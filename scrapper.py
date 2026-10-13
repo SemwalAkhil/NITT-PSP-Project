@@ -32,7 +32,7 @@ with Progress() as p:
 with Progress() as p:
     t = p.add_task("Fetching Tables: ",total=len(links))
     for link in links:
-        print("Checking: ",link)
+        print("Checking: ",link.strip())
         p.update(t,advance=1)
         html = requests.get(link).text
         soup = BeautifulSoup(html,"html.parser")
@@ -40,25 +40,20 @@ with Progress() as p:
         plant_data = []
         tables = soup.find_all("table") 
         for i,table in enumerate(tables):
+            plant_data.append([])
+            print(i)
             curr_table = []
-            # table_head = table.find("thead")
-            # row = table_head.find("tr")
-            # heads = row.find_all("th")
-            # for head in heads:
-            #     plant_data[i] = {head:[]}
-            # table_body = table.find("tbody")
-            # rows = table_body.find_all("tr")
-            # for row in rows:
-            #     datas = row.find_all("td")
-            #     for data in datas:
-            #         plant_data[i]
             for row in table.find_all("tr"):
-                datas = row.find_all("th")
+                print(row)
+                datas = [data.text for data in row.find_all("td")]
                 if datas != []:
-                    plant_data[i].append  
-                if row.find_all("th") != []:
+                    plant_data[i].append(datas)  
+                else:
+                    datas = [data.text for data in row.find_all("tr")]
+                    if datas != row.find_all("td"):
+                        plant_data[i].append(datas)
 
-        print(tables)
+        print(plant_data)
 
 
 
