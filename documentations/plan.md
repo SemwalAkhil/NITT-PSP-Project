@@ -87,14 +87,21 @@ DRAVYA
   ↓
 Scraper
   ↓
-Raw JSON
-  ↓
 Validation
   ↓
 SQLite
   ↓
 Python API
 ```
+
+The MVP will insert parsed records directly into SQLite instead of generating
+an intermediate JSON dataset. Raw HTML remains the source artifact for
+reproducibility. JSON may be added later as an optional export format, but it
+is not part of the primary ingestion path.
+
+Cleaning and normalization should live in a separate module from the database
+operator. The cleaner interprets and prepares source values; the database
+operator owns schema creation, transactions, and persistence.
 
 ---
 
@@ -440,21 +447,9 @@ Stop when a page produces no new plant records.
 
 ## Output
 
-```text
-data/
-└── dravya/
-    └── index.json
-```
-
-Example:
-
-```json
-{
-  "source_id": 374,
-  "name": "Withania somnifera",
-  "url": "https://dravya.ccras.org.in/plant/374/withania-somnifera"
-}
-```
+The discovery result is passed to the downloader/parser and then to the direct
+SQLite ingestion pipeline. A persistent discovery index is optional and must
+not become a second source of truth.
 
 ## Definition of Done
 
@@ -537,14 +532,12 @@ Heading
 Associated content/table
 ```
 
-## Raw output
+## Output
 
-```text
-data/raw/dravya/
-├── 374.json
-├── 375.json
-└── ...
-```
+The parser returns a typed source-record object in memory. It does not write
+per-plant JSON files. The source URL, source record ID, retrieval timestamp,
+and original extracted values travel with the record into the cleaning and
+database layers.
 
 ## Definition of Done
 
@@ -552,13 +545,15 @@ A selected test set of plants can be parsed successfully with section-level outp
 
 ---
 
-# Phase 8 — Raw Data Schema
+# Phase 8 — Parsed Source Records
 
 ## Objective
 
-Create a stable source representation independent of SQL.
+Define the in-memory record contract shared by the scraper, cleaner, validator,
+and database operator. This replaces the planned raw-JSON interchange step.
 
-Example:
+The following field shape is an in-memory model example only; it is not
+written as an intermediate file:
 
 ```json
 {
@@ -599,11 +594,39 @@ Example:
 
 ---
 
-# Phase 9 — Validation Framework
+# Phase 9 — Cleaning, Normalization, and Validation
 
 ## Objective
 
-Detect extraction problems before inserting records into the database.
+Prepare parsed records for direct database insertion and detect extraction
+problems before committing them.
+
+## Cleaning module
+
+Create a dedicated module, for example:
+
+```text
+cleaning/
+├── __init__.py
+├── text.py
+├── records.py
+└── dosha.py
+```
+
+Keep cleaning separate from `database_operator.py`. The database operator
+should manage connections, schema, transactions, and persistence rather than
+HTML or text interpretation. Cleaning functions must be deterministic and
+independently testable.
+
+The cleaning stage should:
+
+- [ ] Trim and collapse irrelevant whitespace
+- [ ] Normalize Unicode without destroying Devanagari or diacritics
+- [ ] Preserve original source values alongside cleaned values
+- [ ] Convert repeated table cells into lists
+- [ ] Handle missing values explicitly
+- [ ] Deduplicate values within a source record
+- [ ] Normalize Dosha expressions using the documented rules
 
 ## Checks
 
@@ -633,31 +656,38 @@ Detect extraction problems before inserting records into the database.
 
 ```text
 reports/
-├── validation.json
 └── validation.csv
 ```
 
 ---
 
-# Phase 10 — SQLite Database Import
+# Phase 10 — Direct SQLite Ingestion
 
 ## Objective
 
-Load validated source records into SQL.
+Insert cleaned and validated source records directly into SQLite without an
+intermediate JSON file.
 
 ## Pipeline
 
 ```text
-Raw JSON
+DRAVYA HTML
    ↓
-Pydantic validation
+Parser
    ↓
-Normalization
+Cleaning and normalization
    ↓
-SQLAlchemy
+Validation
    ↓
-SQLite
+Database operator
+   ↓
+SQLite transaction
 ```
+
+Each source record should be inserted in an atomic transaction. A failed
+record must be rolled back and reported without corrupting successfully
+inserted records. Re-running a scrape must be idempotent by using the source
+and source-record ID as a natural uniqueness key.
 
 ## Initial database
 
@@ -667,7 +697,12 @@ data/ayurveda.db
 
 ## Definition of Done
 
-A clean local SQLite database can be rebuilt entirely from raw source records.
+A clean local SQLite database can be rebuilt by scraping source pages.
+
+- [ ] Validated records are inserted without an intermediate JSON file.
+- [ ] Duplicate source records are updated or skipped deterministically.
+- [ ] Failed records are reported with their source ID and error.
+- [ ] A transaction rollback test passes.
 
 ---
 
@@ -765,7 +800,7 @@ Field extraction
   ↓
 Validation
   ↓
-Raw JSON
+Parsed source record
 ```
 
 ## Initial fields
@@ -1101,9 +1136,9 @@ Test:
 Test:
 
 ```text
-DRAVYA → parser → raw JSON → database
-API → parser → raw JSON → database
-NAMASTE → importer → database
+DRAVYA → parser → cleaner → validator → database
+API → parser → cleaner → validator → database
+NAMASTE → importer → cleaner → validator → database
 ```
 
 ## Data tests
@@ -1200,6 +1235,10 @@ project/
 │   ├── namaste/
 │   └── echarak/
 │
+├── cleaning/
+│   ├── text.py
+│   ├── records.py
+│   └── dosha.py
 ├── normalization/
 ├── database/
 ├── data/
@@ -1440,10 +1479,10 @@ Follow this order instead of implementing all sources simultaneously.
 5. DRAVYA URL discovery
 6. DRAVYA downloader/cache
 7. DRAVYA parser
-8. Raw JSON format
-9. Validation
-10. SQLite import
-11. Dosha normalization
+8. Parsed source-record contract
+9. Cleaning and normalization
+10. Validation
+11. Direct SQLite ingestion
 12. API PDF parser
 13. Botanical taxonomy resolver
 14. NAMASTE importer
@@ -1470,7 +1509,7 @@ The MVP is complete when all of the following are true:
 - [ ] Pages can be downloaded with retries and caching
 - [ ] Raw HTML is stored
 - [ ] DRAVYA sections are parsed
-- [ ] Raw JSON is generated
+- [ ] Parsed records are cleaned before insertion
 - [ ] Validation runs automatically
 - [ ] SQLite database can be rebuilt
 - [ ] Doshakarma normalization is deterministic
@@ -1507,13 +1546,13 @@ Build DRAVYA detail-page downloader.
 Build DRAVYA section parser.
 
 ## TICKET-008
-Create raw JSON schema and validation models.
+Create the parsed source-record contract and validation models.
 
 ## TICKET-009
-Build SQLite import pipeline.
+Build the cleaning/normalization module and direct SQLite ingestion pipeline.
 
 ## TICKET-010
-Implement Dosha normalization rules and unit tests.
+Implement Dosha normalization rules, transaction handling, and unit tests.
 
 ---
 
@@ -1529,7 +1568,9 @@ DRAVYA downloader
       +
 DRAVYA parser
       +
-raw JSON
+cleaning and validation
+      +
+direct SQLite insertion
 ```
 
 Do not start with API OCR, clinical translation, or IMPPAT integration.
@@ -1552,10 +1593,10 @@ Once the DRAVYA pipeline is reliable, use the same architecture to add API, NAMA
        │                   │                    │
        └───────────────────┼────────────────────┘
                            ▼
-                       RAW DATA
+                 PARSED SOURCE RECORDS
                            │
                            ▼
-                    NORMALIZATION
+             CLEANING AND NORMALIZATION
               ┌────────────┼─────────────┐
               │            │             │
               ▼            ▼             ▼

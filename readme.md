@@ -24,22 +24,30 @@ To create a library to know about various illness and their treatments using her
 
 ### 1. Scrapper
 
-Evaluate sites to understand their structures
+Evaluate sites to understand their structures, parse source records, clean
+them, validate them, and insert them directly into SQLite.
 
 ### 2. Database
 
-3 tables
+Initial tables:
 
 1. Herbs
 2. Illnesses
 3. Treatment (Join between herbs and illnesses)
 
-### 3. Multi-Lingual API
+The database operator owns schema creation, transactions, and persistence.
+Cleaning and normalization are kept in a separate module so source parsing
+does not become coupled to SQL.
+
+### 3. Cleaning
+
+### 4. Multi-Lingual API
 
 * Fetch data from databases and present it in multiple languages
 <br>
 * Query in a way to be able to search incomplete or misspelled queries
-### 4. Look for further optimizations
+
+### 5. Look for further optimizations
 
 ---
 
