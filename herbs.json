@@ -1,0 +1,3082 @@
+{
+  "herbs": [
+    {
+      "id": 1,
+      "english_name": "Abies webbiana - Talisha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 1,
+      "source_url": "https://dravya.ccras.org.in/plant/1/abies-webbiana",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 2,
+      "english_name": "Abrus precatorius - Guñja",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 2,
+      "source_url": "https://dravya.ccras.org.in/plant/2/abrus-precatorius",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 3,
+      "english_name": "Abutilon indicum - Atibalā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 3,
+      "source_url": "https://dravya.ccras.org.in/plant/3/abutilon-indicum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 4,
+      "english_name": "Acacia leucophloea - Arimeda",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 5,
+      "source_url": "https://dravya.ccras.org.in/plant/5/acacia-leucophloea",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 5,
+      "english_name": "Acacia pennata - Ādārī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 7,
+      "source_url": "https://dravya.ccras.org.in/plant/7/acacia-pennata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 11,
+      "english_name": "Acacia suma Buch - Kadara",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 8,
+      "source_url": "https://dravya.ccras.org.in/plant/8/acacia-suma-buch",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 12,
+      "english_name": "Acalypha fruticosa - Laghu haritamañjarī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 9,
+      "source_url": "https://dravya.ccras.org.in/plant/9/acalypha-fruticosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 13,
+      "english_name": "Acalypha indica - Haritamañjarī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 10,
+      "source_url": "https://dravya.ccras.org.in/plant/10/acalypha-indica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 14,
+      "english_name": "Achyranthes aspera - Apāmārga",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 11,
+      "source_url": "https://dravya.ccras.org.in/plant/11/achyranthes-aspera",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 15,
+      "english_name": "Aconitum chasmanthum Stapf - Vatsanābha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 12,
+      "source_url": "https://dravya.ccras.org.in/plant/12/aconitum-chasmanthum-stapf",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 16,
+      "english_name": "Aconitum heterophyllum Wall - Ativiṣā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 13,
+      "source_url": "https://dravya.ccras.org.in/plant/13/aconitum-heterophyllum-wall",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 17,
+      "english_name": "Acorus calamus - Vacā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 14,
+      "source_url": "https://dravya.ccras.org.in/plant/14/acorus-calamus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 18,
+      "english_name": "Adhatoda vasica - Vāsā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 15,
+      "source_url": "https://dravya.ccras.org.in/plant/15/adhatoda-vasica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 19,
+      "english_name": "Adiantum capillus-veneris - Bījapatrā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 16,
+      "source_url": "https://dravya.ccras.org.in/plant/16/adiantum-capillus-veneris",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 20,
+      "english_name": "Adiantum lunulatum - Haṁsapadī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 17,
+      "source_url": "https://dravya.ccras.org.in/plant/17/adiantum-lunulatum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 21,
+      "english_name": "Aegle marmelos - Bilva",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 18,
+      "source_url": "https://dravya.ccras.org.in/plant/18/aegle-marmelos",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 22,
+      "english_name": "Aerva lanata - Paṭṭūra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 19,
+      "source_url": "https://dravya.ccras.org.in/plant/19/aerva-lanata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 23,
+      "english_name": "Agave Americana - Kantala",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 20,
+      "source_url": "https://dravya.ccras.org.in/plant/20/agave-americana",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 24,
+      "english_name": "Ailanthus excelsa - Aralu",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 21,
+      "source_url": "https://dravya.ccras.org.in/plant/21/ailanthus-excelsa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 25,
+      "english_name": "Alangium salviifolium - Aṅkola",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 22,
+      "source_url": "https://dravya.ccras.org.in/plant/22/alangium-salviifolium",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 26,
+      "english_name": "Albizzia lebbeck - Śirīṣa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 23,
+      "source_url": "https://dravya.ccras.org.in/plant/23/albizzia-lebbeck",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 27,
+      "english_name": "Alhagi pseudalhagi - Yavāsaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 24,
+      "source_url": "https://dravya.ccras.org.in/plant/24/alhagi-pseudalhagi",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 28,
+      "english_name": "Allium sativum - Laśuna",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 25,
+      "source_url": "https://dravya.ccras.org.in/plant/25/allium-sativum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 29,
+      "english_name": "Alpinia calcarata - Granthimūla",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 27,
+      "source_url": "https://dravya.ccras.org.in/plant/27/alpinia-calcarata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 30,
+      "english_name": "Alpinia galanga - Kulañjana",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 28,
+      "source_url": "https://dravya.ccras.org.in/plant/28/alpinia-galanga",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 31,
+      "english_name": "Alternanthera sessilis - Matsyākṣī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 30,
+      "source_url": "https://dravya.ccras.org.in/plant/30/alternanthera-sessilis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 32,
+      "english_name": "Althaea officinalis - Khatmī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 31,
+      "source_url": "https://dravya.ccras.org.in/plant/31/althaea-officinalis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 33,
+      "english_name": "Amaranthus tricolor - Rāmaśītalikā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 32,
+      "source_url": "https://dravya.ccras.org.in/plant/32/amaranthus-tricolor",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 34,
+      "english_name": "Amomum subulatum - Sthūlailā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 33,
+      "source_url": "https://dravya.ccras.org.in/plant/33/amomum-subulatum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 35,
+      "english_name": "Amorphophallus campanulatus - Sūraṇa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 34,
+      "source_url": "https://dravya.ccras.org.in/plant/34/amorphophallus-campanulatus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 36,
+      "english_name": "Anacyclus pyrethrum - Ākārakarabha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 35,
+      "source_url": "https://dravya.ccras.org.in/plant/35/anacyclus-pyrethrum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 37,
+      "english_name": "Anethum sowa - Śatāhvā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 36,
+      "source_url": "https://dravya.ccras.org.in/plant/36/anethum-sowa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 38,
+      "english_name": "Angelica archangelica - Caṇḍā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 37,
+      "source_url": "https://dravya.ccras.org.in/plant/37/angelica-archangelica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 39,
+      "english_name": "Angelica glauca - Coraka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 38,
+      "source_url": "https://dravya.ccras.org.in/plant/38/angelica-glauca",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 40,
+      "english_name": "Anisomeles malabarica - Spṛkkā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 39,
+      "source_url": "https://dravya.ccras.org.in/plant/39/anisomeles-malabarica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 41,
+      "english_name": "Apium graveolens - Karaphsa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 42,
+      "source_url": "https://dravya.ccras.org.in/plant/42/apium-graveolens",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 42,
+      "english_name": "Apium leptophyllum - Ajamodā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 43,
+      "source_url": "https://dravya.ccras.org.in/plant/43/apium-leptophyllum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 43,
+      "english_name": "Aquilaria agallocha - Agaru",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 44,
+      "source_url": "https://dravya.ccras.org.in/plant/44/aquilaria-agallocha",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 44,
+      "english_name": "Areca catechu - Pūga",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 45,
+      "source_url": "https://dravya.ccras.org.in/plant/45/areca-catechu",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 45,
+      "english_name": "Aristolochia indica - Īśvarī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 47,
+      "source_url": "https://dravya.ccras.org.in/plant/47/aristolochia-indica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 46,
+      "english_name": "Artemisia absinthium - Dvīpāntara Damanaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 48,
+      "source_url": "https://dravya.ccras.org.in/plant/48/artemisia-absinthium",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 47,
+      "english_name": "Artocarpus heterophyllus - Panasa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 49,
+      "source_url": "https://dravya.ccras.org.in/plant/49/artocarpus-heterophyllus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 48,
+      "english_name": "Asparagus officinalis - Dvīpāntara Śatāvarī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 50,
+      "source_url": "https://dravya.ccras.org.in/plant/50/asparagus-officinalis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 49,
+      "english_name": "Asparagus recemosus - Śatāvari",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 51,
+      "source_url": "https://dravya.ccras.org.in/plant/51/asparagus-recemosus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 50,
+      "english_name": "Asteracantha longifolla - Kokilākṣā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 52,
+      "source_url": "https://dravya.ccras.org.in/plant/52/asteracantha-longifolla",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 51,
+      "english_name": "Azadirachta indica - Nimba",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 53,
+      "source_url": "https://dravya.ccras.org.in/plant/53/azadirachta-indica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 52,
+      "english_name": "Bacopa monnieri - Brāhmī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 54,
+      "source_url": "https://dravya.ccras.org.in/plant/54/bacopa-monnieri",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 53,
+      "english_name": "Baliospermum montanum - Dantī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 55,
+      "source_url": "https://dravya.ccras.org.in/plant/55/baliospermum-montanum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 54,
+      "english_name": "Balsamodendron caudata - Āmragandhi-guggulu",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 56,
+      "source_url": "https://dravya.ccras.org.in/plant/56/balsamodendron-caudata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 55,
+      "english_name": "Barleria prionitis - Sahacara",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 57,
+      "source_url": "https://dravya.ccras.org.in/plant/57/barleria-prionitis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 56,
+      "english_name": "Barleria strigosa - Nīlajhiṇṭī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 58,
+      "source_url": "https://dravya.ccras.org.in/plant/58/barleria-strigosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 57,
+      "english_name": "Barringtonia acutangula - Nicula",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 59,
+      "source_url": "https://dravya.ccras.org.in/plant/59/barringtonia-acutangula",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 58,
+      "english_name": "Bauhinia racemosa - Pīta-kāñcanāra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 60,
+      "source_url": "https://dravya.ccras.org.in/plant/60/bauhinia-racemosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 59,
+      "english_name": "Bauhinia variegata - Kāñcanāra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 61,
+      "source_url": "https://dravya.ccras.org.in/plant/61/bauhinia-variegata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 60,
+      "english_name": "Benincasa hispida - Kūśmānḍa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 62,
+      "source_url": "https://dravya.ccras.org.in/plant/62/benincasa-hispida",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 61,
+      "english_name": "Berberis aristata - Dāruharidrā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 63,
+      "source_url": "https://dravya.ccras.org.in/plant/63/berberis-aristata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 62,
+      "english_name": "Bergenia ciliata - Pāṣāṇabheda",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 64,
+      "source_url": "https://dravya.ccras.org.in/plant/64/bergenia-ciliata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 63,
+      "english_name": "Betula utilis - Bhūrja",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 65,
+      "source_url": "https://dravya.ccras.org.in/plant/65/betula-utilis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 64,
+      "english_name": "Blepharis persica - Utiṅgana",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 66,
+      "source_url": "https://dravya.ccras.org.in/plant/66/blepharis-persica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 65,
+      "english_name": "Boerhaavia diffusa - Punarnavā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 67,
+      "source_url": "https://dravya.ccras.org.in/plant/67/boerhaavia-diffusa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 66,
+      "english_name": "Boerhaavia verticillata - Śvetapunarnavā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 68,
+      "source_url": "https://dravya.ccras.org.in/plant/68/boerhaavia-verticillata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 67,
+      "english_name": "Borassus flabellifer - Tāla",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 70,
+      "source_url": "https://dravya.ccras.org.in/plant/70/borassus-flabellifer",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 68,
+      "english_name": "Boswellia serrata - Kunduru",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 71,
+      "source_url": "https://dravya.ccras.org.in/plant/71/boswellia-serrata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 69,
+      "english_name": "Brassica campestris - Sarṣapa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 72,
+      "source_url": "https://dravya.ccras.org.in/plant/72/brassica-campestris",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 70,
+      "english_name": "Buchanania lanzan - Priyāla",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 73,
+      "source_url": "https://dravya.ccras.org.in/plant/73/buchanania-lanzan%0A",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 71,
+      "english_name": "Caesalpinia crista - Pūtīkarañja",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 76,
+      "source_url": "https://dravya.ccras.org.in/plant/76/caesalpinia-crista",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 72,
+      "english_name": "Caesalpinia pulcherrima - Krishnachuda",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 77,
+      "source_url": "https://dravya.ccras.org.in/plant/77/caesalpinia-pulcherrima",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 73,
+      "english_name": "Caesalpinia sappan - Paṭṭaṅga",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 78,
+      "source_url": "https://dravya.ccras.org.in/plant/78/caesalpinia-sappan",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 74,
+      "english_name": "Cajanus cajan - Āḍhakī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 79,
+      "source_url": "https://dravya.ccras.org.in/plant/79/cajanus-cajan",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 75,
+      "english_name": "Calamus rotang - Vetra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 80,
+      "source_url": "https://dravya.ccras.org.in/plant/80/calamus-rotang",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 76,
+      "english_name": "Callicarpa macrophylla - Priyaṅgu",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 81,
+      "source_url": "https://dravya.ccras.org.in/plant/81/callicarpa-macrophylla",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 77,
+      "english_name": "Calotropis procera - Arka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 82,
+      "source_url": "https://dravya.ccras.org.in/plant/82/calotropis-procera",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 78,
+      "english_name": "Calycopteris floribunda - Pullānī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 83,
+      "source_url": "https://dravya.ccras.org.in/plant/83/calycopteris-floribunda",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 79,
+      "english_name": "Capparis sepiaria - Vyāghranakha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 84,
+      "source_url": "https://dravya.ccras.org.in/plant/84/capparis-sepiaria",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 80,
+      "english_name": "Cardiospermum halicacabum - Karṇasphoṭā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 86,
+      "source_url": "https://dravya.ccras.org.in/plant/86/cardiospermum-halicacabum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 81,
+      "english_name": "Careya arborea - Kumbhīka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 87,
+      "source_url": "https://dravya.ccras.org.in/plant/87/careya-arborea",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 82,
+      "english_name": "Carica papaya - Eraṇḍakarkaṭī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 88,
+      "source_url": "https://dravya.ccras.org.in/plant/88/carica-papaya",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 83,
+      "english_name": "Carissa carandas - Karamarda",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 89,
+      "source_url": "https://dravya.ccras.org.in/plant/89/carissa-carandas",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 84,
+      "english_name": "Carthamus tinctorius - Kusumbha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 90,
+      "source_url": "https://dravya.ccras.org.in/plant/90/carthamus-tinctorius",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 85,
+      "english_name": "Carum carvi - Kr̥ṣṇajīraka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 91,
+      "source_url": "https://dravya.ccras.org.in/plant/91/carum-carvi",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 86,
+      "english_name": "Cassia angustifolia - Svarṇapatrī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 92,
+      "source_url": "https://dravya.ccras.org.in/plant/92/cassia-angustifolia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 87,
+      "english_name": "Cassia fistula - Āragvadha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 93,
+      "source_url": "https://dravya.ccras.org.in/plant/93/cassia-fistula",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 88,
+      "english_name": "Cassia tora - Prapunnāḍa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 94,
+      "source_url": "https://dravya.ccras.org.in/plant/94/cassia-tora",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 89,
+      "english_name": "Casuarina equisetifolia",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 95,
+      "source_url": "https://dravya.ccras.org.in/plant/95/casuarina-equisetifolia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 90,
+      "english_name": "Cedrela toona - Tūnī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 96,
+      "source_url": "https://dravya.ccras.org.in/plant/96/cedrela-toona",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 91,
+      "english_name": "Cedrus deodara - Devadāru",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 97,
+      "source_url": "https://dravya.ccras.org.in/plant/97/cedrus-deodara",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 92,
+      "english_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 98,
+      "source_url": "https://dravya.ccras.org.in/plant/98/celastrus-paniculatus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 93,
+      "english_name": "Celosia argentea - Śitivāraka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 99,
+      "source_url": "https://dravya.ccras.org.in/plant/99/celosia-argentea",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 94,
+      "english_name": "Chrysanthemum indicum - Guladāudī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 100,
+      "source_url": "https://dravya.ccras.org.in/plant/100/chrysanthemum-indicum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 95,
+      "english_name": "Centratherum anthelminticum - Vanyajīraka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 101,
+      "source_url": "https://dravya.ccras.org.in/plant/101/centratherum-anthelminticum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 96,
+      "english_name": "Chrysanthemum indicum - Guladāudī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 102,
+      "source_url": "https://dravya.ccras.org.in/plant/102/chrysanthemum-indicum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 97,
+      "english_name": "Cinnamomum camphora - Karpūra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 104,
+      "source_url": "https://dravya.ccras.org.in/plant/104/cinnamomum-camphora",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 98,
+      "english_name": "Cinnamomum zeylanicum - Tvak",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 106,
+      "source_url": "https://dravya.ccras.org.in/plant/106/cinnamomum-zeylanicum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 99,
+      "english_name": "Cissus quadrangularis - Asthisamhṛta",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 108,
+      "source_url": "https://dravya.ccras.org.in/plant/108/cissus-quadrangularis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 100,
+      "english_name": "Citrullus colocynthis - Indravāruṇī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 109,
+      "source_url": "https://dravya.ccras.org.in/plant/109/citrullus-colocynthis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 101,
+      "english_name": "Citrus limon - Nimbū",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 110,
+      "source_url": "https://dravya.ccras.org.in/plant/110/citrus-limon",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 102,
+      "english_name": "Citrus medica - Bījapūra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 111,
+      "source_url": "https://dravya.ccras.org.in/plant/111/citrus-medica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 103,
+      "english_name": "Gynandropsis gynandra - Ajagandha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 112,
+      "source_url": "https://dravya.ccras.org.in/plant/112/gynandropsis-gynandra",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 104,
+      "english_name": "Clerodendrum serratum - Bhāraṅgī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 114,
+      "source_url": "https://dravya.ccras.org.in/plant/114/clerodendrum-serratum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 105,
+      "english_name": "Cocos nucifera - Nārikela",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 117,
+      "source_url": "https://dravya.ccras.org.in/plant/117/cocos-nucifera",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 106,
+      "english_name": "Coix lachryma-jobi - Gavedhuka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 118,
+      "source_url": "https://dravya.ccras.org.in/plant/118/coix-lachryma-jobi",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 107,
+      "english_name": "Coldenia procumbens - Tripakṣī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 119,
+      "source_url": "https://dravya.ccras.org.in/plant/119/coldenia-procumbens",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 108,
+      "english_name": "Coleus amboinicus - Parṇayavānī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 120,
+      "source_url": "https://dravya.ccras.org.in/plant/120/coleus-amboinicus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 109,
+      "english_name": "Coleus forskohlii - Gaṇḍīra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 121,
+      "source_url": "https://dravya.ccras.org.in/plant/121/coleus-forskohlii",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 110,
+      "english_name": "Commiphora wightii - Guggulu",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 122,
+      "source_url": "https://dravya.ccras.org.in/plant/122/commiphora-wightii",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 111,
+      "english_name": "Convolvulus pluricaulis - Śaṅkhapuṣpī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 123,
+      "source_url": "https://dravya.ccras.org.in/plant/123/convolvulus-pluricaulis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 112,
+      "english_name": "Cordia dichotoma - Śleṣmātaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 124,
+      "source_url": "https://dravya.ccras.org.in/plant/124/cordia-dichotoma",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 113,
+      "english_name": "Coscinium fenestratum - Kālīyaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 126,
+      "source_url": "https://dravya.ccras.org.in/plant/126/coscinium-fenestratum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 114,
+      "english_name": "Costus speciosus - Kebuka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 127,
+      "source_url": "https://dravya.ccras.org.in/plant/127/costus-speciosus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 115,
+      "english_name": "Crataeva nurvala - Varuṇa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 128,
+      "source_url": "https://dravya.ccras.org.in/plant/128/crataeva-nurvala",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 227,
+      "english_name": "Crocus sativus - Kunkuma",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 129,
+      "source_url": "https://dravya.ccras.org.in/plant/129/crocus-sativus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 228,
+      "english_name": "Crotolaria juncea - Śaṇa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 130,
+      "source_url": "https://dravya.ccras.org.in/plant/130/crotolaria-juncea",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 229,
+      "english_name": "Croton tiglium - Jayapāla",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 131,
+      "source_url": "https://dravya.ccras.org.in/plant/131/croton-tiglium",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 230,
+      "english_name": "Cryptolepis buchanani - Krishna Sariva",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 132,
+      "source_url": "https://dravya.ccras.org.in/plant/132/cryptolepis-buchanani",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 231,
+      "english_name": "Cucumis melo - Ervāru",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 133,
+      "source_url": "https://dravya.ccras.org.in/plant/133/cucumis-melo",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 232,
+      "english_name": "Cucumis sativus - Trapuṣaṁ",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 134,
+      "source_url": "https://dravya.ccras.org.in/plant/134/cucumis-sativus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 233,
+      "english_name": "Cullen corylifolia - Bākucī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 135,
+      "source_url": "https://dravya.ccras.org.in/plant/135/cullen-corylifolia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 234,
+      "english_name": "Cuminum cyminum - Śvetajīraka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 136,
+      "source_url": "https://dravya.ccras.org.in/plant/136/cuminum-cyminum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 235,
+      "english_name": "Curculigo orchioides - Tālamuli",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 137,
+      "source_url": "https://dravya.ccras.org.in/plant/137/curculigo-orchioides",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 236,
+      "english_name": "Curcuma amada - Āmra Haridrā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 138,
+      "source_url": "https://dravya.ccras.org.in/plant/138/curcuma-amada",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 237,
+      "english_name": "Curcuma longa - Haridrā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 139,
+      "source_url": "https://dravya.ccras.org.in/plant/139/curcuma-longa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 238,
+      "english_name": "Curcuma zedoaria - Karcūra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 140,
+      "source_url": "https://dravya.ccras.org.in/plant/140/curcuma-zedoaria",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 239,
+      "english_name": "Cymbopogon citratus - Kattr̥ṇa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 141,
+      "source_url": "https://dravya.ccras.org.in/plant/141/cymbopogon-citratus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 240,
+      "english_name": "Cymbopogon martinii - Rohīṣa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 142,
+      "source_url": "https://dravya.ccras.org.in/plant/142/cymbopogon-martinii",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 241,
+      "english_name": "Cynodon dactylon - Dūrva",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 143,
+      "source_url": "https://dravya.ccras.org.in/plant/143/cynodon-dactylon",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 242,
+      "english_name": "Cyperus rotundus - Mustā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 144,
+      "source_url": "https://dravya.ccras.org.in/plant/144/cyperus-rotundus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 243,
+      "english_name": "Dendrophthoe falcata - Vandā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 147,
+      "source_url": "https://dravya.ccras.org.in/plant/147/dendrophthoe-falcata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 244,
+      "english_name": "Desmodium gangeticum - Śālaparṇī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 148,
+      "source_url": "https://dravya.ccras.org.in/plant/148/desmodium-gangeticum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 245,
+      "english_name": "Desmostachya bipinnata - Kuśa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 149,
+      "source_url": "https://dravya.ccras.org.in/plant/149/desmostachya-bipinnata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 246,
+      "english_name": "Diospyros exsculpta - Viralā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 151,
+      "source_url": "https://dravya.ccras.org.in/plant/151/diospyros-exsculpta",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 247,
+      "english_name": "Diospyros peregrina - Tinduka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 152,
+      "source_url": "https://dravya.ccras.org.in/plant/152/diospyros-peregrina",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 248,
+      "english_name": "Doronicum hookeri - Vṛścikakanda",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 153,
+      "source_url": "https://dravya.ccras.org.in/plant/153/doronicum-hookeri",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 249,
+      "english_name": "Dryopteris filix mas - Sphītakīṭārī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 154,
+      "source_url": "https://dravya.ccras.org.in/plant/154/dryopteris-filix-mas",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 250,
+      "english_name": "Elaeocarpus sphaericus - Rudrākṣa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 156,
+      "source_url": "https://dravya.ccras.org.in/plant/156/elaeocarpus-sphaericus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 251,
+      "english_name": "Elettaria cardamomum - Sūkṣmailā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 157,
+      "source_url": "https://dravya.ccras.org.in/plant/157/elettaria-cardamomum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 252,
+      "english_name": "Eleusine corocana - Madhulika",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 158,
+      "source_url": "https://dravya.ccras.org.in/plant/158/eleusine-corocana",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 253,
+      "english_name": "Embelia ribes - Viḍaṅga",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 159,
+      "source_url": "https://dravya.ccras.org.in/plant/159/embelia-ribes",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 254,
+      "english_name": "Emblica officinalis - Āmalakī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 160,
+      "source_url": "https://dravya.ccras.org.in/plant/160/emblica-officinalis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 255,
+      "english_name": "Erythrina indica - Pāribhadra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 161,
+      "source_url": "https://dravya.ccras.org.in/plant/161/erythrina-indica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 256,
+      "english_name": "Eucalyptus globulus - Tailaparṇa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 162,
+      "source_url": "https://dravya.ccras.org.in/plant/162/eucalyptus-globulus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 257,
+      "english_name": "Euphorbia dracunculoides - Saptalā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 163,
+      "source_url": "https://dravya.ccras.org.in/plant/163/euphorbia-dracunculoides",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 258,
+      "english_name": "Euphorbia hirta - Bṛhat Dugdhikā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 164,
+      "source_url": "https://dravya.ccras.org.in/plant/164/euphorbia-hirta",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 259,
+      "english_name": "Euphorbia neriifolia - Snuhī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 165,
+      "source_url": "https://dravya.ccras.org.in/plant/165/euphorbia-neriifolia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 260,
+      "english_name": "Euphorbia nivulia Buch - Patrasnuhī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 166,
+      "source_url": "https://dravya.ccras.org.in/plant/166/euphorbia-nivulia-buch",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 261,
+      "english_name": "Euphorbia prostrata - Dugdhikā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 167,
+      "source_url": "https://dravya.ccras.org.in/plant/167/euphorbia-prostrata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 262,
+      "english_name": "Feronia limonia - Kapittha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 169,
+      "source_url": "https://dravya.ccras.org.in/plant/169/feronia-limonia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 263,
+      "english_name": "Ferula foetida - Hiṅgu",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 170,
+      "source_url": "https://dravya.ccras.org.in/plant/170/ferula-foetida",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 264,
+      "english_name": "Ferula jaeschkeana - Hiṅgupatrī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 171,
+      "source_url": "https://dravya.ccras.org.in/plant/171/ferula-jaeschkeana",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 265,
+      "english_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 173,
+      "source_url": "https://dravya.ccras.org.in/plant/173/ficus-bengalensis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 266,
+      "english_name": "Ficus lacor - Plakṣa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 176,
+      "source_url": "https://dravya.ccras.org.in/plant/176/ficus-lacor",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 267,
+      "english_name": "Ficus religiosa - Aśvattha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 178,
+      "source_url": "https://dravya.ccras.org.in/plant/178/ficus-religiosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 268,
+      "english_name": "Flacourtia indica - Sruvavr̥kṣa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 179,
+      "source_url": "https://dravya.ccras.org.in/plant/179/flacourtia-indica%0A",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 269,
+      "english_name": "Foeniculum vulgare - Miśreyā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 180,
+      "source_url": "https://dravya.ccras.org.in/plant/180/foeniculum-vulgare",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 270,
+      "english_name": "Fritillaria roylei - Kṣīrakākolī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 181,
+      "source_url": "https://dravya.ccras.org.in/plant/181/fritillaria-roylei",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 271,
+      "english_name": "Fumaria parviflora - Parpaṭa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 182,
+      "source_url": "https://dravya.ccras.org.in/plant/182/fumaria-parviflora",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 272,
+      "english_name": "Garcinia pedunculata - Vṛntāmlaphala",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 183,
+      "source_url": "https://dravya.ccras.org.in/plant/183/garcinia-pedunculata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 273,
+      "english_name": "Gardenia gummifera - Nāḍīhiṅgu",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 184,
+      "source_url": "https://dravya.ccras.org.in/plant/184/gardenia-gummifera",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 274,
+      "english_name": "Gaultheria fragrantissima - Gandhapūra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 185,
+      "source_url": "https://dravya.ccras.org.in/plant/185/gaultheria-fragrantissima",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 275,
+      "english_name": "Gentiana kurroo - Trāyamāṇā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 186,
+      "source_url": "https://dravya.ccras.org.in/plant/186/gentiana-kurroo",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 276,
+      "english_name": "Gisekia pharnaceoides - Vālukā-Śāka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 187,
+      "source_url": "https://dravya.ccras.org.in/plant/187/gisekia-pharnaceoides",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 277,
+      "english_name": "Glinus lotoides - Ūṣandī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 188,
+      "source_url": "https://dravya.ccras.org.in/plant/188/glinus-lotoides",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 278,
+      "english_name": "Gloriosa superba - Lāṅgalī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 189,
+      "source_url": "https://dravya.ccras.org.in/plant/189/gloriosa-superba",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 279,
+      "english_name": "Gmelina arborea - Gambhārī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 191,
+      "source_url": "https://dravya.ccras.org.in/plant/191/gmelina-arborea",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 280,
+      "english_name": "Grewia tenax - Gāṅgeru",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 192,
+      "source_url": "https://dravya.ccras.org.in/plant/192/grewia-tenax",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 281,
+      "english_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 193,
+      "source_url": "https://dravya.ccras.org.in/plant/193/gymnema-sylvestre",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 282,
+      "english_name": "Habenaria intermedia - Ṛddhi",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 194,
+      "source_url": "https://dravya.ccras.org.in/plant/194/habenaria-intermedia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 283,
+      "english_name": "Heliotropium indicum - Hastiśuṇḍī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 196,
+      "source_url": "https://dravya.ccras.org.in/plant/196/heliotropium-indicum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 284,
+      "english_name": "Hemidesmus indicus - Śveta Sārivā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 197,
+      "source_url": "https://dravya.ccras.org.in/plant/197/hemidesmus-indicus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 285,
+      "english_name": "Hibiscus abelmoschus - Kastūrīlatkā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 198,
+      "source_url": "https://dravya.ccras.org.in/plant/198/hibiscus-abelmoschus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 286,
+      "english_name": "Hibiscus sabdariffa - Ambaṣṭhakī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 199,
+      "source_url": "https://dravya.ccras.org.in/plant/199/hibiscus-sabdariffa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 287,
+      "english_name": "Hiptage benghalensis - Mādhavī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 200,
+      "source_url": "https://dravya.ccras.org.in/plant/200/hiptage-benghalensis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 288,
+      "english_name": "Hordeum vulgare - Yava",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 203,
+      "source_url": "https://dravya.ccras.org.in/plant/203/hordeum-vulgare",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 289,
+      "english_name": "Hordeum vulgare - Yava",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 204,
+      "source_url": "https://dravya.ccras.org.in/plant/204/hordeum-vulgare",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 290,
+      "english_name": "Hydnocarpus pentandra - Tuvaraka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 205,
+      "source_url": "https://dravya.ccras.org.in/plant/205/hydnocarpus-pentandra",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 291,
+      "english_name": "Hyoscyamus niger - Pārasīkayavānī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 206,
+      "source_url": "https://dravya.ccras.org.in/plant/206/hyoscyamus-niger",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 292,
+      "english_name": "Imperata cylindrica - Darbha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 207,
+      "source_url": "https://dravya.ccras.org.in/plant/207/imperata-cylindrica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 293,
+      "english_name": "Indigofera aspalathoides - Śiva-nīlī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 208,
+      "source_url": "https://dravya.ccras.org.in/plant/208/indigofera-aspalathoides",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 294,
+      "english_name": "Indigofera tinctoria - Nīlī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 209,
+      "source_url": "https://dravya.ccras.org.in/plant/209/indigofera-tinctoria",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 295,
+      "english_name": "Inula racemosa - Puṣkara",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 210,
+      "source_url": "https://dravya.ccras.org.in/plant/210/inula-racemosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 296,
+      "english_name": "Ipomoea digitata - Kṣīravidārī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 211,
+      "source_url": "https://dravya.ccras.org.in/plant/211/ipomoea-digitata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 297,
+      "english_name": "Jatropha glandulifera - Dravantī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 213,
+      "source_url": "https://dravya.ccras.org.in/plant/213/jatropha-glandulifera",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 298,
+      "english_name": "Juniperus communis - Hapuṣā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 215,
+      "source_url": "https://dravya.ccras.org.in/plant/215/juniperus-communis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 299,
+      "english_name": "Lagenaria siceraria - Tumbinī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 216,
+      "source_url": "https://dravya.ccras.org.in/plant/216/lagenaria-siceraria",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 300,
+      "english_name": "Lawsonia inermis - Madayantī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 217,
+      "source_url": "https://dravya.ccras.org.in/plant/217/lawsonia-inermis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 301,
+      "english_name": "Lens culinaris - Masūra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 218,
+      "source_url": "https://dravya.ccras.org.in/plant/218/lens-culinaris",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 302,
+      "english_name": "Leonotis nepetaefolia - Granthiparṇī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 219,
+      "source_url": "https://dravya.ccras.org.in/plant/219/leonotis-nepetaefolia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 303,
+      "english_name": "Lepidium sativum - Candraśūra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 220,
+      "source_url": "https://dravya.ccras.org.in/plant/220/lepidium-sativum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 304,
+      "english_name": "Leptadenia reticulata - Jīvantī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 221,
+      "source_url": "https://dravya.ccras.org.in/plant/221/leptadenia-reticulata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 305,
+      "english_name": "Leucas cephalotes - Droṇapuṣpī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 222,
+      "source_url": "https://dravya.ccras.org.in/plant/222/leucas-cephalotes",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 306,
+      "english_name": "Lilium polyphyllum - Kākolī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 223,
+      "source_url": "https://dravya.ccras.org.in/plant/223/lilium-polyphyllum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 307,
+      "english_name": "Linum usitatissimum - Atasī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 224,
+      "source_url": "https://dravya.ccras.org.in/plant/224/linum-usitatissimum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 308,
+      "english_name": "Litsea chinensis - Medāsakaḥ",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 225,
+      "source_url": "https://dravya.ccras.org.in/plant/225/litsea-chinensis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 309,
+      "english_name": "Lodoicea maldivica - Aklāri",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 226,
+      "source_url": "https://dravya.ccras.org.in/plant/226/lodoicea-maldivica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 310,
+      "english_name": "Luffa acutangula - Koṣātakī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 227,
+      "source_url": "https://dravya.ccras.org.in/plant/227/luffa-acutangula",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 311,
+      "english_name": "Lycium barbarum - Kaṇṭakīgulma",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 228,
+      "source_url": "https://dravya.ccras.org.in/plant/228/lycium-barbarum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 312,
+      "english_name": "Malaxis acuminata - Jīvaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 229,
+      "source_url": "https://dravya.ccras.org.in/plant/229/malaxis-acuminata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 313,
+      "english_name": "Mallotus philippinensis Muell - Kampilla",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 230,
+      "source_url": "https://dravya.ccras.org.in/plant/230/mallotus-philippinensis-muell",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 314,
+      "english_name": "Mangifera indica - Āmra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 231,
+      "source_url": "https://dravya.ccras.org.in/plant/231/mangifera-indica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 315,
+      "english_name": "Maranta arundinacea - Ārāroṭa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 232,
+      "source_url": "https://dravya.ccras.org.in/plant/232/maranta-arundinacea",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 316,
+      "english_name": "Martynia annua - Kākanāsikā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 233,
+      "source_url": "https://dravya.ccras.org.in/plant/233/martynia-annua",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 317,
+      "english_name": "Melia azedarachta - Mahānimba",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 234,
+      "source_url": "https://dravya.ccras.org.in/plant/234/melia-azedarachta",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 318,
+      "english_name": "Mentha viridis - Pudīnā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 235,
+      "source_url": "https://dravya.ccras.org.in/plant/235/mentha-viridis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 319,
+      "english_name": "Merremia tridentata - Matsyapatrikā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 236,
+      "source_url": "https://dravya.ccras.org.in/plant/236/merremia-tridentata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 320,
+      "english_name": "Mimosa pudica - Lajjālu",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 239,
+      "source_url": "https://dravya.ccras.org.in/plant/239/mimosa-pudica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 321,
+      "english_name": "Mollugo cerviana - Grīṣmachatraka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 240,
+      "source_url": "https://dravya.ccras.org.in/plant/240/mollugo-cerviana",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 322,
+      "english_name": "Momordica dioica - Karkaśa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 242,
+      "source_url": "https://dravya.ccras.org.in/plant/242/momordica-dioica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 323,
+      "english_name": "Monochoria vaginalis - Indīvara",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 243,
+      "source_url": "https://dravya.ccras.org.in/plant/243/monochoria-vaginalis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 324,
+      "english_name": "Moringa oleifera - Śigru",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 244,
+      "source_url": "https://dravya.ccras.org.in/plant/244/moringa-oleifera",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 325,
+      "english_name": "Mucuna prurita - Ātmagupta",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 245,
+      "source_url": "https://dravya.ccras.org.in/plant/245/mucuna-prurita",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 326,
+      "english_name": "Murraya koenigii - Saurabhanimba",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 246,
+      "source_url": "https://dravya.ccras.org.in/plant/246/murraya-koenigii",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 327,
+      "english_name": "Musa paradisiaca - Kadalī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 247,
+      "source_url": "https://dravya.ccras.org.in/plant/247/musa-paradisiaca",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 328,
+      "english_name": "Myrica esculenta Buch - Kaṭphala",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 248,
+      "source_url": "https://dravya.ccras.org.in/plant/248/myrica-esculenta-buch",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 329,
+      "english_name": "Nardostachys jatamansi - Jatāmāṁsī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 250,
+      "source_url": "https://dravya.ccras.org.in/plant/250/nardostachys-jatamansi",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 330,
+      "english_name": "Nelumbo nucifera - Kamala",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 251,
+      "source_url": "https://dravya.ccras.org.in/plant/251/nelumbo-nucifera",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 331,
+      "english_name": "Nerium indicum - Karavīra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 252,
+      "source_url": "https://dravya.ccras.org.in/plant/252/nerium-indicum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 332,
+      "english_name": "Nigella sativa - Upakuñcikā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 253,
+      "source_url": "https://dravya.ccras.org.in/plant/253/nigella-sativa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 333,
+      "english_name": "Nymphaea alba - Kumudā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 254,
+      "source_url": "https://dravya.ccras.org.in/plant/254/nymphaea-alba",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 334,
+      "english_name": "Nymphaea stellata - Utpala",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 255,
+      "source_url": "https://dravya.ccras.org.in/plant/255/nymphaea-stellata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 335,
+      "english_name": "Onosma bracteatum - Gojihvā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 257,
+      "source_url": "https://dravya.ccras.org.in/plant/257/onosma-bracteatum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 336,
+      "english_name": "Oroxylum indicum - Śyonāka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 258,
+      "source_url": "https://dravya.ccras.org.in/plant/258/oroxylum-indicum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 337,
+      "english_name": "Oryza sativa - Śālī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 259,
+      "source_url": "https://dravya.ccras.org.in/plant/259/oryza-sativa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 338,
+      "english_name": "Ougeinia oojeinensis - Tiniśa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 260,
+      "source_url": "https://dravya.ccras.org.in/plant/260/ougeinia-oojeinensis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 339,
+      "english_name": "Oxalis corniculata - Cāṅgerī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 261,
+      "source_url": "https://dravya.ccras.org.in/plant/261/oxalis-corniculata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 340,
+      "english_name": "Pandanus tectorius - Ketakī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 263,
+      "source_url": "https://dravya.ccras.org.in/plant/263/pandanus-tectorius",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 341,
+      "english_name": "Papaver somniferum - Khakhasa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 264,
+      "source_url": "https://dravya.ccras.org.in/plant/264/papaver-somniferum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 342,
+      "english_name": "Parmelia perlata - Śaileya",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 265,
+      "source_url": "https://dravya.ccras.org.in/plant/265/parmelia-perlata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 343,
+      "english_name": "Paspalum scrobiculatum - Kodrava",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 266,
+      "source_url": "https://dravya.ccras.org.in/plant/266/paspalum-scrobiculatum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 344,
+      "english_name": "Pavetta indica var. tomentosa - Pāpaṭa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 267,
+      "source_url": "https://dravya.ccras.org.in/plant/267/pavetta-indica-var.-tomentosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 345,
+      "english_name": "Pavonia odorata - Gandhaśiphā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 268,
+      "source_url": "https://dravya.ccras.org.in/plant/268/pavonia-odorata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 346,
+      "english_name": "Pennisetum typhoides - Vajrānna",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 269,
+      "source_url": "https://dravya.ccras.org.in/plant/269/pennisetum-typhoides",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 347,
+      "english_name": "Pergularia daemia - Viṣāṇikā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 270,
+      "source_url": "https://dravya.ccras.org.in/plant/270/pergularia-daemia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 348,
+      "english_name": "Peristrophe bicalyculata - Kākajaṅghā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 271,
+      "source_url": "https://dravya.ccras.org.in/plant/271/peristrophe-bicalyculata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 349,
+      "english_name": "Phaseolus radiatus - Mudga",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 272,
+      "source_url": "https://dravya.ccras.org.in/plant/272/phaseolus-radiatus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 350,
+      "english_name": "Phoenix dactylifera - Kharjura",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 273,
+      "source_url": "https://dravya.ccras.org.in/plant/273/phoenix-dactylifera",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 351,
+      "english_name": "Phyla nodiflora - Jalapippalī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 274,
+      "source_url": "https://dravya.ccras.org.in/plant/274/phyla-nodiflora",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 352,
+      "english_name": "Phyllanthus acidus - Lavalīphala",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 275,
+      "source_url": "https://dravya.ccras.org.in/plant/275/phyllanthus-acidus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 353,
+      "english_name": "Phyllanthus fraternus - Tāmalakī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 276,
+      "source_url": "https://dravya.ccras.org.in/plant/276/phyllanthus-fraternus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 354,
+      "english_name": "Physalis alkekengi - Kākanaja",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 277,
+      "source_url": "https://dravya.ccras.org.in/plant/277/physalis-alkekengi",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 355,
+      "english_name": "Picrorhiza kurroa - Kaṭukā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 278,
+      "source_url": "https://dravya.ccras.org.in/plant/278/picrorhiza-kurroa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 356,
+      "english_name": "Pimpinella anisum - Anisūna",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 279,
+      "source_url": "https://dravya.ccras.org.in/plant/279/pimpinella-anisum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 357,
+      "english_name": "Pinus gerardiana - Nikocaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 280,
+      "source_url": "https://dravya.ccras.org.in/plant/280/pinus-gerardiana",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 358,
+      "english_name": "Pinus roxburghii - Sarala",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 281,
+      "source_url": "https://dravya.ccras.org.in/plant/281/pinus-roxburghii",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 359,
+      "english_name": "Piper betle - Nāgavallī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 282,
+      "source_url": "https://dravya.ccras.org.in/plant/282/piper-betle",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 360,
+      "english_name": "Piper cubeba - Kaṅkola",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 283,
+      "source_url": "https://dravya.ccras.org.in/plant/283/piper-cubeba",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 361,
+      "english_name": "Piper longum - Pippali",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 284,
+      "source_url": "https://dravya.ccras.org.in/plant/284/piper-longum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 362,
+      "english_name": "Piper nigrum - Marica",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 285,
+      "source_url": "https://dravya.ccras.org.in/plant/285/piper-nigrum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 363,
+      "english_name": "Pistacia lentiscus - Rūmīmastagī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 286,
+      "source_url": "https://dravya.ccras.org.in/plant/286/pistacia-lentiscus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 364,
+      "english_name": "Pistia stratiotes - Jalakumbhī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 287,
+      "source_url": "https://dravya.ccras.org.in/plant/287/pistia-stratiotes",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 365,
+      "english_name": "Plantago lanceolata - Vanya-aśvagola",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 288,
+      "source_url": "https://dravya.ccras.org.in/plant/288/plantago-lanceolata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 366,
+      "english_name": "Pluchea lanceolata - Rāsnā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 289,
+      "source_url": "https://dravya.ccras.org.in/plant/289/pluchea-lanceolata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 367,
+      "english_name": "Plumbago indica - Rakta Citraka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 290,
+      "source_url": "https://dravya.ccras.org.in/plant/290/plumbago-indica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 368,
+      "english_name": "Plumbago zeylanica - Citraka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 291,
+      "source_url": "https://dravya.ccras.org.in/plant/291/plumbago-zeylanica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 369,
+      "english_name": "Polygonatum cirrhifolium - Mahāmedā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 292,
+      "source_url": "https://dravya.ccras.org.in/plant/292/polygonatum-cirrhifolium",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 370,
+      "english_name": "Prosopis cineraria - Śamī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 294,
+      "source_url": "https://dravya.ccras.org.in/plant/294/prosopis-cineraria",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 371,
+      "english_name": "Prunus avium - Elavāluka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 295,
+      "source_url": "https://dravya.ccras.org.in/plant/295/prunus-avium",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 372,
+      "english_name": "Prunus cerasoides - Padmaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 296,
+      "source_url": "https://dravya.ccras.org.in/plant/296/prunus-cerasoides",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 373,
+      "english_name": "Pterocarpus marsupium - Asana",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 297,
+      "source_url": "https://dravya.ccras.org.in/plant/297/pterocarpus-marsupium",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 374,
+      "english_name": "Pueraria tuberosa - Vidārī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 299,
+      "source_url": "https://dravya.ccras.org.in/plant/299/pueraria-tuberosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 375,
+      "english_name": "Quercus infectoria - Māyakku",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 301,
+      "source_url": "https://dravya.ccras.org.in/plant/301/quercus-infectoria",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 376,
+      "english_name": "Raphanus sativus - Mūlaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 302,
+      "source_url": "https://dravya.ccras.org.in/plant/302/raphanus-sativus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 377,
+      "english_name": "Rauvolfia serpentina - Sarpagandhā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 303,
+      "source_url": "https://dravya.ccras.org.in/plant/303/rauvolfia-serpentina",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 378,
+      "english_name": "Rhus parviflora - Tintiḍīka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 304,
+      "source_url": "https://dravya.ccras.org.in/plant/304/rhus-parviflora",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 379,
+      "english_name": "Ricinus communis - Eraṇḍa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 305,
+      "source_url": "https://dravya.ccras.org.in/plant/305/ricinus-communis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 380,
+      "english_name": "Rosa centifolia - Śatapatrikā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 306,
+      "source_url": "https://dravya.ccras.org.in/plant/306/rosa-centifolia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 381,
+      "english_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 307,
+      "source_url": "https://dravya.ccras.org.in/plant/307/rubia-cordifolia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 382,
+      "english_name": "Saccharum bengalense - Śāra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 308,
+      "source_url": "https://dravya.ccras.org.in/plant/308/saccharum-bengalense",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 383,
+      "english_name": "Saccharum officinarum - Ikṣu",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 309,
+      "source_url": "https://dravya.ccras.org.in/plant/309/saccharum-officinarum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 384,
+      "english_name": "Saccharum spontaneum - Kāśa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 310,
+      "source_url": "https://dravya.ccras.org.in/plant/310/saccharum-spontaneum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 385,
+      "english_name": "Salix alba - Śveta vetasa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 311,
+      "source_url": "https://dravya.ccras.org.in/plant/311/salix-alba",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 386,
+      "english_name": "Saraca asoca - Aśoka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 313,
+      "source_url": "https://dravya.ccras.org.in/plant/313/saraca-asoca%0A",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 387,
+      "english_name": "Saussurea lappa - Kuṣṭha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 314,
+      "source_url": "https://dravya.ccras.org.in/plant/314/saussurea-lappa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 388,
+      "english_name": "Scindapsus officinalis - Gajapippalī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 315,
+      "source_url": "https://dravya.ccras.org.in/plant/315/scindapsus-officinalis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 389,
+      "english_name": "Scirpus kysoor - Kaśeru",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 316,
+      "source_url": "https://dravya.ccras.org.in/plant/316/scirpus-kysoor",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 390,
+      "english_name": "Selinum vaginatum - Bhūtakeśī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 317,
+      "source_url": "https://dravya.ccras.org.in/plant/317/selinum-vaginatum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 391,
+      "english_name": "Semecarpus anacardium - Bhallātaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 318,
+      "source_url": "https://dravya.ccras.org.in/plant/318/semecarpus-anacardium",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 392,
+      "english_name": "Sesamum indicum - Tila",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 319,
+      "source_url": "https://dravya.ccras.org.in/plant/319/sesamum-indicum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 393,
+      "english_name": "Sesbania bispinosa - Itkaṭa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 320,
+      "source_url": "https://dravya.ccras.org.in/plant/320/sesbania-bispinosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 394,
+      "english_name": "Sesbania sesban - Jayanṭī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 321,
+      "source_url": "https://dravya.ccras.org.in/plant/321/sesbania-sesban",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 395,
+      "english_name": "Shorea robusta - Śāla",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 322,
+      "source_url": "https://dravya.ccras.org.in/plant/322/shorea-robusta",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 396,
+      "english_name": "Sisymbrium irio - Khūbkalān",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 324,
+      "source_url": "https://dravya.ccras.org.in/plant/324/sisymbrium-irio",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 397,
+      "english_name": "Smilax china - Madhusnuhī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 325,
+      "source_url": "https://dravya.ccras.org.in/plant/325/smilax-china",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 398,
+      "english_name": "Solanum violaceum - Brihati",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 327,
+      "source_url": "https://dravya.ccras.org.in/plant/327/solanum-violaceum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 399,
+      "english_name": "Solanum nigrum - Kākamācī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 328,
+      "source_url": "https://dravya.ccras.org.in/plant/328/solanum-nigrum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 400,
+      "english_name": "Solanum virginianum - Kaṇṭakārī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 329,
+      "source_url": "https://dravya.ccras.org.in/plant/329/solanum-virginianum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 401,
+      "english_name": "Sphaeranthus indicus - Muṇdītakā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 330,
+      "source_url": "https://dravya.ccras.org.in/plant/330/sphaeranthus-indicus",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 402,
+      "english_name": "Spondias pinnata - Āmrāta",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 331,
+      "source_url": "https://dravya.ccras.org.in/plant/331/spondias-pinnata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 403,
+      "english_name": "Stereospermum chelonoides - Pāṭala",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 332,
+      "source_url": "https://dravya.ccras.org.in/plant/332/stereospermum-chelonoides",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 404,
+      "english_name": "Stereospermum suaveolens - Pāṭalā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 333,
+      "source_url": "https://dravya.ccras.org.in/plant/333/stereospermum-suaveolens",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 405,
+      "english_name": "Streblus asper - Śākhoṭaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 334,
+      "source_url": "https://dravya.ccras.org.in/plant/334/streblus-asper",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 406,
+      "english_name": "Strychnos potatorum - Kataka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 336,
+      "source_url": "https://dravya.ccras.org.in/plant/336/strychnos-potatorum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 407,
+      "english_name": "Swertia chirata - Kirātatikta",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 337,
+      "source_url": "https://dravya.ccras.org.in/plant/337/swertia-chirata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 408,
+      "english_name": "Symplocos racemosa - Lodhra",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 338,
+      "source_url": "https://dravya.ccras.org.in/plant/338/symplocos-racemosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 409,
+      "english_name": "Synantherias sylvatica - Araṇya-sūraṇa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 339,
+      "source_url": "https://dravya.ccras.org.in/plant/339/synantherias-sylvatica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 410,
+      "english_name": "Syzygium cuminii - Jambū",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 341,
+      "source_url": "https://dravya.ccras.org.in/plant/341/syzygium-cuminii",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 411,
+      "english_name": "Tamarindus indica - Ciñcā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 342,
+      "source_url": "https://dravya.ccras.org.in/plant/342/tamarindus-indica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 412,
+      "english_name": "Taxus baccata - Sthauṇeya",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 343,
+      "source_url": "https://dravya.ccras.org.in/plant/343/taxus-baccata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 413,
+      "english_name": "Tectona grandis - Śāka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 345,
+      "source_url": "https://dravya.ccras.org.in/plant/345/tectona-grandis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 414,
+      "english_name": "Teramnus labialis - Māṣaparṇī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 346,
+      "source_url": "https://dravya.ccras.org.in/plant/346/teramnus-labialis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 415,
+      "english_name": "Terminalia arjuna - Arjuna",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 347,
+      "source_url": "https://dravya.ccras.org.in/plant/347/terminalia-arjuna",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 416,
+      "english_name": "Terminalia belerica - Bibhītaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 348,
+      "source_url": "https://dravya.ccras.org.in/plant/348/terminalia-belerica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 417,
+      "english_name": "Terminalia chebula - Harītakī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 349,
+      "source_url": "https://dravya.ccras.org.in/plant/349/terminalia-chebula",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 418,
+      "english_name": "Thespesia populnea - Kapītana",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 350,
+      "source_url": "https://dravya.ccras.org.in/plant/350/thespesia-populnea",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 419,
+      "english_name": "Tinospora cordifolia - Guḍūcī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 351,
+      "source_url": "https://dravya.ccras.org.in/plant/351/tinospora-cordifolia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 420,
+      "english_name": "Toddalia asiatica - Kaṭugulma",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 352,
+      "source_url": "https://dravya.ccras.org.in/plant/352/toddalia-asiatica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 421,
+      "english_name": "Tragia involucrata - Vr̥ścikāli",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 354,
+      "source_url": "https://dravya.ccras.org.in/plant/354/tragia-involucrata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 422,
+      "english_name": "Trapa natans Linn. var. bispinosa - Śrṅgātaka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 355,
+      "source_url": "https://dravya.ccras.org.in/plant/355/trapa-natans-linn.-var.-bispinosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 423,
+      "english_name": "Trianthema decandra - Laghupatra varṣābhū",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 356,
+      "source_url": "https://dravya.ccras.org.in/plant/356/trianthema-decandra",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 424,
+      "english_name": "Trianthema portulacastrum - Varṣābhu",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 357,
+      "source_url": "https://dravya.ccras.org.in/plant/357/trianthema-portulacastrum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 425,
+      "english_name": "Tribulus terrestris - Gokṣura",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 358,
+      "source_url": "https://dravya.ccras.org.in/plant/358/tribulus-terrestris",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 426,
+      "english_name": "Trichosanthes bracteata - Viśalā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 359,
+      "source_url": "https://dravya.ccras.org.in/plant/359/trichosanthes-bracteata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 427,
+      "english_name": "Trigonella foenum-graecum - Methī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 360,
+      "source_url": "https://dravya.ccras.org.in/plant/360/trigonella-foenum-graecum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 428,
+      "english_name": "Typha australis - Gundrā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 361,
+      "source_url": "https://dravya.ccras.org.in/plant/361/typha-australis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 429,
+      "english_name": "Typha elephantina - Poṭagala",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 362,
+      "source_url": "https://dravya.ccras.org.in/plant/362/typha-elephantina",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 430,
+      "english_name": "Typhonium trilobatum - Ślīpadārikanda",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 363,
+      "source_url": "https://dravya.ccras.org.in/plant/363/typhonium-trilobatum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 431,
+      "english_name": "Uraria picta - Pr̥śniparṇi",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 364,
+      "source_url": "https://dravya.ccras.org.in/plant/364/uraria-picta",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 432,
+      "english_name": "Valeriana wallichii - Tagara",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 365,
+      "source_url": "https://dravya.ccras.org.in/plant/365/valeriana-wallichii",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 433,
+      "english_name": "Vallaris solanacea - Āsphoṭā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 366,
+      "source_url": "https://dravya.ccras.org.in/plant/366/vallaris-solanacea",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 434,
+      "english_name": "Vateria indica - Sarja",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 367,
+      "source_url": "https://dravya.ccras.org.in/plant/367/vateria-indica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 435,
+      "english_name": "Vernonia cinerea - Sahadevi",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 368,
+      "source_url": "https://dravya.ccras.org.in/plant/368/vernonia-cinerea",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 436,
+      "english_name": "Vigna unquiculata - Kulattha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 371,
+      "source_url": "https://dravya.ccras.org.in/plant/371/vigna-unquiculata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 437,
+      "english_name": "Vitis vinifera - Drākṣā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 373,
+      "source_url": "https://dravya.ccras.org.in/plant/373/vitis-vinifera",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 438,
+      "english_name": "Withania somnifera - Aśvagandhā",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 374,
+      "source_url": "https://dravya.ccras.org.in/plant/374/withania-somnifera",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 439,
+      "english_name": "Woodfordia fruticosa - Dhātakī",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 375,
+      "source_url": "https://dravya.ccras.org.in/plant/375/woodfordia-fruticosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 440,
+      "english_name": "Xeromphis spinosa - Madana",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 376,
+      "source_url": "https://dravya.ccras.org.in/plant/376/xeromphis-spinosa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 441,
+      "english_name": "Zanthoxylum armatum - Tumburu",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 377,
+      "source_url": "https://dravya.ccras.org.in/plant/377/zanthoxylum-armatum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 442,
+      "english_name": "Zingiber officinale - Ārdraka",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 378,
+      "source_url": "https://dravya.ccras.org.in/plant/378/zingiber-officinale",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 443,
+      "english_name": "Zizyphus mauritiana - Kola",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 379,
+      "source_url": "https://dravya.ccras.org.in/plant/379/zizyphus-mauritiana",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 444,
+      "english_name": "Hygrophila auriculata(Schum.) - Kokilaksha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 380,
+      "source_url": "https://dravya.ccras.org.in/plant/380/hygrophila-auriculata%28schum.%29",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 445,
+      "english_name": "Premna mucronata - Agnimanth",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 382,
+      "source_url": "https://dravya.ccras.org.in/plant/382/premna-mucronata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 446,
+      "english_name": "Andrographis paniculata - Kalamegha",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 383,
+      "source_url": "https://dravya.ccras.org.in/plant/383/andrographis-paniculata",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 447,
+      "english_name": "Trichosanthes dioica - Patola",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 384,
+      "source_url": "https://dravya.ccras.org.in/plant/384/trichosanthes-dioica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 448,
+      "english_name": "Sida cordifolia - Bala",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 385,
+      "source_url": "https://dravya.ccras.org.in/plant/385/sida-cordifolia",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 449,
+      "english_name": "Anthocephalus Chinensis",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 386,
+      "source_url": "https://dravya.ccras.org.in/plant/386/anthocephalus-chinensis",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 450,
+      "english_name": "Mimusops Elengi",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 387,
+      "source_url": "https://dravya.ccras.org.in/plant/387/mimusops-elengi",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 451,
+      "english_name": "Centella Asiatica",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 388,
+      "source_url": "https://dravya.ccras.org.in/plant/388/centella-asiatica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 452,
+      "english_name": "Salvadora Persica",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 389,
+      "source_url": "https://dravya.ccras.org.in/plant/389/salvadora-persica",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 453,
+      "english_name": "Allium Cepa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 390,
+      "source_url": "https://dravya.ccras.org.in/plant/390/allium-cepa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 454,
+      "english_name": "Operculina Trupethum",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 391,
+      "source_url": "https://dravya.ccras.org.in/plant/391/operculina-trupethum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 455,
+      "english_name": "Boerhavia diffusa",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 392,
+      "source_url": "https://dravya.ccras.org.in/plant/392/boerhavia-diffusa",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 456,
+      "english_name": "Albizia lebbeck",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 393,
+      "source_url": "https://dravya.ccras.org.in/plant/393/albizia-lebbeck",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 457,
+      "english_name": "Operculina turpethum",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 394,
+      "source_url": "https://dravya.ccras.org.in/plant/394/operculina-turpethum",
+      "botanical_name": null,
+      "family": null
+    },
+    {
+      "id": 458,
+      "english_name": "Fumaria indica",
+      "source": "CCRAS DRAVYA",
+      "source_record_id": 395,
+      "source_url": "https://dravya.ccras.org.in/plant/395/fumaria-indica",
+      "botanical_name": null,
+      "family": null
+    }
+  ]
+}

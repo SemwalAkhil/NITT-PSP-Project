@@ -1,0 +1,5 @@
+beautifulsoup4
+requests
+rich
+typer
+urllib3

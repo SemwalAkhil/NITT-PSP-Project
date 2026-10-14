@@ -109,6 +109,9 @@ upsert record and attributes into SQLite
 ```
 
 The return value is the number of successfully inserted or updated records.
+During the plant-ingestion loop, the CLI displays a `rich.progress` bar with
+the completed count and estimated time remaining. A plant is counted only
+after its record has been validated and inserted successfully.
 
 ### `main()`
 
@@ -147,7 +150,7 @@ Use a separate database for a test run:
 python scrapper.py --database /tmp/ayurvedic-test.db --max-plants 5
 ```
 
-For an unreliable or slow source, the network limits can be changed:
+For an upython cli.py herb "Ashwagandha"nreliable or slow source, the network limits can be changed:
 
 ```bash
 python scrapper.py --max-plants 1 --timeout 5 --retries 0
@@ -156,3 +159,25 @@ python scrapper.py --max-plants 1 --timeout 5 --retries 0
 The scraper raises network, parsing, validation, and database errors instead
 of silently treating a failed record as successful. Ctrl+C exits with status
 130 and closes the HTTP session cleanly.
+
+The Typer CLI is the preferred project entry point:
+
+```bash
+python cli.py setup
+python cli.py scrape --max-pages 1 --max-plants 5
+python cli.py herbs tulsi
+python cli.py illnesses fever
+```
+
+Manual records can be inserted while preserving database constraints:
+
+```bash
+python cli.py herb "Tulsi" --botanical-name "Ocimum tenuiflorum"
+python cli.py illness "Cough"
+python cli.py treatment HERB_ID ILLNESS_ID
+python cli.py treatments HERB_ID
+```
+
+Duplicate illness names, duplicate treatment links, missing foreign keys, empty
+names, invalid source IDs, and invalid source URLs are rejected with a CLI
+error instead of being silently accepted.

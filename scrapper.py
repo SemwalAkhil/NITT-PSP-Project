@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
+from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn, TimeRemainingColumn
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -130,11 +131,21 @@ def scrape(
         database = AyurvedicAlmanac(database_path)
         database.create_database()
         inserted = 0
-        for plant_id, url in plants:
-            record = parse_plant(plant_id, url, fetch(session, url, timeout))
-            record.validate()
-            database.insert_record(record)
-            inserted += 1
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TaskProgressColumn(),
+            TimeRemainingColumn(),
+        ) as progress:
+            task = progress.add_task("Scraping plants", total=len(plants))
+            for plant_id, url in plants:
+                progress.update(task, description=f"Scraping plant {plant_id}")
+                record = parse_plant(plant_id, url, fetch(session, url, timeout))
+                record.validate()
+                database.insert_record(record)
+                inserted += 1
+                progress.advance(task)
         return inserted
     finally:
         session.close()
