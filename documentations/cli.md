@@ -81,17 +81,23 @@ python cli.py scrape dravya \
 - `--timeout`: sets the HTTP read timeout in seconds.
 - `--retries`: sets the number of retry attempts for supported temporary
   failures.
+- `--record-retries`: retries a plant after parsing, translation, validation,
+  or database failure.
+- `--failure-report`: writes failed plant IDs, URLs, attempts, and reasons to
+  a JSON report.
 
-The scraper displays a progress bar and advances only after a plant has been
-parsed, validated, and inserted successfully.
+The scraper displays a progress bar, continues after isolated plant failures,
+and retries failed plants separately. Failed records are reported without
+committing incomplete database transactions.
 
 During scraping, the first English vernacular name from the source page is
 stored as the herb's primary `english_name`. All language-specific names are
 also stored as attributes with fields such as `Vernacular Names.Hindi` and
 `Vernacular Names.Malayalam`. Translation enrichment adds corresponding
 `Translated Names.<Language>` attributes when Google Translator is available.
-English-facing output is normalized to ASCII, so `Kāsa` is exported as `Kasa`
-and emoji are removed from labels and values.
+Unicode source names are preserved in exports through `original_name` and
+source attributes. The compatibility `english_name` field contains the ASCII
+transliteration (`Kāsa` is searchable as `Kasa`).
 
 ### `herb`
 
@@ -186,9 +192,10 @@ python cli.py attributes HERB_ID --format csv --output attributes.csv
 ```
 
 When a scraped record contains a field such as `Therapeutic Usage` or
-`Therapeutic Uses`, each cleaned value in that field is also inserted as an
-illness and linked to the herb in `treatment`. Existing illness names and
-links are reused, so re-scraping is safe and does not create duplicates.
+`Therapeutic Uses`, mapped disease values are inserted as illnesses and linked
+to the herb in `treatment`. Unmapped therapeutic values remain attributes
+until validated. Existing illness names and links are reused, so re-scraping is
+safe and does not create duplicates.
 
 ### `records`
 

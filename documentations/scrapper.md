@@ -16,7 +16,7 @@ them to the database operator. It does not own text-cleaning rules or SQL.
 | Implemented | `PlantRecord` contract, cleaning, and validation |
 | Implemented | Optional translation enrichment |
 | Implemented | Direct SQLite insertion and upsert |
-| Planned | HTML caching and structured scrape-error reporting |
+| Implemented | Per-plant recovery, retries, and structured scrape-error reporting |
 | Planned | Dosha normalization |
 | Planned | API PDF and NAMASTE Excel importers |
 | Planned | Botanical taxonomy resolution |
@@ -72,9 +72,10 @@ Requests directory pages in sequence:
 ```
 
 Each link is checked against the compiled `/plant/<id>` pattern. IDs are
-stored in a dictionary, so duplicate links do not create duplicate work. The
-function stops when a later page produces no new IDs or `max_pages` is
-reached, then returns sorted `(plant_id, absolute_url)` pairs.
+stored in a dictionary, so duplicate links do not create duplicate work.
+Transient empty pages are tolerated; discovery terminates only after two
+consecutive pages add no IDs or when `max_pages` is reached. The scrape report
+includes the total discovered, pages fetched, and termination reason.
 
 ### `_normalize_label()`
 
@@ -114,7 +115,8 @@ aliases are canonicalized, including `Malyalam` to `Malayalam` and `Oriya` to
 Vernacular attributes and source values are merged into the same record
 before cleaning and persistence. When an English vernacular value exists,
 its first value becomes the record's primary `ayurvedic_name`/database
-`english_name`; otherwise the page heading remains the fallback name.
+`original_name`; its ASCII transliteration is stored in the compatibility
+`english_name` field. Otherwise the page heading remains the fallback name.
 
 ### `parse_plant()`
 
@@ -162,16 +164,17 @@ validate record
 upsert record and attributes into SQLite
 ```
 
-The return value is the number of successfully inserted or updated records.
-During the plant-ingestion loop, the CLI displays a `rich.progress` bar with
-the completed count and estimated time remaining. A plant is counted only
-after its record has been validated and inserted successfully.
+The return value is a `ScrapeReport` containing the successful count and
+structured failures with plant ID, URL, attempt count, exception type, and
+reason. Each failed plant is retried in a separate pass according to
+`record_retries`; a permanently failed plant does not stop other plants.
+`failure_report_path` writes the same report as JSON. The CLI displays a
+`rich.progress` bar and exposes both options as `--record-retries` and
+`--failure-report`.
 
 When the parsed attributes contain a `Therapeutic Usage` field, the database
-operator converts each condition value into an illness and links it to the
-current herb through the treatment join table. Re-scraping the same herb
-replaces its current attributes and treatment links, preventing stale source
-relationships.
+operator creates illness links only for explicitly mapped disease values.
+Ambiguous values remain attributes until validated.
 
 ### `main()`
 
@@ -189,15 +192,14 @@ after persistence, but neither is an intermediate scrape stage.
 
 ## Current limitations
 
-- HTML caching is planned but not yet implemented.
+- HTML caching and resuming discovery itself are not yet implemented; rerun
+  with the same database and failure report to retry failed source records.
 - Translation enrichment depends on the availability and rate limits of
       Google Translator through `deep-translator`.
 - Flexible table fields are stored as section-qualified attributes. Illness and
-      treatment relationships are currently normalized only from the source's
-      `Therapeutic Usage` section; other domain-specific relationships remain
+      treatment relationships are currently normalized only from explicitly
+      mapped disease values; other domain-specific relationships remain
       attributes.
-- A failed plant stops the current run instead of being accumulated into a
-  structured error report.
 - Rate limiting between requests should be added before a large production
   scrape.
 
@@ -221,9 +223,11 @@ For an unreliable or slow source, the network limits can be changed:
 python scrapper.py --max-plants 1 --timeout 5 --retries 0
 ```
 
-The scraper raises network, parsing, validation, and database errors instead
-of silently treating a failed record as successful. Ctrl+C exits with status
-130 and closes the HTTP session cleanly.
+The scraper records network, parsing, validation, and database errors for the
+affected plant, retries that plant according to `--record-retries`, and
+continues with other records. Use `--failure-report` to write the structured
+failure details as JSON. Ctrl+C exits with status 130 and closes the HTTP
+session cleanly.
 
 The Typer CLI is the preferred project entry point:
 

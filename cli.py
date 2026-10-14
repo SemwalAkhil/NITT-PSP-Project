@@ -7,11 +7,12 @@ from pathlib import Path
 from typing import Any, NoReturn
 
 import typer
+import requests
 from rich.console import Console
 from rich.table import Table
 
 from database_operator import AyurvedicAlmanac
-from scrapper import scrape
+from scrapper import ScraperError, scrape
 
 
 app = typer.Typer(
@@ -90,15 +91,29 @@ def scrape_site(
     max_plants: int | None = typer.Option(None, min=1),
     timeout: float = typer.Option(15.0, min=0.1),
     retries: int = typer.Option(2, min=0),
+    record_retries: int = typer.Option(1, "--record-retries", min=0),
+    failure_report: str | None = typer.Option(None, "--failure-report"),
 ) -> None:
     """Scrape a supported site and insert records directly into the database."""
     if site.lower() != "dravya":
         raise typer.BadParameter("Only the DRAVYA site is currently supported.", param_hint="site")
     try:
-        inserted = scrape(database_path, max_pages, max_plants, timeout, retries)
-    except (OSError, ValueError, sqlite3.Error) as error:
+        report = scrape(
+            database_path,
+            max_pages,
+            max_plants,
+            timeout,
+            retries,
+            record_retries,
+            failure_report,
+        )
+    except (OSError, ValueError, sqlite3.Error, requests.RequestException, ScraperError) as error:
         fail(error)
-    typer.echo(f"Processed {inserted} DRAVYA records.")
+    typer.echo(f"Processed {report.processed} DRAVYA records.")
+    if report.failures:
+        typer.echo(f"Failed {len(report.failures)} records.", err=True)
+        if failure_report:
+            typer.echo(f"Failure report: {failure_report}", err=True)
 
 
 @app.command("herb")

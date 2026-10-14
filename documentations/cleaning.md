@@ -47,11 +47,14 @@ validator, and database operator.
 | `source_record_id` | Stable plant ID from the source URL. |
 | `source_url` | URL used to retrieve the source record. |
 | `retrieved_at` | UTC retrieval timestamp. |
-| `ayurvedic_name` | Main plant name from the source. |
-| `botanical_name` | Scientific/botanical name, when available. |
-| `family` | Botanical family, when available. |
-| `attributes` | Parsed fields mapped to cleaned value lists. |
-| `source_values` | Original extracted field text for provenance. |
+| `ayurvedic_name` | Unicode-normalized plant name from the source. |
+| `botanical_name` | Unicode-normalized scientific/botanical name, when available. |
+| `family` | Unicode-normalized botanical family, when available. |
+| `attributes` | Parsed fields mapped to Unicode-normalized value lists. |
+| `source_values` | Cleaned source field text for provenance. |
+| `transliterated_name` | ASCII transliteration for compatibility/search indexing. |
+| `transliterated_botanical_name` | ASCII botanical-name transliteration, when available. |
+| `transliterated_family` | ASCII family-name transliteration, when available. |
 
 ### `PlantRecord.clean()`
 
@@ -59,9 +62,19 @@ validator, and database operator.
 source text. It returns the same record after updating it, allowing the parser
 to construct and clean a record in one expression.
 
-Identity fields and non-regional attributes use `ascii_text()`. Source fields
-under `Vernacular Names.<Language>` and regional `Translated Names` preserve
-their native scripts. English translation fields remain ASCII.
+Identity fields, attributes, and source values retain Unicode after NFC
+normalization. `ascii_text()` is used only to populate the explicit
+`transliterated_*` fields; it never replaces source data. The database keeps
+the normalized name in `original_name` and uses the transliteration in the
+legacy `english_name` search column.
+
+### Typed attribute classification
+
+`DISEASE_NAMES_BY_FIELD` is an explicit mapping of known source fields to
+validated disease names. `PlantRecord.typed_attributes()` returns typed
+attribute records: mapped values are labeled `disease`, while every other
+value is labeled `ambiguous`. Ambiguous values stay in `herb_attributes` and
+do not create treatment relationships.
 
 ### `PlantRecord.validate()`
 

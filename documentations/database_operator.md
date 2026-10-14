@@ -31,26 +31,27 @@ Connections return `sqlite3.Row` objects so columns can be accessed by name.
 ### `herbs`
 
 Stores the main plant identity, source name, source record ID, source URL,
-botanical name, and family. The original `english_name` field is retained for
-compatibility with the first prototype.
+retrieval timestamp, botanical name, and family. `original_name` stores the normalized Unicode
+source name. The original `english_name` field is retained as the
+transliterated compatibility/search name.
 
 The pair `(source, source_record_id)` identifies one source record across
 repeated scrapes.
+`retrieved_at` records when the source page was extracted.
 
 ### `illness`
 
-Stores illness names for the planned herb-to-illness model. The current DRAVYA
-scraper populates this table from values found in the `Therapeutic Usage`
-section. `english_name` is unique so the same illness can be shared by many
-herbs.
+Stores illness names for the planned herb-to-illness model. The current DRAVYA scraper populates this table only from values in the
+explicit disease-name mapping in `cleaning.py`. Other values from
+`Therapeutic Usage` remain source attributes until validated. `english_name`
+is unique so the same illness can be shared by many herbs.
 
 ### `treatment`
 
 This many-to-many join table connects herbs and illnesses through `herb_id`
 and `illness_id`. Its composite primary key prevents duplicate relationships,
-and foreign keys use cascading deletes. The scraper only creates relationships
-from fields whose section contains `Therapeutic Usage`; arbitrary table text
-is not treated as an illness.
+and foreign keys use cascading deletes. Only explicitly classified disease values create relationships; field labels
+alone are not sufficient to create an illness.
 
 ### `herb_attributes`
 
@@ -60,15 +61,21 @@ Stores flexible fields that do not yet have dedicated normalized columns:
 - `field_name`
 - `value`
 - `source_text`
+- `source_language`
+- `machine_generated`
+- `verification_status`
 
 The composite primary key prevents duplicate values for one herb and field.
 `source_text` preserves the original extracted wording for review.
+Translation metadata identifies automatically generated values and whether
+they have been reviewed.
 
 Vernacular names use the same flexible attribute store with field names such
 as `Vernacular Names.English` and `Vernacular Names.Hindi`. English is included
 in the supported language list because it is the source's primary display-name
-language. The first English vernacular value is also stored in the compatibility
-`herbs.english_name` column and is therefore the primary searchable plant name.
+language. The first English vernacular value is also stored in the normalized
+`herbs.original_name` column. Its transliteration is stored in the
+compatibility `herbs.english_name` column, while searches check both columns.
 Other language values remain available through `herb_attributes` without
 adding a fixed column for every language.
 
@@ -98,8 +105,8 @@ One record is written in a single transaction:
 4. Delete the herb's previous attributes.
 5. Delete the herb's previous treatment links.
 6. Insert the current cleaned attributes.
-7. Create or reuse illnesses from `Therapeutic Usage` attributes and insert the
-	current herb-to-illness links.
+7. Create or reuse illnesses from explicitly classified disease attributes and
+   insert the current herb-to-illness links.
 8. Commit only after all steps succeed.
 
 If an attribute insert fails, the context manager rolls back the whole update.

@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timezone
+from dataclasses import asdict, dataclass, field
+import json
+from pathlib import Path
 import re
 from urllib.parse import urljoin
 
 import requests
+import sqlite3
 from bs4 import BeautifulSoup
 from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn, TimeRemainingColumn
 from requests.adapters import HTTPAdapter
@@ -23,6 +27,59 @@ LANGUAGE_ALIASES = {
     "malyalam": "Malayalam",
     "oriya": "Odia",
 }
+_last_discovery_report: DiscoveryReport | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ScrapeFailure:
+    plant_id: int
+    url: str
+    attempts: int
+    error_type: str
+    reason: str
+
+
+class ScraperError(RuntimeError):
+    """Expected scraper failure with actionable context."""
+
+
+class DiscoveryError(ScraperError):
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class DiscoveryReport:
+    plants: list[tuple[int, str]]
+    pages: int
+    total_discovered: int
+    termination: str
+
+
+@dataclass(slots=True)
+class ScrapeReport:
+    processed: int = 0
+    discovered: int = 0
+    discovery_pages: int = 0
+    discovery_termination: str = ""
+    failures: list[ScrapeFailure] = field(default_factory=list)
+
+    def write_json(self, path: str | Path) -> None:
+        destination = Path(path)
+        destination.write_text(
+            json.dumps(
+                {
+                    "processed": self.processed,
+                    "discovered": self.discovered,
+                    "discovery_pages": self.discovery_pages,
+                    "discovery_termination": self.discovery_termination,
+                    "failed": len(self.failures),
+                    "failures": [asdict(failure) for failure in self.failures],
+                },
+                indent=2,
+                ensure_ascii=False,
+            ) + "\n",
+            encoding="utf-8",
+        )
 
 
 def create_session(retries: int = 2) -> requests.Session:
@@ -47,14 +104,15 @@ def fetch(session: requests.Session, url: str, timeout: float = DEFAULT_TIMEOUT)
     return response.text
 
 
-def discover_plants(
+def _discover_plants(
     session: requests.Session,
     directory_url: str = DRAVYA_DIRECTORY,
     max_pages: int | None = None,
-) -> list[tuple[int, str]]:
-    """Discover unique plant IDs and absolute URLs until pagination is exhausted."""
+) -> DiscoveryReport:
+    """Discover plants, rejecting transient empty pages instead of truncating."""
     discovered: dict[int, str] = {}
     page = 1
+    empty_page_attempts = 0
     while max_pages is None or page <= max_pages:
         url = f"{directory_url}?page={page}"
         soup = BeautifulSoup(fetch(session, url), "html.parser")
@@ -63,10 +121,32 @@ def discover_plants(
             match = PLANT_PATH.search(link["href"])
             if match:
                 discovered[int(match.group(1))] = urljoin(directory_url, link["href"])
-        if len(discovered) == before and page > 1:
-            break
+        if len(discovered) == before:
+            empty_page_attempts += 1
+            if page > 1 and empty_page_attempts >= 2:
+                return DiscoveryReport(
+                    sorted(discovered.items()), page, len(discovered), "two consecutive pages added no IDs"
+                )
+        else:
+            empty_page_attempts = 0
         page += 1
-    return sorted(discovered.items())
+    termination = "max_pages reached" if max_pages is not None else "pagination did not terminate"
+    if max_pages is None:
+        raise DiscoveryError(
+            f"pagination did not terminate after {page - 1} pages; discovered {len(discovered)} plants"
+        )
+    return DiscoveryReport(sorted(discovered.items()), page - 1, len(discovered), termination)
+
+
+def discover_plants(
+    session: requests.Session,
+    directory_url: str = DRAVYA_DIRECTORY,
+    max_pages: int | None = None,
+) -> list[tuple[int, str]]:
+    """Return discovered plants while retaining the legacy list API."""
+    global _last_discovery_report
+    _last_discovery_report = _discover_plants(session, directory_url, max_pages)
+    return _last_discovery_report.plants
 
 
 def _normalize_label(value: str) -> str:
@@ -80,6 +160,12 @@ def _normalize_label(value: str) -> str:
 
 def _section_name(table: BeautifulSoup) -> str:
     """Return the accordion section containing a table."""
+    explicit = table.get("data-section") or table.get("data-section-name")
+    if explicit:
+        return _normalize_label(explicit)
+    caption = table.find("caption")
+    if caption:
+        return _normalize_label(caption.get_text(" ", strip=True))
     heading = table.find_previous(class_="accordion-button")
     if heading is None:
         heading = table.find_previous("h3")
@@ -113,6 +199,8 @@ def _table_attributes(soup: BeautifulSoup) -> tuple[dict[str, list[str]], dict[s
             continue
 
         section = _section_name(table)
+        if not section:
+            section = "Unsectioned"
         for row in rows:
             if row is header_row:
                 continue
@@ -220,16 +308,26 @@ def scrape(
     max_plants: int | None = None,
     timeout: float = DEFAULT_TIMEOUT,
     retries: int = 2,
-) -> int:
+    record_retries: int = 1,
+    failure_report_path: str | Path | None = None,
+) -> ScrapeReport:
+    if record_retries < 0:
+        raise ValueError("record_retries must be non-negative")
     session = create_session(retries)
-    translator = GoogleNameTranslator()
+    translator = GoogleNameTranslator(cache_path=database_path)
     try:
         plants = discover_plants(session, max_pages=max_pages)
+        discovery = _last_discovery_report
+        report = ScrapeReport(
+            discovered=discovery.total_discovered if discovery else len(plants),
+            discovery_pages=discovery.pages if discovery else 0,
+            discovery_termination=discovery.termination if discovery else "compatibility fallback",
+        )
         if max_plants is not None:
             plants = plants[:max_plants]
         database = AyurvedicAlmanac(database_path)
         database.create_database()
-        inserted = 0
+        pending = list(plants)
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -238,15 +336,48 @@ def scrape(
             TimeRemainingColumn(),
         ) as progress:
             task = progress.add_task("Scraping plants", total=len(plants))
-            for plant_id, url in plants:
-                progress.update(task, description=f"Scraping plant {plant_id}")
-                record = parse_plant(plant_id, url, fetch(session, url, timeout))
-                record = enrich_record(record, translator)
-                record.validate()
-                database.insert_record(record)
-                inserted += 1
-                progress.advance(task)
-        return inserted
+            for attempt in range(record_retries + 1):
+                failed: list[tuple[int, str, Exception, int]] = []
+                for plant_id, url in pending:
+                    completed = False
+                    progress.update(
+                        task,
+                        description=f"Scraping plant {plant_id}"
+                        + (f" (retry {attempt})" if attempt else ""),
+                    )
+                    try:
+                        record = parse_plant(plant_id, url, fetch(session, url, timeout))
+                        record = enrich_record(record, translator)
+                        record.validate()
+                        database.insert_record(record)
+                    except (requests.RequestException, ValueError, sqlite3.Error) as error:
+                        failed.append((plant_id, url, error, attempt + 1))
+                    except Exception as error:
+                        failed.append((plant_id, url, error, attempt + 1))
+                    else:
+                        report.processed += 1
+                        completed = True
+                    if attempt == record_retries and not completed:
+                        completed = True
+                    if completed:
+                        progress.advance(task)
+                if not failed:
+                    break
+                pending = [(plant_id, url) for plant_id, url, _, _ in failed]
+                if attempt == record_retries:
+                    report.failures = [
+                        ScrapeFailure(
+                            plant_id=plant_id,
+                            url=url,
+                            attempts=attempts,
+                            error_type=type(error).__name__,
+                            reason=str(error) or "no error message",
+                        )
+                        for plant_id, url, error, attempts in failed
+                    ]
+        if failure_report_path is not None:
+            report.write_json(failure_report_path)
+        return report
     finally:
         session.close()
 
@@ -268,6 +399,17 @@ def main() -> None:
         default=2,
         help="Number of retries for connection and temporary HTTP failures.",
     )
+    parser.add_argument(
+        "--record-retries",
+        type=int,
+        default=1,
+        help="Number of separate retries for plants that fail processing.",
+    )
+    parser.add_argument(
+        "--failure-report",
+        type=Path,
+        help="Write failed plant details as JSON to this path.",
+    )
     args = parser.parse_args()
     try:
         print(scrape(
@@ -276,6 +418,8 @@ def main() -> None:
             args.max_plants,
             args.timeout,
             args.retries,
+            args.record_retries,
+            args.failure_report,
         ))
     except KeyboardInterrupt:
         parser.exit(130, "Scrape interrupted by user.\n")

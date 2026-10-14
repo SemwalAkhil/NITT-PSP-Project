@@ -3,7 +3,24 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import re
 import unicodedata
-from typing import Iterable
+from typing import Iterable, Literal
+
+
+AttributeKind = Literal["disease", "ambiguous"]
+
+
+@dataclass(frozen=True, slots=True)
+class TypedAttribute:
+    field: str
+    value: str
+    kind: AttributeKind
+
+
+# Values are deliberately explicit: therapeutic sections also contain
+# properties, actions, and classifications that are not diseases.
+DISEASE_NAMES_BY_FIELD: dict[str, frozenset[str]] = {
+    "Therapeutic Usage.Name": frozenset({"Kāsa", "Agnimāndya"}),
+}
 
 
 def clean_text(value: str) -> str:
@@ -33,6 +50,12 @@ def clean_values(values: Iterable[str]) -> list[str]:
     return result
 
 
+def attribute_kind(field: str, value: str) -> AttributeKind:
+    """Classify an extracted value only when its source mapping is explicit."""
+    known_diseases = DISEASE_NAMES_BY_FIELD.get(clean_text(field), frozenset())
+    return "disease" if clean_text(value) in known_diseases else "ambiguous"
+
+
 @dataclass(slots=True)
 class PlantRecord:
     source: str
@@ -44,40 +67,46 @@ class PlantRecord:
     family: str | None = None
     attributes: dict[str, list[str]] = field(default_factory=dict)
     source_values: dict[str, str] = field(default_factory=dict)
+    attribute_metadata: dict[str, dict[str, str | bool]] = field(default_factory=dict)
+    translation_failures: list[str] = field(default_factory=list)
+    transliterated_name: str = ""
+    transliterated_botanical_name: str | None = None
+    transliterated_family: str | None = None
 
     def clean(self) -> PlantRecord:
-        self.ayurvedic_name = ascii_text(self.ayurvedic_name)
-        self.botanical_name = ascii_text(self.botanical_name) if self.botanical_name else None
-        self.family = ascii_text(self.family) if self.family else None
+        self.ayurvedic_name = clean_text(self.ayurvedic_name)
+        self.botanical_name = clean_text(self.botanical_name) if self.botanical_name else None
+        self.family = clean_text(self.family) if self.family else None
+        self.transliterated_name = ascii_text(self.ayurvedic_name)
+        self.transliterated_botanical_name = (
+            ascii_text(self.botanical_name) if self.botanical_name else None
+        )
+        self.transliterated_family = ascii_text(self.family) if self.family else None
         cleaned_attributes: dict[str, list[str]] = {}
         for field, values in self.attributes.items():
             cleaned_field = clean_text(field)
             if not cleaned_field:
                 continue
-            language = cleaned_field.rsplit(".", 1)[-1]
-            preserve_regional = (
-                cleaned_field.startswith("Vernacular Names.")
-                or cleaned_field.startswith("Translated Names.") and language != "English"
-            )
-            clean_value = clean_text if preserve_regional else ascii_text
-            cleaned_values = clean_values(clean_value(value) for value in values)
+            cleaned_values = clean_values(clean_text(value) for value in values)
             if cleaned_values:
                 cleaned_attributes[cleaned_field] = cleaned_values
         self.attributes = cleaned_attributes
         self.source_values = {
-            clean_text(field): (
-                clean_text(value)
-                if (
-                    clean_text(field).startswith("Vernacular Names.")
-                    or clean_text(field).startswith("Translated Names.")
-                )
-                and clean_text(field).rsplit(".", 1)[-1] != "English"
-                else ascii_text(value)
-            )
+            clean_text(field): clean_text(value)
             for field, value in self.source_values.items()
             if clean_text(field) and clean_text(value)
         }
+        self.attribute_metadata = {
+            clean_text(field): metadata
+            for field, metadata in self.attribute_metadata.items()
+            if clean_text(field)
+        }
         return self
+
+    def typed_attributes(self) -> Iterable[TypedAttribute]:
+        for field, values in self.attributes.items():
+            for value in values:
+                yield TypedAttribute(field, value, attribute_kind(field, value))
 
     def validate(self) -> None:
         if not self.source_record_id > 0:

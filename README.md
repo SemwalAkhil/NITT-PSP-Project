@@ -28,6 +28,35 @@ The CLI can export stored record groups to JSON or CSV after ingestion. Those
 exports are optional views of the database and are not an intermediate
 scraping stage.
 
+The committed `AyurvedicDB.db` is an intentional demo fixture containing a
+sample CCRAS DRAVYA ingestion. Runtime databases and translation caches should
+normally be placed outside the repository. To create a fresh database, run:
+
+```bash
+python cli.py setup --database /tmp/ayurvedic.db
+python cli.py scrape dravya --max-plants 5 --database /tmp/ayurvedic.db
+```
+
+## Architecture
+
+```text
+CCRAS DRAVYA
+    │
+    ▼
+discover → fetch → parse → clean/validate → translate
+                                      │
+                                      ▼
+                              SQLite transaction
+                              ├─ herbs + provenance
+                              ├─ herb_attributes
+                              └─ illness/treatment links
+```
+
+The CCRAS DRAVYA website is the source of scraped plant data. Translated
+attributes are machine-generated and marked unverified; source values are
+preserved separately. See [`documentations/scrapper.md`](documentations/scrapper.md)
+for the ingestion and recovery behavior.
+
 ## Current status
 
 | Area | Status |
@@ -38,7 +67,7 @@ scraping stage.
 | Illness/treatment links from Therapeutic Usage | Implemented |
 | Typer CLI search, inspection, manual inserts, and exports | Implemented |
 | Automated regression tests | Implemented for core parser and persistence paths |
-| HTML cache, structured scrape-error report, fuzzy search, and public API | Planned |
+| Persistent scrape-error report, fuzzy search, and normalized search keys | Implemented |
 | Dosha normalization and additional external source adapters | Planned |
 
 ---
@@ -74,7 +103,8 @@ English-facing values, value splitting, and `PlantRecord` validation.
 * Query in a way to be able to search incomplete or misspelled queries
 
 The current CLI stores multilingual vernacular and translated-name attributes.
-It does not yet provide a dedicated Python API or fuzzy-search implementation.
+Search uses normalized keys and ranked fuzzy matching; a dedicated public
+Python API remains planned.
 
 ### 5. Look for further optimizations
 
@@ -87,6 +117,10 @@ It does not yet provide a dedicated Python API or fuzzy-search implementation.
 3. Typer and Rich for the CLI
 4. Requests, BeautifulSoup, and urllib3 for ingestion
 5. deep-translator for optional name enrichment
+
+The supported/tested Python range is 3.10 through 3.14. Direct dependencies
+are pinned in `requirements.txt`; CI runs the regression suite across that
+range.
 
 ## Documentation map
 
@@ -190,7 +224,8 @@ Run the focused regression suite:
 python -m pytest tests/test_scrapper.py -q
 ```
 
-The tests cover section-aware table parsing, vernacular-name extraction and
-primary-name selection, vernacular persistence, treatment-link refresh,
-English cleanup, and translation enrichment with a fake translator. Network
-scraping itself is not run by the test suite.
+The tests cover section-aware table parsing, malformed HTML, pagination,
+timeouts and HTTP errors, partial scrape recovery, provenance persistence,
+fuzzy search, treatment-link refresh, Unicode cleanup, and translation
+enrichment with a fake translator. Tests use fixtures and do not contact the
+live network.

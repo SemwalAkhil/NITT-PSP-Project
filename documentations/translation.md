@@ -29,14 +29,14 @@ The language codes are the Google Translator codes used by
 ## `GoogleNameTranslator`
 
 `GoogleNameTranslator` wraps `deep_translator.GoogleTranslator` with automatic
-source-language detection, an in-memory cache, and a 0.25-second minimum
-request interval. The cache prevents repeated requests for the same text and
-target language, while the interval helps keep a large scrape below Google's
-documented request rate.
+source-language detection, an in-memory cache, an optional SQLite-backed
+cache, and a 0.25-second minimum request interval. Cached entries include the
+result status, error, and source-language metadata, so failed requests are not
+repeated on later runs.
 
-Translation exceptions are converted to missing results. This keeps a source
-record ingestible when Google Translator is unavailable, rate-limited, or
-unable to translate a particular value.
+`TranslationResult.status` distinguishes `success`, `missing` (an empty
+response), and `failed` (an exception with its reason). Source values remain
+available when either non-success status occurs.
 
 ## `enrich_record()`
 
@@ -51,8 +51,10 @@ Translated Names.Bengali
 
 The record's primary English name is translated into each configured regional
 language. Existing `Vernacular Names.<Language>` values are translated back to
-English and added to `Translated Names.English`. Existing source attributes
-are never overwritten.
+English and added to `Translated Names.English`. Existing source attributes are never overwritten. Generated attributes carry
+`source_language`, `machine_generated`, and `verification_status=unverified`
+metadata. Botanical names and medical terminology are therefore not treated as
+validated facts merely because a machine translation exists.
 
 The function returns the cleaned record. English-facing values use ASCII
 normalization, so diacritics and symbols do not remain in English output:
@@ -72,5 +74,6 @@ requires network access to Google Translator. A failed translation does not
 fail the scrape; the source value remains available in its original attribute.
 
 Translation is intentionally performed during scraping rather than inside the
-SQLite layer. Database persistence remains deterministic and stores translated
-attributes alongside all other record attributes.
+SQLite layer. Database persistence stores translated attributes and their
+metadata alongside all other record attributes. The scraper supplies its
+database path to the translator so the cache persists across runs.
