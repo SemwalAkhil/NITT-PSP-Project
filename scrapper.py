@@ -27,9 +27,6 @@ LANGUAGE_ALIASES = {
     "malyalam": "Malayalam",
     "oriya": "Odia",
 }
-_last_discovery_report: DiscoveryReport | None = None
-
-
 @dataclass(frozen=True, slots=True)
 class ScrapeFailure:
     plant_id: int
@@ -142,11 +139,9 @@ def discover_plants(
     session: requests.Session,
     directory_url: str = DRAVYA_DIRECTORY,
     max_pages: int | None = None,
-) -> list[tuple[int, str]]:
-    """Return discovered plants while retaining the legacy list API."""
-    global _last_discovery_report
-    _last_discovery_report = _discover_plants(session, directory_url, max_pages)
-    return _last_discovery_report.plants
+) -> DiscoveryReport:
+    """Return discovered plants and pagination metadata."""
+    return _discover_plants(session, directory_url, max_pages)
 
 
 def _normalize_label(value: str) -> str:
@@ -263,6 +258,39 @@ def _vernacular_attributes(soup: BeautifulSoup) -> tuple[dict[str, list[str]], d
     return attributes, source_values
 
 
+def _scientific_profile(soup: BeautifulSoup) -> tuple[str | None, str | None]:
+    """Extract taxonomy from the live scientific-profile card."""
+    scientific_name: str | None = None
+    family: str | None = None
+    for label in soup.select("small"):
+        label_text = clean_text(label.get_text(" ", strip=True)).casefold()
+        if label_text not in {"scientific name", "family name"}:
+            continue
+        value_container = label.find_parent("div")
+        if value_container is None:
+            continue
+        value_element = label.find_next_sibling("span")
+        if value_element is None:
+            value_element = value_container.find_next("span")
+        if value_element is None:
+            continue
+        value = clean_text(value_element.get_text(" ", strip=True))
+        if label_text == "scientific name":
+            italic = value_element.find("i")
+            scientific_name = clean_text(italic.get_text(" ", strip=True)) if italic else value
+        else:
+            family = value
+    return scientific_name, family
+
+
+def _title_ayurvedic_name(title: str) -> str | None:
+    """Return the source title's Ayurvedic/Sanskrit name when present."""
+    if " - " not in title:
+        return None
+    value = clean_text(title.rsplit(" - ", 1)[1])
+    return value or None
+
+
 def parse_plant(plant_id: int, url: str, html: str) -> PlantRecord:
     soup = BeautifulSoup(html, "html.parser")
     heading = soup.find(["h1", "h2"])
@@ -279,22 +307,26 @@ def parse_plant(plant_id: int, url: str, html: str) -> PlantRecord:
     attributes.update(vernacular_attributes)
     source_values.update(vernacular_source_values)
     english_names = attributes.get("Vernacular Names.English", [])
-    botanical_name = next(
+    profile_botanical_name, profile_family = _scientific_profile(soup)
+    botanical_name = profile_botanical_name or next(
         (value for field, values in attributes.items()
          if re.search(r"scientific|botanical", field, re.I)
          for value in values),
         None,
     )
-    family = next(
+    family = profile_family or next(
         (value for field, values in attributes.items() if re.search(r"family", field, re.I) for value in values),
         None,
+    )
+    ayurvedic_name = _title_ayurvedic_name(title) or (
+        english_names[0] if english_names else clean_text(title.split("|")[0])
     )
     return PlantRecord(
         source="CCRAS DRAVYA",
         source_record_id=plant_id,
         source_url=url,
         retrieved_at=datetime.now(timezone.utc).isoformat(),
-        ayurvedic_name=english_names[0] if english_names else clean_text(title.split("|")[0]),
+        ayurvedic_name=ayurvedic_name,
         botanical_name=botanical_name,
         family=family,
         attributes=attributes,
@@ -310,18 +342,19 @@ def scrape(
     retries: int = 2,
     record_retries: int = 1,
     failure_report_path: str | Path | None = None,
+    translate: bool = False,
 ) -> ScrapeReport:
     if record_retries < 0:
         raise ValueError("record_retries must be non-negative")
     session = create_session(retries)
-    translator = GoogleNameTranslator(cache_path=database_path)
+    translator = GoogleNameTranslator(cache_path=database_path) if translate else None
     try:
-        plants = discover_plants(session, max_pages=max_pages)
-        discovery = _last_discovery_report
+        discovery = discover_plants(session, max_pages=max_pages)
+        plants = discovery.plants
         report = ScrapeReport(
-            discovered=discovery.total_discovered if discovery else len(plants),
-            discovery_pages=discovery.pages if discovery else 0,
-            discovery_termination=discovery.termination if discovery else "compatibility fallback",
+            discovered=discovery.total_discovered,
+            discovery_pages=discovery.pages,
+            discovery_termination=discovery.termination,
         )
         if max_plants is not None:
             plants = plants[:max_plants]
@@ -347,12 +380,11 @@ def scrape(
                     )
                     try:
                         record = parse_plant(plant_id, url, fetch(session, url, timeout))
-                        record = enrich_record(record, translator)
+                        if translator is not None:
+                            record = enrich_record(record, translator)
                         record.validate()
                         database.insert_record(record)
                     except (requests.RequestException, ValueError, sqlite3.Error) as error:
-                        failed.append((plant_id, url, error, attempt + 1))
-                    except Exception as error:
                         failed.append((plant_id, url, error, attempt + 1))
                     else:
                         report.processed += 1
@@ -410,6 +442,11 @@ def main() -> None:
         type=Path,
         help="Write failed plant details as JSON to this path.",
     )
+    parser.add_argument(
+        "--translate",
+        action="store_true",
+        help="Enable machine translation enrichment (disabled by default).",
+    )
     args = parser.parse_args()
     try:
         print(scrape(
@@ -420,6 +457,7 @@ def main() -> None:
             args.retries,
             args.record_retries,
             args.failure_report,
+            args.translate,
         ))
     except KeyboardInterrupt:
         parser.exit(130, "Scrape interrupted by user.\n")

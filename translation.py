@@ -27,6 +27,7 @@ INDIAN_TRANSLATION_LANGUAGES = {
     "Telugu": "te",
     "Urdu": "ur",
 }
+LANGUAGE_CODES = {language: code for language, code in INDIAN_TRANSLATION_LANGUAGES.items()}
 
 
 class GoogleNameTranslator:
@@ -118,6 +119,7 @@ def enrich_record(record: PlantRecord, translator: GoogleNameTranslator) -> Plan
         if language == "English":
             continue
         result = _translation_result(translator.translate(record.ayurvedic_name, code))
+        result = TranslationResult(result.value, result.status, result.error, "sa")
         if result.value:
             translated[f"Translated Names.{language}"] = [result.value]
             record.attribute_metadata[f"Translated Names.{language}"] = {
@@ -138,6 +140,12 @@ def enrich_record(record: PlantRecord, translator: GoogleNameTranslator) -> Plan
             continue
         for value in values:
             result = _translation_result(translator.translate(value, "en"))
+            result = TranslationResult(
+                result.value,
+                result.status,
+                result.error,
+                LANGUAGE_CODES.get(language, result.source_language),
+            )
             if result.value:
                 translated.setdefault("Translated Names.English", []).append(
                     ascii_text(result.value)

@@ -21,10 +21,11 @@ while making equivalent Unicode sequences consistent.
 
 ### `ascii_text()`
 
-`ascii_text(value)` is used for English-facing fields. It applies compatibility
-normalization, removes diacritics, removes unsupported symbols, and returns
-standard ASCII text. For example, `Kāsa` becomes `Kasa` and `📚 Etymology`
-becomes `Etymology`.
+`ascii_text(value)` is used for English-facing fields. It applies
+Harvard-Kyoto-style romanization before removing unsupported symbols and
+returns ASCII text. This keeps Sanskrit distinctions such as `ś` (`z`) and
+`ṣ` (`S`) instead of collapsing every sibilant to `s`. For example, `Kāsa`
+becomes `KAsa` and `📚 Etymology` becomes `Etymology`.
 
 ### `clean_values()`
 
@@ -70,11 +71,11 @@ legacy `english_name` search column.
 
 ### Typed attribute classification
 
-`DISEASE_NAMES_BY_FIELD` is an explicit mapping of known source fields to
-validated disease names. `PlantRecord.typed_attributes()` returns typed
-attribute records: mapped values are labeled `disease`, while every other
-value is labeled `ambiguous`. Ambiguous values stay in `herb_attributes` and
-do not create treatment relationships.
+`CONDITION_FIELDS` identifies the source's `Therapeutic Usage.Name` column.
+Every value from that column is labeled `disease` by
+`PlantRecord.typed_attributes()` and ingested as an unverified condition.
+Controlled-vocabulary mapping is intentionally deferred. Values from other
+fields remain `ambiguous` and do not create treatment relationships.
 
 ### `PlantRecord.validate()`
 

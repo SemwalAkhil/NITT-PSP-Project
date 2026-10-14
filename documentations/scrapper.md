@@ -113,24 +113,23 @@ aliases are canonicalized, including `Malyalam` to `Malayalam` and `Oriya` to
 `Odia`.
 
 Vernacular attributes and source values are merged into the same record
-before cleaning and persistence. When an English vernacular value exists,
-its first value becomes the record's primary `ayurvedic_name`/database
-`original_name`; its ASCII transliteration is stored in the compatibility
-`english_name` field. Otherwise the page heading remains the fallback name.
+before cleaning and persistence. The source title's text after ` - ` becomes
+the primary `ayurvedic_name`/database `original_name` when present; the first
+English vernacular value remains the `Vernacular Names.English` attribute.
+This avoids promoting incorrect English values published by some source pages.
+Its ASCII transliteration is stored in the compatibility `english_name` field.
 
 ### `parse_plant()`
 
-Builds one `PlantRecord`. It extracts a heading or page title as the fallback
-name, identifies scientific/botanical name and family fields when present,
-records every parsed table and vernacular-name attribute, and adds source ID,
-URL, and the current UTC timestamp. When available, the first English
-vernacular name replaces the fallback heading as the primary plant name. The
-record is cleaned before being returned.
+Builds one `PlantRecord`. It extracts the source heading, the live scientific
+profile's scientific and family values, every parsed table and
+vernacular-name attribute, and source ID, URL, and the current UTC timestamp.
+The record is cleaned before being returned.
 
 ### Translation enrichment
 
 `scrape()` creates one cached `GoogleNameTranslator` and passes each cleaned
-record to `enrich_record()`. The primary English name is translated into the
+record to `enrich_record()`. The primary Ayurvedic name is translated into the
 configured major Indian languages, and each source vernacular name is also
 translated back to English. Results are stored as attributes such as
 `Translated Names.Hindi` and `Translated Names.English`; source
@@ -173,8 +172,9 @@ reason. Each failed plant is retried in a separate pass according to
 `--failure-report`.
 
 When the parsed attributes contain a `Therapeutic Usage` field, the database
-operator creates illness links only for explicitly mapped disease values.
-Ambiguous values remain attributes until validated.
+operator creates unverified illness links for every value in the source
+`Therapeutic Usage.Name` condition field. Controlled-vocabulary validation is
+deferred; other therapeutic values remain attributes.
 
 ### `main()`
 
@@ -197,9 +197,9 @@ after persistence, but neither is an intermediate scrape stage.
 - Translation enrichment depends on the availability and rate limits of
       Google Translator through `deep-translator`.
 - Flexible table fields are stored as section-qualified attributes. Illness and
-      treatment relationships are currently normalized only from explicitly
-      mapped disease values; other domain-specific relationships remain
-      attributes.
+      treatment relationships are currently normalized from the source
+      condition field and marked unverified; other domain-specific relationships
+      remain attributes.
 - Rate limiting between requests should be added before a large production
   scrape.
 

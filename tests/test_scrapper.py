@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 
 from bs4 import BeautifulSoup
 import requests
 import pytest
+from typer.testing import CliRunner
 
 from cleaning import PlantRecord, ascii_text
-from database_operator import AyurvedicAlmanac
+from cli import app
+from database_operator import AyurvedicAlmanac, canonical_illness_key
 import scrapper
 from scrapper import (
     DiscoveryError,
+    DiscoveryReport,
     _discover_plants,
     _table_attributes,
     _vernacular_attributes,
@@ -135,6 +139,35 @@ def test_vernacular_names_are_language_attributes_and_primary_name(tmp_path) -> 
     assert database.search_herbs("Himalayan silver")[0]["id"] == herb_id
 
 
+def test_live_profile_uses_sanskrit_title_and_parses_taxonomy() -> None:
+    html = """
+    <h1>Abies webbiana - Talisha</h1>
+    <div class="card">
+      <div class="card-body">
+        <small>Scientific Name</small>
+        <span><i>Abies webbiana</i> Lindl</span>
+        <small>Family Name</small>
+        <span>Pinaceae</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h5>Vernacular Names</h5></div>
+      <div class="card-body">
+        <div><span class="badge">English</span><p>Turmeric, Kadam, Himalayan siver</p></div>
+      </div>
+    </div>
+    """
+
+    record = parse_plant(1, "https://example.test/plant/1/abies-webbiana", html)
+
+    assert record.ayurvedic_name == "Talisha"
+    assert record.botanical_name == "Abies webbiana"
+    assert record.family == "Pinaceae"
+    assert record.attributes["Vernacular Names.English"] == [
+        "Turmeric, Kadam, Himalayan siver"
+    ]
+
+
 def test_insert_record_refreshes_treatment_links(tmp_path) -> None:
     db_path = tmp_path / "ayurvedic.db"
     database = AyurvedicAlmanac(db_path)
@@ -171,7 +204,13 @@ def test_insert_record_refreshes_treatment_links(tmp_path) -> None:
         (herb_id,),
     ).fetchall()
 
-    assert [row["english_name"] for row in illnesses] == ["Kasa"]
+    manual_id = database.add_illness("Manual condition")
+    database.add_treatment(herb_id, manual_id)
+    assert [row["english_name"] for row in illnesses] == ["KAsa"]
+    assert {
+        row["english_name"]
+        for row in database.treatment_details(herb_id)
+    } == {"KAsa", "Manual condition"}
 
 
 def test_retrieval_timestamp_and_fuzzy_search_are_persisted(tmp_path) -> None:
@@ -192,7 +231,72 @@ def test_retrieval_timestamp_and_fuzzy_search_are_persisted(tmp_path) -> None:
     assert database.search_herbs("Tulsii")[0]["english_name"] == "Tulsi"
 
 
-def test_ambiguous_therapeutic_values_are_not_treatments(tmp_path) -> None:
+def test_search_excludes_weak_fuzzy_matches(tmp_path) -> None:
+    database = AyurvedicAlmanac(tmp_path / "ayurvedic.db")
+    database.add_herb("Tulsi")
+    database.add_herb("Turmeric")
+
+    matches = database.search_herbs("tulsi")
+
+    assert [row["english_name"] for row in matches] == ["Tulsi"]
+    assert matches[0]["match_score"] == 1.0
+
+
+def test_legacy_schema_migrates_without_losing_treatments(tmp_path) -> None:
+    path = tmp_path / "legacy.db"
+    with sqlite3.connect(path) as connection:
+        connection.executescript(
+            """
+            CREATE TABLE herbs (
+                id INTEGER PRIMARY KEY, english_name TEXT NOT NULL
+            );
+            CREATE TABLE illness (
+                id INTEGER PRIMARY KEY, english_name TEXT NOT NULL UNIQUE
+            );
+            CREATE TABLE treatment (
+                herb_id INTEGER NOT NULL, illness_id INTEGER NOT NULL,
+                PRIMARY KEY (herb_id, illness_id)
+            );
+            CREATE TABLE herb_attributes (
+                herb_id INTEGER NOT NULL, field_name TEXT NOT NULL,
+                value TEXT NOT NULL, source_text TEXT NOT NULL,
+                PRIMARY KEY (herb_id, field_name, value)
+            );
+            INSERT INTO herbs VALUES (1, 'KAsa');
+            INSERT INTO illness VALUES (1, 'KAsa');
+            INSERT INTO treatment VALUES (1, 1);
+            """
+        )
+
+    database = AyurvedicAlmanac(path)
+    database.create_database()
+
+    with database.connect() as connection:
+        columns = {row["name"] for row in connection.execute("PRAGMA table_info(herbs)")}
+        source = connection.execute(
+            "SELECT source FROM treatment WHERE herb_id = 1 AND illness_id = 1"
+        ).fetchone()["source"]
+    assert {"original_name", "search_key", "retrieved_at"} <= columns
+    assert source == "manual"
+
+
+def test_cli_setup_and_herb_search(tmp_path) -> None:
+    path = tmp_path / "cli.db"
+    runner = CliRunner()
+
+    assert runner.invoke(app, ["setup", "--database", str(path)]).exit_code == 0
+    assert runner.invoke(
+        app, ["herb", "Tulsi", "--database", str(path)]
+    ).exit_code == 0
+    result = runner.invoke(
+        app, ["herbs", "tulsi", "--database", str(path)]
+    )
+
+    assert result.exit_code == 0
+    assert "Tulsi" in result.stdout
+
+
+def test_all_therapeutic_name_values_are_unverified_conditions(tmp_path) -> None:
     record = PlantRecord(
         source="CCRAS DRAVYA",
         source_record_id=8,
@@ -208,7 +312,18 @@ def test_ambiguous_therapeutic_values_are_not_treatments(tmp_path) -> None:
     herb_id = database.insert_record(record)
 
     illnesses = database.treatment_details(herb_id)
-    assert [row["english_name"] for row in illnesses] == ["Kasa"]
+    assert {row["english_name"] for row in illnesses} == {
+        "KAsa", "Cooling property", "Kapha"
+    }
+    condition_metadata = database.connect().execute(
+        """
+        SELECT machine_generated, verification_status
+        FROM illness WHERE english_name = ?
+        """,
+        ("Kapha",),
+    ).fetchone()
+    assert condition_metadata["machine_generated"] == 1
+    assert condition_metadata["verification_status"] == "unverified"
     stored_values = {
         row["value"] for row in database.herb_attributes(herb_id)
         if row["field_name"] == "Therapeutic Usage.Name"
@@ -216,9 +331,22 @@ def test_ambiguous_therapeutic_values_are_not_treatments(tmp_path) -> None:
     assert stored_values == {"Kāsa", "Cooling property", "Kapha"}
 
 
+def test_illnesses_use_canonical_keys_and_english_aliases(tmp_path) -> None:
+    assert canonical_illness_key("Kāsa") == canonical_illness_key("Kasa")
+    assert canonical_illness_key("jvaraḥ") == canonical_illness_key("jvarah")
+    assert canonical_illness_key("jvaraḥ") == canonical_illness_key("jvara")
+
+    database = AyurvedicAlmanac(tmp_path / "ayurvedic.db")
+    database.add_illness("jvara")
+    assert database.search_illnesses("fever")[0]["english_name"] == "jvara"
+    database.add_illness("Kāsa")
+    with pytest.raises(sqlite3.IntegrityError):
+        database.add_illness("Kasa")
+
+
 def test_english_cleanup_removes_symbols_and_diacritics() -> None:
     assert ascii_text("📚 Etymology") == "Etymology"
-    assert ascii_text("Kāsa") == "Kasa"
+    assert ascii_text("Kāsa") == "KAsa"
 
     record = PlantRecord(
         source="CCRAS DRAVYA",
@@ -230,7 +358,7 @@ def test_english_cleanup_removes_symbols_and_diacritics() -> None:
     ).clean()
 
     assert record.ayurvedic_name == "Kāsa"
-    assert record.transliterated_name == "Kasa"
+    assert record.transliterated_name == "KAsa"
     assert record.attributes["Therapeutic Usage.Name"] == ["Kāsa"]
     assert record.attributes["Vernacular Names.Hindi"] == ["कास"]
 
@@ -321,7 +449,7 @@ def test_machine_translations_are_marked_unverified(tmp_path) -> None:
     enrich_record(record, FakeTranslator())
 
     assert record.attribute_metadata["Translated Names.Hindi"] == {
-        "source_language": "auto",
+        "source_language": "sa",
         "machine_generated": True,
         "verification_status": "unverified",
     }
@@ -332,10 +460,15 @@ def test_scrape_retries_failed_plants_and_writes_failure_report(tmp_path, monkey
     monkeypatch.setattr(
         scrapper,
         "discover_plants",
-        lambda session, max_pages=None: [
-            (1, "https://example.test/plant/1"),
-            (2, "https://example.test/plant/2"),
-        ],
+        lambda session, max_pages=None: DiscoveryReport(
+            [
+                (1, "https://example.test/plant/1"),
+                (2, "https://example.test/plant/2"),
+            ],
+            1,
+            2,
+            "test",
+        ),
     )
     monkeypatch.setattr(
         scrapper,

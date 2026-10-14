@@ -93,6 +93,9 @@ def scrape_site(
     retries: int = typer.Option(2, min=0),
     record_retries: int = typer.Option(1, "--record-retries", min=0),
     failure_report: str | None = typer.Option(None, "--failure-report"),
+    translate: bool = typer.Option(
+        False, "--translate", help="Enable machine translation enrichment."
+    ),
 ) -> None:
     """Scrape a supported site and insert records directly into the database."""
     if site.lower() != "dravya":
@@ -106,6 +109,7 @@ def scrape_site(
             retries,
             record_retries,
             failure_report,
+            translate,
         )
     except (OSError, ValueError, sqlite3.Error, requests.RequestException, ScraperError) as error:
         fail(error)

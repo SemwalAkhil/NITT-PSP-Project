@@ -16,26 +16,47 @@ Vernacular Names card, cleans and validates `PlantRecord` objects, and writes
 them directly to SQLite.
 
 Each vernacular language is stored as an attribute such as
-`Vernacular Names.Hindi`. The first English vernacular value becomes the
-primary herb name; all other language values remain available in
-`herb_attributes`. During scraping, `deep-translator`/Google Translator adds
+`Vernacular Names.Hindi`. The source title's Ayurvedic/Sanskrit name becomes
+the primary herb name when present; English vernacular values remain available
+in `herb_attributes`. During scraping, `deep-translator`/Google Translator adds
 corresponding English and major Indian-language values as
-`Translated Names.<Language>` attributes. English-facing text is normalized to
-standard ASCII, while source regional scripts are preserved. Therapeutic Usage
-values are also normalized into illness and treatment relationships.
+`Translated Names.<Language>` attributes when `--translate` is explicitly
+enabled. English-facing text uses a Harvard-Kyoto-style ASCII transliteration,
+while source regional scripts are preserved. Therapeutic Usage values are also
+normalized into illness and treatment relationships; manual treatment links
+survive later scrapes.
 
 The CLI can export stored record groups to JSON or CSV after ingestion. Those
 exports are optional views of the database and are not an intermediate
 scraping stage.
 
-The committed `AyurvedicDB.db` is an intentional demo fixture containing a
-sample CCRAS DRAVYA ingestion. Runtime databases and translation caches should
-normally be placed outside the repository. To create a fresh database, run:
+SQLite databases are generated runtime artifacts and are not committed. This
+avoids shipping stale schema migrations or incomplete scraped data. Runtime
+databases and translation caches should normally be placed outside the
+repository. To create a fresh database, run:
 
 ```bash
 python cli.py setup --database /tmp/ayurvedic.db
 python cli.py scrape dravya --max-plants 5 --database /tmp/ayurvedic.db
 ```
+
+The scrape command requires network access to the CCRAS DRAVYA source. Use
+`--max-plants` or `--max-pages` for a small reproducible development run.
+Existing local databases are migrated in place, so use a new path when
+rebuilding from scratch.
+
+Translation is disabled by default. Add `--translate` only when machine
+translation is desired.
+
+`data.txt` is a small Sanskrit terminology/reference sample. `sample.html` is
+a saved source-page HTML fixture for parser development; neither is required
+for a network scrape.
+
+This project is for research and software evaluation, not medical advice.
+Translations and scraped therapeutic associations are machine-generated or
+unverified and must not be used to diagnose, treat, or prevent illness.
+CCRAS data remains subject to the source site's terms and attribution
+requirements; verify permission before redistributing scraped content.
 
 ## Architecture
 
@@ -121,6 +142,11 @@ Python API remains planned.
 The supported/tested Python range is 3.10 through 3.14. Direct dependencies
 are pinned in `requirements.txt`; CI runs the regression suite across that
 range.
+
+The project code is licensed under the MIT License. The CCRAS website,
+terminology samples, and scraped data may have separate copyright,
+attribution, or terms-of-use requirements; the MIT license does not grant
+rights to redistribute third-party source data.
 
 ## Documentation map
 

@@ -16,11 +16,9 @@ class TypedAttribute:
     kind: AttributeKind
 
 
-# Values are deliberately explicit: therapeutic sections also contain
-# properties, actions, and classifications that are not diseases.
-DISEASE_NAMES_BY_FIELD: dict[str, frozenset[str]] = {
-    "Therapeutic Usage.Name": frozenset({"Kāsa", "Agnimāndya"}),
-}
+# The source's therapeutic name column is a condition/indication feed. Its
+# values remain unverified until they are mapped to a controlled vocabulary.
+CONDITION_FIELDS = frozenset({"Therapeutic Usage.Name"})
 
 
 def clean_text(value: str) -> str:
@@ -35,7 +33,16 @@ def clean_text(value: str) -> str:
 
 
 def ascii_text(value: str) -> str:
-    """Return readable English text using only standard ASCII characters."""
+    """Return Harvard-Kyoto-style ASCII transliteration for search/display."""
+    romanization = str.maketrans({
+        "ā": "A", "ī": "I", "ū": "U", "ṛ": "R", "ṝ": "RR", "ḷ": "L",
+        "ḹ": "LL", "ṅ": "N", "ñ": "~n", "ṭ": "T", "ḍ": "D", "ṇ": "N",
+        "ś": "z", "ṣ": "S", "ḥ": "H", "ṃ": "M",
+        "Ā": "A", "Ī": "I", "Ū": "U", "Ṛ": "R", "Ṝ": "RR", "Ḷ": "L",
+        "Ḹ": "LL", "Ṅ": "N", "Ñ": "~N", "Ṭ": "T", "Ḍ": "D", "Ṇ": "N",
+        "Ś": "Z", "Ṣ": "S", "Ḥ": "H", "Ṃ": "M",
+    })
+    value = value.translate(romanization)
     value = unicodedata.normalize("NFKD", value)
     value = "".join(character for character in value if not unicodedata.combining(character))
     return clean_text(value.encode("ascii", "ignore").decode("ascii"))
@@ -51,9 +58,9 @@ def clean_values(values: Iterable[str]) -> list[str]:
 
 
 def attribute_kind(field: str, value: str) -> AttributeKind:
-    """Classify an extracted value only when its source mapping is explicit."""
-    known_diseases = DISEASE_NAMES_BY_FIELD.get(clean_text(field), frozenset())
-    return "disease" if clean_text(value) in known_diseases else "ambiguous"
+    """Classify every value from the known source condition field."""
+    del value
+    return "disease" if clean_text(field) in CONDITION_FIELDS else "ambiguous"
 
 
 @dataclass(slots=True)

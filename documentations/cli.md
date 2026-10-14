@@ -31,8 +31,10 @@ python cli.py scrape --help
 
 ## Database selection
 
-Every database command uses `AyurvedicDB.db` by default. Use `--database` or
-`-d` to select another SQLite file:
+Every database command uses the local `AyurvedicDB.db` by default. SQLite
+files are generated runtime artifacts and are not tracked in the repository.
+Use `--database` or `-d` to select another SQLite file; use a new path when
+you need a clean rebuild rather than an in-place migration:
 
 ```bash
 python cli.py setup --database /tmp/herbal-almanac.db
@@ -41,6 +43,8 @@ python cli.py herbs tulsi --database /tmp/herbal-almanac.db
 
 The selected database path is passed to `AyurvedicAlmanac`, which enables
 SQLite foreign-key enforcement and creates the schema when needed.
+Herb and illness commands display only matches meeting the operator's
+relevance cutoff; an empty query still lists all records.
 
 ## Commands
 
@@ -85,19 +89,23 @@ python cli.py scrape dravya \
   or database failure.
 - `--failure-report`: writes failed plant IDs, URLs, attempts, and reasons to
   a JSON report.
+- `--translate`: enables optional machine translation enrichment. It is
+  disabled by default because it makes many external requests.
 
 The scraper displays a progress bar, continues after isolated plant failures,
 and retries failed plants separately. Failed records are reported without
 committing incomplete database transactions.
 
-During scraping, the first English vernacular name from the source page is
-stored as the herb's primary `english_name`. All language-specific names are
+During scraping, the Ayurvedic/Sanskrit name from the source heading is the
+primary herb name when available. All language-specific names are
 also stored as attributes with fields such as `Vernacular Names.Hindi` and
 `Vernacular Names.Malayalam`. Translation enrichment adds corresponding
-`Translated Names.<Language>` attributes when Google Translator is available.
+`Translated Names.<Language>` attributes when Google Translator is explicitly
+enabled.
 Unicode source names are preserved in exports through `original_name` and
 source attributes. The compatibility `english_name` field contains the ASCII
-transliteration (`Kāsa` is searchable as `Kasa`).
+Harvard-Kyoto-style transliteration (`Kāsa` is searchable as `KAsa`).
+Manual treatment links are preserved when a herb is scraped again.
 
 ### `herb`
 
@@ -192,9 +200,9 @@ python cli.py attributes HERB_ID --format csv --output attributes.csv
 ```
 
 When a scraped record contains a field such as `Therapeutic Usage` or
-`Therapeutic Uses`, mapped disease values are inserted as illnesses and linked
-to the herb in `treatment`. Unmapped therapeutic values remain attributes
-until validated. Existing illness names and links are reused, so re-scraping is
+`Therapeutic Uses`, values from the source `Therapeutic Usage.Name` condition
+field are inserted as unverified illnesses and linked to the herb in
+`treatment`. Existing illness names and links are reused, so re-scraping is
 safe and does not create duplicates.
 
 ### `records`

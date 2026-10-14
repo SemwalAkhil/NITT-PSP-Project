@@ -3,17 +3,31 @@ from __future__ import annotations
 import sqlite3
 from difflib import SequenceMatcher
 from pathlib import Path
+import re
 from typing import Any, Iterable
 
 from cleaning import PlantRecord, ascii_text, clean_text
 
 
 def search_key(value: str) -> str:
-    return " ".join(
+    return "".join(
         character
         for character in clean_text(value).casefold()
         if character.isalnum() or character.isspace()
     ).strip()
+
+
+def canonical_illness_key(value: str) -> str:
+    """Fold case/diacritics and Sanskrit visarga transliterations."""
+    key = search_key(ascii_text(value))
+    return re.sub(r"h$", "", key)
+
+
+ILLNESS_ALIASES = {
+    "fever": "jvara",
+    "fevers": "jvara",
+}
+MIN_SEARCH_SCORE = 0.65
 
 
 class AyurvedicAlmanac:
@@ -60,12 +74,16 @@ class AyurvedicAlmanac:
                 CREATE TABLE IF NOT EXISTS illness (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     english_name TEXT NOT NULL UNIQUE,
-                    search_key TEXT NOT NULL DEFAULT ''
+                    search_key TEXT NOT NULL DEFAULT '',
+                    canonical_key TEXT NOT NULL DEFAULT '',
+                    machine_generated INTEGER NOT NULL DEFAULT 0,
+                    verification_status TEXT NOT NULL DEFAULT 'unverified'
                 );
 
                 CREATE TABLE IF NOT EXISTS treatment (
                     herb_id INTEGER NOT NULL,
                     illness_id INTEGER NOT NULL,
+                    source TEXT NOT NULL DEFAULT 'manual',
                     PRIMARY KEY (herb_id, illness_id),
                     FOREIGN KEY (herb_id) REFERENCES herbs(id) ON DELETE CASCADE,
                     FOREIGN KEY (illness_id) REFERENCES illness(id) ON DELETE CASCADE
@@ -86,8 +104,10 @@ class AyurvedicAlmanac:
             )
             self._migrate_legacy_herbs(connection)
             self._migrate_legacy_attributes(connection)
+            self._migrate_legacy_treatments(connection)
             self._migrate_legacy_illnesses(connection)
             self._migrate_search_columns(connection)
+            self._migrate_illness_canonical_keys(connection)
         self._initialized = True
 
     @staticmethod
@@ -130,6 +150,16 @@ class AyurvedicAlmanac:
                 )
 
     @staticmethod
+    def _migrate_legacy_treatments(connection: sqlite3.Connection) -> None:
+        columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(treatment)")
+        }
+        if "source" not in columns:
+            connection.execute(
+                "ALTER TABLE treatment ADD COLUMN source TEXT NOT NULL DEFAULT 'manual'"
+            )
+
+    @staticmethod
     def _migrate_search_columns(connection: sqlite3.Connection) -> None:
         for table in ("herbs", "illness"):
             columns = {
@@ -147,14 +177,75 @@ class AyurvedicAlmanac:
         )
         for table in ("herbs", "illness"):
             rows = connection.execute(
-                f"SELECT id, english_name FROM {table} "
-                "WHERE search_key = '' OR search_key IS NULL"
+                f"SELECT id, english_name FROM {table}"
             ).fetchall()
             for row in rows:
                 connection.execute(
                     f"UPDATE {table} SET search_key = ? WHERE id = ?",
                     (search_key(row["english_name"]), row["id"]),
                 )
+        columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(illness)")
+        }
+        for name, definition in (
+            ("machine_generated", "INTEGER NOT NULL DEFAULT 0"),
+            ("verification_status", "TEXT NOT NULL DEFAULT 'unverified'"),
+        ):
+            if name not in columns:
+                connection.execute(f"ALTER TABLE illness ADD COLUMN {name} {definition}")
+
+    @staticmethod
+    def _migrate_illness_canonical_keys(connection: sqlite3.Connection) -> None:
+        columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(illness)")
+        }
+        if "canonical_key" not in columns:
+            connection.execute(
+                "ALTER TABLE illness ADD COLUMN canonical_key TEXT NOT NULL DEFAULT ''"
+            )
+        rows = connection.execute(
+            "SELECT id, english_name FROM illness ORDER BY id"
+        ).fetchall()
+        for row in rows:
+            connection.execute(
+                "UPDATE illness SET canonical_key = ? WHERE id = ?",
+                (canonical_illness_key(row["english_name"]), row["id"]),
+            )
+        duplicate_groups = connection.execute(
+            """
+            SELECT canonical_key
+            FROM illness
+            GROUP BY canonical_key
+            HAVING canonical_key != '' AND COUNT(*) > 1
+            """
+        ).fetchall()
+        for group in duplicate_groups:
+            illness_ids = [
+                row["id"]
+                for row in connection.execute(
+                    "SELECT id FROM illness WHERE canonical_key = ? ORDER BY id",
+                    (group["canonical_key"],),
+                )
+            ]
+            keeper_id, duplicate_ids = illness_ids[0], illness_ids[1:]
+            for duplicate_id in duplicate_ids:
+                connection.execute(
+                    """
+                    INSERT OR IGNORE INTO treatment (herb_id, illness_id)
+                    SELECT herb_id, ?
+                    FROM treatment
+                    WHERE illness_id = ?
+                    """,
+                    (keeper_id, duplicate_id),
+                )
+                connection.execute(
+                    "DELETE FROM treatment WHERE illness_id = ?", (duplicate_id,)
+                )
+                connection.execute("DELETE FROM illness WHERE id = ?", (duplicate_id,))
+        connection.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_illness_canonical_key "
+            "ON illness(canonical_key)"
+        )
 
     @staticmethod
     def _migrate_legacy_illnesses(connection: sqlite3.Connection) -> None:
@@ -237,7 +328,10 @@ class AyurvedicAlmanac:
             ).fetchone()["id"]
 
             connection.execute("DELETE FROM herb_attributes WHERE herb_id = ?", (herb_id,))
-            connection.execute("DELETE FROM treatment WHERE herb_id = ?", (herb_id,))
+            connection.execute(
+                "DELETE FROM treatment WHERE herb_id = ? AND source = 'scraped'",
+                (herb_id,),
+            )
             connection.executemany(
                 """
                 INSERT INTO herb_attributes
@@ -273,23 +367,27 @@ class AyurvedicAlmanac:
         for illness_name in sorted(therapeutic_values):
             connection.execute(
                 """
-                INSERT INTO illness (english_name, search_key)
-                VALUES (?, ?)
-                ON CONFLICT(english_name) DO NOTHING
+                INSERT INTO illness (
+                    english_name, search_key, canonical_key,
+                    machine_generated, verification_status
+                )
+                VALUES (?, ?, ?, 1, 'unverified')
+                ON CONFLICT(canonical_key) DO NOTHING
                 """,
                 (
                     ascii_text(illness_name) or illness_name,
                     search_key(ascii_text(illness_name) or illness_name),
+                    canonical_illness_key(illness_name),
                 ),
             )
             illness_id = connection.execute(
-                "SELECT id FROM illness WHERE english_name = ?",
-                (ascii_text(illness_name) or illness_name,),
+                "SELECT id FROM illness WHERE canonical_key = ?",
+                (canonical_illness_key(illness_name),),
             ).fetchone()["id"]
             connection.execute(
                 """
-                INSERT INTO treatment (herb_id, illness_id)
-                VALUES (?, ?)
+                INSERT INTO treatment (herb_id, illness_id, source)
+                VALUES (?, ?, 'scraped')
                 ON CONFLICT(herb_id, illness_id) DO NOTHING
                 """,
                 (herb_id, illness_id),
@@ -317,8 +415,13 @@ class AyurvedicAlmanac:
         self.create_database()
         with self.connect() as connection:
             connection.execute(
-                "INSERT INTO illness (id, english_name) VALUES (?, ?)",
-                (id, english_name),
+                """
+                INSERT INTO illness (
+                    id, english_name, search_key, canonical_key,
+                    machine_generated, verification_status
+                ) VALUES (?, ?, ?, ?, 0, 'verified')
+                """,
+                (id, english_name, search_key(english_name), canonical_illness_key(english_name)),
             )
         return True
 
@@ -370,8 +473,13 @@ class AyurvedicAlmanac:
         self.create_database()
         with self.connect() as connection:
             cursor = connection.execute(
-                "INSERT INTO illness (english_name, search_key) VALUES (?, ?)",
-                (name, search_key(name)),
+                """
+                INSERT INTO illness (
+                    english_name, search_key, canonical_key,
+                    machine_generated, verification_status
+                ) VALUES (?, ?, ?, 0, 'verified')
+                """,
+                (name, search_key(name), canonical_illness_key(name)),
             )
             return cursor.lastrowid
 
@@ -383,7 +491,7 @@ class AyurvedicAlmanac:
         self.create_database()
         with self.connect() as connection:
             connection.execute(
-                "INSERT INTO treatment (herb_id, illness_id) VALUES (?, ?)",
+                "INSERT INTO treatment (herb_id, illness_id, source) VALUES (?, ?, 'manual')",
                 (herb_id, illness_id),
             )
 
@@ -406,33 +514,47 @@ class AyurvedicAlmanac:
         with self.connect() as connection:
             rows = connection.execute(
                 """
-                SELECT id, english_name
+                SELECT id, english_name, canonical_key
                 FROM illness
                 ORDER BY english_name
                 """,
             ).fetchall()
-        return self._rank_rows(rows, query, ("english_name",))
+        return self._rank_rows(rows, query, ("english_name", "canonical_key"), aliases_enabled=True)
 
     @staticmethod
     def _rank_rows(
         rows: Iterable[sqlite3.Row],
         query: str,
         fields: tuple[str, ...],
+        aliases_enabled: bool = False,
     ) -> list[dict[str, Any]]:
         normalized = search_key(query)
+        aliases = [normalized]
+        alias = ILLNESS_ALIASES.get(normalized) if aliases_enabled else None
+        if alias:
+            aliases.append(canonical_illness_key(alias))
         ranked: list[tuple[float, dict[str, Any]]] = []
         for row in rows:
             item = dict(row)
             candidates = [search_key(str(item.get(field) or "")) for field in fields]
             score = max(
-                1.0 if normalized and normalized in candidate else
-                SequenceMatcher(None, normalized, candidate).ratio()
+                max(
+                    1.0 if term == candidate else
+                    0.9 if term and term in candidate else
+                    SequenceMatcher(None, term, candidate).ratio()
+                    for term in aliases
+                )
                 for candidate in candidates
             ) if normalized else 1.0
             item["match_score"] = round(score, 4)
             ranked.append((score, item))
         ranked.sort(key=lambda pair: (-pair[0], str(pair[1].get(fields[0], "")).casefold()))
-        return [item for _, item in ranked]
+        if not normalized:
+            return [item for _, item in ranked]
+        return [
+            item for score, item in ranked
+            if score >= MIN_SEARCH_SCORE
+        ]
 
     def treatment_details(self, herb_id: int) -> list[dict[str, Any]]:
         """Return illnesses associated with one herb."""
@@ -481,7 +603,8 @@ class AyurvedicAlmanac:
                 """
             ).fetchall()
             illnesses = connection.execute(
-                "SELECT id, english_name FROM illness ORDER BY id"
+                "SELECT id, english_name, machine_generated, verification_status "
+                "FROM illness ORDER BY id"
             ).fetchall()
             treatments = connection.execute(
                 """

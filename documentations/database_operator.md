@@ -12,8 +12,9 @@ and idempotent updates.
 ### Constructor
 
 `AyurvedicAlmanac(database_path=None)` uses `AyurvedicDB.db` beside the module
-when no path is supplied. Tests and development runs should pass a separate
-path so they do not modify the project database.
+when no path is supplied. SQLite files are local runtime artifacts and are not
+tracked in the repository. Tests and development runs should pass a separate
+path, such as `/tmp/ayurvedic.db`, when they need an isolated database.
 
 ### `connect()`
 
@@ -42,16 +43,22 @@ repeated scrapes.
 ### `illness`
 
 Stores illness names for the planned herb-to-illness model. The current DRAVYA scraper populates this table only from values in the
-explicit disease-name mapping in `cleaning.py`. Other values from
-`Therapeutic Usage` remain source attributes until validated. `english_name`
-is unique so the same illness can be shared by many herbs.
+the `Therapeutic Usage.Name` condition field in `cleaning.py`. These source
+conditions are marked unverified; controlled-vocabulary mapping is deferred.
+Other therapeutic fields remain source attributes. `canonical_key` is unique
+so case, diacritic, and terminal transliteration variants of the same illness
+can be shared by many herbs. The original display name is retained in
+`english_name`.
 
 ### `treatment`
 
 This many-to-many join table connects herbs and illnesses through `herb_id`
 and `illness_id`. Its composite primary key prevents duplicate relationships,
-and foreign keys use cascading deletes. Only explicitly classified disease values create relationships; field labels
-alone are not sufficient to create an illness.
+and foreign keys use cascading deletes. The `source` column distinguishes
+`scraped` relationships from `manual` relationships added through the CLI.
+Values from the source condition field create `scraped` relationships, while
+their `machine_generated` and
+`verification_status` metadata records that they are unverified.
 
 ### `herb_attributes`
 
@@ -73,7 +80,7 @@ they have been reviewed.
 Vernacular names use the same flexible attribute store with field names such
 as `Vernacular Names.English` and `Vernacular Names.Hindi`. English is included
 in the supported language list because it is the source's primary display-name
-language. The first English vernacular value is also stored in the normalized
+language. The source title's Ayurvedic/Sanskrit name is stored in the normalized
 `herbs.original_name` column. Its transliteration is stored in the
 compatibility `herbs.english_name` column, while searches check both columns.
 Other language values remain available through `herb_attributes` without
@@ -88,9 +95,11 @@ attributes, so JSON and CSV exports include them automatically.
 `create_database()` is safe to call repeatedly. It creates missing tables and
 adds the newer columns to the original prototype `herbs` table when needed.
 It also creates a unique source-record index and migrates legacy illness
-tables. The illness migration consolidates duplicate names, redirects or
-removes duplicate treatment links, and creates a unique index on
-`illness(english_name)` so illness upserts have a valid conflict target.
+tables. The illness migration consolidates canonical duplicate names,
+redirects or removes duplicate treatment links, and creates a unique index on
+`illness(canonical_key)` so illness upserts have a valid conflict target.
+Existing SQLite files are migrated in place; use a new database path for a
+clean rebuild.
 
 This is a lightweight migration approach suitable for the current prototype.
 A formal migration tool can be introduced when schema changes become frequent.
@@ -103,9 +112,10 @@ One record is written in a single transaction:
 2. Insert or update the herb using `(source, source_record_id)`.
 3. Resolve the actual local herb ID using that natural key.
 4. Delete the herb's previous attributes.
-5. Delete the herb's previous treatment links.
+5. Delete the herb's previous scraped treatment links; manual links are
+   preserved.
 6. Insert the current cleaned attributes.
-7. Create or reuse illnesses from explicitly classified disease attributes and
+7. Create or reuse unverified conditions from the source condition field and
    insert the current herb-to-illness links.
 8. Commit only after all steps succeed.
 
@@ -126,6 +136,12 @@ names contain `Therapeutic` and `Usage`. It cleans and deduplicates their
 values, inserts missing illness names, and creates the corresponding treatment
 links. Since `insert_record()` deletes links first, a later scrape reflects
 the source's current therapeutic usage rather than accumulating stale links.
+
+Searches rank exact, substring, and fuzzy matches and omit non-empty-query
+results below the minimum relevance score (`0.65`). Empty queries retain the
+full sorted listing behavior. This keeps weak whole-string matches such as
+`Turmeric` out of a `tulsi` search while preserving small misspellings such as
+`Tulsii`.
 
 `insert_herb()` and `insert_illness()` remain as compatibility helpers for the
 original prototype. New ingestion should use `insert_record()` to retain
