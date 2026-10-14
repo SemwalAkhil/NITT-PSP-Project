@@ -6,10 +6,10 @@ import sqlite3
 from pathlib import Path
 from typing import Any, NoReturn
 
-import typer
 import requests
 from rich.console import Console
 from rich.table import Table
+import typer
 
 from database_operator import AyurvedicAlmanac
 from scrapper import ScraperError, scrape
@@ -21,6 +21,18 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 console = Console()
+CSV_FIELDS = {
+    "herbs": (
+        "id", "english_name", "original_name", "source", "source_record_id",
+        "source_url", "retrieved_at", "botanical_name", "family",
+    ),
+    "illnesses": ("id", "english_name", "machine_generated", "verification_status"),
+    "treatments": ("herb_id", "herb_name", "illness_id", "illness_name"),
+    "attributes": (
+        "herb_id", "herb_name", "field_name", "value", "source_text",
+        "source_language", "machine_generated", "verification_status",
+    ),
+}
 
 
 def database(path: str) -> AyurvedicAlmanac:
@@ -31,12 +43,45 @@ def show_rows(rows: list[dict[str, Any]], title: str) -> None:
     if not rows:
         typer.echo("No matching records.")
         return
+    columns = list(rows[0].keys())
     table = Table(title=title)
-    for column in rows[0]:
+    for column in columns:
         table.add_column(column)
     for row in rows:
-        table.add_row(*(str(row[column] or "") for column in rows[0]))
+        table.add_row(
+            *(
+                "" if row.get(column) is None else str(row.get(column))
+                for column in columns
+            )
+        )
     console.print(table)
+
+
+def resolve_export_format(
+    output: Path | None,
+    file_format: str | None,
+) -> str | None:
+    if file_format is not None:
+        normalized = file_format.lower()
+        if normalized not in ("json", "csv"):
+            raise typer.BadParameter("format must be json or csv", param_hint="format")
+        if output is None:
+            raise typer.BadParameter(
+                "--output is required when --format is provided.",
+                param_hint="output",
+            )
+        return normalized
+
+    if output is not None:
+        inferred = output.suffix.lower().lstrip(".")
+        if inferred not in ("json", "csv"):
+            raise typer.BadParameter(
+                "cannot infer format from output filename; use a .json/.csv extension or pass --format.",
+                param_hint="output",
+            )
+        return inferred
+
+    return None
 
 
 def fail(error: Exception) -> NoReturn:
@@ -49,6 +94,7 @@ def write_records(
     output: Path,
     file_format: str,
 ) -> None:
+    output.parent.mkdir(parents=True, exist_ok=True)
     if file_format == "json":
         output.write_text(json.dumps(records, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         return
@@ -59,6 +105,10 @@ def write_records(
         for row in record_rows
     ]
     fieldnames = ["record_type"]
+    for record_type in records:
+        for field in CSV_FIELDS.get(record_type, ()):
+            if field not in fieldnames:
+                fieldnames.append(field)
     for row in rows:
         for field in row:
             if field not in fieldnames:
@@ -79,7 +129,10 @@ def setup(
     database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
 ) -> None:
     """Create the database schema and apply migrations."""
-    database(database_path).create_database()
+    try:
+        database(database_path).create_database()
+    except (OSError, ValueError, sqlite3.Error) as error:
+        fail(error)
     typer.echo(f"Database ready: {database_path}")
 
 
@@ -173,7 +226,10 @@ def list_herbs(
     database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
 ) -> None:
     """Search herbs by common or botanical name."""
-    show_rows(database(database_path).search_herbs(query), "Herbs")
+    try:
+        show_rows(database(database_path).search_herbs(query), "Herbs")
+    except (OSError, ValueError, sqlite3.Error) as error:
+        fail(error)
 
 
 @app.command("illnesses")
@@ -182,7 +238,10 @@ def list_illnesses(
     database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
 ) -> None:
     """Search illnesses by name."""
-    show_rows(database(database_path).search_illnesses(query), "Illnesses")
+    try:
+        show_rows(database(database_path).search_illnesses(query), "Illnesses")
+    except (OSError, ValueError, sqlite3.Error) as error:
+        fail(error)
 
 
 @app.command("treatments")
@@ -191,7 +250,10 @@ def list_treatments(
     database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
 ) -> None:
     """Show illnesses associated with a herb ID."""
-    show_rows(database(database_path).treatment_details(herb_id), "Treatments")
+    try:
+        show_rows(database(database_path).treatment_details(herb_id), "Treatments")
+    except (OSError, ValueError, sqlite3.Error) as error:
+        fail(error)
 
 
 @app.command("attributes")
@@ -211,23 +273,16 @@ def list_attributes(
     ),
 ) -> None:
     """Show or export all source attributes stored for a herb."""
-    if file_format is None and output is not None:
-        file_format = output.suffix.lower().lstrip(".")
-    if file_format is not None:
-        file_format = file_format.lower()
-    if file_format not in (None, "json", "csv"):
-        raise typer.BadParameter("format must be json or csv", param_hint="format")
-    if file_format is not None and output is None:
-        raise typer.BadParameter("--output is required when --format is provided.", param_hint="output")
+    resolved_format = resolve_export_format(output, file_format)
 
     try:
         rows = database(database_path).herb_attributes(herb_id)
-        if output is not None and file_format is not None:
-            write_records({"attributes": rows}, output, file_format)
+        if output is not None and resolved_format is not None:
+            write_records({"attributes": rows}, output, resolved_format)
             typer.echo(f"Saved attributes records to {output}.")
         else:
             show_rows(rows, "Herb Attributes")
-    except (OSError, sqlite3.Error) as error:
+    except (OSError, ValueError, sqlite3.Error) as error:
         fail(error)
 
 
@@ -256,24 +311,17 @@ def list_records(
     if record_type not in valid_types:
         raise typer.BadParameter(", ".join(sorted(valid_types)), param_hint="record_type")
 
-    if file_format is None and output is not None:
-        file_format = output.suffix.lower().lstrip(".")
-    if file_format is not None:
-        file_format = file_format.lower()
-    if file_format not in (None, "json", "csv"):
-        raise typer.BadParameter("format must be json or csv", param_hint="format")
-    if file_format is not None and output is None:
-        raise typer.BadParameter("--output is required when --format is provided.", param_hint="output")
+    resolved_format = resolve_export_format(output, file_format)
 
     try:
         records = database(database_path).all_records()
         selected = records if record_type == "all" else {record_type: records[record_type]}
-        if output is not None and file_format is not None:
-            write_records(selected, output, file_format)
+        if output is not None and resolved_format is not None:
+            write_records(selected, output, resolved_format)
             typer.echo(f"Saved {record_type} records to {output}.")
         else:
             show_record_groups(selected)
-    except (OSError, sqlite3.Error) as error:
+    except (OSError, ValueError, sqlite3.Error) as error:
         fail(error)
 
 

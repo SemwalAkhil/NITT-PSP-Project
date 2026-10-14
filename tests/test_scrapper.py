@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
+import unicodedata
 
 from bs4 import BeautifulSoup
 import requests
 import pytest
 from typer.testing import CliRunner
 
-from cleaning import PlantRecord, ascii_text
-from cli import app
+from cleaning import PlantRecord, ascii_text, clean_text
+from cli import app, show_rows
 from database_operator import AyurvedicAlmanac, canonical_illness_key
 import scrapper
 from scrapper import (
@@ -59,6 +61,18 @@ def test_table_section_can_be_declared_on_table_and_malformed_tables_are_safe() 
     """
     attributes, _ = _table_attributes(BeautifulSoup(html, "html.parser"))
     assert attributes == {"Parts Used.Name": ["leaf"]}
+
+
+def test_show_rows_preserves_falsy_non_null_values(capsys: pytest.CaptureFixture[str]) -> None:
+    show_rows(
+        [{"zero": 0, "decimal": 0.0, "flag": False, "missing": None}],
+        "Values",
+    )
+
+    output = capsys.readouterr().out
+    assert "0" in output
+    assert "0.0" in output
+    assert "False" in output
 
 
 def test_discovery_rejects_unbounded_pagination() -> None:
@@ -296,6 +310,53 @@ def test_cli_setup_and_herb_search(tmp_path) -> None:
     assert "Tulsi" in result.stdout
 
 
+@pytest.mark.parametrize("command", ["attributes", "records"])
+def test_cli_rejects_extensionless_output_without_format(tmp_path, command: str) -> None:
+    path = tmp_path / "cli.db"
+    runner = CliRunner()
+    runner.invoke(app, ["setup", "--database", str(path)])
+
+    args = [command, "--database", str(path), "--output", str(tmp_path / "output_file")]
+    if command == "attributes":
+        args.insert(1, "1")
+    result = runner.invoke(app, args)
+
+    assert result.exit_code != 0
+    assert "cannot infer format from output filename" in result.output
+    assert "output" in result.output.lower()
+
+
+@pytest.mark.parametrize(
+    ("command_args", "header"),
+    [
+        (
+            ["records", "herbs"],
+            "record_type,id,english_name,original_name,source,source_record_id,source_url,retrieved_at,botanical_name,family",
+        ),
+        (
+            ["attributes", "1"],
+            "record_type,herb_id,herb_name,field_name,value,source_text,source_language,machine_generated,verification_status",
+        ),
+    ],
+)
+def test_cli_creates_parent_directories_and_headers_for_empty_csv(
+    tmp_path, command_args: list[str], header: str
+) -> None:
+    database_path = tmp_path / "cli.db"
+    output = tmp_path / "nested" / "export.csv"
+    runner = CliRunner()
+    assert runner.invoke(app, ["setup", "--database", str(database_path)]).exit_code == 0
+
+    result = runner.invoke(
+        app,
+        command_args
+        + ["--database", str(database_path), "--output", str(output)],
+    )
+
+    assert result.exit_code == 0
+    assert output.read_text(encoding="utf-8").splitlines() == [header]
+
+
 def test_all_therapeutic_name_values_are_unverified_conditions(tmp_path) -> None:
     record = PlantRecord(
         source="CCRAS DRAVYA",
@@ -347,6 +408,8 @@ def test_illnesses_use_canonical_keys_and_english_aliases(tmp_path) -> None:
 def test_english_cleanup_removes_symbols_and_diacritics() -> None:
     assert ascii_text("📚 Etymology") == "Etymology"
     assert ascii_text("Kāsa") == "KAsa"
+    assert ascii_text(unicodedata.normalize("NFD", "ā ī ṛ")) == "A I R"
+    assert ascii_text("ṅ ñ ṇ Ś ś") == "G J N Z z"
 
     record = PlantRecord(
         source="CCRAS DRAVYA",
@@ -365,6 +428,92 @@ def test_english_cleanup_removes_symbols_and_diacritics() -> None:
     record.source_values["Translated Names.Hindi"] = "कास"
     record.clean()
     assert record.source_values["Translated Names.Hindi"] == "कास"
+
+
+def test_clean_text_preserves_devanagari_joiners() -> None:
+    value = "क्\u200dष क्\u200cष"
+
+    assert clean_text(value) == value
+
+
+def test_clean_optional_taxonomy_fields_turn_whitespace_into_none() -> None:
+    record = PlantRecord(
+        source="CCRAS DRAVYA",
+        source_record_id=8,
+        source_url="https://example.test/plant/8",
+        retrieved_at="2026-01-01T00:00:00+00:00",
+        ayurvedic_name="कासा",
+        botanical_name="   ",
+        family="\t",
+    ).clean()
+
+    assert record.botanical_name is None
+    assert record.family is None
+    assert record.transliterated_botanical_name is None
+    assert record.transliterated_family is None
+
+
+def test_clean_merges_normalized_attribute_fields_without_duplicates() -> None:
+    record = PlantRecord(
+        source="CCRAS DRAVYA",
+        source_record_id=9,
+        source_url="https://example.test/plant/9",
+        retrieved_at="2026-01-01T00:00:00+00:00",
+        ayurvedic_name="कासा",
+        attributes={"Rasa ": [" sweet ", "bitter"], "Rasa": ["bitter", "pungent"]},
+    ).clean()
+
+    assert record.attributes == {"Rasa": ["sweet", "bitter", "pungent"]}
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("source", "   ", "source cannot be empty"),
+        ("retrieved_at", "", "retrieved_at cannot be empty"),
+        ("source_url", "https://", "source_url must be an HTTP(S) URL"),
+    ],
+)
+def test_validate_rejects_empty_identity_fields_and_hostless_urls(
+    field: str, value: str, message: str
+) -> None:
+    record = PlantRecord(
+        source="CCRAS DRAVYA",
+        source_record_id=1,
+        source_url="https://example.test/plant/1",
+        retrieved_at="2026-01-01T00:00:00+00:00",
+        ayurvedic_name="कासा",
+    )
+    setattr(record, field, value)
+
+    with pytest.raises(ValueError, match=re.escape(message)):
+        record.validate()
+
+
+def test_validate_rejects_boolean_source_record_ids() -> None:
+    record = PlantRecord(
+        source="CCRAS DRAVYA",
+        source_record_id=True,
+        source_url="https://example.test/plant/1",
+        retrieved_at="2026-01-01T00:00:00+00:00",
+        ayurvedic_name="कासा",
+    )
+
+    with pytest.raises(ValueError, match="source_record_id must be a positive integer"):
+        record.validate()
+
+
+def test_clean_normalizes_source_and_retrieved_at() -> None:
+    record = PlantRecord(
+        source=" CCRAS DRAVYA ",
+        source_record_id=10,
+        source_url="https://example.test/plant/10",
+        retrieved_at=" 2026-01-01T00:00:00+00:00 ",
+        ayurvedic_name="कासा",
+    ).clean()
+
+    assert record.source == "CCRAS DRAVYA"
+    assert record.retrieved_at == "2026-01-01T00:00:00+00:00"
 
 
 def test_non_latin_name_is_preserved_alongside_transliteration(tmp_path) -> None:

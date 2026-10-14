@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 import re
 import unicodedata
 from typing import Iterable, Literal
+from urllib.parse import urlsplit
 
 
 AttributeKind = Literal["disease", "ambiguous"]
@@ -19,6 +20,16 @@ class TypedAttribute:
 # The source's therapeutic name column is a condition/indication feed. Its
 # values remain unverified until they are mapped to a controlled vocabulary.
 CONDITION_FIELDS = frozenset({"Therapeutic Usage.Name"})
+PRESERVED_FORMAT_CHARACTERS = frozenset({"\u200c", "\u200d"})
+ROMANIZATION = str.maketrans({
+    "ā": "A", "ī": "I", "ū": "U", "ṛ": "R", "ṝ": "RR", "ḷ": "L",
+    "ḹ": "LL", "ṅ": "G", "ñ": "J", "ṭ": "T", "ḍ": "D", "ṇ": "N",
+    "ś": "z", "ṣ": "S", "ḥ": "H", "ṃ": "M",
+    "Ā": "A", "Ī": "I", "Ū": "U", "Ṛ": "R", "Ṝ": "RR", "Ḷ": "L",
+    "Ḹ": "LL", "Ṅ": "G", "Ñ": "J", "Ṭ": "T", "Ḍ": "D", "Ṇ": "N",
+    "Ś": "Z", "Ṣ": "S", "Ḥ": "H", "Ṃ": "M",
+})
+SPLIT_PATTERN = re.compile(r"\s*(?:\n|;|\|)\s*")
 
 
 def clean_text(value: str) -> str:
@@ -26,23 +37,26 @@ def clean_text(value: str) -> str:
     value = "".join(
         character
         for character in value
-        if unicodedata.category(character) not in {"Cf", "So", "Sk"}
+        if (
+            unicodedata.category(character) != "Cf"
+            or character in PRESERVED_FORMAT_CHARACTERS
+        ) and unicodedata.category(character) not in {"So", "Sk"}
         and not 0xFE00 <= ord(character) <= 0xFE0F
     )
     return " ".join(value.split())
 
 
+def clean_optional_text(value: str | None) -> str | None:
+    if value is None:
+        return None
+    cleaned = clean_text(value)
+    return cleaned or None
+
+
 def ascii_text(value: str) -> str:
     """Return Harvard-Kyoto-style ASCII transliteration for search/display."""
-    romanization = str.maketrans({
-        "ā": "A", "ī": "I", "ū": "U", "ṛ": "R", "ṝ": "RR", "ḷ": "L",
-        "ḹ": "LL", "ṅ": "N", "ñ": "~n", "ṭ": "T", "ḍ": "D", "ṇ": "N",
-        "ś": "z", "ṣ": "S", "ḥ": "H", "ṃ": "M",
-        "Ā": "A", "Ī": "I", "Ū": "U", "Ṛ": "R", "Ṝ": "RR", "Ḷ": "L",
-        "Ḹ": "LL", "Ṅ": "N", "Ñ": "~N", "Ṭ": "T", "Ḍ": "D", "Ṇ": "N",
-        "Ś": "Z", "Ṣ": "S", "Ḥ": "H", "Ṃ": "M",
-    })
-    value = value.translate(romanization)
+    value = unicodedata.normalize("NFC", value)
+    value = value.translate(ROMANIZATION)
     value = unicodedata.normalize("NFKD", value)
     value = "".join(character for character in value if not unicodedata.combining(character))
     return clean_text(value.encode("ascii", "ignore").decode("ascii"))
@@ -50,10 +64,12 @@ def ascii_text(value: str) -> str:
 
 def clean_values(values: Iterable[str]) -> list[str]:
     result: list[str] = []
+    seen: set[str] = set()
     for value in values:
         cleaned = clean_text(value)
-        if cleaned and cleaned not in result:
+        if cleaned and cleaned not in seen:
             result.append(cleaned)
+            seen.add(cleaned)
     return result
 
 
@@ -81,9 +97,11 @@ class PlantRecord:
     transliterated_family: str | None = None
 
     def clean(self) -> PlantRecord:
+        self.source = clean_text(self.source)
+        self.retrieved_at = clean_text(self.retrieved_at)
         self.ayurvedic_name = clean_text(self.ayurvedic_name)
-        self.botanical_name = clean_text(self.botanical_name) if self.botanical_name else None
-        self.family = clean_text(self.family) if self.family else None
+        self.botanical_name = clean_optional_text(self.botanical_name)
+        self.family = clean_optional_text(self.family)
         self.transliterated_name = ascii_text(self.ayurvedic_name)
         self.transliterated_botanical_name = (
             ascii_text(self.botanical_name) if self.botanical_name else None
@@ -94,9 +112,12 @@ class PlantRecord:
             cleaned_field = clean_text(field)
             if not cleaned_field:
                 continue
-            cleaned_values = clean_values(clean_text(value) for value in values)
+            cleaned_values = clean_values(values)
             if cleaned_values:
-                cleaned_attributes[cleaned_field] = cleaned_values
+                merged_values = cleaned_attributes.setdefault(cleaned_field, [])
+                for value in cleaned_values:
+                    if value not in merged_values:
+                        merged_values.append(value)
         self.attributes = cleaned_attributes
         self.source_values = {
             clean_text(field): clean_text(value)
@@ -116,13 +137,18 @@ class PlantRecord:
                 yield TypedAttribute(field, value, attribute_kind(field, value))
 
     def validate(self) -> None:
-        if not self.source_record_id > 0:
+        if not isinstance(self.source, str) or not self.source.strip():
+            raise ValueError("source cannot be empty")
+        if not isinstance(self.retrieved_at, str) or not self.retrieved_at.strip():
+            raise ValueError("retrieved_at cannot be empty")
+        if isinstance(self.source_record_id, bool) or self.source_record_id <= 0:
             raise ValueError("source_record_id must be a positive integer")
-        if not self.source_url.startswith(("http://", "https://")):
+        parsed_url = urlsplit(self.source_url)
+        if parsed_url.scheme not in {"http", "https"} or not parsed_url.hostname:
             raise ValueError("source_url must be an HTTP(S) URL")
         if not self.ayurvedic_name:
             raise ValueError("ayurvedic_name cannot be empty")
 
 
 def split_values(value: str) -> list[str]:
-    return clean_values(re.split(r"\s*(?:\n|;|\|)\s*", value))
+    return clean_values(SPLIT_PATTERN.split(value))

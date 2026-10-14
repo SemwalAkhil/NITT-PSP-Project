@@ -45,6 +45,8 @@ The selected database path is passed to `AyurvedicAlmanac`, which enables
 SQLite foreign-key enforcement and creates the schema when needed.
 Herb and illness commands display only matches meeting the operator's
 relevance cutoff; an empty query still lists all records.
+Database and filesystem errors from setup and read commands are reported as
+CLI errors instead of exposing uncaught exceptions.
 
 ## Commands
 
@@ -236,6 +238,9 @@ python cli.py records all --format json --output records.json
 python cli.py records treatments --format csv --output treatments.csv
 ```
 
+When the output filename has no extension, specify `--format json` or
+`--format csv`; the command reports the missing format against `--output`.
+
 The JSON export preserves separate `herbs`, `illnesses`, and `treatments`
 and `attributes` arrays. CSV exports flatten the selected records into one file
 and add a `record_type` column. Treatment exports include both IDs and the
@@ -249,6 +254,8 @@ python cli.py records attributes --format json --output attributes.json
 ```
 
 The CLI writes exactly the selected record group to the requested output path.
+Missing parent directories are created automatically. Empty CSV exports still
+include the complete header for their selected record group.
 
 `--format` requires `--output`, and only `json` and `csv` are supported.
 
