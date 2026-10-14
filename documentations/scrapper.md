@@ -7,17 +7,19 @@ HTML, parses tables, creates `PlantRecord` objects, validates them, and sends
 them to the database operator. It does not own text-cleaning rules or SQL.
 
 ## Sources
-STEP 1   DRAVYA URL discovery
-STEP 2   DRAVYA HTML downloader + cache
-STEP 3   DRAVYA section parser
-STEP 4   parsed source-record contract
-STEP 5   cleaning and normalization
-STEP 6   validation + deduplication
-STEP 7   direct SQLite insertion
-STEP 8   deterministic Dosha normalizer
-STEP 9   API PDF parser
-STEP 10  NAMASTE Excel importer
-STEP 11  botanical taxonomy resolver
+
+| Status | Capability |
+|---|---|
+| Implemented | DRAVYA URL discovery |
+| Implemented | DRAVYA HTML download with retries and timeouts |
+| Implemented | DRAVYA section and vernacular-card parsing |
+| Implemented | `PlantRecord` contract, cleaning, and validation |
+| Implemented | Optional translation enrichment |
+| Implemented | Direct SQLite insertion and upsert |
+| Planned | HTML caching and structured scrape-error reporting |
+| Planned | Dosha normalization |
+| Planned | API PDF and NAMASTE Excel importers |
+| Planned | Botanical taxonomy resolution |
 
 ## Current direct-ingestion flow
 
@@ -30,7 +32,11 @@ HTTP fetch with retries and timeout
       ↓
 Semantic table parsing
       ↓
-Cleaning and validation
+Cleaning
+      ↓
+Google translation enrichment
+      ↓
+Validation
       ↓
 SQLite upsert
 ```
@@ -51,9 +57,9 @@ behavior for every directory and plant request.
 
 ### `fetch()`
 
-Fetches one URL with a 5-second connection timeout and a 15-second default
-read timeout, then calls `raise_for_status()`. Timeouts, network errors, and
-permanent HTTP failures remain visible to the caller.
+Fetches one URL with a 15-second default timeout, then calls
+`raise_for_status()`. Timeouts, network errors, and permanent HTTP failures
+remain visible to the caller.
 
 ### `discover_plants()`
 
@@ -119,6 +125,21 @@ URL, and the current UTC timestamp. When available, the first English
 vernacular name replaces the fallback heading as the primary plant name. The
 record is cleaned before being returned.
 
+### Translation enrichment
+
+`scrape()` creates one cached `GoogleNameTranslator` and passes each cleaned
+record to `enrich_record()`. The primary English name is translated into the
+configured major Indian languages, and each source vernacular name is also
+translated back to English. Results are stored as attributes such as
+`Translated Names.Hindi` and `Translated Names.English`; source
+`Vernacular Names.*` attributes are never overwritten.
+
+Translation requests are cached and throttled for the duration of a scrape.
+Individual Google Translator failures are treated as missing enrichment rather
+than causing the source record to fail. A live network connection is therefore
+needed for complete translation output, but scraping remains usable when
+translation is unavailable.
+
 ### `scrape()`
 
 Runs the complete direct-ingestion workflow:
@@ -169,6 +190,8 @@ after persistence, but neither is an intermediate scrape stage.
 ## Current limitations
 
 - HTML caching is planned but not yet implemented.
+- Translation enrichment depends on the availability and rate limits of
+      Google Translator through `deep-translator`.
 - Flexible table fields are stored as section-qualified attributes. Illness and
       treatment relationships are currently normalized only from the source's
       `Therapeutic Usage` section; other domain-specific relationships remain

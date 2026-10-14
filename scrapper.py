@@ -13,6 +13,7 @@ from urllib3.util.retry import Retry
 
 from cleaning import PlantRecord, clean_text, split_values
 from database_operator import AyurvedicAlmanac
+from translation import GoogleNameTranslator, enrich_record
 
 
 DRAVYA_DIRECTORY = "https://dravya.ccras.org.in/all_plants"
@@ -221,6 +222,7 @@ def scrape(
     retries: int = 2,
 ) -> int:
     session = create_session(retries)
+    translator = GoogleNameTranslator()
     try:
         plants = discover_plants(session, max_pages=max_pages)
         if max_plants is not None:
@@ -239,6 +241,7 @@ def scrape(
             for plant_id, url in plants:
                 progress.update(task, description=f"Scraping plant {plant_id}")
                 record = parse_plant(plant_id, url, fetch(session, url, timeout))
+                record = enrich_record(record, translator)
                 record.validate()
                 database.insert_record(record)
                 inserted += 1

@@ -1,7 +1,5 @@
 # Dravyaguna Data Mapping Project — SDLC Plan
 
-## 1. Project Overview
-
 ## Current implementation snapshot
 
 The repository currently implements the DRAVYA MVP path through
@@ -27,16 +25,22 @@ Implemented today:
       treatment-link refresh during re-scraping.
 - Typer commands for setup, scraping, manual records, searching, inspection,
       and JSON/CSV export.
-- Regression tests for table parsing, vernacular persistence, and treatment
-      refresh behavior.
+- Regression tests for table parsing, vernacular persistence, treatment
+      refresh, cleanup, and translation enrichment.
 
 Still planned:
 
-- Raw HTML caching and structured scrape-error reporting.
+- Raw HTML caching, structured scrape-error reporting, and request pacing for
+      large runs.
 - Dedicated normalized name/condition/taxonomy tables beyond the current
       flexible attribute store.
 - Dosha normalization, external terminology mapping, API/PDF/Excel importers,
       fuzzy multilingual search, and a public Python API.
+
+The status above describes the repository at the time of this documentation
+update. The detailed phase checklist below remains a design roadmap; unchecked
+items are not implemented merely because they appear in the target
+architecture.
 
 The checklist sections below describe the longer-term target architecture.
 They are planning material, not a claim that every listed subsystem already
@@ -1464,7 +1468,11 @@ dravyaguna/
 
 ---
 
-# 6. Recommended Technology Stack
+# 6. Proposed Future Technology Stack
+
+This is the target stack for later source adapters and the public library, not
+the set of dependencies required by the current MVP. See `requirements.txt`
+and the README for the current runtime dependencies.
 
 ## Core
 

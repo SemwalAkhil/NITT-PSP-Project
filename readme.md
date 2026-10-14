@@ -18,28 +18,34 @@ them directly to SQLite.
 Each vernacular language is stored as an attribute such as
 `Vernacular Names.Hindi`. The first English vernacular value becomes the
 primary herb name; all other language values remain available in
-`herb_attributes`. Therapeutic Usage values are also normalized into illness
-and treatment relationships.
+`herb_attributes`. During scraping, `deep-translator`/Google Translator adds
+corresponding English and major Indian-language values as
+`Translated Names.<Language>` attributes. English-facing text is normalized to
+standard ASCII, while source regional scripts are preserved. Therapeutic Usage
+values are also normalized into illness and treatment relationships.
 
 The CLI can export stored record groups to JSON or CSV after ingestion. Those
 exports are optional views of the database and are not an intermediate
 scraping stage.
 
-## Plan of Action
+## Current status
 
-### Step 1: Data Collection
-
-### Step 2: Database Creation
-
-### Step 3: API Creation
-
-### Step 4: Optimizations
+| Area | Status |
+|---|---|
+| DRAVYA discovery, parsing, and retrying | Implemented |
+| Cleaning, validation, provenance, and SQLite upserts | Implemented |
+| Vernacular and optional translated-name attributes | Implemented |
+| Illness/treatment links from Therapeutic Usage | Implemented |
+| Typer CLI search, inspection, manual inserts, and exports | Implemented |
+| Automated regression tests | Implemented for core parser and persistence paths |
+| HTML cache, structured scrape-error report, fuzzy search, and public API | Planned |
+| Dosha normalization and additional external source adapters | Planned |
 
 ---
 
 ## Design
 
-### 1. Scrapper
+### 1. Scraper
 
 Evaluate sites to understand their structures, parse source records, clean
 them, validate them, and insert them directly into SQLite.
@@ -58,14 +64,17 @@ does not become coupled to SQL.
 
 ### 3. Cleaning
 
-### 4. Multi-Lingual API
+`cleaning.py` provides deterministic Unicode cleanup, ASCII normalization for
+English-facing values, value splitting, and `PlantRecord` validation.
+
+### 4. Multilingual access
 
 * Fetch data from databases and present it in multiple languages
 <br>
 * Query in a way to be able to search incomplete or misspelled queries
 
-The current CLI stores multilingual vernacular attributes but does not yet
-provide a dedicated translation API or fuzzy-search implementation.
+The current CLI stores multilingual vernacular and translated-name attributes.
+It does not yet provide a dedicated Python API or fuzzy-search implementation.
 
 ### 5. Look for further optimizations
 
@@ -73,8 +82,28 @@ provide a dedicated translation API or fuzzy-search implementation.
 
 ## Execution
 
-1. Python for backend
-2. SQLite for database
+1. Python 3.10+ for the backend
+2. SQLite for persistence
+3. Typer and Rich for the CLI
+4. Requests, BeautifulSoup, and urllib3 for ingestion
+5. deep-translator for optional name enrichment
+
+## Documentation map
+
+- [`documentations/cli.md`](documentations/cli.md): commands, options, and
+  export formats.
+- [`documentations/scrapper.md`](documentations/scrapper.md): source discovery,
+  parsing, translation, and ingestion flow.
+- [`documentations/cleaning.md`](documentations/cleaning.md): normalization and
+  `PlantRecord` behavior.
+- [`documentations/database_operator.md`](documentations/database_operator.md):
+  schema, migrations, and transactional persistence.
+- [`documentations/translation.md`](documentations/translation.md): optional
+  Google Translator enrichment.
+- [`documentations/plan.md`](documentations/plan.md): implemented baseline and
+  future roadmap.
+- [`documentations/learnings.md`](documentations/learnings.md): implementation
+  notes and operational patterns.
 
 ---
 
@@ -161,6 +190,7 @@ Run the focused regression suite:
 python -m pytest tests/test_scrapper.py -q
 ```
 
-The tests currently cover section-aware table parsing, vernacular-name
-extraction and primary-name selection, vernacular persistence, and treatment
-link refresh behavior.
+The tests cover section-aware table parsing, vernacular-name extraction and
+primary-name selection, vernacular persistence, treatment-link refresh,
+English cleanup, and translation enrichment with a fake translator. Network
+scraping itself is not run by the test suite.

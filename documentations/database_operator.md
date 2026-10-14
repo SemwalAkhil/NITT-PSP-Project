@@ -72,6 +72,10 @@ language. The first English vernacular value is also stored in the compatibility
 Other language values remain available through `herb_attributes` without
 adding a fixed column for every language.
 
+Translated values use the same store with `Translated Names.<Language>` field
+names. They are persisted by `insert_record()` exactly like source
+attributes, so JSON and CSV exports include them automatically.
+
 ## Schema migration
 
 `create_database()` is safe to call repeatedly. It creates missing tables and

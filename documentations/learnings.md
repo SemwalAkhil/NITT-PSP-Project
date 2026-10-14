@@ -1,27 +1,41 @@
 # Learnings
 
-## Virual Environment
+## Python environment
 
 ### Creating
 
-```powershell
+```bash
 python -m venv .venv
 ```
 
 ### Activating
 
+Linux/macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+Windows PowerShell:
+
 ```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-### Bypass powershell_Execution_Policy if executing script not allowed
+If PowerShell blocks activation, use a process-scoped policy change:
 
 ```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process; .venv\Scripts\Activate.ps1
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+.venv\Scripts\Activate.ps1
 ```
 
-### Exit
+### deactivate
+```
 
+Install dependencies from the repository root:
+
+```bash
+python -m pip install -r requirements.txt
 ```powershell
 exit
 ```
@@ -120,6 +134,7 @@ are used only while inspecting the small set of fields in one page.
 - `re`: identifies plant URLs and source fields.
 - `cleaning`: owns record cleanup and validation.
 - `database_operator`: owns SQLite persistence.
+- `translation`: optionally enriches names with `deep-translator`.
 
 The modules are imported without performing network requests. Scraping starts
 only when `scrape()` or the command-line `main()` function is called.
@@ -158,6 +173,14 @@ record reaches SQLite.
 
 The original extracted table text is retained in `source_values`. Cleaning
 therefore improves queryability without losing provenance.
+
+## Translation enrichment
+
+`GoogleNameTranslator` caches requests by `(text, target language)`, waits at
+least 0.25 seconds between new requests, and treats an individual translation
+failure as missing enrichment. Source vernacular values are never replaced.
+The scraper remains usable without translation network access, but translated
+attributes may be incomplete.
 
 ## Direct ingestion design
 

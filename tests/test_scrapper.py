@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from bs4 import BeautifulSoup
 
-from cleaning import PlantRecord
+from cleaning import PlantRecord, ascii_text
 from database_operator import AyurvedicAlmanac
 from scrapper import _table_attributes, _vernacular_attributes, parse_plant
+from translation import enrich_record
 
 
 def test_table_attributes_use_section_headers() -> None:
@@ -98,4 +99,48 @@ def test_insert_record_refreshes_treatment_links(tmp_path) -> None:
         (herb_id,),
     ).fetchall()
 
-    assert [row["english_name"] for row in illnesses] == ["Kāsa"]
+    assert [row["english_name"] for row in illnesses] == ["Kasa"]
+
+
+def test_english_cleanup_removes_symbols_and_diacritics() -> None:
+    assert ascii_text("📚 Etymology") == "Etymology"
+    assert ascii_text("Kāsa") == "Kasa"
+
+    record = PlantRecord(
+        source="CCRAS DRAVYA",
+        source_record_id=1,
+        source_url="https://example.test/plant/1",
+        retrieved_at="2026-01-01T00:00:00+00:00",
+        ayurvedic_name="Kāsa",
+        attributes={"Therapeutic Usage.Name": ["Kāsa"], "Vernacular Names.Hindi": ["कास"]},
+    ).clean()
+
+    assert record.ayurvedic_name == "Kasa"
+    assert record.attributes["Therapeutic Usage.Name"] == ["Kasa"]
+    assert record.attributes["Vernacular Names.Hindi"] == ["कास"]
+
+    record.source_values["Translated Names.Hindi"] = "कास"
+    record.clean()
+    assert record.source_values["Translated Names.Hindi"] == "कास"
+
+
+def test_translation_enrichment_adds_english_and_regional_attributes() -> None:
+    class FakeTranslator:
+        def translate(self, text: str, target: str) -> str:
+            if target == "en":
+                return "Cough"
+            return f"{target}:{text}"
+
+    record = PlantRecord(
+        source="CCRAS DRAVYA",
+        source_record_id=1,
+        source_url="https://example.test/plant/1",
+        retrieved_at="2026-01-01T00:00:00+00:00",
+        ayurvedic_name="Kasa",
+        attributes={"Vernacular Names.Hindi": ["कास"]},
+    ).clean()
+
+    enrich_record(record, FakeTranslator())
+
+    assert record.attributes["Translated Names.Hindi"] == ["hi:Kasa"]
+    assert record.attributes["Translated Names.English"] == ["Kasa", "Cough"]

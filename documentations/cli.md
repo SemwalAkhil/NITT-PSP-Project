@@ -88,7 +88,10 @@ parsed, validated, and inserted successfully.
 During scraping, the first English vernacular name from the source page is
 stored as the herb's primary `english_name`. All language-specific names are
 also stored as attributes with fields such as `Vernacular Names.Hindi` and
-`Vernacular Names.Malayalam`.
+`Vernacular Names.Malayalam`. Translation enrichment adds corresponding
+`Translated Names.<Language>` attributes when Google Translator is available.
+English-facing output is normalized to ASCII, so `Kāsa` is exported as `Kasa`
+and emoji are removed from labels and values.
 
 ### `herb`
 
