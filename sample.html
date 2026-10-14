@@ -1,0 +1,2207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Home - Dravya </title>
+    <link rel="stylesheet" id="theme-change" type="text/css" href="#">
+    <link rel="apple-touch-icon" sizes="57x57" href="https://dravya.ccras.org.in/public/assets/favicon_io/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="https://dravya.ccras.org.in/public/assets/favicon_io/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="https://dravya.ccras.org.in/public/assets/favicon_io/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="https://dravya.ccras.org.in/public/assets/favicon_io/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="https://dravya.ccras.org.in/public/assets/favicon_io/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://dravya.ccras.org.in/public/assets/favicon_io/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="https://dravya.ccras.org.in/public/assets/favicon_io/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://dravya.ccras.org.in/public/assets/favicon_io/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://dravya.ccras.org.in/public/assets/favicon_io/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"
+        href="https://dravya.ccras.org.in/public/assets/favicon_io/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://dravya.ccras.org.in/public/assets/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="https://dravya.ccras.org.in/public/assets/favicon_io/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://dravya.ccras.org.in/public/assets/favicon_io/favicon-16x16.png">
+
+    <!-- CSS  -->
+    <link rel="stylesheet" href="https://dravya.ccras.org.in/resources/views/frontend/template/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://dravya.ccras.org.in/resources/views/frontend/template/assets/css/all.min.css">
+    <link rel="stylesheet" href="https://dravya.ccras.org.in/resources/views/frontend/template/assets/css/font.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://dravya.ccras.org.in/resources/views/frontend/template/assets/font-awesome/css/font-awesome.min.css">
+
+    <!-- ionicons -->
+    <link rel="stylesheet" href="https://dravya.ccras.org.in/resources/views/frontend/template/assets/Ionicons/css/ionicons.min.css">
+    <link rel="stylesheet" href="https://dravya.ccras.org.in/resources/views/frontend/template/assets/css/swiper.css">
+    <link rel="stylesheet" href="https://dravya.ccras.org.in/resources/views/frontend/template/assets/css/style.css">
+    <link rel="stylesheet" href="https://dravya.ccras.org.in/public/css/modern-theme.css">
+
+    <style>
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: transparent;
+            z-index: 9999;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            transition: width 0.05s linear;
+        }
+        /* Dynamic Theme Navbar */
+        #header-main {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: var(--glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #header-main.scrolled {
+            background: var(--bg-white);
+            box-shadow: var(--shadow-md);
+            border-bottom: 1px solid var(--border);
+            padding: 5px 0;
+        }
+        .pa-logo a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .pa-logo img {
+            height: 45px;
+            width: auto;
+            border-radius: 12px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+        .pa-logo .company_title {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+        .pa-logo .company_title span {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .pa-menu ul {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .pa-menu ul li a {
+            display: block;
+            padding: 24px 18px;
+            color: var(--text-body);
+            font-weight: 500;
+            font-size: 1.05rem;
+            position: relative;
+            transition: color 0.3s ease;
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .pa-menu ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 25px;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 3px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pa-menu ul li a:hover,
+        .pa-menu ul li.active a {
+            color: var(--primary);
+        }
+        .pa-menu ul li a:hover::after,
+        .pa-menu ul li.active a::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+        .pa-menu ul li a#active-link {
+            color: var(--primary);
+        }
+        .pa-menu ul li a#active-link::after {
+            transform: translateX(-50%) scaleX(1);
+            background: var(--accent);
+        }
+        @media (max-width: 768px) {
+            .pa-menu ul li a {
+                padding: 14px 16px;
+            }
+            .pa-menu ul li a::after {
+                bottom: 8px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- Progress bar -->
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+    <!-- main wrapper start -->
+    <div class="pa-main-wrapper">
+        <!-- main header start -->
+        <div class="pa-main-header pa-head-three" id="header-main">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-3 col-6">
+                        <div class="pa-logo">
+                            <a href="https://dravya.ccras.org.in/home" id="logo_top">
+                                <img src="https://dravya.ccras.org.in/public/assets/img/new_logo.jpeg" alt="CCRAS DRAVYA Logo" />
+                                <span class="company_title">CCRAS <span>DRAVYA</span></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-9 col-6">
+                        <div class="pa-nav-bar">
+                            <div class="pa-menu">
+                                <ul>
+                                    <li
+                                        class="">
+                                        <a href="https://dravya.ccras.org.in/home"
+                                            id="">Home</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="https://dravya.ccras.org.in/about"
+                                            id="">About</a>
+                                    </li>
+                                    <li
+                                        class="">
+                                        <a href="https://dravya.ccras.org.in/contact"
+                                            id="">Contact</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="https://dravya.ccras.org.in/search"
+                                            id="">Search</a>
+                                    </li>
+                                    <li><a href="https://dravya.ccras.org.in/all_plants"
+                                            class="btn-premium btn-sm-premium btn-primary-premium"
+                                            style="padding: 10px 22px; margin-left: 8px;"><i class="fa fa-leaf"></i> All
+                                            Plants</a></li>
+                                </ul>
+                            </div>
+                            <div class="pa-head-icon d-flex align-items-center justify-center gap-3">
+                                <div class="theme-switch-wrapper">
+                                    <label class="theme-switch" for="checkbox-toggle-darkmode" title="Toggle Theme">
+                                        <input type="checkbox" id="checkbox-toggle-darkmode" />
+                                        <div class="theme-switch-slider"></div>
+                                    </label>
+                                </div>
+                                <div class="pa-toggle-nav">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- main header end -->
+        <script>
+            // Navbar scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header-main');
+                if (window.scrollY > 20) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+            // Scroll progress bar
+            window.addEventListener('scroll', function() {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                document.getElementById('progress-bar').style.width = scrolled + '%';
+            });
+        </script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/universalviewer@4.0.0/dist/uv.css">
+<script src="https://cdn.jsdelivr.net/npm/universalviewer@4.0.0/dist/umd/UV.js"></script>
+<style>
+    #uv {
+        width: 100%;
+        height: 100%;
+    }
+
+    #vernacularNames {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .qr-code-wrapper {
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    }
+
+    .qr-code-wrapper:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 24px rgba(var(--primary-rgb), 0.3) !important;
+    }
+
+    /* Sidebar Toggle Button Styles */
+    .sidebar-toggle-btn {
+        position: fixed;
+        z-index: 1050;
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        background: var(--gradient-primary);
+        border: none;
+        box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.4);
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar-toggle-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.6);
+    }
+
+    .sidebar-toggle-btn:active {
+        transform: scale(0.95);
+    }
+
+    .sidebar-toggle-btn i {
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar-toggle-btn.active i {
+        transform: rotate(180deg);
+    }
+
+    /* Desktop Sidebar Styles */
+    .sidebar {
+        transition: all 0.3s ease-in-out;
+        overflow-y: auto;
+        background: var(--glass-bg) !important;
+        backdrop-filter: blur(16px);
+        border-right: 1px solid var(--border);
+        position: sticky;
+        top: 90px;
+        height: calc(100vh - 90px);
+        z-index: 1000;
+    }
+
+    .sidebar.collapsed {
+        width: 0 !important;
+        min-width: 0 !important;
+        flex: 0 0 0 !important;
+        padding: 0 !important;
+        overflow: hidden;
+        opacity: 0;
+    }
+
+    main.content {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .sidebar-overlay {
+        display: none;
+    }
+
+    /* When sidebar is collapsed on desktop, expand the main content */
+    .sidebar.collapsed+main.content,
+    .sidebar.collapsed~main.content {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    /* Desktop positioning - button at top right of sidebar */
+    @media (min-width: 992px) {
+        .sidebar-toggle-btn {
+            /* top: 20px; */
+            left: calc(17.666667% - 64px);
+        }
+
+        .sidebar.collapsed~.sidebar-toggle-btn,
+        .sidebar-toggle-btn.active {
+            left: 20px;
+        }
+
+        main.content {
+            padding-left: 60px !important;
+        }
+
+        .sidebar.collapsed+main.content,
+        .sidebar.collapsed~main.content {
+            padding-left: 15px !important;
+        }
+    }
+
+    /* Mobile tabs horizontal scroll */
+    @media (max-width: 991px) {
+        .d-flex.justify-content-between.flex-wrap.flex-md-nowrap>div {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-light) var(--bg-sand);
+            gap: 8px;
+            padding-bottom: 5px;
+            width: 100%;
+        }
+
+        .d-flex.justify-content-between.flex-wrap.flex-md-nowrap>div::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .d-flex.justify-content-between.flex-wrap.flex-md-nowrap>div::-webkit-scrollbar-track {
+            background: var(--bg-sand);
+            border-radius: 2px;
+        }
+
+        .d-flex.justify-content-between.flex-wrap.flex-md-nowrap>div::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .d-flex.justify-content-between.flex-wrap.flex-md-nowrap>div .btn {
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            margin-right: 0 !important;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+    }
+
+    /* Dynamic Sidebar Styles */
+    #dynamicSidebar {
+        max-height: calc(100vh - 150px);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary-light) var(--bg-sand);
+    }
+
+    #dynamicSidebar::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    #dynamicSidebar::-webkit-scrollbar-track {
+        background: var(--bg-sand);
+        border-radius: 3px;
+    }
+
+    #dynamicSidebar::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 3px;
+    }
+
+    #dynamicSidebar .nav-link {
+        color: var(--text-muted);
+        font-size: 15px;
+        padding: 8px 12px;
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+        margin: 2px 0;
+    }
+
+    #dynamicSidebar .nav-link:hover {
+        background-color: rgba(var(--primary-rgb), 0.1);
+        color: var(--primary-light);
+        border-left-color: var(--primary-light);
+        padding-left: 15px;
+    }
+
+    #dynamicSidebar .nav-link.active {
+        background-color: rgba(var(--primary-rgb), 0.2);
+        color: var(--primary-light);
+        border-left-color: var(--primary-light);
+        font-weight: 600;
+        padding-left: 15px;
+    }
+
+    #dynamicSidebar .nav-link.font-weight-bold {
+        font-size: 16px;
+        margin-top: 8px;
+    }
+
+    /* Mobile Sidebar Styles */
+    @media (max-width: 991px) {
+        .sidebar-toggle-btn {
+            top: auto;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            font-size: 20px;
+        }
+
+        /* When sidebar is collapsed on mobile, move button to bottom right */
+        .sidebar.collapsed~.sidebar-toggle-btn {
+            left: auto;
+            right: 20px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 85%;
+            max-width: 300px;
+            height: 100vh;
+            z-index: 1040;
+            transition: left 0.3s ease-in-out;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            padding-top: 60px;
+        }
+
+        .sidebar.show {
+            left: 0;
+        }
+
+        .sidebar.collapsed {
+            width: 85% !important;
+            min-width: auto !important;
+            flex: 0 0 85% !important;
+            opacity: 1;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1030;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        main.content {
+            width: 100%;
+            margin-left: 0 !important;
+            padding: 15px;
+        }
+
+        .col-md-3.col-lg-2.sidebar {
+            flex: 0 0 85%;
+            max-width: 300px;
+        }
+
+        .col-md-9.ms-sm-auto.col-lg-10.px-md-4.content {
+            flex: 0 0 100%;
+            max-width: 100%;
+            margin-left: 0 !important;
+        }
+    }
+
+    /* ============================================
+       PREMIUM DARK GLASS THEME OVERRIDES
+       ============================================ */
+
+    /* Section Buttons */
+    .btn-section {
+        border-radius: 50px !important;
+        padding: 10px 20px !important;
+        font-weight: 600;
+        font-size: 13px;
+        background: var(--glass-bg);
+        border: 1px solid var(--border);
+        color: var(--text-main);
+        transition: all 0.3s ease;
+        margin: 0 4px 8px 0;
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-section:hover {
+        transform: translateY(-2px);
+        background: var(--glass-dark);
+        border-color: var(--primary-light);
+    }
+
+    .btn-section.active {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+        border-color: var(--primary-light) !important;
+        color: white !important;
+        box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.4);
+    }
+
+    /* Cards */
+    .card {
+        background: var(--glass-bg) !important;
+        backdrop-filter: blur(16px) !important;
+        border-radius: 16px !important;
+        border: 1px solid var(--border) !important;
+        box-shadow: var(--shadow) !important;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        color: var(--text-main);
+    }
+
+    .card:hover {
+        box-shadow: var(--shadow-lg) !important;
+        border-color: rgba(var(--primary-rgb), 0.3) !important;
+    }
+
+    /* Card Headers */
+    .card-header,
+    .card>div[style*="background:var(--gradient-primary)"] {
+        background: var(--glass-dark) !important;
+        color: var(--primary-light) !important;
+        border-bottom: 1px solid var(--border) !important;
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding: 16px 20px !important;
+    }
+
+    .card-header i {
+        margin-right: 8px;
+    }
+
+    h5.text-light,
+    h6.card-title {
+        color: var(--primary-light) !important;
+    }
+
+    .text-dark,
+    .text-muted,
+    small {
+        color: var(--text-body) !important;
+    }
+
+    hr.text-dark {
+        border-color: var(--border) !important;
+    }
+
+    /* Card Body Items */
+    .list-group-item {
+        background: transparent !important;
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+        padding: 12px 16px;
+        border-color: var(--border) !important;
+        color: var(--text-main);
+    }
+
+    .list-group-item:hover {
+        background: var(--border-light) !important;
+        border-left-color: var(--primary);
+        padding-left: 20px;
+    }
+
+    .list-group-item strong {
+        color: var(--primary-light);
+    }
+
+    /* Main Content Typography */
+    .content h1,
+    .content h2,
+    .content h3 {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        color: var(--text-main) !important;
+    }
+
+    .content h2:not(.accordion-header) {
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--text-dark) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .accordion-button {
+        -webkit-text-fill-color: initial !important;
+    }
+
+    /* Sidebar Nav Items */
+    .sidebar .nav-link {
+        border-radius: 10px;
+        margin-bottom: 4px;
+        padding: 10px 16px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        color: var(--text-muted);
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+        background: rgba(var(--primary-rgb), 0.1);
+        color: var(--primary-light);
+    }
+
+    .sidebar .nav-link i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Image Viewer */
+    #imageViewerModal .modal-content {
+        border-radius: 20px;
+        overflow: hidden;
+        background: var(--bg-dark);
+        border: 1px solid var(--border);
+    }
+
+    #imageViewerModal .modal-header {
+        background: var(--glass-dark);
+        color: var(--text-light);
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* Top Pills for Sections */
+    .btn-outline-secondary {
+        color: var(--text-main);
+        border-color: var(--border);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+        background: var(--surface);
+        margin-bottom: 8px;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--border-light);
+        border-color: var(--primary-light);
+        color: var(--text-dark);
+    }
+
+    .btn-outline-secondary.active {
+        background: var(--gradient-primary);
+        border-color: transparent;
+        color: var(--text-light);
+        box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.4);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--primary-dark);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary);
+    }
+
+    /* Table Overrides for Premium Feel */
+    .table-dark {
+        background-color: var(--glass-dark) !important;
+        color: var(--primary-light) !important;
+    }
+
+    .table {
+        color: var(--text-body) !important;
+        border-color: var(--border) !important;
+    }
+
+    .table td,
+    .table th {
+        border-color: var(--border) !important;
+    }
+
+    .table-striped>tbody>tr:nth-of-type(odd)>* {
+        background-color: var(--border-light) !important;
+        color: var(--text-body) !important;
+    }
+
+    .table-striped>tbody>tr:nth-of-type(even)>* {
+        background-color: transparent !important;
+        color: var(--text-body) !important;
+    }
+
+    /* Plant Header Card - Premium Design */
+    .plant-header {
+        position: relative;
+        background: var(--glass-dark) !important;
+        backdrop-filter: blur(20px);
+        padding: 24px 30px !important;
+        margin-bottom: 2.5rem;
+        border-bottom: 2px solid var(--primary);
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .header-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .header-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: var(--bg-white) !important;
+        color: var(--text-dark) !important;
+        padding: 4px 12px !important;
+        border-radius: 4px;
+        font-weight: 800;
+        margin-bottom: 5px;
+        display: inline-block;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .plant-header h1 {
+        color: var(--text-dark) !important;
+        font-weight: 700 !important;
+    }
+
+    .manifest-badge {
+        font-size: 11px;
+        background: rgba(var(--primary-rgb), 0.1);
+        border: 1px solid rgba(var(--primary-rgb), 0.2);
+        color: var(--primary-light);
+        padding: 4px 12px;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .manifest-badge:hover {
+        background: var(--primary-light);
+        color: var(--bg-dark);
+        transform: translateY(-1px);
+    }
+
+    /* Header QR Code Styling - Beside Plant Name */
+    .header-qr-link {
+        display: inline-block;
+        text-decoration: none;
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+        vertical-align: middle;
+    }
+
+    .header-qr-link:hover {
+        transform: scale(1.08);
+    }
+
+    .header-qr-wrapper {
+        width: 44px;
+        height: 44px;
+        padding: 2px;
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .header-qr-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .header-qr-wrapper {
+            width: 36px;
+            height: 36px;
+        }
+    }
+
+    /* Section Buttons */
+    .btn-section {
+        border-radius: 50px !important;
+        padding: 8px 18px !important;
+        font-weight: 600;
+        font-size: 13px;
+        background: var(--glass-bg) !important;
+        border: 1px solid var(--border) !important;
+        color: var(--text-dark) !important;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-section:hover {
+        transform: translateY(-2px);
+        background: var(--glass-dark) !important;
+        border-color: var(--primary-light) !important;
+    }
+
+    .btn-section.active {
+        background: var(--gradient-primary) !important;
+        border-color: transparent !important;
+        color: white !important;
+        box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.4);
+    }
+
+    /* Adjust sidebar toggle button position */
+    @media (min-width: 992px) {
+        .sidebar-toggle-btn {
+            top: 100px;
+        }
+    }
+</style>
+
+<!-- Accordion for Substance Details -->
+<style>
+    #plantAccordion {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    #plantAccordion>h3,
+    #plantAccordion>hr {
+        display: none !important;
+    }
+
+    .accordion-button {
+        font-weight: 600;
+        background-color: var(--glass-dark);
+        color: var(--text-main);
+        border-bottom: 1px solid var(--border);
+        padding: 18px 24px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .accordion-button:not(.collapsed) {
+        color: var(--primary-light);
+        background-color: rgba(var(--primary-rgb), 0.08);
+        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .125);
+    }
+
+    .accordion-button::after {
+        filter: brightness(0) invert(1);
+    }
+
+    .accordion-item {
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--glass-bg);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(16px);
+        margin-bottom: 0;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .accordion-item:hover {
+        border-color: rgba(var(--primary-rgb), 0.4) !important;
+        box-shadow: var(--shadow-md) !important;
+    }
+
+    .accordion-body {
+        background: transparent;
+        color: var(--text-body);
+        padding: 24px;
+    }
+
+    /* Fix Search Input */
+    #accordionSearch {
+        background: var(--glass-bg);
+        border: 1px solid var(--border);
+        color: var(--text-main);
+        border-radius: 12px;
+    }
+
+    #accordionSearch::placeholder {
+        color: var(--text-muted);
+    }
+
+    #accordionSearch:focus {
+        box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.2);
+        border-color: var(--primary);
+    }
+</style>
+
+<script>
+    // Set global variables for AJAX tab loading
+    window.currentPlantId = 1;
+    window.partialsBaseUrl = 'https://dravya.ccras.org.in/resources/views/frontend/template/partials/';
+</script>
+
+<!-- Sidebar Toggle Button -->
+<button class="sidebar-toggle-btn" id="sidebarToggle" type="button" aria-label="Toggle Sidebar" title="Toggle Sidebar">
+    <i class="fa fa-bars"></i>
+</button>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="pa-contact">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 sidebar pt-2" id="plantSidebar">
+                <div class="position-sticky" style="left:0;">
+                    <div id="overflow">
+                        <h6 class="px-3 py-2 text-muted text-uppercase" id="sidebarHeading"
+                            style="font-size: 14px; font-weight: 700; letter-spacing: 1px; border-bottom: 2px solid var(--border); color: var(--primary-light) !important;">
+                            Ayurveda Sections
+                        </h6>
+                        <ul class="nav flex-column" id="dynamicSidebar">
+                            <!-- Dynamic sidebar items will be inserted here -->
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+                        <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content pt-5 pb-5">
+                <div class="plant-header">
+                    <div class="header-label">Plant Information Dashboard</div>
+                    <div class="header-top-row d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <h1 class="h2 mb-0">
+                                Abies webbiana - Talisha                            </h1>
+                        </div>
+                        <a href="https://dravya.ccras.org.in/manifests/manifest-1.json" target="_blank"
+                            class="manifest-badge">
+                            <i class="fa fa-file-code-o me-1"></i> IIIF Manifest (JSON)
+                        </a>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        <button type="button" class="btn btn-section active" id="ayurveda_btn"
+                            title="">Ayurveda</button>
+                        <button type="button" class="btn btn-section" id="botany_btn" title="">Botany</button>
+                        <button type="button" class="btn btn-section" id="pharmacy_btn" title="">Pharmacy</button>
+                        <button type="button" class="btn btn-section" id="pharmacology_btn"
+                            title="">Pharmacology</button>
+                        <button type="button" class="btn btn-section" id="drug_description_btn" title="">Drug
+                            Description</button>
+                        <button type="button" class="btn btn-section" id="chemistry_btn" title="">Chemistry</button>
+                    </div>
+                </div>
+
+                <section id="default" style="margin-top: 10px; scroll-margin-top: 250px;">
+                    <div class="summary">
+                        <div class="container-fluid">
+                            <!-- Row 1: Media (Universal Viewer) and Key Details/Classification Card -->
+                            <div class="row g-4">
+                                <div class="col-lg-8">
+                                    <!-- Universal Viewer Placeholder -->
+                                    <div id="uv" class="uv card border-0 shadow-lg"
+                                        style="background: var(--glass-dark); border-radius: 16px; overflow: hidden; padding: 0; height: 550px;">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <!-- Unified Scientific Profile & QR Code Card -->
+                                    <div class="card border-0 shadow-lg"
+                                        style="border-radius: 16px; background: var(--glass-bg); backdrop-filter: blur(16px); overflow: hidden;">
+                                        <!-- Top Integrated QR Code Section -->
+                                        <div class="p-4 text-center d-flex flex-column align-items-center justify-content-center gap-3"
+                                            style="background: rgba(var(--primary-rgb), 0.02); border-bottom: 1px solid var(--border);">
+                                            <div class="qr-code-wrapper p-2 bg-white rounded-3 shadow-sm"
+                                                style="display: inline-block; cursor: pointer; border: 1px solid var(--border); transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                                                <img id="plantQrCode" src="" alt="Plant QR Code"
+                                                    style="width: 120px; height: 120px; display: block;" />
+                                            </div>
+                                            <div
+                                                style="font-weight: 500; font-size: 0.85rem; line-height: 1.4; color: var(--text-muted);">
+                                                <i class="fa fa-qrcode me-1" style="color: var(--primary);"></i> Scan to
+                                                view this plant on mobile.
+                                            </div>
+                                            <a href="https://dravya.ccras.org.in/qr?text=https%3A%2F%2Fdravya.ccras.org.in%2Fresources%2Fviews%2Ffrontend%2Ftemplate%2Fplantdetails.php%3Flink%3DeyJpZCI6MX0%3D"
+                                                class="btn w-100 d-flex align-items-center justify-content-center gap-2"
+                                                style="background: var(--gradient-primary); color: white; border: none; border-radius: 10px; font-weight: 600; padding: 10px 20px; font-size: 0.9rem; transition: all 0.3s ease;"
+                                                download="Abies_webbiana_QR.png">
+                                                <i class="fa fa-download"></i> Download QR Code
+                                            </a>
+                                        </div>
+
+                                        <!-- Scientific Profile Header -->
+                                        <div class="card-header border-0 d-flex align-items-center"
+                                            style="background: var(--glass-dark) !important; padding: 16px 20px; border-bottom: 1px solid var(--border) !important;">
+                                            <i class="fa fa-university me-2"
+                                                style="font-size: 1.2rem; color: var(--primary);"></i>
+                                            <h5 class="m-0 font-weight-bold"
+                                                style="font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary);">
+                                                Scientific Profile</h5>
+                                        </div>
+
+                                        <!-- Scientific Profile Body -->
+                                        <div class="card-body p-4 d-flex flex-column gap-3">
+                                            <!-- Scientific Name -->
+                                            <div class="d-flex align-items-start gap-3 p-3 rounded-3"
+                                                style="background: rgba(var(--primary-rgb), 0.04); border: 1px solid rgba(var(--primary-rgb), 0.08);">
+                                                <div class="d-flex align-items-center justify-content-center bg-white rounded-circle"
+                                                    style="width: 44px; height: 44px; flex-shrink: 0; box-shadow: var(--shadow-sm); color: var(--primary);">
+                                                    <i class="fa fa-leaf"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-uppercase d-block mb-1"
+                                                        style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 600; color: var(--text-muted);">Scientific
+                                                        Name</small>
+                                                    <span class="font-weight-bold"
+                                                        style="font-size: 1rem; color: var(--text-main);">
+                                                        <i>Abies webbiana</i>
+                                                        Lindl                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Family Name -->
+                                                                                            <div class="d-flex align-items-start gap-3 p-3 rounded-3"
+                                                    style="background: rgba(var(--primary-rgb), 0.04); border: 1px solid rgba(var(--primary-rgb), 0.08);">
+                                                    <div class="d-flex align-items-center justify-content-center bg-white rounded-circle"
+                                                        style="width: 44px; height: 44px; flex-shrink: 0; box-shadow: var(--shadow-sm); color: var(--primary);">
+                                                        <i class="fa fa-dna"></i>
+                                                    </div>
+                                                    <div>
+                                                        <small class="text-uppercase d-block mb-1"
+                                                            style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 600; color: var(--text-muted);">Family
+                                                            Name</small>
+                                                        <span class="font-weight-bold"
+                                                            style="font-size: 1rem; color: var(--text-main);">
+                                                            Pinaceae                                                        </span>
+                                                    </div>
+                                                </div>
+                                            
+                                            <!-- Subfamily Name -->
+                                            
+                                            <!-- Substance Origin -->
+                                            <div class="d-flex align-items-start gap-3 p-3 rounded-3"
+                                                style="background: rgba(var(--primary-rgb), 0.04); border: 1px solid rgba(var(--primary-rgb), 0.08);">
+                                                <div class="d-flex align-items-center justify-content-center bg-white rounded-circle"
+                                                    style="width: 44px; height: 44px; flex-shrink: 0; box-shadow: var(--shadow-sm); color: var(--primary);">
+                                                    <i class="fa fa-globe"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-uppercase d-block mb-1"
+                                                        style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 600; color: var(--text-muted);">Substance
+                                                        Origin</small>
+                                                    <span class="font-weight-bold"
+                                                        style="font-size: 1rem; color: var(--text-main);">
+                                                        Plant                                                        |
+                                                        Audbhida/udbhija                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Vernacular Names (Full Width Grid Card) -->
+                            <div class="row mt-4">
+                                <div class="col-lg-12">
+                                    <div class="card border-0 shadow-lg"
+                                        style="border-radius: 16px; background: var(--glass-bg); backdrop-filter: blur(16px);">
+                                        <div class="card-header border-0 d-flex align-items-center"
+                                            style="background: var(--glass-dark) !important; border-radius: 16px 16px 0 0; padding: 16px 20px; border-bottom: 1px solid var(--border) !important;">
+                                            <i class="fa fa-language me-2" style="font-size: 1.2rem; color: var(--primary);"></i>
+                                            <h5 class="m-0 font-weight-bold"
+                                                style="font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary);">
+                                                Vernacular Names</h5>
+                                        </div>
+                                        <div class="card-body p-4">
+                                            <div class="row g-3">
+                                                                                                            <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Assamese</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Talish                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Bengali</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Taleesh Patra                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">English</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Turmeric, Kadam, Himalayan siver                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Gujarati</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Talish Patra, Talish Patra                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Hindi</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Talish Patra, Talish Patra                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Kannada</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Tales Patra, Talisapathra, Shukodara, Tales Patra, Talisapathra, Shukodara                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Malyalam</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Taleesapatri                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Marathi</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Kadamb, Laghu taleespatra                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Oriya</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Holiptiya, Laghu Taleespatra                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Punjabi</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Talis                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Sanskrit</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Patrāḍhyaṁ, Patrāḍhyaṁ, Talisha, Dhatriptra, Shukodar                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Tamil</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Talispatra, Taleesapatri, Talispatra, Taleesapatri                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Telugu</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Taleesapatri, Taleesapatri                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                                                <div class="p-3 rounded-3 h-100"
+                                                                    style="background: rgba(var(--primary-rgb), 0.03); border: 1px solid rgba(var(--primary-rgb), 0.06); transition: all 0.2s ease;">
+                                                                    <span class="badge mb-2 px-3 py-1.5"
+                                                                        style="background: rgba(var(--primary-rgb), 0.1); color: var(--primary-dark); font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; border-radius: 6px;">Urdu</span>
+                                                                    <p class="card-text text-dark font-weight-semibold mb-0"
+                                                                        style="font-size: 0.9rem; line-height: 1.5;">
+                                                                        Zarnab, Zarnab                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                                                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Relational Concept Map -->
+                            <div class="row mt-4">
+                                <div class="col-lg-12">
+                                    <div class="card border-0 shadow-lg mb-4"
+                                        style="border-radius: 16px; background: var(--glass-bg); backdrop-filter: blur(16px);">
+                                        <div class="card-header border-0 d-flex align-items-center"
+                                            style="background: var(--glass-dark) !important; border-radius: 16px 16px 0 0; padding: 16px 20px; border-bottom: 1px solid var(--border) !important;">
+                                            <i class="fa fa-sitemap me-2" style="font-size: 1.2rem; color: var(--primary);"></i>
+                                            <h5 class="m-0 font-weight-bold"
+                                                style="font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary);">
+                                                Relational Concept Map</h5>
+                                        </div>
+                                        <div class="card-body p-4">
+                                            <div id="echart-main" style="width:100%;height:600px;padding-top:10px">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container-fluid my-5">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12">
+                                <!-- Card with Accordion -->
+                                <div class="card shadow-lg border-0">
+                                    <div class="card-body p-4">
+                                        <h2 class="text-center mb-4">🌱 Plant Information</h2>
+                                        <!-- Search Box -->
+                                        <div class="mb-3">
+                                            <input type="text" id="accordionSearch" class="form-control form-control-lg"
+                                                placeholder="🔍 Search inside plant details...">
+                                        </div>
+                                        <div class="accordion" id="plantAccordion">
+                                            <!-- Etymology -->
+                                            <h3>Etymology</h3>
+                                            <hr>
+                                                                                            <!-- No Etymology Data Message -->
+                                                <div class="alert alert-info mb-3">
+                                                    <i class="fa fa-info-circle"></i> Etymology data not available for this
+                                                    plant.
+                                                </div>
+                                            
+                                            <!-- Classifications -->
+                                            <h3>Classifications</h3>
+                                            <hr>
+                                                                                            <!-- Parts Used -->
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingThree">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseThree"
+                                                            aria-expanded="true" aria-controls="collapseThree">
+                                                            🪴 Parts Used
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseThree" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingThree">
+                                                        <div class="accordion-body card-body text-dark">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">उपयोगी हिस्सा(हिन्दी)</th>
+                                                                            <th scope="col">Part Used(Diacritical)</th>
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>Leaf</td><td>पत्र</td><td>Patra</td><td></td><td></td></tr><tr><td>Leaf</td><td>पत्र</td><td>Patra</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                            
+                                                                                            <!-- Mahakashaya -->
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingFive">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseFive"
+                                                            aria-expanded="true" aria-controls="collapseFive">
+                                                            🧪 Mahakashaya
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseFive" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingFive">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">महाकषाय (हिन्दी)</th>
+                                                                            <th scope="col">Mahakashaya(Diacritical)</th>
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>Balya Mahakashaya</td><td>बल्य महाकषाय</td><td>Balya mahākaṣāya</td><td></td><td></td></tr><tr><td>Brimhaniya Mahakashaya</td><td>बृंहणीय महाकषाय</td><td>Bṛṃhaṇīya mahākaṣāya</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                                                                            <!-- Varga -->
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingSix">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseSix"
+                                                            aria-expanded="true" aria-controls="collapseSix">
+                                                            🗂️ Varga
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseSix" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingSix">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">वर्ग(हिन्दी)</th>
+                                                                            <th scope="col">Varga(Diacritical)</th>
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>Karpuradivarga</td><td>कर्पूरादिवर्ग</td><td>Karpūrādivarga</td><td></td><td></td></tr><tr><td>Karpuradivarga</td><td>कर्पूरादिवर्ग</td><td>Karpūrādivarga</td><td></td><td></td></tr><tr><td>Oshadhivarga</td><td>ओषधिवर्ग</td><td>Oṣadhivarga</td><td></td><td></td></tr><tr><td>Pippalyadivarga</td><td>पिप्पल्यादिवर्ग</td><td>Pippalyādivarga</td><td></td><td></td></tr><tr><td>Shatapushpadivarga</td><td>शतपुष्पादिवर्ग</td><td>Śatapuṣpādivarga</td><td></td><td></td></tr><tr><td>Karpuradivarga</td><td>कर्पूरादिवर्ग</td><td>Karpūrādivarga</td><td></td><td></td></tr><tr><td>Karpuradivarga</td><td>कर्पूरादिवर्ग</td><td>Karpūrādivarga</td><td></td><td></td></tr><tr><td>Oshadhivarga</td><td>ओषधिवर्ग</td><td>Oṣadhivarga</td><td></td><td></td></tr><tr><td>Pippalyadivarga</td><td>पिप्पल्यादिवर्ग</td><td>Pippalyādivarga</td><td></td><td></td></tr><tr><td>Shatapushpadivarga</td><td>शतपुष्पादिवर्ग</td><td>Śatapuṣpādivarga</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                            
+                                            <h3 class="mt-5">Properties</h3>
+                                            <hr>
+
+                                                                                            <!-- Rasa -->
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingEight">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseEight"
+                                                            aria-expanded="true" aria-controls="collapseEight">
+                                                            🧉 Rasa
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseEight" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingEight">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <!-- Plant Rasa Table -->
+                                                            <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">रस (हिन्दी) </th>
+                                                                            <th scope="col">Rasa (Diacritical) </th>
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Author (Ref. Book)</th>
+                                                                            <th scope="col">Publisher (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>Tikta
+</td><td>तिक्त
+</td><td>Tikta</td><td></td><td></td><td></td><td></td></tr><tr><td>Madhura/Svadu</td><td>मधुर/स्वादु</td><td>Madhura/Svādu</td><td></td><td></td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                            
+                                                                                            <!-- Guna -->
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingTen">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseTen"
+                                                            aria-expanded="true" aria-controls="collapseTen">
+                                                            📜 Guna
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseTen" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingTen">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">गुण(हिन्दी)</th>
+                                                                            <th scope="col">Guna(Diacritical)</th>
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>Laghu/ Aguru</td><td>लघु</td><td>Laghu</td><td></td><td></td></tr><tr><td>Tikshna</td><td>तीक्ष्ण</td><td>Tīkṣṇa</td><td></td><td></td></tr><tr><td>Laghu/ Aguru</td><td>लघु</td><td>Laghu</td><td></td><td></td></tr><tr><td>Tikshna</td><td>तीक्ष्ण</td><td>Tīkṣṇa</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                                                                            <!-- Virya -->
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingEleven">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseEleven"
+                                                            aria-expanded="true" aria-controls="collapseEleven">
+                                                            🔥 Virya
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseEleven" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingEleven">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">विर्य (हिन्दी)</th>
+                                                                            <th scope="col">Virya (Diacritical)</th>
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>Ushna Virya
+</td><td>उष्ण वीर्य
+</td><td>Uṣṇa vīrya</td><td></td><td></td></tr><tr><td>Ushna Virya
+</td><td>उष्ण वीर्य
+</td><td>Uṣṇa vīrya</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                                                                            <!-- Vipaka -->
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingTwelve">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseTwelve"
+                                                            aria-expanded="true" aria-controls="collapseTwelve">
+                                                            🪙 Vipaka
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseTwelve" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingTwelve">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">विपाक (हिन्दी)</th>
+                                                                            <th scope="col">Vipaka(Diacritical)</th>
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>Katu vipaka
+</td><td>Kaṭu vipāka</td><td>कटु विपाक
+</td><td></td><td></td></tr><tr><td>Katu vipaka
+</td><td>Kaṭu vipāka</td><td>कटु विपाक
+</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                                                                            <!-- Karma -->
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingThirteen">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseThirteen"
+                                                            aria-expanded="true" aria-controls="collapseThirteen">
+                                                            🏥 Karma
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseThirteen" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingThirteen">
+                                                        <div class="accordion-body card-body text-dark">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">कर्म (हिन्दी)</th>
+                                                                            <th scope="col">Karma (Diacritical)</th>
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <!-- <th scope="col">Author (Ref. Book)</th>
+                            <th scope="col">Publisher (Ref. Book)</th> -->
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>Jvarahara</td><td>ज्वरहर</td><td>jvarahara</td><td></td><td></td></tr><tr><td>Mutrajanana/ Mutrala/ Mutravirechaniya</td><td>मुत्रजनन/ मूत्रल/ मुत्रविरेचनीय</td><td>mutrajanana/ mūtrala/ mutravirecanīya</td><td></td><td></td></tr><tr><td>Trishnanigraha</td><td></td><td></td><td></td><td></td></tr><tr><td>Tvakdosahara</td><td></td><td></td><td></td><td></td></tr><tr><td>Vatanulomana</td><td>वातानुलोमन</td><td>vātānulomana</td><td></td><td></td></tr><tr><td>Vedanasthapana</td><td>वेदनास्थापन</td><td>vedanāsthāpana</td><td></td><td></td></tr><tr><td>Vatakaphahara/ Vatakaphapaha/ Vatakaphaprashamana/ Vatabalasajita</td><td>वातकफहर/ वाटकफपहा/ वातकफप्रशमन/ वातबलासजित</td><td>vātakaphahara/ vāṭakaphapahā/ vātakaphapraśamana/</td><td></td><td></td></tr><tr><td>Kaphapittahara/ Kaphapittaghna/ Kaphapittahrita/ Kaphapittanuta/ Kaphapittanashaka Kaphapittashamaka</td><td>कफपित्तहर/ कफपित्तघ्न/ कफपित्तहृत/ कफपित्तनुत/ कफपित्तनाशक कफपित्तशामक</td><td>kaphapittahara/ kaphapittaghna/ kaphapittahṛta/ ka</td><td></td><td></td></tr><tr><td>Dipana</td><td>दीपन</td><td>dīpana</td><td></td><td></td></tr><tr><td>Hridya/ Hridayam (Saumanasyakara)</td><td>हृद्य/ हृदयं (सौमनस्यकर)</td><td>hṛdya/ hṛdayaṃ (saumanasyakara)</td><td></td><td></td></tr><tr><td>Jvarahara</td><td>ज्वरहर</td><td>jvarahara</td><td></td><td></td></tr><tr><td>Mutrajanana/ Mutrala/ Mutravirechaniya</td><td>मुत्रजनन/ मूत्रल/ मुत्रविरेचनीय</td><td>mutrajanana/ mūtrala/ mutravirecanīya</td><td></td><td></td></tr><tr><td>Vatanulomana</td><td>वातानुलोमन</td><td>vātānulomana</td><td></td><td></td></tr><tr><td>Vedanasthapana</td><td>वेदनास्थापन</td><td>vedanāsthāpana</td><td></td><td></td></tr><tr><td>Vatakaphahara/ Vatakaphapaha/ Vatakaphaprashamana/ Vatabalasajita</td><td>वातकफहर/ वाटकफपहा/ वातकफप्रशमन/ वातबलासजित</td><td>vātakaphahara/ vāṭakaphapahā/ vātakaphapraśamana/</td><td></td><td></td></tr><tr><td>Kaphapittahara/ Kaphapittaghna/ Kaphapittahrita/ Kaphapittanuta/ Kaphapittanashaka Kaphapittashamaka</td><td>कफपित्तहर/ कफपित्तघ्न/ कफपित्तहृत/ कफपित्तनुत/ कफपित्तनाशक कफपित्तशामक</td><td>kaphapittahara/ kaphapittaghna/ kaphapittahṛta/ ka</td><td></td><td></td></tr><tr><td>Dipana</td><td>दीपन</td><td>dīpana</td><td></td><td></td></tr><tr><td>Hridya/ Hridayam (Saumanasyakara)</td><td>हृद्य/ हृदयं (सौमनस्यकर)</td><td>hṛdya/ hṛdayaṃ (saumanasyakara)</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                                                                            <!-- Doshakarma -->
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingFourteen">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseFourteen"
+                                                            aria-expanded="true" aria-controls="collapseFourteen">
+                                                            ⚖️ Doshakarma
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseFourteen" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingFourteen">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">दोषकर्म (हिन्दी)</th>
+                                                                            <th scope="col">Doshakarma (Diacritical)</th>
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>KaphaVatahara/KaphaVatashamana/ KaphaVstasaṃshamana</td><td>कफवातहर/ कफवातशमन/ कफवातसंशमन</td><td>KaphaVātahara/KaphaVātaśamana/ KaphaVātasaṃśamana</td><td></td><td></td></tr><tr><td>KaphaVatahara/KaphaVatashamana/ KaphaVstasaṃshamana</td><td>कफवातहर/ कफवातशमन/ कफवातसंशमन</td><td>KaphaVātahara/KaphaVātaśamana/ KaphaVātasaṃśamana</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                            
+                                                                                            <!-- Usage -->
+                                                <h3 class="mt-5">Usage</h3>
+                                                <hr>
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingSixteen">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseSixteen"
+                                                            aria-expanded="true" aria-controls="collapseSixteen">
+                                                            💊 Dosage Formulation
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseSixteen" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingSixteen">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <th scope="col">Dosage(Form)</th>
+                                                                            <th scope="col">Dosage(Reference)</th>
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>Drakshadi Churna</td><td>Churna</td><td>Ayurvedic Formulary of India (AFI), Part I, 7:16</td><td></td><td></td></tr><tr><td>Yogaraja Guggulu</td><td>Guggulu</td><td>Ayurvedic Formulary of India (AFI), Part I, 5:7</td><td></td><td></td></tr><tr><td>Drakshadi Churna</td><td>Churna</td><td>Ayurvedic Formulary of India (AFI), Part I, 7:16</td><td></td><td></td></tr><tr><td>Yogaraja Guggulu</td><td>Guggulu</td><td>Ayurvedic Formulary of India (AFI), Part I, 5:7</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                                                                            <!-- Therapeutic Usage -->
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingSeventeen">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseSeventeen"
+                                                            aria-expanded="true" aria-controls="collapseSeventeen">
+                                                            🩺 Therapeutic Usage
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseSeventeen" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingSeventeen">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <!-- <th scope="col"></th> -->
+                                                                            <!-- <th scope="col">(Reference)</th> -->
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td> Kāsa</td><td></td><td></td></tr><tr><td>ādhmānam</td><td></td><td></td></tr><tr><td>Agnimāndya</td><td></td><td></td></tr><tr><td>aruciḥ</td><td></td><td></td></tr><tr><td>daurbalyam</td><td></td><td></td></tr><tr><td>gulmaḥ</td><td></td><td></td></tr><tr><td>jvaraḥ</td><td></td><td></td></tr><tr><td>Mutrakrichha</td><td></td><td></td></tr><tr><td>rājayakṣmā</td><td></td><td></td></tr><tr><td>shukrameha</td><td></td><td></td></tr><tr><td>Śotha</td><td></td><td></td></tr><tr><td>svarabhedaḥ</td><td></td><td></td></tr><tr><td>Svasa</td><td></td><td></td></tr><tr><td> Kāsa</td><td></td><td></td></tr><tr><td>ādhmānam</td><td></td><td></td></tr><tr><td>Agnimāndya</td><td></td><td></td></tr><tr><td>aruciḥ</td><td></td><td></td></tr><tr><td>daurbalyam</td><td></td><td></td></tr><tr><td>gulmaḥ</td><td></td><td></td></tr><tr><td>jvaraḥ</td><td></td><td></td></tr><tr><td>Mutrakrichha</td><td></td><td></td></tr><tr><td>rājayakṣmā</td><td></td><td></td></tr><tr><td>Śotha</td><td></td><td></td></tr><tr><td>svarabhedaḥ</td><td></td><td></td></tr><tr><td>Svasa</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                                                                            <h3 class="mt-5">Dose</h3>
+                                                <hr>
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingEighteen">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseEighteen"
+                                                            aria-expanded="true" aria-controls="collapseEighteen">
+                                                            🧪 Dose
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseEighteen" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingEighteen">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <!-- <th scope="col"></th> -->
+                                                                            <!-- <th scope="col">(Reference)</th> -->
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>Powder/Churna-2-5gm</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                                                                            <h3 class="mt-5">Pharmacopoeial Status</h3>
+                                                <hr>
+                                                <div class="accordion-item card mb-2 shadow-sm">
+                                                    <h2 class="accordion-header" id="headingNineteen">
+                                                        <button class="accordion-button" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#collapseNineteen"
+                                                            aria-expanded="true" aria-controls="collapseNineteen">
+                                                            🧾 Pharmacopoeial Status
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseNineteen" class="accordion-collapse collapse show"
+                                                        aria-labelledby="headingNineteen">
+                                                        <div class="accordion-body card-body  text-dark ">
+                                                                                                                        <div class="table-responsive">
+                                                                <table
+                                                                    class="table table-bordered table-striped align-middle text-center">
+                                                                    <thead class="table-dark">
+                                                                        <tr>
+                                                                            <th scope="col">Name</th>
+                                                                            <!-- <th scope="col"></th> -->
+                                                                            <!-- <th scope="col">(Reference)</th> -->
+                                                                            <th scope="col">Title (Ref. Book)</th>
+                                                                            <th scope="col">Reference Remarks</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr><td>The Ayurvedic Pharmacopoeia of india,Part-I,Vol.-IV,Pg. No.-124(Leaves)</td><td></td><td></td></tr>                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            
+                                            
+                                            <!-- End Accordion -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section id="botany">
+                </section>
+                <section id="pharmacy">
+                </section>
+                <section id="pharmacology">
+                </section>
+                <section id="chemistry">
+                </section>
+                <section id="drug_description">
+                </section>
+        </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="https://dravya.ccras.org.in/resources/views/frontend/template/assets/js/jquery.min.js"></script>
+<script src="https://dravya.ccras.org.in/resources/views/frontend/template/assets/js/bootstrap.min.js"></script>
+<script src="https://dravya.ccras.org.in/resources/views/frontend/template/assets/js/SmoothScroll.min.js"></script>
+<script src="https://dravya.ccras.org.in/resources/views/frontend/template/assets/js/swiper.min.js"></script>
+<script
+    src="https://dravya.ccras.org.in/resources/views/frontend/template/assets/vendor_plugins/DataTables-1.10.15/media/js/jquery.dataTables.min.js"></script>
+<script src="https://dravya.ccras.org.in/resources/views/frontend/template/assets/js/data-table.js"></script>
+<script src="https://dravya.ccras.org.in/resources/views/frontend/template/assets/js/echart.js"></script>
+<script src="https://dravya.ccras.org.in/resources/views/frontend/template/assets/js/custom.js"></script>
+<script type="text/javascript">
+    const chartDom = document.getElementById('echart-main');
+    const myChart = echarts.init(chartDom);
+
+    // Get the data and links passed from PHP
+    const data = [{"name":"Abies webbiana","size":40,"color":"#FAC858"},{"name":"KaphaVatahara\/KaphaVatashamana\/ KaphaVstasa\u1e43shamana","size":40,"table_name":"doshakarma","color":"#91CC75"},{"name":"Jvarahara","size":40,"table_name":"karma","color":"#6A994E"},{"name":"Mutrajanana\/ Mutrala\/ Mutravirechaniya","size":40,"table_name":"karma","color":"#6A994E"},{"name":"Trishnanigraha","size":40,"table_name":"karma","color":"#6A994E"},{"name":"Tvakdosahara","size":40,"table_name":"karma","color":"#6A994E"},{"name":"Vatanulomana","size":40,"table_name":"karma","color":"#6A994E"},{"name":"Vedanasthapana","size":40,"table_name":"karma","color":"#6A994E"},{"name":"Vatakaphahara\/ Vatakaphapaha\/ Vatakaphaprashamana\/ Vatabalasajita","size":40,"table_name":"karma","color":"#6A994E"},{"name":"Kaphapittahara\/ Kaphapittaghna\/ Kaphapittahrita\/ Kaphapittanuta\/ Kaphapittanashaka Kaphapittashamaka","size":40,"table_name":"karma","color":"#6A994E"},{"name":"Dipana","size":40,"table_name":"karma","color":"#6A994E"},{"name":"Hridya\/ Hridayam (Saumanasyakara)","size":40,"table_name":"karma","color":"#6A994E"},{"name":"Balya Mahakashaya","size":40,"table_name":"mahakashaya","color":"#B1C203"},{"name":"Brimhaniya Mahakashaya","size":40,"table_name":"mahakashaya","color":"#B1C203"},{"name":"leaf","size":40,"table_name":"part_used","color":"#FFBE0B"},{"name":"Tikta\r\n","size":40,"table_name":"rasa","color":"#F77F00"},{"name":"Madhura\/Svadu","size":40,"table_name":"rasa","color":"#F77F00"},{"name":"Karpuradivarga","size":40,"table_name":"varga","color":"#D62828"},{"name":"Oshadhivarga","size":40,"table_name":"varga","color":"#D62828"},{"name":"Pippalyadivarga","size":40,"table_name":"varga","color":"#D62828"},{"name":"Shatapushpadivarga","size":40,"table_name":"varga","color":"#D62828"},{"name":"Katu vipaka\r\n","size":40,"table_name":"vipaka","color":"#F25C54"},{"name":"Ushna Virya\r\n","size":40,"table_name":"virya","color":"#4D908E"},{"name":"Laghu\/ Aguru","size":40,"table_name":"guna","color":"#577590"},{"name":"Tikshna","size":40,"table_name":"guna","color":"#577590"},{"name":"Pinaceae","size":40,"table_name":"family_name","color":"#277DA1"},{"name":"Drakshadi Churna","size":40,"table_name":"dosage","color":"#2A9D8F"},{"name":"Yogaraja Guggulu","size":40,"table_name":"dosage","color":"#2A9D8F"},{"name":" K\u0101sa","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"\u0101dhm\u0101nam","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"Agnim\u0101ndya","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"aruci\u1e25","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"daurbalyam","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"gulma\u1e25","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"jvara\u1e25","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"Mutrakrichha","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"r\u0101jayak\u1e63m\u0101","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"shukrameha","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"\u015aotha","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"svarabheda\u1e25","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"Svasa","size":40,"table_name":"therapeutic_usage","color":"#F4A261"},{"name":"Powder\/Churna-2-5gm","size":40,"table_name":"dose","color":"#E76F51"},{"name":"The Ayurvedic Pharmacopoeia of india,Part-I,Vol.-IV,Pg. No.-124(Leaves)","size":40,"table_name":"pharmacopoeial_status","color":"#734F96"}];
+    const links = [{"source":"Abies webbiana","target":"KaphaVatahara\/KaphaVatashamana\/ KaphaVstasa\u1e43shamana"},{"source":"Abies webbiana","target":"Jvarahara"},{"source":"Abies webbiana","target":"Mutrajanana\/ Mutrala\/ Mutravirechaniya"},{"source":"Abies webbiana","target":"Trishnanigraha"},{"source":"Abies webbiana","target":"Tvakdosahara"},{"source":"Abies webbiana","target":"Vatanulomana"},{"source":"Abies webbiana","target":"Vedanasthapana"},{"source":"Abies webbiana","target":"Vatakaphahara\/ Vatakaphapaha\/ Vatakaphaprashamana\/ Vatabalasajita"},{"source":"Abies webbiana","target":"Kaphapittahara\/ Kaphapittaghna\/ Kaphapittahrita\/ Kaphapittanuta\/ Kaphapittanashaka Kaphapittashamaka"},{"source":"Abies webbiana","target":"Dipana"},{"source":"Abies webbiana","target":"Hridya\/ Hridayam (Saumanasyakara)"},{"source":"Abies webbiana","target":"Balya Mahakashaya"},{"source":"Abies webbiana","target":"Brimhaniya Mahakashaya"},{"source":"Abies webbiana","target":"leaf"},{"source":"Abies webbiana","target":"Tikta\r\n"},{"source":"Abies webbiana","target":"Madhura\/Svadu"},{"source":"Abies webbiana","target":"Karpuradivarga"},{"source":"Abies webbiana","target":"Oshadhivarga"},{"source":"Abies webbiana","target":"Pippalyadivarga"},{"source":"Abies webbiana","target":"Shatapushpadivarga"},{"source":"Abies webbiana","target":"Katu vipaka\r\n"},{"source":"Abies webbiana","target":"Ushna Virya\r\n"},{"source":"Abies webbiana","target":"Laghu\/ Aguru"},{"source":"Abies webbiana","target":"Tikshna"},{"source":"Abies webbiana","target":"Pinaceae"},{"source":"Abies webbiana","target":"Drakshadi Churna"},{"source":"Abies webbiana","target":"Yogaraja Guggulu"},{"source":"Abies webbiana","target":" K\u0101sa"},{"source":"Abies webbiana","target":"\u0101dhm\u0101nam"},{"source":"Abies webbiana","target":"Agnim\u0101ndya"},{"source":"Abies webbiana","target":"aruci\u1e25"},{"source":"Abies webbiana","target":"daurbalyam"},{"source":"Abies webbiana","target":"gulma\u1e25"},{"source":"Abies webbiana","target":"jvara\u1e25"},{"source":"Abies webbiana","target":"Mutrakrichha"},{"source":"Abies webbiana","target":"r\u0101jayak\u1e63m\u0101"},{"source":"Abies webbiana","target":"shukrameha"},{"source":"Abies webbiana","target":"\u015aotha"},{"source":"Abies webbiana","target":"svarabheda\u1e25"},{"source":"Abies webbiana","target":"Svasa"},{"source":"Abies webbiana","target":"Powder\/Churna-2-5gm"},{"source":"Abies webbiana","target":"The Ayurvedic Pharmacopoeia of india,Part-I,Vol.-IV,Pg. No.-124(Leaves)"}];
+
+    // Configure the graph options
+    const option = {
+        title: {
+            text: 'Relational Graph',
+            left: 'center'
+        },
+        series: [{
+            type: 'graph',
+            layout: 'force',
+            force: {
+                repulsion: 200,
+                edgeLength: [60, 120]
+            },
+            roam: true,
+            label: {
+                show: true,
+                position: 'inside',
+                formatter: '{b}'
+            },
+            data: data && Array.isArray(data) ? data
+                .filter(item => item.name && item.name.trim() !== '' && !item.name.includes('Unknown'))
+                .map(item => ({
+                    name: item.name,
+                    symbolSize: item.size,
+                    itemStyle: { color: item.color }
+                })) : [],
+            emphasis: {
+                focus: 'adjacency',
+                label: {
+                    position: 'inside',
+                    show: true
+                }
+            },
+            links: links && Array.isArray(links) ? links : [],
+            lineStyle: {
+                opacity: 0.9,
+                width: 2,
+                curveness: 0
+            }
+        }]
+    };
+
+    myChart.setOption(option);
+
+    // Make the chart responsive
+    window.addEventListener('resize', () => {
+        myChart.resize();
+    });
+
+</script>
+<script>
+    const uvdata = {
+        manifest: "https://dravya.ccras.org.in/manifests/manifest-1.json",
+        embedded: true
+    };
+    UV.init("uv", uvdata);
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Generate QR code for the current URL
+        const currentUrl = window.location.href;
+        const qrCodeImg = document.getElementById('plantQrCode');
+        const headerQrCodeImg = document.getElementById('headerPlantQrCode');
+        if (qrCodeImg) {
+            qrCodeImg.src = 'https://dravya.ccras.org.in/qr?text=' + encodeURIComponent(currentUrl);
+        }
+
+        // Initialize tooltips
+        if (window.bootstrap && bootstrap.Tooltip) {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+
+        const searchBox = document.getElementById("accordionSearch");
+        const accordionItems = document.querySelectorAll("#plantAccordion .accordion-item");
+
+        searchBox.addEventListener("input", function () {
+            const query = searchBox.value.trim().toLowerCase();
+            accordionItems.forEach(item => {
+                const txt = item.textContent.toLowerCase();
+
+                if (txt.includes(query)) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        });
+    });
+
+    // Dynamic Sidebar Builder
+    function buildDynamicSidebar() {
+        const $sidebar = $("#dynamicSidebar");
+        const $sidebarHeading = $("#sidebarHeading");
+        const $activeSection = $("section:visible");
+
+        // Update heading based on active tab
+        const activeTabText = $("button.btn.active").text().trim();
+        if (activeTabText) {
+            $sidebarHeading.text(activeTabText + ' Sections');
+        }
+
+        if ($activeSection.length === 0) return;
+
+        let sidebarHTML = '';
+        let itemIndex = 0;
+
+        // Find all accordion items in the visible section
+        $activeSection.find('.accordion-item').each(function () {
+            const $accordionItem = $(this);
+            const $header = $accordionItem.find('.accordion-button');
+            let title = $header.text().trim();
+
+            // Skip if title is empty or just whitespace
+            if (!title || title === '') return;
+
+            // Skip hidden items
+            if ($accordionItem.is(':hidden')) return;
+
+            // Create a unique ID for this item if it doesn't have one
+            let targetId = $accordionItem.attr('id');
+            if (!targetId) {
+                targetId = 'sidebar-target-' + itemIndex;
+                $accordionItem.attr('id', targetId);
+            }
+
+            sidebarHTML += `
+                <li class="nav-item">
+                    <a class="nav-link sidebar-nav-link" href="#${targetId}" data-target="#${targetId}">
+                        ${title}
+                    </a>
+                </li>
+            `;
+            itemIndex++;
+        });
+
+        // Also find h3 headings
+        $activeSection.find('h3').each(function () {
+            const $heading = $(this);
+            let title = $heading.text().trim();
+
+            // Skip if title is empty
+            if (!title || title === '') return;
+
+            // Skip hidden items
+            if ($heading.is(':hidden')) return;
+
+            let targetId = $heading.attr('id');
+            if (!targetId) {
+                targetId = 'sidebar-heading-' + itemIndex;
+                $heading.attr('id', targetId);
+            }
+
+            sidebarHTML += `
+                <li class="nav-item">
+                    <a class="nav-link sidebar-nav-link font-weight-bold" href="#${targetId}" data-target="#${targetId}" style="color: var(--primary-light); font-weight: 600;">
+                        ${title}
+                    </a>
+                </li>
+            `;
+            itemIndex++;
+        });
+
+        // If no items found, show a message
+        if (sidebarHTML === '') {
+            sidebarHTML = `
+                <li class="nav-item">
+                    <a class="nav-link text-muted" href="javascript:void(0);">
+                        <em>No sections available</em>
+                    </a>
+                </li>
+            `;
+        }
+
+        $sidebar.html(sidebarHTML);
+
+        // Add click handlers to new sidebar links
+        $sidebar.find('.sidebar-nav-link').on('click', function (e) {
+            e.preventDefault();
+            const target = $(this).data('target');
+            const $target = $(target);
+
+            if ($target.length) {
+                // Calculate offset considering the sticky header
+                const headerOffset = 100;
+                const elementPosition = $target.offset().top;
+                const offsetPosition = elementPosition - headerOffset;
+
+                // Smooth scroll to target
+                $('html, body').animate({
+                    scrollTop: offsetPosition
+                }, 500);
+
+                // If it's an accordion, open it
+                const $collapse = $target.find('.accordion-collapse');
+                if ($collapse.length && !$collapse.hasClass('show')) {
+                    $collapse.collapse('show');
+                }
+
+                // Close sidebar on mobile
+                if ($(window).width() <= 991) {
+                    setTimeout(function () {
+                        $("#plantSidebar").removeClass("show");
+                        $("#sidebarOverlay").removeClass("show");
+                        $("#sidebarToggle").removeClass("active");
+                        $("#sidebarToggle").find("i").removeClass("fa-times").addClass("fa-bars");
+                    }, 300);
+                }
+            }
+        });
+    }
+
+    // Sidebar Toggle Script
+    $(document).ready(function () {
+        const $sidebar = $("#plantSidebar");
+        const $toggleBtn = $("#sidebarToggle");
+        const $overlay = $("#sidebarOverlay");
+        const $content = $("main.content");
+
+        // Check if user has a saved preference
+        const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (sidebarCollapsed && $(window).width() > 991) {
+            $sidebar.addClass("collapsed");
+            $toggleBtn.addClass("active");
+            $toggleBtn.find("i").removeClass("fa-bars").addClass("fa-chevron-right");
+        }
+
+        // Toggle sidebar on button click
+        $toggleBtn.on("click", function () {
+            if ($(window).width() <= 991) {
+                // Mobile behavior - slide in from left
+                $sidebar.toggleClass("show");
+                $overlay.toggleClass("show");
+                $(this).toggleClass("active");
+
+                // Change icon based on state
+                if ($(this).hasClass("active")) {
+                    $(this).find("i").removeClass("fa-bars").addClass("fa-times");
+                } else {
+                    $(this).find("i").removeClass("fa-times").addClass("fa-bars");
+                }
+            } else {
+                // Desktop behavior - collapse/expand
+                $sidebar.toggleClass("collapsed");
+                $(this).toggleClass("active");
+
+                // Save preference
+                localStorage.setItem('sidebarCollapsed', $sidebar.hasClass("collapsed"));
+
+                // Change icon based on state
+                if ($(this).hasClass("active")) {
+                    $(this).find("i").removeClass("fa-bars").addClass("fa-chevron-right");
+                } else {
+                    $(this).find("i").removeClass("fa-chevron-right").addClass("fa-bars");
+                }
+            }
+        });
+
+        // Close sidebar when clicking overlay
+        $overlay.on("click", function () {
+            $sidebar.removeClass("show");
+            $overlay.removeClass("show");
+            $toggleBtn.removeClass("active");
+            $toggleBtn.find("i").removeClass("fa-times").addClass("fa-bars");
+        });
+
+        // Close sidebar when clicking a nav link on mobile
+        $(document).on("click", ".sidebar .nav-link", function () {
+            if ($(window).width() <= 991) {
+                setTimeout(function () {
+                    $sidebar.removeClass("show");
+                    $overlay.removeClass("show");
+                    $toggleBtn.removeClass("active");
+                    $toggleBtn.find("i").removeClass("fa-times").addClass("fa-bars");
+                }, 300);
+            }
+        });
+
+        // Handle window resize
+        $(window).on("resize", function () {
+            if ($(window).width() > 991) {
+                $sidebar.removeClass("show");
+                $overlay.removeClass("show");
+
+                // Restore desktop state based on preference
+                if ($sidebar.hasClass("collapsed")) {
+                    $toggleBtn.addClass("active");
+                    $toggleBtn.find("i").removeClass("fa-bars").addClass("fa-chevron-right");
+                } else {
+                    $toggleBtn.removeClass("active");
+                    $toggleBtn.find("i").removeClass("fa-chevron-right").addClass("fa-bars");
+                }
+            } else {
+                // Reset for mobile
+                $sidebar.removeClass("collapsed");
+                $toggleBtn.removeClass("active");
+                $toggleBtn.find("i").removeClass("fa-chevron-right").addClass("fa-bars");
+            }
+        });
+
+        // Build sidebar on page load
+        setTimeout(buildDynamicSidebar, 100);
+
+        // Rebuild sidebar when tab buttons are clicked
+        $(document).on('click', '#ayurveda_btn, #botany_btn, #pharmacy_btn, #pharmacology_btn, #chemistry_btn, #drug_description_btn', function () {
+            // Clear current sidebar to show loading state
+            $("#dynamicSidebar").html('<li class="nav-item"><a class="nav-link text-muted" href="javascript:void(0);"><em>Loading sections...</em></a></li>');
+
+            // Wait for content to load (especially for AJAX tabs)
+            setTimeout(buildDynamicSidebar, 500);
+            // Also rebuild after a longer delay for slower AJAX loads
+            setTimeout(buildDynamicSidebar, 1500);
+        });
+
+        // Monitor AJAX complete to rebuild sidebar for dynamically loaded content
+        $(document).ajaxComplete(function (event, xhr, settings) {
+            // Check if the AJAX request is for one of our partials
+            if (settings.url && (settings.url.includes('partials/botany') ||
+                settings.url.includes('partials/pharmacy') ||
+                settings.url.includes('partials/pharmacology') ||
+                settings.url.includes('partials/chemistry') ||
+                settings.url.includes('partials/drug-description'))) {
+                // Rebuild sidebar after AJAX content is loaded
+                setTimeout(buildDynamicSidebar, 100);
+            }
+        });
+
+        // Update active sidebar item on scroll
+        let scrollTimeout;
+        $(window).on('scroll', function () {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(function () {
+                const scrollPos = $(window).scrollTop() + 150;
+
+                $('#dynamicSidebar .sidebar-nav-link').each(function () {
+                    const $link = $(this);
+                    const target = $link.data('target');
+                    const $target = $(target);
+
+                    if ($target.length) {
+                        const targetTop = $target.offset().top;
+                        const targetBottom = targetTop + $target.outerHeight();
+
+                        if (scrollPos >= targetTop && scrollPos < targetBottom) {
+                            $('#dynamicSidebar .sidebar-nav-link').removeClass('active');
+                            $link.addClass('active');
+                        }
+                    }
+                });
+            }, 100);
+        });
+
+        // MutationObserver to watch for content changes and rebuild sidebar
+        let sidebarObserver = null;
+        function setupSidebarObserver() {
+            // Disconnect existing observer if any
+            if (sidebarObserver) {
+                sidebarObserver.disconnect();
+            }
+
+            const $visibleSection = $("section:visible");
+            if ($visibleSection.length === 0) return;
+
+            // Create new observer
+            sidebarObserver = new MutationObserver(function (mutations) {
+                // Check if accordion items were added
+                let shouldRebuild = false;
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        $(mutation.addedNodes).each(function () {
+                            if ($(this).hasClass('accordion-item') || $(this).find('.accordion-item').length > 0) {
+                                shouldRebuild = true;
+                            }
+                        });
+                    }
+                });
+
+                if (shouldRebuild) {
+                    setTimeout(buildDynamicSidebar, 100);
+                }
+            });
+
+            // Start observing
+            sidebarObserver.observe($visibleSection[0], {
+                childList: true,
+                subtree: true
+            });
+        }
+
+        // Setup observer after initial sidebar build
+        setTimeout(setupSidebarObserver, 500);
+
+        // Re-setup observer when tabs are clicked
+        $(document).on('click', '#ayurveda_btn, #botany_btn, #pharmacy_btn, #pharmacology_btn, #chemistry_btn, #drug_description_btn', function () {
+            setTimeout(setupSidebarObserver, 1000);
+        });
+    });
+</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"2f624f1e28704d0ca5ad34a2edfcd785","r":1,"spa":2}' crossorigin="anonymous"></script>

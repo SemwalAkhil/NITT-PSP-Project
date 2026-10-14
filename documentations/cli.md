@@ -1,6 +1,6 @@
 # Command-Line Interface
 
-This document explains how [`cli.py`](./cli.py) provides access to the Herbal
+This document explains how [`cli.py`](../cli.py) provides access to the Herbal
 Almanac database and scraper.
 
 ## Overview
@@ -84,6 +84,11 @@ python cli.py scrape dravya \
 
 The scraper displays a progress bar and advances only after a plant has been
 parsed, validated, and inserted successfully.
+
+During scraping, the first English vernacular name from the source page is
+stored as the herb's primary `english_name`. All language-specific names are
+also stored as attributes with fields such as `Vernacular Names.Hindi` and
+`Vernacular Names.Malayalam`.
 
 ### `herb`
 
@@ -218,6 +223,14 @@ and `attributes` arrays. CSV exports flatten the selected records into one file
 and add a `record_type` column. Treatment exports include both IDs and the
 related herb and illness names. Attribute exports include the herb ID, herb
 name, field name, value, and original source text.
+
+To export vernacular attributes, select the `attributes` record group:
+
+```bash
+python cli.py records attributes --format json --output attributes.json
+```
+
+The CLI writes exactly the selected record group to the requested output path.
 
 `--format` requires `--output`, and only `json` and `csv` are supported.
 

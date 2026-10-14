@@ -61,9 +61,9 @@ looking record.
 ## Data flow
 
 ```text
-HTML table cells
+HTML tables and vernacular-name cards
       ↓
-scrapper._table_attributes()
+scrapper table/card parsers
       ↓
 PlantRecord
       ↓
@@ -73,6 +73,11 @@ PlantRecord.validate()
       ↓
 database_operator.insert_record()
 ```
+
+The cleaner does not distinguish between ordinary attributes and vernacular
+attributes. Fields such as `Vernacular Names.English` pass through the same
+normalization path as `Parts Used.Name` or `Therapeutic Usage.Name`, preserving
+their section and language in the field name.
 
 The module currently provides general cleanup only. Domain-specific Dosha
 normalization and condition mapping should be added as separate deterministic

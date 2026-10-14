@@ -18,6 +18,10 @@ from database_operator import AyurvedicAlmanac
 DRAVYA_DIRECTORY = "https://dravya.ccras.org.in/all_plants"
 PLANT_PATH = re.compile(r"/plant/(\d+)(?:/|$)")
 DEFAULT_TIMEOUT = 15.0
+LANGUAGE_ALIASES = {
+    "malyalam": "Malayalam",
+    "oriya": "Odia",
+}
 
 
 def create_session(retries: int = 2) -> requests.Session:
@@ -64,20 +68,109 @@ def discover_plants(
     return sorted(discovered.items())
 
 
+def _normalize_label(value: str) -> str:
+    """Strip numbering and punctuation that appears in the DRAVYA table labels."""
+    label = clean_text(value)
+    label = re.sub(r"^(?:\d+[.)]?\s*)+", "", label)
+    label = re.sub(r"^[\s\-:]+", "", label)
+    label = re.sub(r"[:\s]+$", "", label)
+    return label
+
+
+def _section_name(table: BeautifulSoup) -> str:
+    """Return the accordion section containing a table."""
+    heading = table.find_previous(class_="accordion-button")
+    if heading is None:
+        heading = table.find_previous("h3")
+    if heading is None:
+        return ""
+    return _normalize_label(heading.get_text(" ", strip=True))
+
+
 def _table_attributes(soup: BeautifulSoup) -> tuple[dict[str, list[str]], dict[str, str]]:
+    """Parse each table as a header row followed by records.
+
+    DRAVYA tables are relational tables: the first row contains column names
+    and every later row contains values for those columns. The accordion
+    button supplies the parent section, which prevents fields such as
+    ``Name`` from colliding across sections.
+    """
     attributes: dict[str, list[str]] = {}
     source_values: dict[str, str] = {}
     for table in soup.find_all("table"):
-        for row in table.find_all("tr"):
-            cells = [clean_text(cell.get_text(" ", strip=True)) for cell in row.find_all(["th", "td"])]
-            cells = [cell for cell in cells if cell]
-            if len(cells) < 2:
+        rows = table.find_all("tr")
+        header_row = next((row for row in rows if row.find("th")), None)
+        if header_row is None:
+            continue
+
+        headers = [
+            _normalize_label(cell.get_text(" ", strip=True))
+            for cell in header_row.find_all(["th", "td"])
+        ]
+        headers = [header for header in headers if header]
+        if not headers:
+            continue
+
+        section = _section_name(table)
+        for row in rows:
+            if row is header_row:
                 continue
-            field = cells[0].rstrip(":")
-            values = split_values(" ".join(cells[1:]))
-            if field and values:
+            cells = [clean_text(cell.get_text(" ", strip=True)) for cell in row.find_all("td")]
+            if not cells:
+                continue
+            for index, value in enumerate(cells[:len(headers)]):
+                if not value:
+                    continue
+                field = ".".join(part for part in (section, headers[index]) if part)
+                values = split_values(value)
                 attributes.setdefault(field, []).extend(values)
-                source_values[field] = " | ".join(cells[1:])
+                existing = source_values.get(field, "")
+                combined = [piece for piece in existing.split(" | ") if piece] if existing else []
+                for item in values:
+                    if item and item not in combined:
+                        combined.append(item)
+                source_values[field] = " | ".join(combined)
+
+    return attributes, source_values
+
+
+def _vernacular_attributes(soup: BeautifulSoup) -> tuple[dict[str, list[str]], dict[str, str]]:
+    """Extract language names from the DRAVYA vernacular-name card."""
+    attributes: dict[str, list[str]] = {}
+    source_values: dict[str, str] = {}
+    header = next(
+        (
+            element
+            for element in soup.select(".card-header")
+            if "vernacular names" in element.get_text(" ", strip=True).casefold()
+        ),
+        None,
+    )
+    if header is None:
+        return attributes, source_values
+
+    card = header.find_parent(class_="card")
+    if card is None:
+        return attributes, source_values
+
+    for badge in card.select(".badge"):
+        language = clean_text(badge.get_text(" ", strip=True))
+        language = LANGUAGE_ALIASES.get(language.casefold(), language)
+        value_element = badge.parent.find("p") if badge.parent else None
+        if not language or value_element is None:
+            continue
+        values = split_values(value_element.get_text(" ", strip=True))
+        if not values:
+            continue
+        field = f"Vernacular Names.{language}"
+        attributes.setdefault(field, []).extend(values)
+        existing = source_values.get(field, "")
+        combined = [piece for piece in existing.split(" | ") if piece] if existing else []
+        for value in values:
+            if value not in combined:
+                combined.append(value)
+        source_values[field] = " | ".join(combined)
+
     return attributes, source_values
 
 
@@ -93,6 +186,10 @@ def parse_plant(plant_id: int, url: str, html: str) -> PlantRecord:
         else f"Plant {plant_id}"
     )
     attributes, source_values = _table_attributes(soup)
+    vernacular_attributes, vernacular_source_values = _vernacular_attributes(soup)
+    attributes.update(vernacular_attributes)
+    source_values.update(vernacular_source_values)
+    english_names = attributes.get("Vernacular Names.English", [])
     botanical_name = next(
         (value for field, values in attributes.items()
          if re.search(r"scientific|botanical", field, re.I)
@@ -108,7 +205,7 @@ def parse_plant(plant_id: int, url: str, html: str) -> PlantRecord:
         source_record_id=plant_id,
         source_url=url,
         retrieved_at=datetime.now(timezone.utc).isoformat(),
-        ayurvedic_name=clean_text(title.split("|")[0]),
+        ayurvedic_name=english_names[0] if english_names else clean_text(title.split("|")[0]),
         botanical_name=botanical_name,
         family=family,
         attributes=attributes,

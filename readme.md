@@ -8,6 +8,23 @@ To create a library to know about various illness and their treatments using her
 
 ---
 
+## Current implementation
+
+The current MVP supports the CCRAS DRAVYA source. It discovers plant URLs,
+downloads pages with retries and timeouts, parses semantic tables and the
+Vernacular Names card, cleans and validates `PlantRecord` objects, and writes
+them directly to SQLite.
+
+Each vernacular language is stored as an attribute such as
+`Vernacular Names.Hindi`. The first English vernacular value becomes the
+primary herb name; all other language values remain available in
+`herb_attributes`. Therapeutic Usage values are also normalized into illness
+and treatment relationships.
+
+The CLI can export stored record groups to JSON or CSV after ingestion. Those
+exports are optional views of the database and are not an intermediate
+scraping stage.
+
 ## Plan of Action
 
 ### Step 1: Data Collection
@@ -46,6 +63,9 @@ does not become coupled to SQL.
 * Fetch data from databases and present it in multiple languages
 <br>
 * Query in a way to be able to search incomplete or misspelled queries
+
+The current CLI stores multilingual vernacular attributes but does not yet
+provide a dedicated translation API or fuzzy-search implementation.
 
 ### 5. Look for further optimizations
 
@@ -135,7 +155,12 @@ available commands and options.
 
 ## Testing
 
-1. Check for searching via herbs
-2. Check for searching via illness
-3. Check for searching incomplete queries
-4. Check for searching in another language 
+Run the focused regression suite:
+
+```bash
+python -m pytest tests/test_scrapper.py -q
+```
+
+The tests currently cover section-aware table parsing, vernacular-name
+extraction and primary-name selection, vernacular persistence, and treatment
+link refresh behavior.

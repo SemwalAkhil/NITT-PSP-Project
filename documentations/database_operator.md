@@ -40,16 +40,17 @@ repeated scrapes.
 ### `illness`
 
 Stores illness names for the planned herb-to-illness model. The current DRAVYA
-scraper does not populate this table.
+scraper populates this table from values found in the `Therapeutic Usage`
+section. `english_name` is unique so the same illness can be shared by many
+herbs.
 
 ### `treatment`
 
 This many-to-many join table connects herbs and illnesses through `herb_id`
 and `illness_id`. Its composite primary key prevents duplicate relationships,
-and foreign keys use cascading deletes.
-
-The scraper does not infer treatment relationships from arbitrary table text.
-That requires a defined illness extraction and mapping process.
+and foreign keys use cascading deletes. The scraper only creates relationships
+from fields whose section contains `Therapeutic Usage`; arbitrary table text
+is not treated as an illness.
 
 ### `herb_attributes`
 
@@ -63,11 +64,22 @@ Stores flexible fields that do not yet have dedicated normalized columns:
 The composite primary key prevents duplicate values for one herb and field.
 `source_text` preserves the original extracted wording for review.
 
+Vernacular names use the same flexible attribute store with field names such
+as `Vernacular Names.English` and `Vernacular Names.Hindi`. English is included
+in the supported language list because it is the source's primary display-name
+language. The first English vernacular value is also stored in the compatibility
+`herbs.english_name` column and is therefore the primary searchable plant name.
+Other language values remain available through `herb_attributes` without
+adding a fixed column for every language.
+
 ## Schema migration
 
 `create_database()` is safe to call repeatedly. It creates missing tables and
 adds the newer columns to the original prototype `herbs` table when needed.
-It also creates a unique source-record index.
+It also creates a unique source-record index and migrates legacy illness
+tables. The illness migration consolidates duplicate names, redirects or
+removes duplicate treatment links, and creates a unique index on
+`illness(english_name)` so illness upserts have a valid conflict target.
 
 This is a lightweight migration approach suitable for the current prototype.
 A formal migration tool can be introduced when schema changes become frequent.
@@ -80,8 +92,11 @@ One record is written in a single transaction:
 2. Insert or update the herb using `(source, source_record_id)`.
 3. Resolve the actual local herb ID using that natural key.
 4. Delete the herb's previous attributes.
-5. Insert the current cleaned attributes.
-6. Commit only after all steps succeed.
+5. Delete the herb's previous treatment links.
+6. Insert the current cleaned attributes.
+7. Create or reuse illnesses from `Therapeutic Usage` attributes and insert the
+	current herb-to-illness links.
+8. Commit only after all steps succeed.
 
 If an attribute insert fails, the context manager rolls back the whole update.
 This prevents partially updated records.
@@ -94,6 +109,12 @@ to identify the existing row.
 
 `insert_records()` persists an iterable of `PlantRecord` objects by delegating
 to `insert_record()`.
+
+`_insert_treatments_from_attributes()` selects section-qualified fields whose
+names contain `Therapeutic` and `Usage`. It cleans and deduplicates their
+values, inserts missing illness names, and creates the corresponding treatment
+links. Since `insert_record()` deletes links first, a later scrape reflects
+the source's current therapeutic usage rather than accumulating stale links.
 
 `insert_herb()` and `insert_illness()` remain as compatibility helpers for the
 original prototype. New ingestion should use `insert_record()` to retain

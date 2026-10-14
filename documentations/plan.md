@@ -2,6 +2,46 @@
 
 ## 1. Project Overview
 
+## Current implementation snapshot
+
+The repository currently implements the DRAVYA MVP path through
+`scrapper.py`, `cleaning.py`, `database_operator.py`, and `cli.py`:
+
+```text
+DRAVYA directory
+            -> HTTP discovery and fetch with retries
+            -> semantic table and vernacular-card parsing
+            -> PlantRecord cleaning and validation
+            -> SQLite upsert of herbs and attributes
+            -> illness/treatment links from Therapeutic Usage
+            -> optional JSON/CSV CLI export
+```
+
+Implemented today:
+
+- DRAVYA pagination, plant-ID discovery, timeouts, retries, and progress output.
+- Section-qualified table attributes and language-qualified vernacular names.
+- English vernacular name selection as the primary herb name, with heading
+      fallback when English is absent.
+- SQLite persistence, legacy schema migration, provenance fields, and
+      treatment-link refresh during re-scraping.
+- Typer commands for setup, scraping, manual records, searching, inspection,
+      and JSON/CSV export.
+- Regression tests for table parsing, vernacular persistence, and treatment
+      refresh behavior.
+
+Still planned:
+
+- Raw HTML caching and structured scrape-error reporting.
+- Dedicated normalized name/condition/taxonomy tables beyond the current
+      flexible attribute store.
+- Dosha normalization, external terminology mapping, API/PDF/Excel importers,
+      fuzzy multilingual search, and a public Python API.
+
+The checklist sections below describe the longer-term target architecture.
+They are planning material, not a claim that every listed subsystem already
+exists in this repository.
+
 ### Goal
 
 Build an open-source Python library and SQL database that maps Ayurvedic pharmacology (**Dravyaguna**) to:
@@ -94,10 +134,10 @@ SQLite
 Python API
 ```
 
-The MVP will insert parsed records directly into SQLite instead of generating
-an intermediate JSON dataset. Raw HTML remains the source artifact for
-reproducibility. JSON may be added later as an optional export format, but it
-is not part of the primary ingestion path.
+The MVP inserts parsed records directly into SQLite instead of generating an
+intermediate JSON dataset. Raw HTML remains the source artifact for
+reproducibility. JSON and CSV are implemented as optional CLI export formats,
+but they are not part of the primary ingestion path.
 
 Cleaning and normalization should live in a separate module from the database
 operator. The cleaner interprets and prepares source values; the database

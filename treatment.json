@@ -1,0 +1,5872 @@
+{
+  "treatments": [
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 9,
+      "illness_name": "rājayakṣmā"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 10,
+      "illness_name": "shukrameha"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 11,
+      "illness_name": "svarabhedaḥ"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 12,
+      "illness_name": "ādhmānam"
+    },
+    {
+      "herb_id": 1,
+      "herb_name": "Abies webbiana - Talisha",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 11,
+      "illness_name": "svarabhedaḥ"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 14,
+      "illness_name": "Garbhanirodha"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 17,
+      "illness_name": "Urustambha"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 18,
+      "illness_name": "Vranashotha"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 21,
+      "illness_name": "jirnajvara"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 23,
+      "illness_name": "khālityam/khalati"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 2,
+      "herb_name": "Abrus precatorius - Guñja",
+      "illness_id": 25,
+      "illness_name": "pakṣāghāta/pakṣavadhaḥ"
+    },
+    {
+      "herb_id": 3,
+      "herb_name": "Abutilon indicum - Atibalā",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 3,
+      "herb_name": "Abutilon indicum - Atibalā",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 3,
+      "herb_name": "Abutilon indicum - Atibalā",
+      "illness_id": 25,
+      "illness_name": "pakṣāghāta/pakṣavadhaḥ"
+    },
+    {
+      "herb_id": 3,
+      "herb_name": "Abutilon indicum - Atibalā",
+      "illness_id": 28,
+      "illness_name": "Stanyalpata"
+    },
+    {
+      "herb_id": 3,
+      "herb_name": "Abutilon indicum - Atibalā",
+      "illness_id": 29,
+      "illness_name": "arditaḥ"
+    },
+    {
+      "herb_id": 3,
+      "herb_name": "Abutilon indicum - Atibalā",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 3,
+      "herb_name": "Abutilon indicum - Atibalā",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 3,
+      "herb_name": "Abutilon indicum - Atibalā",
+      "illness_id": 33,
+      "illness_name": "katishool"
+    },
+    {
+      "herb_id": 3,
+      "herb_name": "Abutilon indicum - Atibalā",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 3,
+      "herb_name": "Abutilon indicum - Atibalā",
+      "illness_id": 36,
+      "illness_name": "somarogaḥ/śvetapradaraḥ"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 39,
+      "illness_name": "Ashmari"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 44,
+      "illness_name": "chardiḥ"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 47,
+      "illness_name": "karṇaśūlaḥ"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 50,
+      "illness_name": "netrarogaḥ/akṣirogaḥ"
+    },
+    {
+      "herb_id": 14,
+      "herb_name": "Achyranthes aspera - Apāmārga",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 11,
+      "illness_name": "svarabhedaḥ"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 12,
+      "illness_name": "ādhmānam"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 39,
+      "illness_name": "Ashmari"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 56,
+      "illness_name": "Pratiśyāyaḥ"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 58,
+      "illness_name": "apasmāraḥ"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 59,
+      "illness_name": "apatānakaḥ"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 61,
+      "illness_name": "arśaḥ"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 63,
+      "illness_name": "pakṣmagatarogaḥ"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 65,
+      "illness_name": "unmādaḥ"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 17,
+      "herb_name": "Acorus calamus - Vacā",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 9,
+      "illness_name": "rājayakṣmā"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 18,
+      "illness_name": "Vranashotha"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 58,
+      "illness_name": "apasmāraḥ"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 70,
+      "illness_name": "Mutradaha"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 72,
+      "illness_name": "Nadishula"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 77,
+      "illness_name": "apatantrakaḥ"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 78,
+      "illness_name": "asṛgdaraḥ/raktapradaraḥ"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 18,
+      "herb_name": "Adhatoda vasica - Vāsā",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 21,
+      "herb_name": "Aegle marmelos - Bilva",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 21,
+      "herb_name": "Aegle marmelos - Bilva",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 21,
+      "herb_name": "Aegle marmelos - Bilva",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 21,
+      "herb_name": "Aegle marmelos - Bilva",
+      "illness_id": 44,
+      "illness_name": "chardiḥ"
+    },
+    {
+      "herb_id": 21,
+      "herb_name": "Aegle marmelos - Bilva",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 21,
+      "herb_name": "Aegle marmelos - Bilva",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 21,
+      "herb_name": "Aegle marmelos - Bilva",
+      "illness_id": 89,
+      "illness_name": "Madhumeha"
+    },
+    {
+      "herb_id": 21,
+      "herb_name": "Aegle marmelos - Bilva",
+      "illness_id": 92,
+      "illness_name": "kukṣiśūlaḥ"
+    },
+    {
+      "herb_id": 21,
+      "herb_name": "Aegle marmelos - Bilva",
+      "illness_id": 93,
+      "illness_name": "medorogaḥ"
+    },
+    {
+      "herb_id": 21,
+      "herb_name": "Aegle marmelos - Bilva",
+      "illness_id": 96,
+      "illness_name": "Śūla"
+    },
+    {
+      "herb_id": 26,
+      "herb_name": "Albizzia lebbeck - Śirīṣa",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 26,
+      "herb_name": "Albizzia lebbeck - Śirīṣa",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 26,
+      "herb_name": "Albizzia lebbeck - Śirīṣa",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 26,
+      "herb_name": "Albizzia lebbeck - Śirīṣa",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 26,
+      "herb_name": "Albizzia lebbeck - Śirīṣa",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 26,
+      "herb_name": "Albizzia lebbeck - Śirīṣa",
+      "illness_id": 97,
+      "illness_name": "Dantdaurbalya"
+    },
+    {
+      "herb_id": 26,
+      "herb_name": "Albizzia lebbeck - Śirīṣa",
+      "illness_id": 99,
+      "illness_name": "Pratishyay"
+    },
+    {
+      "herb_id": 26,
+      "herb_name": "Albizzia lebbeck - Śirīṣa",
+      "illness_id": 103,
+      "illness_name": "gaṇḍamālā"
+    },
+    {
+      "herb_id": 26,
+      "herb_name": "Albizzia lebbeck - Śirīṣa",
+      "illness_id": 104,
+      "illness_name": "shukradaurblya"
+    },
+    {
+      "herb_id": 26,
+      "herb_name": "Albizzia lebbeck - Śirīṣa",
+      "illness_id": 105,
+      "illness_name": "visarpaḥ"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 9,
+      "illness_name": "rājayakṣmā"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 11,
+      "illness_name": "svarabhedaḥ"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 17,
+      "illness_name": "Urustambha"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 21,
+      "illness_name": "jirnajvara"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 25,
+      "illness_name": "pakṣāghāta/pakṣavadhaḥ"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 29,
+      "illness_name": "arditaḥ"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 47,
+      "illness_name": "karṇaśūlaḥ"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 108,
+      "illness_name": "Aratavajanan"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 110,
+      "illness_name": "Drishtimandya"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 111,
+      "illness_name": "Gridhasi"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 113,
+      "illness_name": "Mastishakdaurblya"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 115,
+      "illness_name": "Sandhivata"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 116,
+      "illness_name": "Shukrajanan"
+    },
+    {
+      "herb_id": 28,
+      "herb_name": "Allium sativum - Laśuna",
+      "illness_id": 119,
+      "illness_name": "ajīrṇam"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 58,
+      "illness_name": "apasmāraḥ"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 78,
+      "illness_name": "asṛgdaraḥ/raktapradaraḥ"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 110,
+      "illness_name": "Drishtimandya"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 113,
+      "illness_name": "Mastishakdaurblya"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 135,
+      "illness_name": "Hridyaroga"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 137,
+      "illness_name": "Murchha"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 139,
+      "illness_name": "Shukrakshay"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 140,
+      "illness_name": "Stanyakshay"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 141,
+      "illness_name": "amlapittam"
+    },
+    {
+      "herb_id": 49,
+      "herb_name": "Asparagus recemosus - Śatāvari",
+      "illness_id": 145,
+      "illness_name": "garbhasrāvaḥ"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 23,
+      "illness_name": "khālityam/khalati"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 150,
+      "illness_name": "Sandhisotha"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 153,
+      "illness_name": "kashtaprasav"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 156,
+      "illness_name": "palitya"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 157,
+      "illness_name": "sūtikā"
+    },
+    {
+      "herb_id": 51,
+      "herb_name": "Azadirachta indica - Nimba",
+      "illness_id": 158,
+      "illness_name": "yakritvikara"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 11,
+      "illness_name": "svarabhedaḥ"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 58,
+      "illness_name": "apasmāraḥ"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 65,
+      "illness_name": "unmādaḥ"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 168,
+      "illness_name": "kandu"
+    },
+    {
+      "herb_id": 52,
+      "herb_name": "Bacopa monnieri - Brāhmī",
+      "illness_id": 173,
+      "illness_name": "ārtavadoṣaḥ/ārtavaduṣṭiḥ/rajodoṣaḥ"
+    },
+    {
+      "herb_id": 55,
+      "herb_name": "Barleria prionitis - Sahacara",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 55,
+      "herb_name": "Barleria prionitis - Sahacara",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 55,
+      "herb_name": "Barleria prionitis - Sahacara",
+      "illness_id": 56,
+      "illness_name": "Pratiśyāyaḥ"
+    },
+    {
+      "herb_id": 55,
+      "herb_name": "Barleria prionitis - Sahacara",
+      "illness_id": 178,
+      "illness_name": "sarvangasotha"
+    },
+    {
+      "herb_id": 55,
+      "herb_name": "Barleria prionitis - Sahacara",
+      "illness_id": 179,
+      "illness_name": "śukramehaḥ"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 78,
+      "illness_name": "asṛgdaraḥ/raktapradaraḥ"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 186,
+      "illness_name": "hṛdrogaḥ"
+    },
+    {
+      "herb_id": 65,
+      "herb_name": "Boerhaavia diffusa - Punarnavā",
+      "illness_id": 189,
+      "illness_name": "pāṇḍurogaḥ"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 21,
+      "illness_name": "jirnajvara"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 50,
+      "illness_name": "netrarogaḥ/akṣirogaḥ"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 113,
+      "illness_name": "Mastishakdaurblya"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 115,
+      "illness_name": "Sandhivata"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 193,
+      "illness_name": "Ajeerna"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 194,
+      "illness_name": "Arsha"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 195,
+      "illness_name": "Atisara"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 198,
+      "illness_name": "Parshvashoola"
+    },
+    {
+      "herb_id": 68,
+      "herb_name": "Boswellia serrata - Kunduru",
+      "illness_id": 199,
+      "illness_name": "Pramehapidika"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 207,
+      "illness_name": "Granthisotha"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 212,
+      "illness_name": "shlipad"
+    },
+    {
+      "herb_id": 77,
+      "herb_name": "Calotropis procera - Arka",
+      "illness_id": 215,
+      "illness_name": "visūcikā"
+    },
+    {
+      "herb_id": 79,
+      "herb_name": "Capparis sepiaria - Vyāghranakha",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 79,
+      "herb_name": "Capparis sepiaria - Vyāghranakha",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 79,
+      "herb_name": "Capparis sepiaria - Vyāghranakha",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 79,
+      "herb_name": "Capparis sepiaria - Vyāghranakha",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 79,
+      "herb_name": "Capparis sepiaria - Vyāghranakha",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 83,
+      "herb_name": "Carissa carandas - Karamarda",
+      "illness_id": 222,
+      "illness_name": "visphoṭakaḥ"
+    },
+    {
+      "herb_id": 83,
+      "herb_name": "Carissa carandas - Karamarda",
+      "illness_id": 223,
+      "illness_name": "vraṇaḥ"
+    },
+    {
+      "herb_id": 83,
+      "herb_name": "Carissa carandas - Karamarda",
+      "illness_id": 224,
+      "illness_name": "vridradhi"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 207,
+      "illness_name": "Granthisotha"
+    },
+    {
+      "herb_id": 87,
+      "herb_name": "Cassia fistula - Āragvadha",
+      "illness_id": 232,
+      "illness_name": "kamla"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 25,
+      "illness_name": "pakṣāghāta/pakṣavadhaḥ"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 29,
+      "illness_name": "arditaḥ"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 88,
+      "herb_name": "Cassia tora - Prapunnāḍa",
+      "illness_id": 93,
+      "illness_name": "medorogaḥ"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 25,
+      "illness_name": "pakṣāghāta/pakṣavadhaḥ"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 29,
+      "illness_name": "arditaḥ"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 33,
+      "illness_name": "katishool"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 254,
+      "illness_name": "klaibyam"
+    },
+    {
+      "herb_id": 92,
+      "herb_name": "Celastrus paniculatus - Jyotiṣmatī",
+      "illness_id": 255,
+      "illness_name": "nadidaurblya"
+    },
+    {
+      "herb_id": 99,
+      "herb_name": "Cissus quadrangularis - Asthisamhṛta",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 99,
+      "herb_name": "Cissus quadrangularis - Asthisamhṛta",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 99,
+      "herb_name": "Cissus quadrangularis - Asthisamhṛta",
+      "illness_id": 119,
+      "illness_name": "ajīrṇam"
+    },
+    {
+      "herb_id": 99,
+      "herb_name": "Cissus quadrangularis - Asthisamhṛta",
+      "illness_id": 261,
+      "illness_name": "karṇa-srāvaḥ"
+    },
+    {
+      "herb_id": 99,
+      "herb_name": "Cissus quadrangularis - Asthisamhṛta",
+      "illness_id": 262,
+      "illness_name": "phiraṅgaḥ"
+    },
+    {
+      "herb_id": 99,
+      "herb_name": "Cissus quadrangularis - Asthisamhṛta",
+      "illness_id": 263,
+      "illness_name": "raktāsrāvaḥ"
+    },
+    {
+      "herb_id": 99,
+      "herb_name": "Cissus quadrangularis - Asthisamhṛta",
+      "illness_id": 264,
+      "illness_name": "upadaṃśaḥ"
+    },
+    {
+      "herb_id": 99,
+      "herb_name": "Cissus quadrangularis - Asthisamhṛta",
+      "illness_id": 265,
+      "illness_name": "vātaraktam"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 25,
+      "illness_name": "pakṣāghāta/pakṣavadhaḥ"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 29,
+      "illness_name": "arditaḥ"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 39,
+      "illness_name": "Ashmari"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 72,
+      "illness_name": "Nadishula"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 93,
+      "illness_name": "medorogaḥ"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 103,
+      "illness_name": "gaṇḍamālā"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 104,
+      "illness_name": "shukradaurblya"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 115,
+      "illness_name": "Sandhivata"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 158,
+      "illness_name": "yakritvikara"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 186,
+      "illness_name": "hṛdrogaḥ"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 189,
+      "illness_name": "pāṇḍurogaḥ"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 212,
+      "illness_name": "shlipad"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 223,
+      "illness_name": "vraṇaḥ"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 254,
+      "illness_name": "klaibyam"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 265,
+      "illness_name": "vātaraktam"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 269,
+      "illness_name": "Kashtaratava"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 273,
+      "illness_name": "Plague"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 274,
+      "illness_name": "Puyameha"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 275,
+      "illness_name": "Rasayana"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 277,
+      "illness_name": "Shitajavarah"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 279,
+      "illness_name": "apacī"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 283,
+      "illness_name": "granthiḥ"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 284,
+      "illness_name": "gṛdhrasī"
+    },
+    {
+      "herb_id": 110,
+      "herb_name": "Commiphora wightii - Guggulu",
+      "illness_id": 299,
+      "illness_name": "yonirogaḥ/yoni-vyāpadaḥ"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 21,
+      "illness_name": "jirnajvara"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 168,
+      "illness_name": "kandu"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 232,
+      "illness_name": "kamla"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 263,
+      "illness_name": "raktāsrāvaḥ"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 305,
+      "illness_name": "hikkā (hidhmā)"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 306,
+      "illness_name": "jalodaraḥ"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 314,
+      "illness_name": "stanyaduṣṭiḥ/kṣīradoṣaḥ"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 315,
+      "illness_name": "udardaḥ"
+    },
+    {
+      "herb_id": 237,
+      "herb_name": "Curcuma longa - Haridrā",
+      "illness_id": 317,
+      "illness_name": "śītapittam"
+    },
+    {
+      "herb_id": 242,
+      "herb_name": "Cyperus rotundus - Mustā",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 242,
+      "herb_name": "Cyperus rotundus - Mustā",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 242,
+      "herb_name": "Cyperus rotundus - Mustā",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 242,
+      "herb_name": "Cyperus rotundus - Mustā",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 242,
+      "herb_name": "Cyperus rotundus - Mustā",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 242,
+      "herb_name": "Cyperus rotundus - Mustā",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 242,
+      "herb_name": "Cyperus rotundus - Mustā",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 242,
+      "herb_name": "Cyperus rotundus - Mustā",
+      "illness_id": 119,
+      "illness_name": "ajīrṇam"
+    },
+    {
+      "herb_id": 242,
+      "herb_name": "Cyperus rotundus - Mustā",
+      "illness_id": 314,
+      "illness_name": "stanyaduṣṭiḥ/kṣīradoṣaḥ"
+    },
+    {
+      "herb_id": 244,
+      "herb_name": "Desmodium gangeticum - Śālaparṇī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 244,
+      "herb_name": "Desmodium gangeticum - Śālaparṇī",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 244,
+      "herb_name": "Desmodium gangeticum - Śālaparṇī",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 244,
+      "herb_name": "Desmodium gangeticum - Śālaparṇī",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 244,
+      "herb_name": "Desmodium gangeticum - Śālaparṇī",
+      "illness_id": 44,
+      "illness_name": "chardiḥ"
+    },
+    {
+      "herb_id": 244,
+      "herb_name": "Desmodium gangeticum - Śālaparṇī",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 244,
+      "herb_name": "Desmodium gangeticum - Śālaparṇī",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 244,
+      "herb_name": "Desmodium gangeticum - Śālaparṇī",
+      "illness_id": 332,
+      "illness_name": "mūtrakṛcchram"
+    },
+    {
+      "herb_id": 244,
+      "herb_name": "Desmodium gangeticum - Śālaparṇī",
+      "illness_id": 335,
+      "illness_name": "śvāsaḥ"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 61,
+      "illness_name": "arśaḥ"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 341,
+      "illness_name": "Trishna"
+    },
+    {
+      "herb_id": 251,
+      "herb_name": "Elettaria cardamomum - Sūkṣmailā",
+      "illness_id": 347,
+      "illness_name": "mukharogaḥ"
+    },
+    {
+      "herb_id": 253,
+      "herb_name": "Embelia ribes - Viḍaṅga",
+      "illness_id": 12,
+      "illness_name": "ādhmānam"
+    },
+    {
+      "herb_id": 253,
+      "herb_name": "Embelia ribes - Viḍaṅga",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 253,
+      "herb_name": "Embelia ribes - Viḍaṅga",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 141,
+      "illness_name": "amlapittam"
+    },
+    {
+      "herb_id": 254,
+      "herb_name": "Emblica officinalis - Āmalakī",
+      "illness_id": 186,
+      "illness_name": "hṛdrogaḥ"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 47,
+      "illness_name": "karṇaśūlaḥ"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 65,
+      "illness_name": "unmādaḥ"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 89,
+      "illness_name": "Madhumeha"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 99,
+      "illness_name": "Pratishyay"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 254,
+      "illness_name": "klaibyam"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 264,
+      "illness_name": "upadaṃśaḥ"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 366,
+      "illness_name": "Plihavridhhi"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 369,
+      "illness_name": "Vatarakta"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 370,
+      "illness_name": "Yakritplihavridhhi"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 371,
+      "illness_name": "bhagandaraḥ"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 373,
+      "illness_name": "dantashula"
+    },
+    {
+      "herb_id": 259,
+      "herb_name": "Euphorbia neriifolia - Snuhī",
+      "illness_id": 378,
+      "illness_name": "pandu"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 36,
+      "illness_name": "somarogaḥ/śvetapradaraḥ"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 44,
+      "illness_name": "chardiḥ"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 78,
+      "illness_name": "asṛgdaraḥ/raktapradaraḥ"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 150,
+      "illness_name": "Sandhisotha"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 207,
+      "illness_name": "Granthisotha"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 261,
+      "illness_name": "karṇa-srāvaḥ"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 373,
+      "illness_name": "dantashula"
+    },
+    {
+      "herb_id": 265,
+      "herb_name": "Ficus bengalensis - Nyagrodha Jaṭa",
+      "illness_id": 396,
+      "illness_name": "vipādikā"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 105,
+      "illness_name": "visarpaḥ"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 223,
+      "illness_name": "vraṇaḥ"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 263,
+      "illness_name": "raktāsrāvaḥ"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 400,
+      "illness_name": "bhramaḥ"
+    },
+    {
+      "herb_id": 266,
+      "herb_name": "Ficus lacor - Plakṣa",
+      "illness_id": 401,
+      "illness_name": "mūrcchā"
+    },
+    {
+      "herb_id": 267,
+      "herb_name": "Ficus religiosa - Aśvattha",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 267,
+      "herb_name": "Ficus religiosa - Aśvattha",
+      "illness_id": 44,
+      "illness_name": "chardiḥ"
+    },
+    {
+      "herb_id": 267,
+      "herb_name": "Ficus religiosa - Aśvattha",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 267,
+      "herb_name": "Ficus religiosa - Aśvattha",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 267,
+      "herb_name": "Ficus religiosa - Aśvattha",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 267,
+      "herb_name": "Ficus religiosa - Aśvattha",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 267,
+      "herb_name": "Ficus religiosa - Aśvattha",
+      "illness_id": 371,
+      "illness_name": "bhagandaraḥ"
+    },
+    {
+      "herb_id": 267,
+      "herb_name": "Ficus religiosa - Aśvattha",
+      "illness_id": 415,
+      "illness_name": "vraṇaśophaḥ"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 153,
+      "illness_name": "kashtaprasav"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 194,
+      "illness_name": "Arsha"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 369,
+      "illness_name": "Vatarakta"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 417,
+      "illness_name": "Aganimandya"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 419,
+      "illness_name": "Khalitya"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 420,
+      "illness_name": "Krimi"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 421,
+      "illness_name": "Pittavikara"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 422,
+      "illness_name": "Shotha"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 423,
+      "illness_name": "Unmantha"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 429,
+      "illness_name": "viṣamajvaraḥ"
+    },
+    {
+      "herb_id": 278,
+      "herb_name": "Gloriosa superba - Lāṅgalī",
+      "illness_id": 430,
+      "illness_name": "vrana"
+    },
+    {
+      "herb_id": 279,
+      "herb_name": "Gmelina arborea - Gambhārī",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 279,
+      "herb_name": "Gmelina arborea - Gambhārī",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 279,
+      "herb_name": "Gmelina arborea - Gambhārī",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 279,
+      "herb_name": "Gmelina arborea - Gambhārī",
+      "illness_id": 400,
+      "illness_name": "bhramaḥ"
+    },
+    {
+      "herb_id": 279,
+      "herb_name": "Gmelina arborea - Gambhārī",
+      "illness_id": 433,
+      "illness_name": "garbhapātaḥ"
+    },
+    {
+      "herb_id": 281,
+      "herb_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 281,
+      "herb_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 281,
+      "herb_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 281,
+      "herb_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 281,
+      "herb_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "illness_id": 56,
+      "illness_name": "Pratiśyāyaḥ"
+    },
+    {
+      "herb_id": 281,
+      "herb_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "illness_id": 61,
+      "illness_name": "arśaḥ"
+    },
+    {
+      "herb_id": 281,
+      "herb_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "illness_id": 89,
+      "illness_name": "Madhumeha"
+    },
+    {
+      "herb_id": 281,
+      "herb_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "illness_id": 429,
+      "illness_name": "viṣamajvaraḥ"
+    },
+    {
+      "herb_id": 281,
+      "herb_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "illness_id": 441,
+      "illness_name": "Rajorodha"
+    },
+    {
+      "herb_id": 281,
+      "herb_name": "Gymnema sylvestre - Meṣaśr̥ṅgī",
+      "illness_id": 443,
+      "illness_name": "aśmarī"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 33,
+      "illness_name": "katishool"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 115,
+      "illness_name": "Sandhivata"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 193,
+      "illness_name": "Ajeerna"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 195,
+      "illness_name": "Atisara"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 198,
+      "illness_name": "Parshvashoola"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 369,
+      "illness_name": "Vatarakta"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 417,
+      "illness_name": "Aganimandya"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 446,
+      "illness_name": "Adhmana"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 450,
+      "illness_name": "Grahani"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 451,
+      "illness_name": "Gulma"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 452,
+      "illness_name": "Hikka"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 453,
+      "illness_name": "Mootrakrichchhra"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 455,
+      "illness_name": "Phiranga"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 457,
+      "illness_name": "Shukradaurbalya"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 458,
+      "illness_name": "Shwasa"
+    },
+    {
+      "herb_id": 303,
+      "herb_name": "Lepidium sativum - Candraśūra",
+      "illness_id": 461,
+      "illness_name": "Vatavyadhi"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 9,
+      "illness_name": "rājayakṣmā"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 10,
+      "illness_name": "shukrameha"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 28,
+      "illness_name": "Stanyalpata"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 70,
+      "illness_name": "Mutradaha"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 179,
+      "illness_name": "śukramehaḥ"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 274,
+      "illness_name": "Puyameha"
+    },
+    {
+      "herb_id": 304,
+      "herb_name": "Leptadenia reticulata - Jīvantī",
+      "illness_id": 473,
+      "illness_name": "kosthagata"
+    },
+    {
+      "herb_id": 313,
+      "herb_name": "Mallotus philippinensis Muell - Kampilla",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 313,
+      "herb_name": "Mallotus philippinensis Muell - Kampilla",
+      "illness_id": 14,
+      "illness_name": "Garbhanirodha"
+    },
+    {
+      "herb_id": 313,
+      "herb_name": "Mallotus philippinensis Muell - Kampilla",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 313,
+      "herb_name": "Mallotus philippinensis Muell - Kampilla",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 313,
+      "herb_name": "Mallotus philippinensis Muell - Kampilla",
+      "illness_id": 39,
+      "illness_name": "Ashmari"
+    },
+    {
+      "herb_id": 313,
+      "herb_name": "Mallotus philippinensis Muell - Kampilla",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 313,
+      "herb_name": "Mallotus philippinensis Muell - Kampilla",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 313,
+      "herb_name": "Mallotus philippinensis Muell - Kampilla",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 313,
+      "herb_name": "Mallotus philippinensis Muell - Kampilla",
+      "illness_id": 168,
+      "illness_name": "kandu"
+    },
+    {
+      "herb_id": 313,
+      "herb_name": "Mallotus philippinensis Muell - Kampilla",
+      "illness_id": 223,
+      "illness_name": "vraṇaḥ"
+    },
+    {
+      "herb_id": 320,
+      "herb_name": "Mimosa pudica - Lajjālu",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 320,
+      "herb_name": "Mimosa pudica - Lajjālu",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 320,
+      "herb_name": "Mimosa pudica - Lajjālu",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 320,
+      "herb_name": "Mimosa pudica - Lajjālu",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 320,
+      "herb_name": "Mimosa pudica - Lajjālu",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 320,
+      "herb_name": "Mimosa pudica - Lajjālu",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 320,
+      "herb_name": "Mimosa pudica - Lajjālu",
+      "illness_id": 104,
+      "illness_name": "shukradaurblya"
+    },
+    {
+      "herb_id": 320,
+      "herb_name": "Mimosa pudica - Lajjālu",
+      "illness_id": 223,
+      "illness_name": "vraṇaḥ"
+    },
+    {
+      "herb_id": 320,
+      "herb_name": "Mimosa pudica - Lajjālu",
+      "illness_id": 371,
+      "illness_name": "bhagandaraḥ"
+    },
+    {
+      "herb_id": 320,
+      "herb_name": "Mimosa pudica - Lajjālu",
+      "illness_id": 495,
+      "illness_name": "sarpaviṣaḥ"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 18,
+      "illness_name": "Vranashotha"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 25,
+      "illness_name": "pakṣāghāta/pakṣavadhaḥ"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 29,
+      "illness_name": "arditaḥ"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 50,
+      "illness_name": "netrarogaḥ/akṣirogaḥ"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 93,
+      "illness_name": "medorogaḥ"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 115,
+      "illness_name": "Sandhivata"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 255,
+      "illness_name": "nadidaurblya"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 269,
+      "illness_name": "Kashtaratava"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 441,
+      "illness_name": "Rajorodha"
+    },
+    {
+      "herb_id": 324,
+      "herb_name": "Moringa oleifera - Śigru",
+      "illness_id": 517,
+      "illness_name": "vidradhiḥ"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 36,
+      "illness_name": "somarogaḥ/śvetapradaraḥ"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 145,
+      "illness_name": "garbhasrāvaḥ"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 341,
+      "illness_name": "Trishna"
+    },
+    {
+      "herb_id": 330,
+      "herb_name": "Nelumbo nucifera - Kamala",
+      "illness_id": 532,
+      "illness_name": "vamaka"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 39,
+      "illness_name": "Ashmari"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 50,
+      "illness_name": "netrarogaḥ/akṣirogaḥ"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 223,
+      "illness_name": "vraṇaḥ"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 262,
+      "illness_name": "phiraṅgaḥ"
+    },
+    {
+      "herb_id": 331,
+      "herb_name": "Nerium indicum - Karavīra",
+      "illness_id": 264,
+      "illness_name": "upadaṃśaḥ"
+    },
+    {
+      "herb_id": 336,
+      "herb_name": "Oroxylum indicum - Śyonāka",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 336,
+      "herb_name": "Oroxylum indicum - Śyonāka",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 336,
+      "herb_name": "Oroxylum indicum - Śyonāka",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 336,
+      "herb_name": "Oroxylum indicum - Śyonāka",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 336,
+      "herb_name": "Oroxylum indicum - Śyonāka",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 336,
+      "herb_name": "Oroxylum indicum - Śyonāka",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 336,
+      "herb_name": "Oroxylum indicum - Śyonāka",
+      "illness_id": 552,
+      "illness_name": "sandhigatarogaḥ"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 10,
+      "illness_name": "shukrameha"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 33,
+      "illness_name": "katishool"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 50,
+      "illness_name": "netrarogaḥ/akṣirogaḥ"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 70,
+      "illness_name": "Mutradaha"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 263,
+      "illness_name": "raktāsrāvaḥ"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 274,
+      "illness_name": "Puyameha"
+    },
+    {
+      "herb_id": 339,
+      "herb_name": "Oxalis corniculata - Cāṅgerī",
+      "illness_id": 560,
+      "illness_name": "gudabhraṃśaḥ"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 93,
+      "illness_name": "medorogaḥ"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 232,
+      "illness_name": "kamla"
+    },
+    {
+      "herb_id": 355,
+      "herb_name": "Picrorhiza kurroa - Kaṭukā",
+      "illness_id": 570,
+      "illness_name": "anaha"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 305,
+      "illness_name": "hikkā (hidhmā)"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 584,
+      "illness_name": "kuṣṭham"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 585,
+      "illness_name": "plīharogaḥ"
+    },
+    {
+      "herb_id": 361,
+      "herb_name": "Piper longum - Pippali",
+      "illness_id": 587,
+      "illness_name": "tṛṣṇā"
+    },
+    {
+      "herb_id": 362,
+      "herb_name": "Piper nigrum - Marica",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 362,
+      "herb_name": "Piper nigrum - Marica",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 362,
+      "herb_name": "Piper nigrum - Marica",
+      "illness_id": 12,
+      "illness_name": "ādhmānam"
+    },
+    {
+      "herb_id": 362,
+      "herb_name": "Piper nigrum - Marica",
+      "illness_id": 119,
+      "illness_name": "ajīrṇam"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 9,
+      "illness_name": "rājayakṣmā"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 369,
+      "illness_name": "Vatarakta"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 594,
+      "illness_name": "Amadosha"
+    },
+    {
+      "herb_id": 366,
+      "herb_name": "Pluchea lanceolata - Rāsnā",
+      "illness_id": 596,
+      "illness_name": "Sheetahara"
+    },
+    {
+      "herb_id": 368,
+      "herb_name": "Plumbago zeylanica - Citraka",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 368,
+      "herb_name": "Plumbago zeylanica - Citraka",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 368,
+      "herb_name": "Plumbago zeylanica - Citraka",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 368,
+      "herb_name": "Plumbago zeylanica - Citraka",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 368,
+      "herb_name": "Plumbago zeylanica - Citraka",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 368,
+      "herb_name": "Plumbago zeylanica - Citraka",
+      "illness_id": 212,
+      "illness_name": "shlipad"
+    },
+    {
+      "herb_id": 368,
+      "herb_name": "Plumbago zeylanica - Citraka",
+      "illness_id": 255,
+      "illness_name": "nadidaurblya"
+    },
+    {
+      "herb_id": 368,
+      "herb_name": "Plumbago zeylanica - Citraka",
+      "illness_id": 609,
+      "illness_name": "gudasotha"
+    },
+    {
+      "herb_id": 368,
+      "herb_name": "Plumbago zeylanica - Citraka",
+      "illness_id": 612,
+      "illness_name": "shvitra"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 89,
+      "illness_name": "Madhumeha"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 105,
+      "illness_name": "visarpaḥ"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 156,
+      "illness_name": "palitya"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 315,
+      "illness_name": "udardaḥ"
+    },
+    {
+      "herb_id": 373,
+      "herb_name": "Pterocarpus marsupium - Asana",
+      "illness_id": 617,
+      "illness_name": "bhagnaḥ"
+    },
+    {
+      "herb_id": 374,
+      "herb_name": "Pueraria tuberosa - Vidārī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 374,
+      "herb_name": "Pueraria tuberosa - Vidārī",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 374,
+      "herb_name": "Pueraria tuberosa - Vidārī",
+      "illness_id": 11,
+      "illness_name": "svarabhedaḥ"
+    },
+    {
+      "herb_id": 374,
+      "herb_name": "Pueraria tuberosa - Vidārī",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 374,
+      "herb_name": "Pueraria tuberosa - Vidārī",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 379,
+      "herb_name": "Ricinus communis - Eraṇḍa",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 379,
+      "herb_name": "Ricinus communis - Eraṇḍa",
+      "illness_id": 150,
+      "illness_name": "Sandhisotha"
+    },
+    {
+      "herb_id": 379,
+      "herb_name": "Ricinus communis - Eraṇḍa",
+      "illness_id": 255,
+      "illness_name": "nadidaurblya"
+    },
+    {
+      "herb_id": 379,
+      "herb_name": "Ricinus communis - Eraṇḍa",
+      "illness_id": 265,
+      "illness_name": "vātaraktam"
+    },
+    {
+      "herb_id": 379,
+      "herb_name": "Ricinus communis - Eraṇḍa",
+      "illness_id": 284,
+      "illness_name": "gṛdhrasī"
+    },
+    {
+      "herb_id": 379,
+      "herb_name": "Ricinus communis - Eraṇḍa",
+      "illness_id": 633,
+      "illness_name": "hṛdayaśūlaḥ"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 11,
+      "illness_name": "svarabhedaḥ"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 21,
+      "illness_name": "jirnajvara"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 105,
+      "illness_name": "visarpaḥ"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 223,
+      "illness_name": "vraṇaḥ"
+    },
+    {
+      "herb_id": 381,
+      "herb_name": "Rubia cordifolia - Mañjiṣṭhā",
+      "illness_id": 441,
+      "illness_name": "Rajorodha"
+    },
+    {
+      "herb_id": 386,
+      "herb_name": "Saraca asoca - Aśoka",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 386,
+      "herb_name": "Saraca asoca - Aśoka",
+      "illness_id": 36,
+      "illness_name": "somarogaḥ/śvetapradaraḥ"
+    },
+    {
+      "herb_id": 386,
+      "herb_name": "Saraca asoca - Aśoka",
+      "illness_id": 39,
+      "illness_name": "Ashmari"
+    },
+    {
+      "herb_id": 386,
+      "herb_name": "Saraca asoca - Aśoka",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 386,
+      "herb_name": "Saraca asoca - Aśoka",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 386,
+      "herb_name": "Saraca asoca - Aśoka",
+      "illness_id": 78,
+      "illness_name": "asṛgdaraḥ/raktapradaraḥ"
+    },
+    {
+      "herb_id": 386,
+      "herb_name": "Saraca asoca - Aśoka",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 386,
+      "herb_name": "Saraca asoca - Aśoka",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 386,
+      "herb_name": "Saraca asoca - Aśoka",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 386,
+      "herb_name": "Saraca asoca - Aśoka",
+      "illness_id": 341,
+      "illness_name": "Trishna"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 21,
+      "illness_name": "jirnajvara"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 25,
+      "illness_name": "pakṣāghāta/pakṣavadhaḥ"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 58,
+      "illness_name": "apasmāraḥ"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 207,
+      "illness_name": "Granthisotha"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 255,
+      "illness_name": "nadidaurblya"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 284,
+      "illness_name": "gṛdhrasī"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 366,
+      "illness_name": "Plihavridhhi"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 570,
+      "illness_name": "anaha"
+    },
+    {
+      "herb_id": 391,
+      "herb_name": "Semecarpus anacardium - Bhallātaka",
+      "illness_id": 612,
+      "illness_name": "shvitra"
+    },
+    {
+      "herb_id": 398,
+      "herb_name": "Solanum violaceum - Brihati",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 398,
+      "herb_name": "Solanum violaceum - Brihati",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 398,
+      "herb_name": "Solanum violaceum - Brihati",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 398,
+      "herb_name": "Solanum violaceum - Brihati",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 398,
+      "herb_name": "Solanum violaceum - Brihati",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 398,
+      "herb_name": "Solanum violaceum - Brihati",
+      "illness_id": 684,
+      "illness_name": "Dhawajabhanga"
+    },
+    {
+      "herb_id": 398,
+      "herb_name": "Solanum violaceum - Brihati",
+      "illness_id": 685,
+      "illness_name": "Indralupta"
+    },
+    {
+      "herb_id": 398,
+      "herb_name": "Solanum violaceum - Brihati",
+      "illness_id": 689,
+      "illness_name": "yonikandu"
+    },
+    {
+      "herb_id": 398,
+      "herb_name": "Solanum violaceum - Brihati",
+      "illness_id": 690,
+      "illness_name": "yonipuran"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 11,
+      "illness_name": "svarabhedaḥ"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 21,
+      "illness_name": "jirnajvara"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 44,
+      "illness_name": "chardiḥ"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 47,
+      "illness_name": "karṇaśūlaḥ"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 115,
+      "illness_name": "Sandhivata"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 223,
+      "illness_name": "vraṇaḥ"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 274,
+      "illness_name": "Puyameha"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 305,
+      "illness_name": "hikkā (hidhmā)"
+    },
+    {
+      "herb_id": 399,
+      "herb_name": "Solanum nigrum - Kākamācī",
+      "illness_id": 366,
+      "illness_name": "Plihavridhhi"
+    },
+    {
+      "herb_id": 400,
+      "herb_name": "Solanum virginianum - Kaṇṭakārī",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 400,
+      "herb_name": "Solanum virginianum - Kaṇṭakārī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 400,
+      "herb_name": "Solanum virginianum - Kaṇṭakārī",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 400,
+      "herb_name": "Solanum virginianum - Kaṇṭakārī",
+      "illness_id": 56,
+      "illness_name": "Pratiśyāyaḥ"
+    },
+    {
+      "herb_id": 400,
+      "herb_name": "Solanum virginianum - Kaṇṭakārī",
+      "illness_id": 58,
+      "illness_name": "apasmāraḥ"
+    },
+    {
+      "herb_id": 400,
+      "herb_name": "Solanum virginianum - Kaṇṭakārī",
+      "illness_id": 59,
+      "illness_name": "apatānakaḥ"
+    },
+    {
+      "herb_id": 400,
+      "herb_name": "Solanum virginianum - Kaṇṭakārī",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 400,
+      "herb_name": "Solanum virginianum - Kaṇṭakārī",
+      "illness_id": 305,
+      "illness_name": "hikkā (hidhmā)"
+    },
+    {
+      "herb_id": 400,
+      "herb_name": "Solanum virginianum - Kaṇṭakārī",
+      "illness_id": 715,
+      "illness_name": "kṛmidantakaḥ"
+    },
+    {
+      "herb_id": 403,
+      "herb_name": "Stereospermum chelonoides - Pāṭala",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 403,
+      "herb_name": "Stereospermum chelonoides - Pāṭala",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 403,
+      "herb_name": "Stereospermum chelonoides - Pāṭala",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 403,
+      "herb_name": "Stereospermum chelonoides - Pāṭala",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 403,
+      "herb_name": "Stereospermum chelonoides - Pāṭala",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 403,
+      "herb_name": "Stereospermum chelonoides - Pāṭala",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 403,
+      "herb_name": "Stereospermum chelonoides - Pāṭala",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 89,
+      "illness_name": "Madhumeha"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 119,
+      "illness_name": "ajīrṇam"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 262,
+      "illness_name": "phiraṅgaḥ"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 263,
+      "illness_name": "raktāsrāvaḥ"
+    },
+    {
+      "herb_id": 410,
+      "herb_name": "Syzygium cuminii - Jambū",
+      "illness_id": 264,
+      "illness_name": "upadaṃśaḥ"
+    },
+    {
+      "herb_id": 414,
+      "herb_name": "Teramnus labialis - Māṣaparṇī",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 414,
+      "herb_name": "Teramnus labialis - Māṣaparṇī",
+      "illness_id": 25,
+      "illness_name": "pakṣāghāta/pakṣavadhaḥ"
+    },
+    {
+      "herb_id": 414,
+      "herb_name": "Teramnus labialis - Māṣaparṇī",
+      "illness_id": 29,
+      "illness_name": "arditaḥ"
+    },
+    {
+      "herb_id": 414,
+      "herb_name": "Teramnus labialis - Māṣaparṇī",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 414,
+      "herb_name": "Teramnus labialis - Māṣaparṇī",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 414,
+      "herb_name": "Teramnus labialis - Māṣaparṇī",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 415,
+      "herb_name": "Terminalia arjuna - Arjuna",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 415,
+      "herb_name": "Terminalia arjuna - Arjuna",
+      "illness_id": 21,
+      "illness_name": "jirnajvara"
+    },
+    {
+      "herb_id": 415,
+      "herb_name": "Terminalia arjuna - Arjuna",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 415,
+      "herb_name": "Terminalia arjuna - Arjuna",
+      "illness_id": 36,
+      "illness_name": "somarogaḥ/śvetapradaraḥ"
+    },
+    {
+      "herb_id": 415,
+      "herb_name": "Terminalia arjuna - Arjuna",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 415,
+      "herb_name": "Terminalia arjuna - Arjuna",
+      "illness_id": 78,
+      "illness_name": "asṛgdaraḥ/raktapradaraḥ"
+    },
+    {
+      "herb_id": 415,
+      "herb_name": "Terminalia arjuna - Arjuna",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 415,
+      "herb_name": "Terminalia arjuna - Arjuna",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 415,
+      "herb_name": "Terminalia arjuna - Arjuna",
+      "illness_id": 186,
+      "illness_name": "hṛdrogaḥ"
+    },
+    {
+      "herb_id": 416,
+      "herb_name": "Terminalia belerica - Bibhītaka",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 416,
+      "herb_name": "Terminalia belerica - Bibhītaka",
+      "illness_id": 44,
+      "illness_name": "chardiḥ"
+    },
+    {
+      "herb_id": 416,
+      "herb_name": "Terminalia belerica - Bibhītaka",
+      "illness_id": 50,
+      "illness_name": "netrarogaḥ/akṣirogaḥ"
+    },
+    {
+      "herb_id": 416,
+      "herb_name": "Terminalia belerica - Bibhītaka",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 186,
+      "illness_name": "hṛdrogaḥ"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 189,
+      "illness_name": "pāṇḍurogaḥ"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 429,
+      "illness_name": "viṣamajvaraḥ"
+    },
+    {
+      "herb_id": 417,
+      "herb_name": "Terminalia chebula - Harītakī",
+      "illness_id": 763,
+      "illness_name": "udāvartaḥ"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 44,
+      "illness_name": "chardiḥ"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 89,
+      "illness_name": "Madhumeha"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 104,
+      "illness_name": "shukradaurblya"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 105,
+      "illness_name": "visarpaḥ"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 141,
+      "illness_name": "amlapittam"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 232,
+      "illness_name": "kamla"
+    },
+    {
+      "herb_id": 419,
+      "herb_name": "Tinospora cordifolia - Guḍūcī",
+      "illness_id": 429,
+      "illness_name": "viṣamajvaraḥ"
+    },
+    {
+      "herb_id": 425,
+      "herb_name": "Tribulus terrestris - Gokṣura",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 425,
+      "herb_name": "Tribulus terrestris - Gokṣura",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 425,
+      "herb_name": "Tribulus terrestris - Gokṣura",
+      "illness_id": 780,
+      "illness_name": "Agnidaurbalya"
+    },
+    {
+      "herb_id": 425,
+      "herb_name": "Tribulus terrestris - Gokṣura",
+      "illness_id": 782,
+      "illness_name": "Nāḍidaurbalya"
+    },
+    {
+      "herb_id": 427,
+      "herb_name": "Trigonella foenum-graecum - Methī",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 427,
+      "herb_name": "Trigonella foenum-graecum - Methī",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 427,
+      "herb_name": "Trigonella foenum-graecum - Methī",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 427,
+      "herb_name": "Trigonella foenum-graecum - Methī",
+      "illness_id": 255,
+      "illness_name": "nadidaurblya"
+    },
+    {
+      "herb_id": 427,
+      "herb_name": "Trigonella foenum-graecum - Methī",
+      "illness_id": 517,
+      "illness_name": "vidradhiḥ"
+    },
+    {
+      "herb_id": 427,
+      "herb_name": "Trigonella foenum-graecum - Methī",
+      "illness_id": 785,
+      "illness_name": "Kosthagatavatavridhhi"
+    },
+    {
+      "herb_id": 427,
+      "herb_name": "Trigonella foenum-graecum - Methī",
+      "illness_id": 786,
+      "illness_name": "Stanyavridhhi"
+    },
+    {
+      "herb_id": 431,
+      "herb_name": "Uraria picta - Pr̥śniparṇi",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 431,
+      "herb_name": "Uraria picta - Pr̥śniparṇi",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 431,
+      "herb_name": "Uraria picta - Pr̥śniparṇi",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 431,
+      "herb_name": "Uraria picta - Pr̥śniparṇi",
+      "illness_id": 335,
+      "illness_name": "śvāsaḥ"
+    },
+    {
+      "herb_id": 431,
+      "herb_name": "Uraria picta - Pr̥śniparṇi",
+      "illness_id": 587,
+      "illness_name": "tṛṣṇā"
+    },
+    {
+      "herb_id": 431,
+      "herb_name": "Uraria picta - Pr̥śniparṇi",
+      "illness_id": 793,
+      "illness_name": "Vātaroga"
+    },
+    {
+      "herb_id": 431,
+      "herb_name": "Uraria picta - Pr̥śniparṇi",
+      "illness_id": 794,
+      "illness_name": "dāhaḥ"
+    },
+    {
+      "herb_id": 437,
+      "herb_name": "Vitis vinifera - Drākṣā",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 437,
+      "herb_name": "Vitis vinifera - Drākṣā",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 437,
+      "herb_name": "Vitis vinifera - Drākṣā",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 437,
+      "herb_name": "Vitis vinifera - Drākṣā",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 437,
+      "herb_name": "Vitis vinifera - Drākṣā",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 437,
+      "herb_name": "Vitis vinifera - Drākṣā",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 437,
+      "herb_name": "Vitis vinifera - Drākṣā",
+      "illness_id": 104,
+      "illness_name": "shukradaurblya"
+    },
+    {
+      "herb_id": 437,
+      "herb_name": "Vitis vinifera - Drākṣā",
+      "illness_id": 232,
+      "illness_name": "kamla"
+    },
+    {
+      "herb_id": 437,
+      "herb_name": "Vitis vinifera - Drākṣā",
+      "illness_id": 341,
+      "illness_name": "Trishna"
+    },
+    {
+      "herb_id": 437,
+      "herb_name": "Vitis vinifera - Drākṣā",
+      "illness_id": 763,
+      "illness_name": "udāvartaḥ"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 104,
+      "illness_name": "shukradaurblya"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 283,
+      "illness_name": "granthiḥ"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 400,
+      "illness_name": "bhramaḥ"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 401,
+      "illness_name": "mūrcchā"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 612,
+      "illness_name": "shvitra"
+    },
+    {
+      "herb_id": 438,
+      "herb_name": "Withania somnifera - Aśvagandhā",
+      "illness_id": 812,
+      "illness_name": "galagaṇḍaḥ"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 12,
+      "illness_name": "ādhmānam"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 44,
+      "illness_name": "chardiḥ"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 57,
+      "illness_name": "Udarshool"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 99,
+      "illness_name": "Pratishyay"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 119,
+      "illness_name": "ajīrṇam"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 150,
+      "illness_name": "Sandhisotha"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 212,
+      "illness_name": "shlipad"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 305,
+      "illness_name": "hikkā (hidhmā)"
+    },
+    {
+      "herb_id": 442,
+      "herb_name": "Zingiber officinale - Ārdraka",
+      "illness_id": 832,
+      "illness_name": "koṭhaḥ"
+    },
+    {
+      "herb_id": 444,
+      "herb_name": "Hygrophila auriculata(Schum.) - Kokilaksha",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 444,
+      "herb_name": "Hygrophila auriculata(Schum.) - Kokilaksha",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 444,
+      "herb_name": "Hygrophila auriculata(Schum.) - Kokilaksha",
+      "illness_id": 39,
+      "illness_name": "Ashmari"
+    },
+    {
+      "herb_id": 444,
+      "herb_name": "Hygrophila auriculata(Schum.) - Kokilaksha",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 444,
+      "herb_name": "Hygrophila auriculata(Schum.) - Kokilaksha",
+      "illness_id": 104,
+      "illness_name": "shukradaurblya"
+    },
+    {
+      "herb_id": 444,
+      "herb_name": "Hygrophila auriculata(Schum.) - Kokilaksha",
+      "illness_id": 254,
+      "illness_name": "klaibyam"
+    },
+    {
+      "herb_id": 444,
+      "herb_name": "Hygrophila auriculata(Schum.) - Kokilaksha",
+      "illness_id": 255,
+      "illness_name": "nadidaurblya"
+    },
+    {
+      "herb_id": 444,
+      "herb_name": "Hygrophila auriculata(Schum.) - Kokilaksha",
+      "illness_id": 570,
+      "illness_name": "anaha"
+    },
+    {
+      "herb_id": 444,
+      "herb_name": "Hygrophila auriculata(Schum.) - Kokilaksha",
+      "illness_id": 844,
+      "illness_name": "yakritudara"
+    },
+    {
+      "herb_id": 445,
+      "herb_name": "Premna mucronata - Agnimanth",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 445,
+      "herb_name": "Premna mucronata - Agnimanth",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 445,
+      "herb_name": "Premna mucronata - Agnimanth",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 445,
+      "herb_name": "Premna mucronata - Agnimanth",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 445,
+      "herb_name": "Premna mucronata - Agnimanth",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 445,
+      "herb_name": "Premna mucronata - Agnimanth",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 445,
+      "herb_name": "Premna mucronata - Agnimanth",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 445,
+      "herb_name": "Premna mucronata - Agnimanth",
+      "illness_id": 89,
+      "illness_name": "Madhumeha"
+    },
+    {
+      "herb_id": 445,
+      "herb_name": "Premna mucronata - Agnimanth",
+      "illness_id": 335,
+      "illness_name": "śvāsaḥ"
+    },
+    {
+      "herb_id": 445,
+      "herb_name": "Premna mucronata - Agnimanth",
+      "illness_id": 852,
+      "illness_name": "pratiśyāyaḥ/pīnasaḥ"
+    },
+    {
+      "herb_id": 446,
+      "herb_name": "Andrographis paniculata - Kalamegha",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 446,
+      "herb_name": "Andrographis paniculata - Kalamegha",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 446,
+      "herb_name": "Andrographis paniculata - Kalamegha",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 446,
+      "herb_name": "Andrographis paniculata - Kalamegha",
+      "illness_id": 21,
+      "illness_name": "jirnajvara"
+    },
+    {
+      "herb_id": 446,
+      "herb_name": "Andrographis paniculata - Kalamegha",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 446,
+      "herb_name": "Andrographis paniculata - Kalamegha",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 446,
+      "herb_name": "Andrographis paniculata - Kalamegha",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 5,
+      "illness_name": "aruciḥ"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 21,
+      "illness_name": "jirnajvara"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 23,
+      "illness_name": "khālityam/khalati"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 41,
+      "illness_name": "Raktavikāra"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 119,
+      "illness_name": "ajīrṇam"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 141,
+      "illness_name": "amlapittam"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 158,
+      "illness_name": "yakritvikara"
+    },
+    {
+      "herb_id": 447,
+      "herb_name": "Trichosanthes dioica - Patola",
+      "illness_id": 223,
+      "illness_name": "vraṇaḥ"
+    },
+    {
+      "herb_id": 448,
+      "herb_name": "Sida cordifolia - Bala",
+      "illness_id": 25,
+      "illness_name": "pakṣāghāta/pakṣavadhaḥ"
+    },
+    {
+      "herb_id": 448,
+      "herb_name": "Sida cordifolia - Bala",
+      "illness_id": 29,
+      "illness_name": "arditaḥ"
+    },
+    {
+      "herb_id": 448,
+      "herb_name": "Sida cordifolia - Bala",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 448,
+      "herb_name": "Sida cordifolia - Bala",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 448,
+      "herb_name": "Sida cordifolia - Bala",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 448,
+      "herb_name": "Sida cordifolia - Bala",
+      "illness_id": 50,
+      "illness_name": "netrarogaḥ/akṣirogaḥ"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 10,
+      "illness_name": "shukrameha"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 39,
+      "illness_name": "Ashmari"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 148,
+      "illness_name": "Daha"
+    },
+    {
+      "herb_id": 449,
+      "herb_name": "Anthocephalus Chinensis",
+      "illness_id": 299,
+      "illness_name": "yonirogaḥ/yoni-vyāpadaḥ"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 10,
+      "illness_name": "shukrameha"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 36,
+      "illness_name": "somarogaḥ/śvetapradaraḥ"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 48,
+      "illness_name": "krimiroga"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 78,
+      "illness_name": "asṛgdaraḥ/raktapradaraḥ"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 79,
+      "illness_name": "atisāraḥ"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 83,
+      "illness_name": "pravāhikā"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 97,
+      "illness_name": "Dantdaurbalya"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 113,
+      "illness_name": "Mastishakdaurblya"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 274,
+      "illness_name": "Puyameha"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 896,
+      "illness_name": "Bastisotha"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 899,
+      "illness_name": "Puyadanta"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 903,
+      "illness_name": "dantacālaḥ"
+    },
+    {
+      "herb_id": 450,
+      "herb_name": "Mimusops Elengi",
+      "illness_id": 910,
+      "illness_name": "śirorogaḥ/śiraḥśūla/śirastāpa/śirobhitāpa"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 11,
+      "illness_name": "svarabhedaḥ"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 24,
+      "illness_name": "kustha"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 31,
+      "illness_name": "grahni"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 58,
+      "illness_name": "apasmāraḥ"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 65,
+      "illness_name": "unmādaḥ"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 82,
+      "illness_name": "pramehaḥ"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 113,
+      "illness_name": "Mastishakdaurblya"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 212,
+      "illness_name": "shlipad"
+    },
+    {
+      "herb_id": 451,
+      "herb_name": "Centella Asiatica",
+      "illness_id": 914,
+      "illness_name": "Medhya"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 7,
+      "illness_name": "gulmaḥ"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 35,
+      "illness_name": "raktapittam"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 115,
+      "illness_name": "Sandhivata"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 441,
+      "illness_name": "Rajorodha"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 495,
+      "illness_name": "sarpaviṣaḥ"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 852,
+      "illness_name": "pratiśyāyaḥ/pīnasaḥ"
+    },
+    {
+      "herb_id": 452,
+      "herb_name": "Salvadora Persica",
+      "illness_id": 933,
+      "illness_name": "arbudaḥ"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 1,
+      "illness_name": "Agnimāndya"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 3,
+      "illness_name": "Mutrakrichha"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 6,
+      "illness_name": "daurbalyam"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 13,
+      "illness_name": "Śotha"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 18,
+      "illness_name": "Vranashotha"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 19,
+      "illness_name": "charmaroga"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 32,
+      "illness_name": "hriddaurblya"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 47,
+      "illness_name": "karṇaśūlaḥ"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 72,
+      "illness_name": "Nadishula"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 104,
+      "illness_name": "shukradaurblya"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 110,
+      "illness_name": "Drishtimandya"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 111,
+      "illness_name": "Gridhasi"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 115,
+      "illness_name": "Sandhivata"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 168,
+      "illness_name": "kandu"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 215,
+      "illness_name": "visūcikā"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 232,
+      "illness_name": "kamla"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 254,
+      "illness_name": "klaibyam"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 263,
+      "illness_name": "raktāsrāvaḥ"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 273,
+      "illness_name": "Plague"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 560,
+      "illness_name": "gudabhraṃśaḥ"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 945,
+      "illness_name": "Jalasantrasha"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 946,
+      "illness_name": "Kilas"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 953,
+      "illness_name": "Yoshapasmara"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 966,
+      "illness_name": "vyaṅgaḥ"
+    },
+    {
+      "herb_id": 453,
+      "herb_name": "Allium Cepa",
+      "illness_id": 967,
+      "illness_name": "ākṣepakaḥ"
+    },
+    {
+      "herb_id": 454,
+      "herb_name": "Operculina Trupethum",
+      "illness_id": 2,
+      "illness_name": "Kāsa"
+    },
+    {
+      "herb_id": 454,
+      "herb_name": "Operculina Trupethum",
+      "illness_id": 4,
+      "illness_name": "Svasa"
+    },
+    {
+      "herb_id": 454,
+      "herb_name": "Operculina Trupethum",
+      "illness_id": 8,
+      "illness_name": "jvaraḥ"
+    },
+    {
+      "herb_id": 454,
+      "herb_name": "Operculina Trupethum",
+      "illness_id": 38,
+      "illness_name": "Arśa"
+    },
+    {
+      "herb_id": 454,
+      "herb_name": "Operculina Trupethum",
+      "illness_id": 51,
+      "illness_name": "udara/udararogaḥ"
+    },
+    {
+      "herb_id": 454,
+      "herb_name": "Operculina Trupethum",
+      "illness_id": 66,
+      "illness_name": "vibandha"
+    },
+    {
+      "herb_id": 454,
+      "herb_name": "Operculina Trupethum",
+      "illness_id": 68,
+      "illness_name": "āmavātaḥ"
+    },
+    {
+      "herb_id": 454,
+      "herb_name": "Operculina Trupethum",
+      "illness_id": 232,
+      "illness_name": "kamla"
+    },
+    {
+      "herb_id": 454,
+      "herb_name": "Operculina Trupethum",
+      "illness_id": 369,
+      "illness_name": "Vatarakta"
+    },
+    {
+      "herb_id": 454,
+      "herb_name": "Operculina Trupethum",
+      "illness_id": 570,
+      "illness_name": "anaha"
+    }
+  ]
+}

@@ -11,7 +11,7 @@ class AyurvedicAlmanac:
     """SQLite persistence for cleaned DRAVYA plant records."""
 
     supported_languages = [
-        "Assamese", "Bengali", "Bodo", "Dogri", "Gujarati", "Hindi",
+        "English", "Assamese", "Bengali", "Bodo", "Dogri", "Gujarati", "Hindi",
         "Kannada", "Kashmiri", "Konkani", "Maithili", "Malayalam",
         "Manipuri", "Marathi", "Nepali", "Odia", "Punjabi", "Sanskrit",
         "Santali", "Sindhi", "Tamil", "Telugu", "Urdu",
@@ -66,6 +66,7 @@ class AyurvedicAlmanac:
                 """
             )
             self._migrate_legacy_herbs(connection)
+            self._migrate_legacy_illnesses(connection)
 
     @staticmethod
     def _migrate_legacy_herbs(connection: sqlite3.Connection) -> None:
@@ -85,6 +86,50 @@ class AyurvedicAlmanac:
         connection.execute(
             "CREATE UNIQUE INDEX IF NOT EXISTS idx_herbs_source_record "
             "ON herbs(source, source_record_id)"
+        )
+
+    @staticmethod
+    def _migrate_legacy_illnesses(connection: sqlite3.Connection) -> None:
+        duplicate_names = connection.execute(
+            """
+            SELECT english_name
+            FROM illness
+            GROUP BY english_name
+            HAVING COUNT(*) > 1
+            """
+        ).fetchall()
+        for row in duplicate_names:
+            illness_ids = [
+                illness_row["id"]
+                for illness_row in connection.execute(
+                    "SELECT id FROM illness WHERE english_name = ? ORDER BY id",
+                    (row["english_name"],),
+                )
+            ]
+            keeper_id, duplicate_ids = illness_ids[0], illness_ids[1:]
+            for duplicate_id in duplicate_ids:
+                connection.execute(
+                    """
+                    DELETE FROM treatment
+                    WHERE illness_id = ?
+                      AND herb_id IN (
+                          SELECT herb_id FROM treatment WHERE illness_id = ?
+                      )
+                      AND EXISTS (
+                          SELECT 1 FROM treatment
+                          WHERE illness_id = ? AND herb_id = treatment.herb_id
+                      )
+                    """,
+                    (duplicate_id, duplicate_id, keeper_id),
+                )
+                connection.execute(
+                    "UPDATE treatment SET illness_id = ? WHERE illness_id = ?",
+                    (keeper_id, duplicate_id),
+                )
+                connection.execute("DELETE FROM illness WHERE id = ?", (duplicate_id,))
+        connection.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_illness_english_name "
+            "ON illness(english_name)"
         )
 
     def insert_record(self, record: PlantRecord) -> int:
@@ -118,6 +163,7 @@ class AyurvedicAlmanac:
             ).fetchone()["id"]
 
             connection.execute("DELETE FROM herb_attributes WHERE herb_id = ?", (herb_id,))
+            connection.execute("DELETE FROM treatment WHERE herb_id = ?", (herb_id,))
             connection.executemany(
                 """
                 INSERT INTO herb_attributes
@@ -139,14 +185,15 @@ class AyurvedicAlmanac:
         herb_id: int,
         attributes: dict[str, list[str]],
     ) -> None:
-        therapeutic_values = [
-            value
+        therapeutic_values = {
+            clean_text(value)
             for field, values in attributes.items()
+            for value in values
             if "therapeutic" in field.casefold()
             and ("use" in field.casefold() or "usage" in field.casefold())
-            for value in values
-        ]
-        for illness_name in therapeutic_values:
+            and clean_text(value)
+        }
+        for illness_name in sorted(therapeutic_values):
             connection.execute(
                 """
                 INSERT INTO illness (english_name)

@@ -63,11 +63,10 @@ git push
 
 ## Creating progress bar in Python
 
-The first scraper used Rich's `Progress` context manager to show progress
-while discovering links and fetching tables. The current scraper intentionally
-does not use a progress bar yet. It focuses on a reusable pipeline and a
-small command-line interface first. A progress display can be added later
-without putting presentation logic inside the parser or database layer.
+The current scraper uses Rich's `Progress` context manager in `scrape()` to
+show the plant currently being processed, completion count, and estimated time
+remaining. Presentation stays in the orchestration layer; the parser and
+database operator do not depend on Rich.
 
 ## Using retry
 
@@ -162,7 +161,7 @@ therefore improves queryability without losing provenance.
 
 ## Direct ingestion design
 
-The current pipeline intentionally avoids an intermediate JSON file:
+The primary ingestion pipeline intentionally avoids an intermediate JSON file:
 
 ```text
 HTML → PlantRecord → clean → validate → SQLite upsert
@@ -170,3 +169,6 @@ HTML → PlantRecord → clean → validate → SQLite upsert
 
 Raw HTML is still the source artifact, while the typed `PlantRecord` is the
 in-memory boundary between parsing, cleaning, validation, and persistence.
+
+JSON and CSV remain available as explicit CLI exports from the stored SQLite
+records. They are output formats, not intermediate stages of scraping.

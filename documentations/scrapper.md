@@ -70,21 +70,54 @@ stored in a dictionary, so duplicate links do not create duplicate work. The
 function stops when a later page produces no new IDs or `max_pages` is
 reached, then returns sorted `(plant_id, absolute_url)` pairs.
 
+### `_normalize_label()`
+
+Removes numeric prefixes and surrounding punctuation from DRAVYA labels. For
+example, `1. Parts Used` becomes `Parts Used`, and `1.1 Name` becomes `Name`.
+This keeps source presentation numbering out of database field names.
+
+### `_section_name()`
+
+Finds the accordion heading or nearest `h3` associated with a table and
+normalizes it with `_normalize_label()`. The section is retained as context
+for every column in that table.
+
 ### `_table_attributes()`
 
-Walks every HTML table and row. It extracts visible header/data cells, uses the
-first cell as the field name, splits the remaining cells into values, and
-keeps the original cell text in `source_values`.
+Treats each HTML table as a relational table: the first row containing `th`
+cells is the header row, and later rows contain values for those headers. Each
+value is stored under a section-qualified field such as
+`Parts Used.Name` or `Therapeutic Usage.Name`.
 
-This uses table content instead of fixed table indexes, so changes in table
-ordering are less likely to break extraction.
+Values are split on the supported source delimiters, deduplicated by the
+`PlantRecord.clean()` stage, and accumulated in `source_values` so repeated
+rows preserve all source wording instead of overwriting earlier rows. Empty
+cells are ignored and rows are limited to the number of detected headers.
+
+This uses table structure and nearby section headings instead of fixed table
+indexes, so changes in table ordering are less likely to break extraction.
+
+### `_vernacular_attributes()`
+
+Extracts the separate `Vernacular Names` card, where each language is shown as
+a badge followed by a name paragraph. Each language becomes an attribute such
+as `Vernacular Names.Assamese` or `Vernacular Names.English`. Source spelling
+aliases are canonicalized, including `Malyalam` to `Malayalam` and `Oriya` to
+`Odia`.
+
+Vernacular attributes and source values are merged into the same record
+before cleaning and persistence. When an English vernacular value exists,
+its first value becomes the record's primary `ayurvedic_name`/database
+`english_name`; otherwise the page heading remains the fallback name.
 
 ### `parse_plant()`
 
-Builds one `PlantRecord`. It extracts a heading or page title as the
-Ayurvedic name, identifies scientific/botanical name and family fields when
-present, records every parsed table attribute, and adds source ID, URL, and
-the current UTC timestamp. The record is cleaned before being returned.
+Builds one `PlantRecord`. It extracts a heading or page title as the fallback
+name, identifies scientific/botanical name and family fields when present,
+records every parsed table and vernacular-name attribute, and adds source ID,
+URL, and the current UTC timestamp. When available, the first English
+vernacular name replaces the fallback heading as the primary plant name. The
+record is cleaned before being returned.
 
 ### `scrape()`
 
@@ -113,6 +146,12 @@ During the plant-ingestion loop, the CLI displays a `rich.progress` bar with
 the completed count and estimated time remaining. A plant is counted only
 after its record has been validated and inserted successfully.
 
+When the parsed attributes contain a `Therapeutic Usage` field, the database
+operator converts each condition value into an illness and links it to the
+current herb through the treatment join table. Re-scraping the same herb
+replaces its current attributes and treatment links, preventing stale source
+relationships.
+
 ### `main()`
 
 Provides the command-line interface. Importing `scrapper.py` does not make
@@ -121,16 +160,19 @@ point.
 
 ## Why there is no JSON stage
 
-The current plan uses direct SQLite insertion. `PlantRecord` gives the
+The ingestion path uses direct SQLite insertion. `PlantRecord` gives the
 parser, cleaner, validator, and database operator a typed hand-off without
 creating a second persisted source representation. Raw HTML and database
-provenance are retained, while JSON can be added later as an optional export.
+provenance are retained. JSON and CSV are available as explicit CLI exports
+after persistence, but neither is an intermediate scrape stage.
 
 ## Current limitations
 
 - HTML caching is planned but not yet implemented.
-- Flexible table fields are stored, but Dosha, illness, and treatment
-  relationships are not fully normalized yet.
+- Flexible table fields are stored as section-qualified attributes. Illness and
+      treatment relationships are currently normalized only from the source's
+      `Therapeutic Usage` section; other domain-specific relationships remain
+      attributes.
 - A failed plant stops the current run instead of being accumulated into a
   structured error report.
 - Rate limiting between requests should be added before a large production
@@ -150,7 +192,7 @@ Use a separate database for a test run:
 python scrapper.py --database /tmp/ayurvedic-test.db --max-plants 5
 ```
 
-For an upython cli.py herb "Ashwagandha"nreliable or slow source, the network limits can be changed:
+For an unreliable or slow source, the network limits can be changed:
 
 ```bash
 python scrapper.py --max-plants 1 --timeout 5 --retries 0
