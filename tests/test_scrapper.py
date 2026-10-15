@@ -10,11 +10,11 @@ import requests
 import pytest
 from typer.testing import CliRunner
 
-from cleaning import PlantRecord, ascii_text, clean_text
-from cli import app, show_rows
-from database_operator import AyurvedicAlmanac, canonical_illness_key
-import scrapper
-from scrapper import (
+from herbal_almanac.cleaning import PlantRecord, ascii_text, clean_text
+from herbal_almanac.cli import app, show_rows
+from herbal_almanac.database_operator import AyurvedicAlmanac, canonical_illness_key
+import herbal_almanac.scrapper as scrapper
+from herbal_almanac.scrapper import (
     DiscoveryError,
     DiscoveryReport,
     _discover_plants,
@@ -22,8 +22,8 @@ from scrapper import (
     _vernacular_attributes,
     parse_plant,
 )
-from translation import enrich_record
-from translation import GoogleNameTranslator, TranslationResult
+from herbal_almanac.translation import enrich_record
+from herbal_almanac.translation import GoogleNameTranslator, TranslationResult
 
 
 def test_table_attributes_use_section_headers() -> None:
@@ -89,7 +89,6 @@ def test_discovery_rejects_unbounded_pagination() -> None:
         page = int(url.rsplit("=", 1)[1])
         return pages[page]
 
-    import scrapper
     original_fetch = scrapper.fetch
     scrapper.fetch = fake_fetch
     try:
@@ -243,6 +242,18 @@ def test_retrieval_timestamp_and_fuzzy_search_are_persisted(tmp_path) -> None:
     ).fetchone()
     assert herb["retrieved_at"] == record.retrieved_at
     assert database.search_herbs("Tulsii")[0]["english_name"] == "Tulsi"
+
+
+def test_default_database_uses_user_data_directory(tmp_path, monkeypatch) -> None:
+    data_home = tmp_path / "user-data"
+    monkeypatch.setenv("XDG_DATA_HOME", str(data_home))
+
+    database = AyurvedicAlmanac()
+    expected_path = data_home / "herbal-almanac" / "AyurvedicDB.db"
+
+    assert database.database_path == expected_path
+    database.create_database()
+    assert expected_path.exists()
 
 
 def test_search_excludes_weak_fuzzy_matches(tmp_path) -> None:
@@ -571,7 +582,7 @@ def test_translation_cache_persists_status_and_failure(tmp_path, monkeypatch) ->
         calls += 1
         raise RuntimeError("translator unavailable")
 
-    monkeypatch.setattr("translation.GoogleTranslator.translate", fail_translate)
+    monkeypatch.setattr("deep_translator.GoogleTranslator.translate", fail_translate)
     cache_path = tmp_path / "translations.db"
     first = GoogleNameTranslator(minimum_interval=0, cache_path=cache_path)
     result = first.translate("Kasa", "hi")

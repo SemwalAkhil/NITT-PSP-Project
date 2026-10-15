@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import sqlite3
 from difflib import SequenceMatcher
+import os
 from pathlib import Path
 import re
+import sys
 from typing import Any, Iterable
 
-from cleaning import PlantRecord, ascii_text, clean_text
+from .cleaning import PlantRecord, ascii_text, clean_text
 
 
 def search_key(value: str) -> str:
@@ -30,6 +32,17 @@ ILLNESS_ALIASES = {
 MIN_SEARCH_SCORE = 0.65
 
 
+def default_database_path() -> Path:
+    """Return the platform's per-user writable database location."""
+    if os.name == "nt":
+        data_home = Path(os.environ.get("APPDATA", Path.home() / "AppData" / "Roaming"))
+    elif sys.platform == "darwin":
+        data_home = Path.home() / "Library" / "Application Support"
+    else:
+        data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share"))
+    return data_home / "herbal-almanac" / "AyurvedicDB.db"
+
+
 class AyurvedicAlmanac:
     """SQLite persistence for cleaned DRAVYA plant records."""
 
@@ -41,10 +54,11 @@ class AyurvedicAlmanac:
     ]
 
     def __init__(self, database_path: str | Path | None = None) -> None:
-        self.database_path = Path(database_path or Path(__file__).with_name("AyurvedicDB.db"))
+        self.database_path = Path(database_path) if database_path else default_database_path()
         self._initialized = False
 
     def connect(self) -> sqlite3.Connection:
+        self.database_path.parent.mkdir(parents=True, exist_ok=True)
         connection = sqlite3.connect(self.database_path)
         connection.execute("PRAGMA foreign_keys = ON")
         connection.row_factory = sqlite3.Row

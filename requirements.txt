@@ -3,4 +3,3 @@ requests==2.34.2
 rich==15.0.0
 typer==0.27.3
 urllib3==2.8.0
-deep-translator==1.11.4

@@ -26,18 +26,33 @@ while source regional scripts are preserved. Therapeutic Usage values are also
 normalized into illness and treatment relationships; manual treatment links
 survive later scrapes.
 
-The CLI can export stored record groups to JSON or CSV after ingestion. Those
-exports are optional views of the database and are not an intermediate
-scraping stage.
+The importable code is provided by the `herbal_almanac` package, including the
+public `PlantRecord` and `AyurvedicAlmanac` classes. The configured
+`herbal-almanac` command provides the Typer CLI, which can export stored record
+groups to JSON or CSV after ingestion. Those exports are optional views of the
+database and are not an intermediate scraping stage.
+
+Library consumers can use the cleaning and database APIs without starting the
+CLI or making network requests:
+
+```python
+from herbal_almanac.cleaning import PlantRecord, clean_text
+from herbal_almanac.database_operator import AyurvedicAlmanac
+
+print(clean_text("  Tulsi  "))
+database = AyurvedicAlmanac("/tmp/ayurvedic.db")
+```
 
 SQLite databases are generated runtime artifacts and are not committed. This
 avoids shipping stale schema migrations or incomplete scraped data. Runtime
-databases and translation caches should normally be placed outside the
-repository. To create a fresh database, run:
+databases and translation caches are stored in the user data directory by
+default, outside both the repository and the installed package. To create a
+fresh database, run:
 
 ```bash
-python cli.py setup --database /tmp/ayurvedic.db
-python cli.py scrape dravya --max-plants 5 --database /tmp/ayurvedic.db
+pip install -e .
+herbal-almanac setup --database /tmp/ayurvedic.db
+herbal-almanac scrape dravya --max-plants 5 --database /tmp/ayurvedic.db
 ```
 
 The scrape command requires network access to the CCRAS DRAVYA source. Use
@@ -87,8 +102,10 @@ for the ingestion and recovery behavior.
 | Vernacular and optional translated-name attributes | Implemented |
 | Illness/treatment links from Therapeutic Usage | Implemented |
 | Typer CLI search, inspection, manual inserts, and exports | Implemented |
-| Automated regression tests | Implemented for core parser and persistence paths |
+| `src/` package layout, wheel/sdist build, and console entry point | Implemented |
+| Automated regression tests and clean-install smoke test | Implemented |
 | Persistent scrape-error report, fuzzy search, and normalized search keys | Implemented |
+| TestPyPI release candidate upload | Pending valid TestPyPI credentials |
 | Dosha normalization and additional external source adapters | Planned |
 
 ---
@@ -173,71 +190,75 @@ The project is accessed through the Typer command-line interface. Install the
 Python dependencies first:
 
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
+
+For development and release checks, install `pip install -e ".[dev]"`.
+Translation support is optional: install `pip install -e ".[translate]"` only
+when using `--translate`.
 
 Create the database schema:
 
 ```bash
-python cli.py setup
+herbal-almanac setup
 ```
 
 Scrape plant records from the currently supported DRAVYA site:
 
 ```bash
-python cli.py scrape dravya
+herbal-almanac scrape dravya
 ```
 
 For a smaller development run, limit the number of pages or plants:
 
 ```bash
-python cli.py scrape dravya --max-pages 1 --max-plants 5
+herbal-almanac scrape dravya --max-pages 1 --max-plants 5
 ```
 
 Search the database for herbs, illnesses, or treatments:
 
 ```bash
-python cli.py herbs tulsi
-python cli.py illnesses fever
-python cli.py treatments HERB_ID
-python cli.py attributes HERB_ID
+herbal-almanac herbs tulsi
+herbal-almanac illnesses fever
+herbal-almanac treatments HERB_ID
+herbal-almanac attributes HERB_ID
 ```
 
 View all stored records, or export a record group as JSON or CSV:
 
 ```bash
-python cli.py records
-python cli.py records herbs
-python cli.py records attributes
-python cli.py records all --format json --output records.json
-python cli.py records treatments --format csv --output treatments.csv
-python cli.py records attributes --format csv --output attributes.csv
+herbal-almanac records
+herbal-almanac records herbs
+herbal-almanac records attributes
+herbal-almanac records all --format json --output records.json
+herbal-almanac records treatments --format csv --output treatments.csv
+herbal-almanac records attributes --format csv --output attributes.csv
 ```
 
 Attributes for one herb can also be exported directly:
 
 ```bash
-python cli.py attributes HERB_ID --output attributes.json
-python cli.py attributes HERB_ID --format csv --output attributes.csv
+herbal-almanac attributes HERB_ID --output attributes.json
+herbal-almanac attributes HERB_ID --format csv --output attributes.csv
 ```
 
 Add individual records manually. Use the IDs printed by the herb and illness
 commands when creating a treatment relationship:
 
 ```bash
-python cli.py herb "Tulsi" --botanical-name "Ocimum tenuiflorum"
-python cli.py illness "Cough"
-python cli.py treatment HERB_ID ILLNESS_ID
+herbal-almanac herb "Tulsi" --botanical-name "Ocimum tenuiflorum"
+herbal-almanac illness "Cough"
+herbal-almanac treatment HERB_ID ILLNESS_ID
 ```
 
 Use a different SQLite database by passing `--database` to any command:
 
 ```bash
-python cli.py setup --database /tmp/ayurvedic-test.db
-python cli.py herbs tulsi --database /tmp/ayurvedic-test.db
+herbal-almanac setup --database /tmp/ayurvedic-test.db
+herbal-almanac herbs tulsi --database /tmp/ayurvedic-test.db
 ```
 
-Run `python cli.py --help` or `python cli.py COMMAND --help` to see all
+Run `herbal-almanac --help` or `herbal-almanac COMMAND --help` to see all
 available commands and options.
 
 ---

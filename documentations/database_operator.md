@@ -11,10 +11,18 @@ and idempotent updates.
 
 ### Constructor
 
-`AyurvedicAlmanac(database_path=None)` uses `AyurvedicDB.db` beside the module
-when no path is supplied. SQLite files are local runtime artifacts and are not
-tracked in the repository. Tests and development runs should pass a separate
-path, such as `/tmp/ayurvedic.db`, when they need an isolated database.
+`AyurvedicAlmanac(database_path=None)` uses a per-user writable data directory
+when no path is supplied. On Linux and other Unix-like systems this is
+`$XDG_DATA_HOME/herbal-almanac/AyurvedicDB.db`, or
+`~/.local/share/herbal-almanac/AyurvedicDB.db` when `XDG_DATA_HOME` is unset.
+macOS uses `~/Library/Application Support/herbal-almanac/AyurvedicDB.db`, and
+Windows uses `%APPDATA%/herbal-almanac/AyurvedicDB.db`.
+
+The parent directory is created when the first connection is opened, so an
+installed package never writes beside its own modules. Pass an explicit path,
+such as `/tmp/ayurvedic.db`, for tests, isolated runs, or a shared database.
+Existing databases at either the default or explicit path continue through the
+existing schema migration process.
 
 ### `connect()`
 

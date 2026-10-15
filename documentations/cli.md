@@ -1,7 +1,7 @@
 # Command-Line Interface
 
-This document explains how [`cli.py`](../cli.py) provides access to the Herbal
-Almanac database and scraper.
+This document explains how [`src/herbal_almanac/cli.py`](../src/herbal_almanac/cli.py)
+provides access to the Herbal Almanac database and scraper.
 
 ## Overview
 
@@ -15,30 +15,33 @@ Rich for table output. It provides commands for:
 - Viewing treatment relationships.
 - Viewing or exporting all stored records.
 
-Run the CLI from the project root:
+Install the project from the repository root, which also configures the
+`herbal-almanac` command:
 
 ```bash
-python cli.py
+pip install -e .
+herbal-almanac
 ```
 
 Running the CLI without a command displays the available commands. General and
 command-specific help are also available:
 
 ```bash
-python cli.py --help
-python cli.py scrape --help
+herbal-almanac --help
+herbal-almanac scrape --help
 ```
 
 ## Database selection
 
-Every database command uses the local `AyurvedicDB.db` by default. SQLite
-files are generated runtime artifacts and are not tracked in the repository.
-Use `--database` or `-d` to select another SQLite file; use a new path when
-you need a clean rebuild rather than an in-place migration:
+Every database command uses the per-user writable
+`herbal-almanac/AyurvedicDB.db` location by default. SQLite files are generated
+runtime artifacts and are not tracked in the repository or written into the
+installed package. Use `--database` or `-d` to select another SQLite file; use
+a new path when you need a clean rebuild rather than an in-place migration:
 
 ```bash
-python cli.py setup --database /tmp/herbal-almanac.db
-python cli.py herbs tulsi --database /tmp/herbal-almanac.db
+herbal-almanac setup --database /tmp/herbal-almanac.db
+herbal-almanac herbs tulsi --database /tmp/herbal-almanac.db
 ```
 
 The selected database path is passed to `AyurvedicAlmanac`, which enables
@@ -55,8 +58,8 @@ CLI errors instead of exposing uncaught exceptions.
 Creates the database tables and applies the existing schema migrations.
 
 ```bash
-python cli.py setup
-python cli.py setup --database /tmp/herbal-almanac.db
+herbal-almanac setup
+herbal-almanac setup --database /tmp/herbal-almanac.db
 ```
 
 The command creates the `herbs`, `illness`, `treatment`, and
@@ -68,13 +71,13 @@ Scrapes a supported source and inserts each validated record directly into the
 database. The only currently supported source is `dravya`.
 
 ```bash
-python cli.py scrape dravya
+herbal-almanac scrape dravya
 ```
 
 Useful options:
 
 ```bash
-python cli.py scrape dravya \
+herbal-almanac scrape dravya \
   --database /tmp/herbal-almanac.db \
   --max-pages 1 \
   --max-plants 5 \
@@ -92,7 +95,8 @@ python cli.py scrape dravya \
 - `--failure-report`: writes failed plant IDs, URLs, attempts, and reasons to
   a JSON report.
 - `--translate`: enables optional machine translation enrichment. It is
-  disabled by default because it makes many external requests.
+  disabled by default because it makes many external requests. Install the
+  optional dependency first with `pip install "herbal-almanac[translate]"`.
 
 The scraper displays a progress bar, continues after isolated plant failures,
 and retries failed plants separately. Failed records are reported without
@@ -114,8 +118,8 @@ Manual treatment links are preserved when a herb is scraped again.
 Adds one manually entered herb:
 
 ```bash
-python cli.py herb "Tulsi"
-python cli.py herb "Tulsi" \
+herbal-almanac herb "Tulsi"
+herbal-almanac herb "Tulsi" \
   --botanical-name "Ocimum tenuiflorum" \
   --family "Lamiaceae" \
   --source "Manual"
@@ -138,7 +142,7 @@ non-HTTP(S) source URLs are rejected.
 Adds one illness:
 
 ```bash
-python cli.py illness "Cough"
+herbal-almanac illness "Cough"
 ```
 
 Illness names are required and unique. Attempting to insert a duplicate name
@@ -149,7 +153,7 @@ returns an error from the database constraint.
 Creates a relationship between an existing herb and an existing illness:
 
 ```bash
-python cli.py treatment HERB_ID ILLNESS_ID
+herbal-almanac treatment HERB_ID ILLNESS_ID
 ```
 
 Both IDs must be positive integers and must already exist. SQLite foreign keys
@@ -162,8 +166,8 @@ Searches herb names and botanical names. An empty query lists all matching
 herbs:
 
 ```bash
-python cli.py herbs tulsi
-python cli.py herbs
+herbal-almanac herbs tulsi
+herbal-almanac herbs
 ```
 
 Results are displayed as a Rich table.
@@ -173,8 +177,8 @@ Results are displayed as a Rich table.
 Searches illness names:
 
 ```bash
-python cli.py illnesses fever
-python cli.py illnesses
+herbal-almanac illnesses fever
+herbal-almanac illnesses
 ```
 
 ### `treatments`
@@ -182,7 +186,7 @@ python cli.py illnesses
 Lists illnesses associated with one herb ID:
 
 ```bash
-python cli.py treatments HERB_ID
+herbal-almanac treatments HERB_ID
 ```
 
 ### `attributes`
@@ -191,14 +195,14 @@ Lists all source attributes stored for a herb, including the normalized field
 name, individual value, and original source text:
 
 ```bash
-python cli.py attributes HERB_ID
+herbal-almanac attributes HERB_ID
 ```
 
 Attributes for an individual herb can also be exported:
 
 ```bash
-python cli.py attributes HERB_ID --output attributes.json
-python cli.py attributes HERB_ID --format csv --output attributes.csv
+herbal-almanac attributes HERB_ID --output attributes.json
+herbal-almanac attributes HERB_ID --format csv --output attributes.csv
 ```
 
 When a scraped record contains a field such as `Therapeutic Usage` or
@@ -212,11 +216,11 @@ safe and does not create duplicates.
 Displays all stored records, or only one record group:
 
 ```bash
-python cli.py records
-python cli.py records herbs
-python cli.py records illnesses
-python cli.py records treatments
-python cli.py records attributes
+herbal-almanac records
+herbal-almanac records herbs
+herbal-almanac records illnesses
+herbal-almanac records treatments
+herbal-almanac records attributes
 ```
 
 Valid record groups are `all`, `herbs`, `illnesses`, `treatments`, and
@@ -225,17 +229,17 @@ Valid record groups are `all`, `herbs`, `illnesses`, `treatments`, and
 Records can be exported to JSON or CSV with `--output`/`-o`:
 
 ```bash
-python cli.py records all --output records.json
-python cli.py records herbs --output herbs.csv
-python cli.py records attributes --output attributes.csv
+herbal-almanac records all --output records.json
+herbal-almanac records herbs --output herbs.csv
+herbal-almanac records attributes --output attributes.csv
 ```
 
 The format is inferred from the file extension. It can also be specified
 explicitly:
 
 ```bash
-python cli.py records all --format json --output records.json
-python cli.py records treatments --format csv --output treatments.csv
+herbal-almanac records all --format json --output records.json
+herbal-almanac records treatments --format csv --output treatments.csv
 ```
 
 When the output filename has no extension, specify `--format json` or
@@ -250,7 +254,7 @@ name, field name, value, and original source text.
 To export vernacular attributes, select the `attributes` record group:
 
 ```bash
-python cli.py records attributes --format json --output attributes.json
+herbal-almanac records attributes --format json --output attributes.json
 ```
 
 The CLI writes exactly the selected record group to the requested output path.
@@ -277,23 +281,23 @@ Database integrity is enforced by both CLI validation and SQLite constraints:
 ## Typical workflow
 
 ```bash
-# Install dependencies and create the schema.
-pip install -r requirements.txt
-python cli.py setup
+# Install the package and create the schema.
+pip install -e .
+herbal-almanac setup
 
 # Import source data.
-python cli.py scrape dravya --max-plants 10
+herbal-almanac scrape dravya --max-plants 10
 
 # Inspect imported records.
-python cli.py herbs
-python cli.py illnesses
-python cli.py records treatments
+herbal-almanac herbs
+herbal-almanac illnesses
+herbal-almanac records treatments
 
 # Add a manual relationship.
-python cli.py herb "Ashwagandha"
-python cli.py illness "Fatigue"
-python cli.py treatment HERB_ID ILLNESS_ID
+herbal-almanac herb "Ashwagandha"
+herbal-almanac illness "Fatigue"
+herbal-almanac treatment HERB_ID ILLNESS_ID
 
 # Back up the database contents.
-python cli.py records all --format json --output herbal-almanac.json
+herbal-almanac records all --format json --output herbal-almanac.json
 ```

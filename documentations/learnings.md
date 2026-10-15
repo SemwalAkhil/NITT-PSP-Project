@@ -29,15 +29,22 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 .venv\Scripts\Activate.ps1
 ```
 
-### deactivate
-```
-
-Install dependencies from the repository root:
+### Deactivating
 
 ```bash
-python -m pip install -r requirements.txt
-```powershell
-exit
+deactivate
+```
+
+Install the package and its development tools from the repository root:
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+Translation is optional and can be installed separately:
+
+```bash
+python -m pip install -e ".[translate]"
 ```
 
 ## Foreign Keys in Python SQLite3
@@ -195,3 +202,102 @@ in-memory boundary between parsing, cleaning, validation, and persistence.
 
 JSON and CSV remain available as explicit CLI exports from the stored SQLite
 records. They are output formats, not intermediate stages of scraping.
+
+## Harvard-Kyoto Convention
+
+The project uses a compatibility transliteration for English-facing database
+fields and search keys. `ascii_text()` first applies the explicit romanization
+map, then removes Unicode combining marks and non-ASCII characters. For
+example, `Kāsa` becomes `KAsa`, while the original Unicode value remains in
+the source-facing fields.
+
+This is a search/display normalization, not a claim that every Sanskrit word
+has one universally correct romanization. Regional scripts and original source
+values are preserved separately.
+
+## Fuzzy match
+
+Search values are normalized by `search_key()`: text is cleaned, case-folded,
+and reduced to letters, numbers, and whitespace. `search_herbs()` and
+`search_illnesses()` compare that key with `difflib.SequenceMatcher` and reject
+weak matches below the `0.65` score threshold. Exact matches therefore rank
+first, while small spelling or transliteration differences remain searchable.
+Illnesses also use a canonical key that folds ASCII transliteration variants
+and known aliases such as `fever` and `jvara`.
+
+## pyproject.toml
+
+`pyproject.toml` is the packaging and build source of truth. It defines the
+`herbal-almanac` distribution, the `src/` package directory, the
+`herbal-almanac` console entry point, and Python 3.10 or newer support. Core
+dependencies cover scraping, persistence, and CLI operation. The `dev` extra
+adds pytest, build, Twine, and translation support; the `translate` extra adds
+only `deep-translator`.
+
+The standard release checks are:
+
+```bash
+python -m pytest -q
+python -m build
+python -m twine check dist/*
+```
+
+## how automated tests work?
+
+Tests import `herbal_almanac` through the configured `src` path and use saved
+HTML strings, fake sessions, temporary SQLite files, and fake translators.
+They do not contact DRAVYA or Google. The suite currently covers parser
+sections, malformed HTML, retries and failures, database migrations, search,
+CLI exports, and translation caching. CI installs `.[dev]` and runs the suite
+on Python 3.10 through 3.14.
+## orchestration module
+
+`cli.py` is the user-facing orchestration layer. It validates Typer arguments,
+selects the database path, calls `scrape()` or database operations, formats
+tables and exports, and converts expected failures into exit code 1. It does
+not contain HTML parsing or SQL schema logic.
+
+`scrapper.py` orchestrates HTTP discovery, parsing, optional translation,
+validation, retries, progress output, and database insertion. `cleaning.py`
+and `database_operator.py` remain usable independently as library modules.
+
+## Responses 429, 500, 502, 503, 504
+
+The scraper retries these temporary HTTP statuses through `urllib3.Retry`.
+The default policy allows two connection and status retries with exponential
+backoff, while read retries remain disabled. Requests use a five-second
+connect timeout and a configurable fifteen-second read timeout. A final HTTP
+failure remains visible to the per-plant failure report instead of silently
+creating an incomplete record.
+## What is the page structure of DRAVYA what are we extracting from the page
+
+The directory page contains links matching `/plant/` followed by a numeric ID.
+Each plant page may contain a title, a scientific-profile card, a Vernacular
+Names card, and accordion tables. The parser extracts:
+
+- the Ayurvedic name from the title when written as `English - Ayurvedic`;
+- scientific and family names from the profile card or table attributes;
+- section-qualified table fields such as `Parts Used.Name`;
+- language-qualified values such as `Vernacular Names.Hindi`;
+- the source URL, numeric record ID, and UTC retrieval timestamp.
+
+Section qualification prevents repeated headers such as `Name` from colliding
+across unrelated tables. Therapeutic Usage values are later normalized into
+unverified illness and treatment records.
+## _function_name convention
+
+Names beginning with one underscore are implementation helpers rather than
+stable public API. The scraper uses this convention for parsing stages such as
+`_discover_plants()`, `_table_attributes()`, and `_scientific_profile()`.
+Public entry points include `discover_plants()`, `parse_plant()`, `scrape()`,
+`PlantRecord`, and `AyurvedicAlmanac`. Tests may exercise private helpers when
+that gives precise coverage of parser behavior, but application code should
+prefer the public functions.
+
+## Release validation status
+
+The source distribution and wheel build successfully and pass `twine check`.
+The clean wheel smoke test verifies library imports, the installed CLI, and a
+user-selected database path without the optional translation dependency. The
+TestPyPI upload is still pending valid TestPyPI credentials after a rejected
+upload, so no public package release has been made.

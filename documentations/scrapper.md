@@ -232,19 +232,19 @@ session cleanly.
 The Typer CLI is the preferred project entry point:
 
 ```bash
-python cli.py setup
-python cli.py scrape --max-pages 1 --max-plants 5
-python cli.py herbs tulsi
-python cli.py illnesses fever
+herbal-almanac setup
+herbal-almanac scrape --max-pages 1 --max-plants 5
+herbal-almanac herbs tulsi
+herbal-almanac illnesses fever
 ```
 
 Manual records can be inserted while preserving database constraints:
 
 ```bash
-python cli.py herb "Tulsi" --botanical-name "Ocimum tenuiflorum"
-python cli.py illness "Cough"
-python cli.py treatment HERB_ID ILLNESS_ID
-python cli.py treatments HERB_ID
+herbal-almanac herb "Tulsi" --botanical-name "Ocimum tenuiflorum"
+herbal-almanac illness "Cough"
+herbal-almanac treatment HERB_ID ILLNESS_ID
+herbal-almanac treatments HERB_ID
 ```
 
 Duplicate illness names, duplicate treatment links, missing foreign keys, empty

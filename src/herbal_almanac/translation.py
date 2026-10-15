@@ -5,9 +5,7 @@ import sqlite3
 from pathlib import Path
 import time
 
-from deep_translator import GoogleTranslator
-
-from cleaning import PlantRecord, ascii_text, clean_text, clean_values
+from .cleaning import PlantRecord, ascii_text, clean_text, clean_values
 
 
 INDIAN_TRANSLATION_LANGUAGES = {
@@ -28,6 +26,16 @@ INDIAN_TRANSLATION_LANGUAGES = {
     "Urdu": "ur",
 }
 LANGUAGE_CODES = {language: code for language, code in INDIAN_TRANSLATION_LANGUAGES.items()}
+
+
+def _google_translator():
+    try:
+        from deep_translator import GoogleTranslator
+    except ModuleNotFoundError as error:
+        raise RuntimeError(
+            "Translation requires the optional dependency; install herbal-almanac[translate]."
+        ) from error
+    return GoogleTranslator
 
 
 class GoogleNameTranslator:
@@ -74,7 +82,7 @@ class GoogleNameTranslator:
             elapsed = time.monotonic() - self._last_request_at
             if elapsed < self._minimum_interval:
                 time.sleep(self._minimum_interval - elapsed)
-            translated = GoogleTranslator(source="auto", target=target).translate(text)
+            translated = _google_translator()(source="auto", target=target).translate(text)
             self._last_request_at = time.monotonic()
         except Exception as error:
             result = TranslationResult(None, "failed", str(error), "auto")

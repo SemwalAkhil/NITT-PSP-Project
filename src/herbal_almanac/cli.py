@@ -11,8 +11,8 @@ from rich.console import Console
 from rich.table import Table
 import typer
 
-from database_operator import AyurvedicAlmanac
-from scrapper import ScraperError, scrape
+from .database_operator import AyurvedicAlmanac, default_database_path
+from .scrapper import ScraperError, scrape
 
 
 app = typer.Typer(
@@ -21,6 +21,7 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 console = Console()
+DEFAULT_DATABASE_PATH = str(default_database_path())
 CSV_FIELDS = {
     "herbs": (
         "id", "english_name", "original_name", "source", "source_record_id",
@@ -126,7 +127,7 @@ def show_record_groups(records: dict[str, list[dict[str, Any]]]) -> None:
 
 @app.command()
 def setup(
-    database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
+    database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
 ) -> None:
     """Create the database schema and apply migrations."""
     try:
@@ -139,7 +140,7 @@ def setup(
 @app.command("scrape")
 def scrape_site(
     site: str = typer.Argument("dravya", help="Supported site: dravya."),
-    database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
+    database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
     max_pages: int | None = typer.Option(None, min=1),
     max_plants: int | None = typer.Option(None, min=1),
     timeout: float = typer.Option(15.0, min=0.1),
@@ -176,7 +177,7 @@ def scrape_site(
 @app.command("herb")
 def add_herb(
     english_name: str = typer.Argument(..., help="Herb name."),
-    database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
+    database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
     botanical_name: str | None = typer.Option(None),
     family: str | None = typer.Option(None),
     source: str | None = typer.Option(None),
@@ -196,7 +197,7 @@ def add_herb(
 @app.command("illness")
 def add_illness(
     english_name: str = typer.Argument(..., help="Illness name."),
-    database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
+    database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
 ) -> None:
     """Insert one illness; duplicate names are rejected by the schema."""
     try:
@@ -210,7 +211,7 @@ def add_illness(
 def add_treatment(
     herb_id: int = typer.Argument(..., min=1),
     illness_id: int = typer.Argument(..., min=1),
-    database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
+    database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
 ) -> None:
     """Link an existing herb to an existing illness."""
     try:
@@ -223,7 +224,7 @@ def add_treatment(
 @app.command("herbs")
 def list_herbs(
     query: str = typer.Argument(""),
-    database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
+    database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
 ) -> None:
     """Search herbs by common or botanical name."""
     try:
@@ -235,7 +236,7 @@ def list_herbs(
 @app.command("illnesses")
 def list_illnesses(
     query: str = typer.Argument(""),
-    database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
+    database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
 ) -> None:
     """Search illnesses by name."""
     try:
@@ -247,7 +248,7 @@ def list_illnesses(
 @app.command("treatments")
 def list_treatments(
     herb_id: int = typer.Argument(..., min=1),
-    database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
+    database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
 ) -> None:
     """Show illnesses associated with a herb ID."""
     try:
@@ -259,7 +260,7 @@ def list_treatments(
 @app.command("attributes")
 def list_attributes(
     herb_id: int = typer.Argument(..., min=1),
-    database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
+    database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
     output: Path | None = typer.Option(
         None,
         "--output",
@@ -292,7 +293,7 @@ def list_records(
         "all",
         help="Records to show: all, herbs, illnesses, treatments, or attributes.",
     ),
-    database_path: str = typer.Option("AyurvedicDB.db", "--database", "-d"),
+    database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
     output: Path | None = typer.Option(
         None,
         "--output",
@@ -325,5 +326,9 @@ def list_records(
         fail(error)
 
 
-if __name__ == "__main__":
+def main() -> None:
     app()
+
+
+if __name__ == "__main__":
+    main()

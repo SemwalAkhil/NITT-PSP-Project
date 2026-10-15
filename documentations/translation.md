@@ -26,6 +26,12 @@ The current target set is:
 The language codes are the Google Translator codes used by
 `deep-translator`.
 
+Install the optional dependency before enabling translation:
+
+```bash
+pip install "herbal-almanac[translate]"
+```
+
 ## `GoogleNameTranslator`
 
 `GoogleNameTranslator` wraps `deep_translator.GoogleTranslator` with an

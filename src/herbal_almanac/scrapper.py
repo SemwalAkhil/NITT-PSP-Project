@@ -15,9 +15,9 @@ from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from cleaning import PlantRecord, clean_text, split_values
-from database_operator import AyurvedicAlmanac
-from translation import GoogleNameTranslator, enrich_record
+from .cleaning import PlantRecord, clean_text, split_values
+from .database_operator import AyurvedicAlmanac, default_database_path
+from .translation import GoogleNameTranslator, enrich_record
 
 
 DRAVYA_DIRECTORY = "https://dravya.ccras.org.in/all_plants"
@@ -335,7 +335,7 @@ def parse_plant(plant_id: int, url: str, html: str) -> PlantRecord:
 
 
 def scrape(
-    database_path: str = "AyurvedicDB.db",
+    database_path: str | Path | None = None,
     max_pages: int | None = None,
     max_plants: int | None = None,
     timeout: float = DEFAULT_TIMEOUT,
@@ -346,6 +346,7 @@ def scrape(
 ) -> ScrapeReport:
     if record_retries < 0:
         raise ValueError("record_retries must be non-negative")
+    database_path = database_path or default_database_path()
     session = create_session(retries)
     translator = GoogleNameTranslator(cache_path=database_path) if translate else None
     try:
@@ -416,7 +417,7 @@ def scrape(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Scrape CCRAS DRAVYA into SQLite.")
-    parser.add_argument("--database", default="AyurvedicDB.db")
+    parser.add_argument("--database", default=str(default_database_path()))
     parser.add_argument("--max-pages", type=int)
     parser.add_argument("--max-plants", type=int)
     parser.add_argument(
