@@ -35,7 +35,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 deactivate
 ```
 
-Install the package and its development tools from the repository root:
+### Install the package and its development tools from the repository root:
 
 ```bash
 python -m pip install -e ".[dev]"
