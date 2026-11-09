@@ -43,6 +43,20 @@ duplicates while preserving the original order.
 `split_values(value)` splits one source value on newlines, semicolons, and
 pipe characters, then applies the normal value cleanup.
 
+### `normalize_dosha_expression()`
+
+`normalize_dosha_expression(expression)` recognizes documented Vata, Pitta,
+and Kapha effects from classical Doshakarma expressions. It supports
+decrease terms such as `-hara`, `-ghna`, and `-shamana`, increase terms such
+as `-vardhaka` and `-vrddhi`, and multi-Dosha expressions such as
+`KaphaVātahara` and `Tridoṣaśamana`.
+
+The result preserves the source expression and returns one effect for each of
+the three Doshas. A Dosha that is not explicitly present is returned as
+`unspecified`; the normalizer never infers an undocumented effect. This is a
+deterministic cleaning helper only. Database storage and scraper integration
+remain separate follow-up work.
+
 ### `PlantRecord`
 
 `PlantRecord` is the typed in-memory contract shared by the scraper, cleaner,

@@ -203,6 +203,14 @@ in-memory boundary between parsing, cleaning, validation, and persistence.
 JSON and CSV remain available as explicit CLI exports from the stored SQLite
 records. They are output formats, not intermediate stages of scraping.
 
+## Dosha normalization
+
+Dosha expressions are normalized as a separate deterministic cleaning step.
+The normalizer preserves the source expression and assigns `decrease`,
+`increase`, or `unspecified` independently to Vata, Pitta, and Kapha. Missing
+Doshas remain `unspecified`; they are never inferred from the Doshas that are
+present.
+
 ## Harvard-Kyoto Convention
 
 The project uses a compatibility transliteration for English-facing database

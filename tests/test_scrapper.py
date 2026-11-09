@@ -10,7 +10,12 @@ import requests
 import pytest
 from typer.testing import CliRunner
 
-from herbal_almanac.cleaning import PlantRecord, ascii_text, clean_text
+from herbal_almanac.cleaning import (
+    PlantRecord,
+    ascii_text,
+    clean_text,
+    normalize_dosha_expression,
+)
 from herbal_almanac.cli import app, show_rows
 from herbal_almanac.database_operator import AyurvedicAlmanac, canonical_illness_key
 import herbal_almanac.scrapper as scrapper
@@ -445,6 +450,46 @@ def test_clean_text_preserves_devanagari_joiners() -> None:
     value = "क्\u200dष क्\u200cष"
 
     assert clean_text(value) == value
+
+
+@pytest.mark.parametrize(
+    ("expression", "expected_effects"),
+    [
+        (
+            "Vātahara",
+            {"Vata": "decrease", "Pitta": "unspecified", "Kapha": "unspecified"},
+        ),
+        (
+            "Pittavṛddhi",
+            {"Vata": "unspecified", "Pitta": "increase", "Kapha": "unspecified"},
+        ),
+        (
+            "KaphaVātahara",
+            {"Vata": "decrease", "Pitta": "unspecified", "Kapha": "decrease"},
+        ),
+        (
+            "Tridoṣaśamana",
+            {"Vata": "decrease", "Pitta": "decrease", "Kapha": "decrease"},
+        ),
+    ],
+)
+def test_normalize_dosha_expression_preserves_source_and_missing_doshas(
+    expression: str, expected_effects: dict[str, str]
+) -> None:
+    result = normalize_dosha_expression(expression)
+
+    assert result.source_expression == expression
+    assert result.effects == expected_effects
+
+
+def test_normalize_dosha_expression_leaves_unknown_effect_unspecified() -> None:
+    result = normalize_dosha_expression("Vāta relationship not documented")
+
+    assert result.effects == {
+        "Vata": "unspecified",
+        "Pitta": "unspecified",
+        "Kapha": "unspecified",
+    }
 
 
 def test_clean_optional_taxonomy_fields_turn_whitespace_into_none() -> None:

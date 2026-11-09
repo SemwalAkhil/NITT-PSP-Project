@@ -8,6 +8,8 @@ from urllib.parse import urlsplit
 
 
 AttributeKind = Literal["disease", "ambiguous"]
+DoshaEffect = Literal["decrease", "increase", "unspecified"]
+DOSHAS = ("Vata", "Pitta", "Kapha")
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,6 +32,8 @@ ROMANIZATION = str.maketrans({
     "Ś": "Z", "Ṣ": "S", "Ḥ": "H", "Ṃ": "M",
 })
 SPLIT_PATTERN = re.compile(r"\s*(?:\n|;|\|)\s*")
+DOSHA_DECREASE_TERMS = ("hara", "ghna", "shamana", "zamana")
+DOSHA_INCREASE_TERMS = ("vardhaka", "vrddhi")
 
 
 def clean_text(value: str) -> str:
@@ -152,3 +156,37 @@ class PlantRecord:
 
 def split_values(value: str) -> list[str]:
     return clean_values(SPLIT_PATTERN.split(value))
+
+
+@dataclass(frozen=True, slots=True)
+class DoshaNormalization:
+    source_expression: str
+    effects: dict[str, DoshaEffect]
+
+
+def normalize_dosha_expression(expression: str) -> DoshaNormalization:
+    """Normalize documented Dosha effects without inferring missing Doshas."""
+    normalized = re.sub(r"[^a-z]", "", ascii_text(clean_text(expression)).casefold())
+    if "tridosa" in normalized or "tridosha" in normalized:
+        present_doshas = set(DOSHAS)
+    else:
+        present_doshas = {
+            dosha
+            for dosha in DOSHAS
+            if dosha.casefold() in normalized
+        }
+
+    if any(term in normalized for term in DOSHA_DECREASE_TERMS):
+        effect: DoshaEffect = "decrease"
+    elif any(term in normalized for term in DOSHA_INCREASE_TERMS):
+        effect = "increase"
+    else:
+        effect = "unspecified"
+
+    return DoshaNormalization(
+        source_expression=expression,
+        effects={
+            dosha: effect if dosha in present_doshas else "unspecified"
+            for dosha in DOSHAS
+        },
+    )
