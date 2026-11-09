@@ -160,6 +160,27 @@ If table creation or backfill fails, the Migration 1 transaction rolls back its
 new tables and does not insert a migration-version row. Reinitialization is
 idempotent after a successful versioned run.
 
+### Migration 2: normalized botanical taxonomy
+
+Migration 2 is tracked at version `2` with the name
+`normalized_botanical_taxonomy`. It runs only after Migration 1 and creates
+`taxa`, `taxon_relationships`, and `herb_taxa` transactionally. Repeated
+initialization skips both recorded migrations.
+
+Legacy `herbs.botanical_name` values become separate `unknown`-rank taxa and
+`source_identification` associations. Legacy `herbs.family` values become
+separate `family`-rank taxa and source-identification associations. The
+backfill uses Migration 1 source records and creates `taxonomy_name` claims
+with `created_by = migration:2`. It preserves the original herb columns and
+does not infer authorship, accepted status, authority, parent-child
+relationships, or taxonomic merges. Family-only values remain assertions; they
+do not create a hierarchy.
+
+Every taxonomy association has a source claim. Database constraints enforce
+foreign keys, controlled ranks and relationship types, no self-parent edges,
+duplicate prevention, and one preferred accepted taxon per herb. Migration 2
+does not switch application reads or writes to the new tables.
+
 ### Application-level claim subject validation
 
 SQLite foreign keys prove that a `herb_names.herb_id` and

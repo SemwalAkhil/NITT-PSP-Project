@@ -25,6 +25,7 @@ Herbal Almanac catalogs Ayurvedic herbs, illnesses, and their therapeutic relati
 - **Schema Refinement:** The proposal uses source-record-owned, reusable claims, one names table with typed synonyms, non-null claim references for domain rows, append-only manual curation, and NULL-safe unique indexes.
 - **Migration 1:** Core identity/provenance tables (`schema_migrations`, `sources`, `source_records`, `source_claims`, `legacy_herb_map`, and `herb_names`) are implemented additively; legacy application reads and writes remain active.
 - **Migration 1 Integrity:** Duplicate legacy source identities fail before backfill, null IDs retain explicit artifact references, and application-level claim validation prevents cross-herb name associations under the documented manual-claim policy.
+- **Migration 2:** Botanical taxonomy tables (`taxa`, `taxon_relationships`, and `herb_taxa`) are implemented additively with source-claim provenance; legacy botanical names use unknown rank and family values use family rank without inferred hierarchy or acceptance.
 
 ## 4. Key Commands
 - **Install (Dev):** `pip install -e ".[dev]"` (add `".[translate]"` for translation support).

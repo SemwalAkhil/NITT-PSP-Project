@@ -400,12 +400,234 @@ def test_migration_1_is_tracked_and_idempotent(tmp_path) -> None:
 
     assert {
         "schema_migrations", "sources", "source_records", "source_claims",
-        "legacy_herb_map", "herb_names",
+        "legacy_herb_map", "herb_names", "taxa", "taxon_relationships", "herb_taxa",
     } <= tables
     assert [(row["version"], row["name"]) for row in migration] == [
-        (1, "core_identity_and_provenance")
+        (1, "core_identity_and_provenance"),
+        (2, "normalized_botanical_taxonomy"),
     ]
     assert any("external_key" in row["name"] for row in source_record_indexes)
+
+
+def _remove_migration_2_for_test(path) -> None:
+    with sqlite3.connect(path) as connection:
+        connection.execute("DELETE FROM schema_migrations WHERE version = 2")
+        connection.execute("DROP TABLE herb_taxa")
+        connection.execute("DROP TABLE taxon_relationships")
+        connection.execute("DROP TABLE taxa")
+
+
+def test_migration_2_upgrades_migration_1_and_rolls_back(tmp_path, monkeypatch) -> None:
+    path = tmp_path / "migration-2.db"
+    AyurvedicAlmanac(path).create_database()
+    _remove_migration_2_for_test(path)
+
+    AyurvedicAlmanac(path).create_database()
+    with sqlite3.connect(path) as connection:
+        versions = connection.execute(
+            "SELECT version FROM schema_migrations ORDER BY version"
+        ).fetchall()
+    assert versions == [(1,), (2,)]
+
+    _remove_migration_2_for_test(path)
+
+    def fail_migration(connection) -> None:
+        raise RuntimeError("forced taxonomy migration failure")
+
+    monkeypatch.setattr(
+        AyurvedicAlmanac,
+        "_migration_2_normalized_botanical_taxonomy",
+        staticmethod(fail_migration),
+    )
+    with pytest.raises(RuntimeError, match="forced taxonomy migration failure"):
+        AyurvedicAlmanac(path).create_database()
+
+    with sqlite3.connect(path) as connection:
+        tables = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            )
+        }
+        versions = connection.execute(
+            "SELECT version FROM schema_migrations ORDER BY version"
+        ).fetchall()
+    assert not {"taxa", "taxon_relationships", "herb_taxa"} & tables
+    assert versions == [(1,)]
+
+
+def test_migration_2_taxonomy_constraints_and_provenance(tmp_path) -> None:
+    database = AyurvedicAlmanac(tmp_path / "taxonomy.db")
+    database.create_database()
+    herb_id = database.add_herb("Taxonomy herb")
+
+    with database.connect() as connection:
+        source_id = connection.execute(
+            "INSERT INTO sources (source_key) VALUES ('taxonomy-test')"
+        ).lastrowid
+        source_record_id = connection.execute(
+            "INSERT INTO source_records (source_id, external_record_key) VALUES (?, '1')",
+            (source_id,),
+        ).lastrowid
+        claim_id = connection.execute(
+            """
+            INSERT INTO source_claims
+                (source_record_id, claim_type, source_field, source_expression,
+                 created_by_type, created_by, created_at, updated_at)
+            VALUES (?, 'taxonomy_name', 'test', 'Abies webbiana', 'system', 'test',
+                    '2026-01-01T00:00:00+00:00', '2026-01-01T00:00:00+00:00')
+            """,
+            (source_record_id,),
+        ).lastrowid
+        taxon_id = connection.execute(
+            """
+            INSERT INTO taxa (scientific_name, normalized_name, rank, created_at)
+            VALUES ('Abies webbiana', 'abies webbiana', 'unknown', '2026-01-01T00:00:00+00:00')
+            """
+        ).lastrowid
+        parent_id = connection.execute(
+            """
+            INSERT INTO taxa (scientific_name, normalized_name, rank, created_at)
+            VALUES ('Pinaceae', 'pinaceae', 'family', '2026-01-01T00:00:00+00:00')
+            """
+        ).lastrowid
+        connection.execute(
+            """
+            INSERT INTO herb_taxa
+                (herb_id, taxon_id, relationship_type, source_claim_id,
+                 is_preferred, created_at)
+            VALUES (?, ?, 'accepted', ?, 1, '2026-01-01T00:00:00+00:00')
+            """,
+            (herb_id, taxon_id, claim_id),
+        )
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                """
+                INSERT INTO herb_taxa
+                    (herb_id, taxon_id, relationship_type, source_claim_id,
+                     is_preferred, created_at)
+                VALUES (?, ?, 'accepted', ?, 1, '2026-01-01T00:00:00+00:00')
+                """,
+                (herb_id, parent_id, claim_id),
+            )
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                """
+                INSERT INTO herb_taxa
+                    (herb_id, taxon_id, relationship_type, source_claim_id,
+                     is_preferred, created_at)
+                VALUES (?, ?, 'accepted', 999999, 0, '2026-01-01T00:00:00+00:00')
+                """,
+                (herb_id, parent_id),
+            )
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                """
+                INSERT INTO taxa (scientific_name, normalized_name, rank, created_at)
+                VALUES ('Invalid', 'invalid', 'not-a-rank', '2026-01-01T00:00:00+00:00')
+                """
+            )
+        connection.execute(
+            """
+            INSERT INTO taxon_relationships
+                (parent_taxon_id, child_taxon_id, relationship_type,
+                 source_claim_id, created_at)
+            VALUES (?, ?, 'parent_child', ?, '2026-01-01T00:00:00+00:00')
+            """,
+            (parent_id, taxon_id, claim_id),
+        )
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                """
+                INSERT INTO taxon_relationships
+                    (parent_taxon_id, child_taxon_id, relationship_type,
+                     source_claim_id, created_at)
+                VALUES (?, ?, 'parent_child', ?, '2026-01-01T00:00:00+00:00')
+                """,
+                (parent_id, taxon_id, claim_id),
+            )
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                """
+                INSERT INTO taxon_relationships
+                    (parent_taxon_id, child_taxon_id, relationship_type,
+                     source_claim_id, created_at)
+                VALUES (?, ?, 'parent_child', ?, '2026-01-01T00:00:00+00:00')
+                """,
+                (taxon_id, taxon_id, claim_id),
+            )
+
+
+def test_migration_2_backfills_botanical_and_family_values_conservatively(tmp_path) -> None:
+    path = tmp_path / "legacy-taxonomy.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            """
+            CREATE TABLE herbs (
+                id INTEGER PRIMARY KEY, english_name TEXT NOT NULL,
+                original_name TEXT, source TEXT, source_record_id INTEGER,
+                source_url TEXT, retrieved_at TEXT, botanical_name TEXT, family TEXT
+            )
+            """
+        )
+        connection.executemany(
+            """
+            INSERT INTO herbs
+                (id, english_name, source, source_record_id, source_url,
+                 retrieved_at, botanical_name, family)
+            VALUES (?, ?, 'Legacy source', ?, ?, ?, ?, ?)
+            """,
+            [
+                (1, "First", 1, "https://example.test/1", "2026-01-01", "Abies webbiana", "Pinaceae"),
+                (2, "Second", 2, "https://example.test/2", "2026-01-02", "Abies webbiana", None),
+                (3, "Third", 3, "https://example.test/3", "2026-01-03", None, "Rosaceae"),
+                (4, "Fourth", 4, "https://example.test/4", "2026-01-04", None, None),
+            ],
+        )
+
+    AyurvedicAlmanac(path).create_database()
+
+    with sqlite3.connect(path) as connection:
+        taxa = connection.execute(
+            "SELECT scientific_name, rank FROM taxa ORDER BY taxon_id"
+        ).fetchall()
+        associations = connection.execute(
+            """
+            SELECT herb_id, relationship_type, source_claim_id
+            FROM herb_taxa ORDER BY herb_id, herb_taxon_id
+            """
+        ).fetchall()
+        claims = connection.execute(
+            """
+            SELECT source_field, source_expression
+            FROM source_claims WHERE claim_type = 'taxonomy_name'
+            ORDER BY source_claim_id
+            """
+        ).fetchall()
+        original_values = connection.execute(
+            "SELECT id, botanical_name, family FROM herbs ORDER BY id"
+        ).fetchall()
+
+    assert taxa == [
+        ("Abies webbiana", "unknown"),
+        ("Pinaceae", "family"),
+        ("Abies webbiana", "unknown"),
+        ("Rosaceae", "family"),
+    ]
+    assert [row[0] for row in associations] == [1, 1, 2, 3]
+    assert all(row[2] for row in associations)
+    assert [(row[0], row[1]) for row in claims] == [
+        ("legacy.herbs.botanical_name", "Abies webbiana"),
+        ("legacy.herbs.family", "Pinaceae"),
+        ("legacy.herbs.botanical_name", "Abies webbiana"),
+        ("legacy.herbs.family", "Rosaceae"),
+    ]
+    assert [tuple(row) for row in original_values] == [
+        (1, "Abies webbiana", "Pinaceae"),
+        (2, "Abies webbiana", None),
+        (3, None, "Rosaceae"),
+        (4, None, None),
+    ]
 
 
 def test_migration_1_enforces_claim_and_name_integrity(tmp_path) -> None:

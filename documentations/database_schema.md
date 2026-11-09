@@ -3,9 +3,9 @@
 ## Status and scope
 
 This document describes the current SQLite model and the normalized model for
-Dravyaguna data. Migration 1 implements only the core identity and provenance
-tables identified below. The remaining domain tables are still a design
-proposal and have not been implemented.
+Dravyaguna data. Migrations 1 and 2 implement core identity, provenance, and
+botanical taxonomy tables identified below. The remaining domain tables are
+still a design proposal and have not been implemented.
 
 The design keeps source expressions and normalized interpretations side by
 side. Normalized values are claims made about a source record, not replacements
@@ -55,6 +55,14 @@ legacy application contract:
 | `legacy_herb_map` | One-to-one mapping from existing `herbs.id` values to themselves for staged migration. |
 | `herb_names` | Source-backed multilingual/name-type associations for existing herbs. |
 
+Migration 2 additionally creates these additive taxonomy tables:
+
+| Table | Migration 2 purpose |
+|---|---|
+| `taxa` | Taxonomic concepts with conservative rank and normalized-name search fields. |
+| `taxon_relationships` | Provenance-backed parent-child or synonym relationships between taxa. |
+| `herb_taxa` | Provenance-backed associations between existing herbs and taxonomic concepts. |
+
 The generated schema uses stable integer primary keys. `herbs` has a unique
 `(source, source_record_id)` constraint. `illness` has unique display and
 canonical names. `treatment` has a composite primary key and cascading foreign
@@ -65,9 +73,9 @@ its checks currently restrict Doshas to Vata, Pitta, and Kapha and effects to
 
 Every application connection enables `PRAGMA foreign_keys = ON`. Search indexes
 cover herb and illness search keys; unique indexes cover source identity and
-illness canonical names. No part, property, Karma, taxonomy, Dosha-effect, or
-condition-mapping tables are implemented by Migration 1; those remain proposed
-future tables.
+illness canonical names. No part, property, Karma, Dosha-effect, or
+condition-mapping tables are implemented by Migrations 1 or 2; those remain
+proposed future tables.
 
 ### Current record and update behavior
 
@@ -119,8 +127,9 @@ identity of a herb.
 
 The `sources`, `source_records`, `source_claims`, `legacy_herb_map`, and
 `herb_names` definitions in this section are implemented by Migration 1.
-Properties, Karma, Dosha-effect, taxonomy, condition, and related vocabulary
-tables remain proposed and are not active application tables.
+The taxonomy definitions are implemented by Migration 2. Properties, Karma,
+Dosha-effect, condition, and related vocabulary tables remain proposed and are
+not active application tables.
 
 ### Identity and taxonomy
 
@@ -180,6 +189,26 @@ required `source_claim_id`. Use a unique index on
 Taxonomy is justified as a separate concept because accepted names, source
 identifications, and taxonomic parents can be shared by many herbs and can
 change independently of Ayurvedic names.
+
+Migration 2 uses this taxonomy model conservatively. A legacy botanical name
+creates an `unknown`-rank taxon and a `source_identification` `herb_taxa` row;
+a legacy family creates a `family`-rank taxon and the same relationship type.
+No author, accepted status, authority, or parent-child hierarchy is invented.
+The same botanical spelling on two herbs creates separate taxon concepts
+during this migration, preventing silent concept merging. Future explicit
+curation may merge or relate concepts using new source claims.
+
+`taxon_relationships` has a surrogate `relationship_id`, required parent and
+child taxa, a controlled `relationship_type`, and a required `source_claim_id`.
+Self-parent rows are rejected by a check constraint and duplicate
+`(parent_taxon_id, child_taxon_id, relationship_type, source_claim_id)` rows by
+a unique index. It does not cascade-delete source claims.
+
+`herb_taxa` has a surrogate `herb_taxon_id`, required herb/taxon/claim foreign
+keys, `relationship_type`, `is_preferred`, and `created_at`. A unique index
+prevents duplicate claim-backed associations. A partial unique index allows at
+most one preferred `accepted` taxon per herb. Migration 2 creates only
+non-preferred `source_identification` rows, so it does not assert acceptance.
 
 ### Parts and Dravyaguna properties
 
@@ -390,6 +419,8 @@ erDiagram
     HERBS ||--o{ HERB_TAXA : identified_as
     TAXA ||--o{ HERB_TAXA : describes
     TAXA ||--o{ TAXA : parent_of
+    TAXA ||--o{ TAXON_RELATIONSHIPS : parent
+    TAXA ||--o{ TAXON_RELATIONSHIPS : child
     HERBS ||--o{ HERB_CONDITIONS : indicates
     CONDITIONS ||--o{ HERB_CONDITIONS : normalizes
     SOURCES ||--o{ SOURCE_RECORDS : publishes
@@ -401,6 +432,7 @@ erDiagram
     SOURCE_CLAIMS ||--o{ HERB_KARMA : supports
     SOURCE_CLAIMS ||--o{ HERB_DOSHA_EFFECTS : supports
     SOURCE_CLAIMS ||--o{ HERB_TAXA : supports
+    SOURCE_CLAIMS ||--o{ TAXON_RELATIONSHIPS : supports
     SOURCE_CLAIMS ||--o{ HERB_CONDITIONS : supports
 ```
 

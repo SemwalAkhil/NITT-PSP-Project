@@ -255,6 +255,15 @@ key. SQLite foreign keys provide existence checks, while `_validate_herb_claim`
 provides the application-level subject check for herb names. Manual claims are
 accepted only with an explicit `legacy_herb_id:<id>` binding.
 
+## Migration 2 botanical taxonomy
+
+Taxonomy backfill must preserve source expressions without inventing a complete
+hierarchy. Botanical names are `unknown` rank, family values are `family` rank,
+and both become non-preferred source-identification associations backed by
+Migration 1 claims. Matching names on different herbs are not merged during
+backfill; explicit taxonomic curation is required before concept identity is
+shared.
+
 ## Harvard-Kyoto Convention
 
 The project uses a compatibility transliteration for English-facing database

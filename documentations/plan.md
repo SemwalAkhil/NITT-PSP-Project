@@ -39,6 +39,9 @@ Implemented today:
 - Migration 1 backfill integrity is hardened with duplicate-identity preflight,
       deterministic inserted-row mapping, and application-level claim subject
       validation; no new domain tables are included.
+- Migration 2 implements only normalized botanical taxonomy (`taxa`,
+      `taxon_relationships`, and `herb_taxa`) with conservative legacy backfill;
+      other Dravyaguna domain migrations remain planned.
 
 Still planned:
 

@@ -33,6 +33,12 @@ ILLNESS_ALIASES = {
 MIN_SEARCH_SCORE = 0.65
 MIGRATION_1_VERSION = 1
 MIGRATION_1_NAME = "core_identity_and_provenance"
+MIGRATION_2_VERSION = 2
+MIGRATION_2_NAME = "normalized_botanical_taxonomy"
+TAXON_RANKS = (
+    "unknown", "family", "genus", "species", "subspecies", "variety", "form",
+    "cultivar", "unranked",
+)
 
 
 class MigrationError(RuntimeError):
@@ -162,17 +168,25 @@ class AyurvedicAlmanac:
                     row["version"]
                     for row in connection.execute("SELECT version FROM schema_migrations")
                 }
-                if MIGRATION_1_VERSION not in applied_versions:
-                    self._migration_1_core_identity_and_provenance(connection)
+                if MIGRATION_2_VERSION in applied_versions and MIGRATION_1_VERSION not in applied_versions:
+                    raise MigrationError(
+                        "Migration 2 is recorded without Migration 1; "
+                        "restore the database backup before retrying."
+                    )
+                migrations = (
+                    (MIGRATION_1_VERSION, MIGRATION_1_NAME, self._migration_1_core_identity_and_provenance),
+                    (MIGRATION_2_VERSION, MIGRATION_2_NAME, self._migration_2_normalized_botanical_taxonomy),
+                )
+                for version, name, migration in migrations:
+                    if version in applied_versions:
+                        continue
+                    migration(connection)
                     connection.execute(
                         "INSERT INTO schema_migrations (version, name, applied_at) VALUES (?, ?, ?)",
-                        (
-                            MIGRATION_1_VERSION,
-                            MIGRATION_1_NAME,
-                            datetime.now(timezone.utc).isoformat(),
-                        ),
+                        (version, name, datetime.now(timezone.utc).isoformat()),
                     )
-                connection.commit()
+                    connection.commit()
+                    applied_versions.add(version)
             except Exception:
                 connection.rollback()
                 raise
@@ -591,6 +605,170 @@ class AyurvedicAlmanac:
     ) -> None:
         cls._create_migration_1_tables(connection)
         cls._backfill_migration_1(connection)
+
+    @staticmethod
+    def _create_migration_2_tables(connection: sqlite3.Connection) -> None:
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS taxa (
+                taxon_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                scientific_name TEXT NOT NULL,
+                normalized_name TEXT NOT NULL,
+                rank TEXT NOT NULL,
+                authorship TEXT,
+                created_at TEXT NOT NULL,
+                CHECK (rank IN (
+                    'unknown', 'family', 'genus', 'species', 'subspecies',
+                    'variety', 'form', 'cultivar', 'unranked'
+                ))
+            )
+            """
+        )
+        connection.execute(
+            "CREATE INDEX IF NOT EXISTS idx_taxa_normalized_name "
+            "ON taxa(normalized_name, rank)"
+        )
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS taxon_relationships (
+                relationship_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                parent_taxon_id INTEGER NOT NULL,
+                child_taxon_id INTEGER NOT NULL,
+                relationship_type TEXT NOT NULL,
+                source_claim_id INTEGER NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (parent_taxon_id) REFERENCES taxa(taxon_id),
+                FOREIGN KEY (child_taxon_id) REFERENCES taxa(taxon_id),
+                FOREIGN KEY (source_claim_id) REFERENCES source_claims(source_claim_id),
+                CHECK (parent_taxon_id <> child_taxon_id),
+                CHECK (relationship_type IN ('parent_child', 'accepted_synonym'))
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_taxon_relationships_unique
+            ON taxon_relationships(
+                parent_taxon_id, child_taxon_id, relationship_type, source_claim_id
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_taxon_relationships_child
+            ON taxon_relationships(child_taxon_id, relationship_type)
+            """
+        )
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS herb_taxa (
+                herb_taxon_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                herb_id INTEGER NOT NULL,
+                taxon_id INTEGER NOT NULL,
+                relationship_type TEXT NOT NULL,
+                source_claim_id INTEGER NOT NULL,
+                is_preferred INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (herb_id) REFERENCES herbs(id),
+                FOREIGN KEY (taxon_id) REFERENCES taxa(taxon_id),
+                FOREIGN KEY (source_claim_id) REFERENCES source_claims(source_claim_id),
+                CHECK (is_preferred IN (0, 1)),
+                CHECK (relationship_type IN (
+                    'accepted', 'source_identification', 'synonym'
+                ))
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_herb_taxa_unique
+            ON herb_taxa(herb_id, taxon_id, relationship_type, source_claim_id)
+            """
+        )
+        connection.execute(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_herb_taxa_preferred
+            ON herb_taxa(herb_id)
+            WHERE relationship_type = 'accepted' AND is_preferred = 1
+            """
+        )
+        connection.execute(
+            "CREATE INDEX IF NOT EXISTS idx_herb_taxa_taxon "
+            "ON herb_taxa(taxon_id, relationship_type)"
+        )
+
+    @classmethod
+    def _insert_legacy_taxon_claim(
+        cls,
+        connection: sqlite3.Connection,
+        herb_id: int,
+        expression: str,
+        source_field: str,
+        rank: str,
+        created_at: str,
+    ) -> None:
+        source_record_id = cls._resolve_legacy_source_record_id(connection, herb_id)
+        claim_id = connection.execute(
+            """
+            INSERT INTO source_claims
+                (source_record_id, claim_type, source_field, source_expression,
+                 language_code, verification_status, created_by_type, created_by,
+                 created_at, updated_at)
+            VALUES (?, 'taxonomy_name', ?, ?, 'und', 'unreviewed',
+                    'system', 'migration:2', ?, ?)
+            """,
+            (source_record_id, source_field, expression, created_at, created_at),
+        ).lastrowid
+        taxon_id = connection.execute(
+            """
+            INSERT INTO taxa
+                (scientific_name, normalized_name, rank, created_at)
+            VALUES (?, ?, ?, ?)
+            """,
+            (expression, search_key(ascii_text(expression) or expression), rank, created_at),
+        ).lastrowid
+        cls._validate_herb_claim(connection, herb_id, claim_id)
+        connection.execute(
+            """
+            INSERT INTO herb_taxa
+                (herb_id, taxon_id, relationship_type, source_claim_id,
+                 is_preferred, created_at)
+            VALUES (?, ?, 'source_identification', ?, 0, ?)
+            """,
+            (herb_id, taxon_id, claim_id, created_at),
+        )
+
+    @classmethod
+    def _backfill_migration_2(cls, connection: sqlite3.Connection) -> None:
+        now = datetime.now(timezone.utc).isoformat()
+        for row in connection.execute(
+            "SELECT id, botanical_name, family FROM herbs ORDER BY id"
+        ):
+            if row["botanical_name"]:
+                cls._insert_legacy_taxon_claim(
+                    connection,
+                    row["id"],
+                    row["botanical_name"],
+                    "legacy.herbs.botanical_name",
+                    "unknown",
+                    now,
+                )
+            if row["family"]:
+                cls._insert_legacy_taxon_claim(
+                    connection,
+                    row["id"],
+                    row["family"],
+                    "legacy.herbs.family",
+                    "family",
+                    now,
+                )
+
+    @classmethod
+    def _migration_2_normalized_botanical_taxonomy(
+        cls, connection: sqlite3.Connection
+    ) -> None:
+        cls._create_migration_2_tables(connection)
+        cls._backfill_migration_2(connection)
 
     @staticmethod
     def _migrate_legacy_herbs(connection: sqlite3.Connection) -> None:
