@@ -1,0 +1,16 @@
+LICENSE
+README.md
+pyproject.toml
+src/herbal_almanac/__init__.py
+src/herbal_almanac/cleaning.py
+src/herbal_almanac/cli.py
+src/herbal_almanac/database_operator.py
+src/herbal_almanac/scrapper.py
+src/herbal_almanac/translation.py
+src/herbal_almanac.egg-info/PKG-INFO
+src/herbal_almanac.egg-info/SOURCES.txt
+src/herbal_almanac.egg-info/dependency_links.txt
+src/herbal_almanac.egg-info/entry_points.txt
+src/herbal_almanac.egg-info/requires.txt
+src/herbal_almanac.egg-info/top_level.txt
+tests/test_scrapper.py

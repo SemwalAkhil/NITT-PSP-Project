@@ -362,3 +362,6 @@ The clean wheel smoke test verifies library imports, the installed CLI, and a
 user-selected database path without the optional translation dependency. The
 TestPyPI upload is still pending valid TestPyPI credentials after a rejected
 upload, so no public package release has been made.
+
+## assert keyword
+The `assert` keyword in Python is a debugging aid that tests a condition as a internal sanity check. If the condition evaluates to `True`, the program carries on running normally. If the condition evaluates to `False`, Python immediately crashes the program and raises an AssertionError

@@ -1,0 +1,2 @@
+[console_scripts]
+herbal-almanac = herbal_almanac.cli:main
