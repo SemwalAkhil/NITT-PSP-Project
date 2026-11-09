@@ -1,294 +1,180 @@
 # Database Operator
 
-## Purpose
+## Purpose and boundaries
 
-`database_operator.py` owns SQLite persistence for cleaned DRAVYA records. It
-does not download pages or interpret HTML. Its responsibilities are connection
-lifecycle, schema creation, lightweight migration, transactional persistence,
-and idempotent updates.
+`src/herbal_almanac/database_operator.py` owns SQLite persistence for
+validated `PlantRecord` objects. It does not download pages or parse source
+HTML. Its responsibilities include connection lifecycle, legacy schema
+compatibility, versioned migrations, transactional persistence, search, and
+export-oriented reads.
 
-## `AyurvedicAlmanac`
+## `AyurvedicAlmanac` and connection management
 
-### Constructor
+### Database path
 
-`AyurvedicAlmanac(database_path=None)` uses a per-user writable data directory
-when no path is supplied. On Linux and other Unix-like systems this is
-`$XDG_DATA_HOME/herbal-almanac/AyurvedicDB.db`, or
-`~/.local/share/herbal-almanac/AyurvedicDB.db` when `XDG_DATA_HOME` is unset.
-macOS uses `~/Library/Application Support/herbal-almanac/AyurvedicDB.db`, and
-Windows uses `%APPDATA%/herbal-almanac/AyurvedicDB.db`.
+`AyurvedicAlmanac(database_path=None)` uses a per-user writable location:
 
-The parent directory is created when the first connection is opened, so an
-installed package never writes beside its own modules. Pass an explicit path,
-such as `/tmp/ayurvedic.db`, for tests, isolated runs, or a shared database.
-Existing databases at either the default or explicit path continue through the
-existing schema migration process.
+- Linux/Unix: `$XDG_DATA_HOME/herbal-almanac/AyurvedicDB.db`, falling back to
+  `~/.local/share/herbal-almanac/AyurvedicDB.db`.
+- macOS: `~/Library/Application Support/herbal-almanac/AyurvedicDB.db`.
+- Windows: `%APPDATA%/herbal-almanac/AyurvedicDB.db`.
+
+The parent directory is created when a connection is opened. Pass an explicit
+path for tests, isolated runs, or a shared local database.
 
 ### `connect()`
 
-Every connection enables:
+Each new SQLite connection enables `PRAGMA foreign_keys = ON` and uses
+`sqlite3.Row` as its row factory. Foreign-key enforcement is configured per
+connection.
 
-```sql
-PRAGMA foreign_keys = ON;
-```
+### Private `_connection()`
 
-SQLite does not enforce foreign keys by default on every new connection.
-Connections return `sqlite3.Row` objects so columns can be accessed by name.
+Ordinary read and CRUD methods use the private `_connection()` context
+manager. It opens one operation-scoped connection, enters SQLite's
+transaction context, and closes the connection in `finally`. Normal exit
+commits; exceptions roll back; both paths close the connection. Using
+`contextlib.closing()` alone would close the resource but would not supply the
+transaction behavior.
 
-### Private `_connection()` context manager
+`create_database()` intentionally has a separate lifecycle because it
+manages schema creation and versioned migrations. It closes its connection in
+`finally` and marks the instance initialized only after successful completion.
 
-Ordinary CRUD and read methods use the private `_connection()` context manager.
-It enters SQLite's connection context manager to retain transaction semantics,
-then closes the connection in a `finally` block. Normal exit commits and an
-exception triggers rollback; the connection is closed in either case.
-`contextlib.closing()` alone is not a substitute because it does not manage
-transactions.
+## Active legacy application tables
 
-`create_database()` owns a separate connection lifecycle because it controls
-schema creation and versioned migrations explicitly. It closes the connection
-with `finally` after either success or failure.
+The application currently continues to read and write these tables:
 
-## Schema
+| Table | Responsibility |
+|---|---|
+| `herbs` | Herb identity, source/source-record identity, original and compatibility names, botanical name/family text, source URL, retrieval timestamp, and search key |
+| `illness` | Condition names, normalized/canonical search keys, and verification metadata |
+| `treatment` | Herb–illness relationships; `source` distinguishes manual and scraped rows |
+| `herb_attributes` | Flexible section-qualified source values, source wording/language, and translation metadata |
+| `herb_doshas` | Normalized Vata/Pitta/Kapha effect rows retaining the source expression |
 
-### `herbs`
+### Transactional record upsert
 
-Stores the main plant identity, source name, source record ID, source URL,
-retrieval timestamp, botanical name, and family. `original_name` stores the normalized Unicode
-source name. The original `english_name` field is retained as the
-transliterated compatibility/search name.
+`insert_record()` writes one cleaned record in one transaction. It upserts
+the herb by `(source, source_record_id)`, resolves the actual local herb ID,
+refreshes flexible attributes, refreshes scraped treatment links while
+preserving manual links, and refreshes normalized Dosha rows. It commits only
+after all steps succeed. Failure rolls back the complete record update.
 
-The pair `(source, source_record_id)` identifies one source record across
-repeated scrapes.
-`retrieved_at` records when the source page was extracted.
+The source condition field currently creates unverified illness entries and
+scraped treatment links. Other Therapeutic Usage sections remain available as
+source attributes. Translation-generated attributes retain their
+machine-generated/unverified metadata.
 
-### `illness`
+## Legacy compatibility and initialization
 
-Stores illness names for the planned herb-to-illness model. The current DRAVYA scraper populates this table only from values in the
-the `Therapeutic Usage.Name` condition field in `cleaning.py`. These source
-conditions are marked unverified; controlled-vocabulary mapping is deferred.
-Other therapeutic fields remain source attributes. `canonical_key` is unique
-so case, diacritic, and terminal transliteration variants of the same illness
-can be shared by many herbs. The original display name is retained in
-`english_name`.
+`create_database()` first acquires the instance's re-entrant
+initialization lock. It opens its own connection, sets
+`PRAGMA busy_timeout = 10000`, and uses `BEGIN IMMEDIATE` to reserve the
+SQLite writer before schema changes. Static DDL statements execute individually
+inside the transaction; `executescript()` is avoided because it implicitly
+commits a pending transaction.
 
-### `treatment`
+Legacy table/column adjustments and data consolidation remain supported for
+existing local database files. Versioned normalized migrations then use the
+`schema_migrations` ledger. Each migration body and its version row are
+committed together under the writer reservation. Failed work is rolled back
+and is not marked as applied. An instance becomes initialized only after the
+whole initialization flow succeeds.
 
-This many-to-many join table connects herbs and illnesses through `herb_id`
-and `illness_id`. Its composite primary key prevents duplicate relationships,
-and foreign keys use cascading deletes. The `source` column distinguishes
-`scraped` relationships from `manual` relationships added through the CLI.
-Values from the source condition field create `scraped` relationships, while
-their `machine_generated` and
-`verification_status` metadata records that they are unverified.
+## Versioned migrations
 
-### `herb_attributes`
+### Migration 1 — core identity and provenance
 
-Stores flexible fields that do not yet have dedicated normalized columns:
+Version `1`, `core_identity_and_provenance`, adds:
 
-- `herb_id`
-- `field_name`
-- `value`
-- `source_text`
-- `source_language`
-- `machine_generated`
-- `verification_status`
+- `schema_migrations` — applied migration versions.
+- `sources` — source/provider identifiers, including a manual source.
+- `source_records` — source-level record identifiers and retrieval metadata.
+- `source_claims` — assertions tied to source records, including review
+  workflow and correction lineage.
+- `legacy_herb_map` — a stable one-to-one mapping from legacy herb IDs.
+- `herb_names` — typed, multilingual, claim-backed herb name associations.
 
-The composite primary key prevents duplicate values for one herb and field.
-`source_text` preserves the original extracted wording for review.
-Translation metadata identifies automatically generated values and whether
-they have been reviewed.
+Before backfill, duplicate normalized legacy identities
+`(cleaned source, string source_record_id)` are rejected with
+`MigrationError` and conflicting herb IDs. Missing external IDs remain
+explicitly represented by `legacy_herb_id:<id>` artifact references rather
+than invented keys. The backfill preserves legacy IDs and source URLs and uses
+the inserted source-record ID directly to avoid ambiguous lookup.
 
-Vernacular names use the same flexible attribute store with field names such
-as `Vernacular Names.English` and `Vernacular Names.Hindi`. English is included
-in the supported language list because it is the source's primary display-name
-language. The source title's Ayurvedic/Sanskrit name is stored in the normalized
-`herbs.original_name` column. Its transliteration is stored in the
-compatibility `herbs.english_name` column, while searches check both columns.
-Other language values remain available through `herb_attributes` without
-adding a fixed column for every language.
+Migration 1 does not rewrite the active legacy application tables or redirect
+application reads/writes to the new tables. Its new structures provide an
+additive provenance foundation.
 
-Translated values use the same store with `Translated Names.<Language>` field
-names. They are persisted by `insert_record()` exactly like source
-attributes, so JSON and CSV exports include them automatically.
+### Migration 2 — normalized botanical taxonomy
 
-### `herb_doshas`
+Version `2`, `normalized_botanical_taxonomy`, adds:
 
-Stores one normalized effect for each Dosha documented by a source expression:
+- `taxa` — taxonomic concepts with controlled rank and normalized-name fields.
+- `taxon_relationships` — provenance-backed parent-child or synonym links.
+- `herb_taxa` — provenance-backed associations between herbs and taxa.
 
-- `herb_id`
-- `dosha` (`Vata`, `Pitta`, or `Kapha`)
-- `effect` (`decrease`, `increase`, or `unspecified`)
-- `source_expression`
-- `source`
+Legacy botanical names are backfilled as separate `unknown`-rank taxa;
+legacy family values are backfilled as `family`-rank taxa. The migration
+preserves original herb columns and does not infer accepted status, author
+citations, parent-child hierarchy, or synonym merges. Each association is
+linked to a source claim. Constraints enforce allowed ranks and relationship
+types, foreign keys, no self-parent relationships, duplicate prevention, and
+the preferred accepted-taxon rule.
 
-Every documented expression creates all three Dosha rows, including
-`unspecified` rows for Doshas that are not mentioned. This makes the absence of
-an effect explicit without inferring one. Scraped rows are replaced during a
-record refresh, while the source expression is retained for auditability.
+Migration 2 remains additive: the legacy tables continue to be the active
+application read/write contract.
 
-## Schema migration
+### Claim-to-herb validation
 
-`create_database()` is safe to call repeatedly. It creates missing tables and
-adds the newer columns to the original prototype `herbs` table when needed.
-It also creates a unique source-record index and migrates legacy illness
-tables. The illness migration consolidates canonical duplicate names,
-redirects or removes duplicate treatment links, and creates a unique index on
-`illness(canonical_key)` so illness upserts have a valid conflict target.
-Existing SQLite files are migrated in place; use a new database path for a
-clean rebuild.
+SQLite foreign keys confirm that referenced claims and herbs exist, but they
+cannot prove that a claim's source record belongs to the herb receiving a name
+association. The application helper `_validate_herb_claim()` verifies the
+source-record relationship before `_insert_herb_name()` writes a row.
+Missing, cross-herb, or ambiguous associations raise
+`ClaimAssociationError`.
 
-This is a lightweight migration approach suitable for the current prototype.
-A formal migration tool can be introduced when schema changes become frequent.
+The supported manual-claim path requires the `manual` source and an explicit
+`raw_artifact_ref = legacy_herb_id:<herb_id>` binding. This is an
+application-level rule; direct SQL can bypass it and should not be treated as
+validated application curation.
 
-### Initialization and migration concurrency
+## Search and read behavior
 
-A per-instance re-entrant lock prevents concurrent initialization calls on
-the same `AyurvedicAlmanac` object. Independent instances and processes are
-coordinated with SQLite's writer lock: initialization sets a 10-second
-`busy_timeout` and acquires `BEGIN IMMEDIATE` before changing schema state.
+Herb and illness searches use normalized search keys and ranked exact,
+substring, and fuzzy matching. Non-empty queries omit results below the
+`0.65` minimum score; empty queries retain the full sorted listing behavior.
+This reduces unrelated whole-string matches while retaining small spelling
+variants.
 
-The base schema statements run individually inside the writer transaction.
-The implementation intentionally avoids `executescript()` here because that
-method implicitly commits a pending transaction and would release the lock.
-Legacy compatibility adjustments are committed as a separate phase. The
-migration ledger is then inspected, and each missing migration plus its
-version-row insert is committed in one transaction while holding the writer
-reservation. Failed migration work rolls back and does not mark the database
-instance initialized.
+`herb_doshas(herb_id)` returns normalized effects with their source
+expressions. `all_records()` includes Dosha data for JSON/CSV export.
+Compatibility helpers `insert_herb()` and `insert_illness()` remain for the
+original prototype; new ingestion should use `insert_record()`.
 
-Each public operation uses its own connection. Do not share one SQLite
-connection between worker threads.
+## Connection and migration verification
 
-### Migration 1: core identity and provenance
+The offline database tests cover:
 
-Migration 1 is tracked in `schema_migrations` at version `1` with the name
-`core_identity_and_provenance`. It runs transactionally after the legacy
-prototype initialization and creates `sources`, `source_records`,
-`source_claims`, `legacy_herb_map`, and `herb_names`. A partial unique index
-enforces non-null `(source_id, external_record_key)` pairs while allowing
-multiple legacy records whose external key is unavailable.
+- Success and failure connection closure.
+- Transaction rollback and foreign-key enforcement.
+- Independent operation connections.
+- Concurrent initialization on one instance and across instances.
+- Idempotent migration application.
+- Migration rollback and retry without a partial version-ledger entry.
 
-Before Migration 1 creates any of its tables, it validates normalized legacy
-identities `(cleaned source, string source_record_id)`. Duplicate non-null
-identities raise `MigrationError` with the conflicting legacy herb IDs. Null
-source-record IDs remain valid because each receives its explicit
-`legacy_herb_id:<id>` artifact reference. The backfill uses each inserted
-`source_records` row ID directly; it never selects a possibly ambiguous match
-with `ORDER BY` and `LIMIT`.
-
-The backfill creates source rows from existing source identifiers and a
-`manual` source row for future curation. It preserves source URLs, retrieval
-timestamps, and non-null external record IDs. Records without an external key
-retain a `legacy_herb_id:<id>` artifact reference instead of receiving an
-invented key. Existing herb IDs map one-to-one through `legacy_herb_map`.
-
-One claim-backed `source_alias` name is created from each herb's existing
-`original_name` (or `english_name` when the original is absent). Existing
-attributes, treatments, Dosha rows, and herb columns are not rewritten. The
-application continues to read and write the legacy tables; the new tables are
-available for migration validation and future dual-write work.
-
-If table creation or backfill fails, the Migration 1 transaction rolls back its
-new tables and does not insert a migration-version row. Reinitialization is
-idempotent after a successful versioned run.
-
-### Migration 2: normalized botanical taxonomy
-
-Migration 2 is tracked at version `2` with the name
-`normalized_botanical_taxonomy`. It runs only after Migration 1 and creates
-`taxa`, `taxon_relationships`, and `herb_taxa` transactionally. Repeated
-initialization skips both recorded migrations.
-
-Legacy `herbs.botanical_name` values become separate `unknown`-rank taxa and
-`source_identification` associations. Legacy `herbs.family` values become
-separate `family`-rank taxa and source-identification associations. The
-backfill uses Migration 1 source records and creates `taxonomy_name` claims
-with `created_by = migration:2`. It preserves the original herb columns and
-does not infer authorship, accepted status, authority, parent-child
-relationships, or taxonomic merges. Family-only values remain assertions; they
-do not create a hierarchy.
-
-Every taxonomy association has a source claim. Database constraints enforce
-foreign keys, controlled ranks and relationship types, no self-parent edges,
-duplicate prevention, and one preferred accepted taxon per herb. Migration 2
-does not switch application reads or writes to the new tables.
-
-### Application-level claim subject validation
-
-SQLite foreign keys prove that a `herb_names.herb_id` and
-`source_claims.source_claim_id` exist, but they cannot prove that the claim's
-source record describes that herb. The private `_validate_herb_claim()` helper
-resolves the herb through `legacy_herb_map`, resolves its unique source record,
-and rejects missing, cross-herb, or ambiguous claims with
-`ClaimAssociationError`. `_insert_herb_name()` invokes this helper before
-creating an association.
-
-Manual claims are accepted only when their source is `manual` and their source
-record has the explicit `raw_artifact_ref = legacy_herb_id:<herb_id>` binding.
-This is a deliberate application policy for future manual curation, not a
-database-enforced foreign key. Direct SQL inserts can bypass it and must not be
-treated as validated application operations.
-
-## `insert_record()`
-
-One record is written in a single transaction:
-
-1. Ensure the schema exists.
-2. Insert or update the herb using `(source, source_record_id)`.
-3. Resolve the actual local herb ID using that natural key.
-4. Delete the herb's previous attributes.
-5. Delete the herb's previous scraped treatment links; manual links are
-   preserved.
-6. Insert the current cleaned attributes.
-7. Create or reuse unverified conditions from the source condition field and
-   insert the current herb-to-illness links.
-8. Normalize and insert the current Doshakarma expressions into `herb_doshas`.
-9. Commit only after all steps succeed.
-
-If an attribute insert fails, the `_connection()` context manager rolls back the whole update and closes the connection.
-This prevents partially updated records.
-
-The local ID is queried after the upsert instead of relying on `lastrowid`.
-When SQLite takes the conflict-update path, `lastrowid` is not a reliable way
-to identify the existing row.
-
-## Other methods
-
-`insert_records()` persists an iterable of `PlantRecord` objects by delegating
-to `insert_record()`.
-
-`_insert_treatments_from_attributes()` selects section-qualified fields whose
-names contain `Therapeutic` and `Usage`. It cleans and deduplicates their
-values, inserts missing illness names, and creates the corresponding treatment
-links. Since `insert_record()` deletes links first, a later scrape reflects
-the source's current therapeutic usage rather than accumulating stale links.
-
-Searches rank exact, substring, and fuzzy matches and omit non-empty-query
-results below the minimum relevance score (`0.65`). Empty queries retain the
-full sorted listing behavior. This keeps weak whole-string matches such as
-`Turmeric` out of a `tulsi` search while preserving small misspellings such as
-`Tulsii`.
-
-`insert_herb()` and `insert_illness()` remain as compatibility helpers for the
-original prototype. New ingestion should use `insert_record()` to retain
-provenance and attributes.
-
-`herb_doshas(herb_id)` returns normalized effects together with their source
-expressions. `all_records()` includes a `doshas` group for JSON and CSV export.
-
-## Connection lifecycle verification
-
-The connection tests check that application operations close their SQLite connection after both successful and failing calls. They also cover rollback, independent per-thread connections, and foreign-key enforcement. Initialization tests cover same-instance thread safety, concurrent independent instances, migration idempotence, rollback and retry after migration failure, and connection closure.
-
-Run the required scraper regression and full suite with:
+Run both the mandatory regression and full suite:
 
 ```bash
 python -m pytest tests/test_scrapper.py -q
 python -m pytest -q
 ```
 
-## Design principle
+## Design boundary
 
-The database stores searchable cleaned values together with source context.
-This supports future normalization while keeping the dataset auditable and
-rebuildable from source pages.
+The normalized schema is deliberately staged. Migrations 1 and 2 add source
+identity/provenance and botanical taxonomy, but the legacy application model
+remains active. The remaining target domain structures in
+`documentations/database_schema.md` must be treated as proposals until their
+own migrations and tests are implemented.
