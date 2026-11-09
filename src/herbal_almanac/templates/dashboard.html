@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Overview · Herbal Almanac{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">YOUR KNOWLEDGE SPACE</p><h1>Good day. <em>Explore nature.</em></h1><p class="subheading">A clear view of the botanical records in your local library.</p></div>
+  <a class="button button-primary" href="{{ url_for('herb_list') }}">Explore herbs <span>→</span></a>
+</section>
+<section class="welcome-panel">
+  <div class="welcome-copy"><span class="panel-kicker">THE DRAVYAGUNA COLLECTION</span><h2>Traditional knowledge,<br><em>thoughtfully catalogued.</em></h2><p>Browse plant identities, regional names, traditional attributes and Dosha effects preserved with their source context.</p><a href="{{ url_for('herb_list') }}" class="text-link">Discover the collection <span>→</span></a></div>
+  <div class="botanical-art" aria-hidden="true"><div class="sun"></div><div class="stem"></div><i class="leaf leaf-one"></i><i class="leaf leaf-two"></i><i class="leaf leaf-three"></i><i class="leaf leaf-four"></i><i class="leaf leaf-five"></i></div>
+</section>
+<section class="section-block">
+  <div class="section-title"><div><p class="eyebrow">LIBRARY AT A GLANCE</p><h2>Your collection</h2></div><span class="muted">Live counts from your SQLite database</span></div>
+  <div class="stat-grid">
+    <article class="stat-card"><span class="stat-icon">✿</span><p>HERB RECORDS</p><strong>{{ "{:,}".format(summary.herbs) }}</strong><small>Plant identities</small></article>
+    <article class="stat-card"><span class="stat-icon">◈</span><p>ILLNESS TERMS</p><strong>{{ "{:,}".format(summary.illnesses) }}</strong><small>Condition references</small></article>
+    <article class="stat-card"><span class="stat-icon">⌁</span><p>TREATMENT LINKS</p><strong>{{ "{:,}".format(summary.treatments) }}</strong><small>Herb associations</small></article>
+    <article class="stat-card"><span class="stat-icon">▤</span><p>ATTRIBUTES</p><strong>{{ "{:,}".format(summary.attributes) }}</strong><small>Source data points</small></article>
+  </div>
+</section>
+<section class="section-block recent-section">
+  <div class="section-title"><div><p class="eyebrow">RECENTLY ADDED</p><h2>Herbs in your library</h2></div><a class="text-link" href="{{ url_for('herb_list') }}">View all <span>→</span></a></div>
+  {% if summary.recent_herbs %}
+  <div class="herb-grid">
+    {% for herb in summary.recent_herbs %}
+    <a class="herb-card" href="{{ url_for('herb_detail', herb_id=herb.id) }}"><span class="card-index">HERB · {{ "%04d"|format(herb.id) }}</span><h3>{{ herb.original_name or herb.english_name }}</h3><p class="latin">{{ herb.botanical_name or "Botanical identity not recorded" }}</p><span class="card-arrow">↗</span></a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state"><span>✿</span><h3>Your library is ready to grow</h3><p>No herb records are stored yet. Use the existing CLI scraper to populate your database, then return here to explore them.</p></div>
+  {% endif %}
+</section>
+{% endblock %}
