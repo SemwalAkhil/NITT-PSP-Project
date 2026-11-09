@@ -39,6 +39,12 @@ Implemented today:
   `documentations/database_schema.md`; domain tables beyond Migrations 1–2
   remain a staged design proposal.
 
+Implemented web GUI foundation:
+- Optional FastAPI/Uvicorn/Jinja2 read-only local interface.
+- Overview dashboard, searchable herb explorer, and herb detail view.
+- Temporary-database route tests; browser templates and CSS packaged with the
+  Python distribution.
+
 Still planned:
 
 - More normalized domain tables for properties, parts, Karma, Dosha,
