@@ -134,8 +134,7 @@ attributes. Fields such as `Vernacular Names.English` pass through the same
 normalization path as `Parts Used.Name` or `Therapeutic Usage.Name`, preserving
 their section and language in the field name.
 
-The module provides deterministic text cleanup only. Google translation is
-kept in `translation.py` so cleaning remains independent of network access.
-Domain-specific Dosha normalization and condition mapping should be added as
-separate deterministic functions once the source expressions and rules are
-defined.
+The module provides deterministic text cleanup and Dosha-expression
+normalization. Google translation is kept in `translation.py` so cleaning
+remains independent of network access. Condition mapping and Dosha persistence
+should remain separate concerns until their storage contracts are defined.

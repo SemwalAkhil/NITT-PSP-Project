@@ -34,7 +34,7 @@ Still planned:
       large runs.
 - Dedicated normalized name/condition/taxonomy tables beyond the current
       flexible attribute store.
-- Dosha normalization, external terminology mapping, API/PDF/Excel importers,
+- Dosha persistence and scraper integration, external terminology mapping, API/PDF/Excel importers,
       fuzzy multilingual search, and a public Python API.
 
 The status above describes the repository at the time of this documentation
@@ -670,7 +670,7 @@ The cleaning stage should:
 - [ ] Convert repeated table cells into lists
 - [ ] Handle missing values explicitly
 - [ ] Deduplicate values within a source record
-- [ ] Normalize Dosha expressions using the documented rules
+- [x] Normalize Dosha expressions using the documented rules
 
 ## Checks
 

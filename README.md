@@ -4,7 +4,8 @@
 
 ## Goal
 
-To create a library to know about various illness and their treatments using herbs in ayurveda and vice versa
+Create a library for exploring Ayurvedic herbs, illnesses, and their treatment
+relationships in both directions.
 
 ---
 
