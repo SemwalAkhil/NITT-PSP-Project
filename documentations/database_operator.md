@@ -4,7 +4,7 @@
 
 `database_operator.py` owns SQLite persistence for cleaned DRAVYA records. It
 does not download pages or interpret HTML. Its responsibilities are connection
-management, schema creation, lightweight migration, transactional persistence,
+lifecycle, schema creation, lightweight migration, transactional persistence,
 and idempotent updates.
 
 ## `AyurvedicAlmanac`
@@ -34,6 +34,19 @@ PRAGMA foreign_keys = ON;
 
 SQLite does not enforce foreign keys by default on every new connection.
 Connections return `sqlite3.Row` objects so columns can be accessed by name.
+
+### Private `_connection()` context manager
+
+Ordinary CRUD and read methods use the private `_connection()` context manager.
+It enters SQLite's connection context manager to retain transaction semantics,
+then closes the connection in a `finally` block. Normal exit commits and an
+exception triggers rollback; the connection is closed in either case.
+`contextlib.closing()` alone is not a substitute because it does not manage
+transactions.
+
+`create_database()` owns a separate connection lifecycle because it controls
+schema creation and versioned migrations explicitly. It closes the connection
+with `finally` after either success or failure.
 
 ## Schema
 
@@ -127,6 +140,25 @@ clean rebuild.
 This is a lightweight migration approach suitable for the current prototype.
 A formal migration tool can be introduced when schema changes become frequent.
 
+### Initialization and migration concurrency
+
+A per-instance re-entrant lock prevents concurrent initialization calls on
+the same `AyurvedicAlmanac` object. Independent instances and processes are
+coordinated with SQLite's writer lock: initialization sets a 10-second
+`busy_timeout` and acquires `BEGIN IMMEDIATE` before changing schema state.
+
+The base schema statements run individually inside the writer transaction.
+The implementation intentionally avoids `executescript()` here because that
+method implicitly commits a pending transaction and would release the lock.
+Legacy compatibility adjustments are committed as a separate phase. The
+migration ledger is then inspected, and each missing migration plus its
+version-row insert is committed in one transaction while holding the writer
+reservation. Failed migration work rolls back and does not mark the database
+instance initialized.
+
+Each public operation uses its own connection. Do not share one SQLite
+connection between worker threads.
+
 ### Migration 1: core identity and provenance
 
 Migration 1 is tracked in `schema_migrations` at version `1` with the name
@@ -213,7 +245,7 @@ One record is written in a single transaction:
 8. Normalize and insert the current Doshakarma expressions into `herb_doshas`.
 9. Commit only after all steps succeed.
 
-If an attribute insert fails, the context manager rolls back the whole update.
+If an attribute insert fails, the `_connection()` context manager rolls back the whole update and closes the connection.
 This prevents partially updated records.
 
 The local ID is queried after the upsert instead of relying on `lastrowid`.
@@ -243,6 +275,17 @@ provenance and attributes.
 
 `herb_doshas(herb_id)` returns normalized effects together with their source
 expressions. `all_records()` includes a `doshas` group for JSON and CSV export.
+
+## Connection lifecycle verification
+
+The connection tests check that application operations close their SQLite connection after both successful and failing calls. They also cover rollback, independent per-thread connections, and foreign-key enforcement. Initialization tests cover same-instance thread safety, concurrent independent instances, migration idempotence, rollback and retry after migration failure, and connection closure.
+
+Run the required scraper regression and full suite with:
+
+```bash
+python -m pytest tests/test_scrapper.py -q
+python -m pytest -q
+```
 
 ## Design principle
 

@@ -8,8 +8,10 @@ Herbal Almanac catalogs Ayurvedic herbs, illnesses, and their therapeutic relati
 ## 2. Repository Structure
 - `src/herbal_almanac/` — Main package source (`src/` layout).
   - `cleaning.py` — `PlantRecord` data model, `clean_text`, Unicode normalization, and Harvard-Kyoto ASCII transliteration.
-  - `database_operator.py` — `AyurvedicAlmanac` class, SQLite schema, migrations, fuzzy search, and transactional upserts.
-- `tests/test_scrapper.py` — Offline regression test suite.
+  - `database_operator.py` — `AyurvedicAlmanac` class, SQLite connection lifecycle, schema initialization, migration locking, CRUD, fuzzy search, and transactional upserts.
+- `tests/test_scrapper.py` — Offline scraper/database regression test suite.
+- `tests/test_database_connections.py` — Independent connections, transaction rollback, connection closure, and foreign-key tests.
+- `tests/test_database_initialization.py` — Concurrent initialization, migration idempotence, rollback/retry, and schema tests.
 - `documentations/` — Detailed module docs (`cli.md`, `scrapper.md`, `cleaning.md`, `database_operator.md`, `translation.md`, `plan.md`, `learnings.md`).
 - `documentations/database_schema.md` — Proposed normalized Dravyaguna schema, provenance model, ER diagram, and staged migration design.
 - `sample.html` — Saved DRAVYA HTML fixture for offline parser development.
@@ -27,13 +29,21 @@ Herbal Almanac catalogs Ayurvedic herbs, illnesses, and their therapeutic relati
 - **Migration 1 Integrity:** Duplicate legacy source identities fail before backfill, null IDs retain explicit artifact references, and application-level claim validation prevents cross-herb name associations under the documented manual-claim policy.
 - **Migration 2:** Botanical taxonomy tables (`taxa`, `taxon_relationships`, and `herb_taxa`) are implemented additively with source-claim provenance; legacy botanical names use unknown rank and family values use family rank without inferred hierarchy or acceptance.
 
-## 4. Key Commands
+## 4. SQLite Connection and Concurrency Policy
+- Each database operation opens its own connection; connections are not shared between worker threads.
+- `connect()` enables SQLite foreign keys and returns rows as `sqlite3.Row`.
+- Ordinary CRUD/read methods use `_connection()`, which preserves commit/rollback semantics and always closes the connection.
+- `create_database()` has separate connection and transaction management for schema initialization and migrations.
+- A per-instance `RLock`, `BEGIN IMMEDIATE`, and a 10-second `busy_timeout` coordinate concurrent initialization from threads, independent instances, and processes.
+- Migration state is read and updated under the SQLite writer reservation; a migration and its version-ledger row commit together.
+
+## 5. Key Commands
 - **Install (Dev):** `pip install -e ".[dev]"` (add `".[translate]"` for translation support).
 - **Initialize DB:** `herbal-almanac setup --database /tmp/ayurvedic.db`
 - **Dev Scrape:** `herbal-almanac scrape dravya --max-pages 1 --max-plants 5 --database /tmp/ayurvedic.db`
 - **Run Tests:** `python -m pytest tests/test_scrapper.py -q`
 
-## 5. Upcoming Roadmap
+## 6. Upcoming Roadmap
 - Upload release candidate to TestPyPI.
 - Expand documented Dosha terminology and query capabilities.
 - Implement the remaining normalized Dravyaguna domain tables through additive, reversible migrations.

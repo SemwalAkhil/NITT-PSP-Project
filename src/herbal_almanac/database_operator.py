@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import sqlite3
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
 import os
 from pathlib import Path
 import re
 import sys
-from typing import Any, Iterable
+from typing import Any, Iterable, Iterator
+from threading import RLock
 
 from .cleaning import DOSHAS, PlantRecord, ascii_text, clean_text, normalize_dosha_expression
 
@@ -73,6 +75,7 @@ class AyurvedicAlmanac:
     def __init__(self, database_path: str | Path | None = None) -> None:
         self.database_path = Path(database_path) if database_path else default_database_path()
         self._initialized = False
+        self._initialization_lock = RLock()
 
     def connect(self) -> sqlite3.Connection:
         self.database_path.parent.mkdir(parents=True, exist_ok=True)
@@ -81,13 +84,33 @@ class AyurvedicAlmanac:
         connection.row_factory = sqlite3.Row
         return connection
 
+    @contextmanager
+    def _connection(self) -> Iterator[sqlite3.Connection]:
+        """Yield a transaction-scoped connection and always close it."""
+        connection = self.connect()
+        try:
+            with connection:
+                yield connection
+        finally:
+            connection.close()
+
     def create_database(self) -> None:
-        """Create the schema and apply small migrations to the prototype DB."""
-        if self._initialized:
-            return
-        with self.connect() as connection:
-            connection.executescript(
-                """
+        """Create the schema and apply versioned migrations safely.
+
+        A re-entrant instance lock avoids duplicate work from threads sharing
+        this object. SQLite's BEGIN IMMEDIATE plus busy_timeout serializes
+        separate instances and processes using the same database file.
+        """
+        with self._initialization_lock:
+            if self._initialized:
+                return
+
+            connection = self.connect()
+            try:
+                connection.execute("PRAGMA busy_timeout = 10000")
+                connection.execute("BEGIN IMMEDIATE")
+                schema_statements = """
+
                 CREATE TABLE IF NOT EXISTS herbs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     english_name TEXT NOT NULL,
@@ -143,18 +166,26 @@ class AyurvedicAlmanac:
                     CHECK (effect IN ('decrease', 'increase', 'unspecified')),
                     FOREIGN KEY (herb_id) REFERENCES herbs(id) ON DELETE CASCADE
                 );
+
+
                 """
-            )
-            self._validate_legacy_source_identity(connection)
-            self._migrate_legacy_herbs(connection)
-            self._migrate_legacy_attributes(connection)
-            self._migrate_legacy_treatments(connection)
-            self._migrate_legacy_illnesses(connection)
-            self._migrate_search_columns(connection)
-            self._migrate_illness_canonical_keys(connection)
-            connection.commit()
-            try:
-                connection.execute("BEGIN")
+                # executescript() implicitly commits a pending transaction.
+                # Execute this static DDL one statement at a time so the
+                # BEGIN IMMEDIATE reservation remains active during setup.
+                for statement in schema_statements.split(";"):
+                    if statement.strip():
+                        connection.execute(statement)
+                self._validate_legacy_source_identity(connection)
+                self._migrate_legacy_herbs(connection)
+                self._migrate_legacy_attributes(connection)
+                self._migrate_legacy_treatments(connection)
+                self._migrate_legacy_illnesses(connection)
+                self._migrate_search_columns(connection)
+                self._migrate_illness_canonical_keys(connection)
+                connection.commit()
+
+                # Inspect migration state only after acquiring the writer lock.
+                connection.execute("BEGIN IMMEDIATE")
                 connection.execute(
                     """
                     CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -173,6 +204,7 @@ class AyurvedicAlmanac:
                         "Migration 2 is recorded without Migration 1; "
                         "restore the database backup before retrying."
                     )
+
                 migrations = (
                     (MIGRATION_1_VERSION, MIGRATION_1_NAME, self._migration_1_core_identity_and_provenance),
                     (MIGRATION_2_VERSION, MIGRATION_2_NAME, self._migration_2_normalized_botanical_taxonomy),
@@ -185,12 +217,15 @@ class AyurvedicAlmanac:
                         "INSERT INTO schema_migrations (version, name, applied_at) VALUES (?, ?, ?)",
                         (version, name, datetime.now(timezone.utc).isoformat()),
                     )
-                    connection.commit()
                     applied_versions.add(version)
+                connection.commit()
             except Exception:
                 connection.rollback()
                 raise
-        self._initialized = True
+            finally:
+                connection.close()
+
+            self._initialized = True
 
     @classmethod
     def _validate_legacy_source_identity(cls, connection: sqlite3.Connection) -> None:
@@ -954,7 +989,7 @@ class AyurvedicAlmanac:
     def insert_record(self, record: PlantRecord) -> int:
         """Upsert one record and its attributes in a single transaction."""
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             connection.execute(
                 """
                 INSERT INTO herbs (
@@ -1090,7 +1125,7 @@ class AyurvedicAlmanac:
     def insert_herb(self, id: int, english_name: str) -> bool:
         """Backward-compatible helper for the original prototype API."""
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             connection.execute(
                 "INSERT INTO herbs (id, english_name) VALUES (?, ?)",
                 (id, english_name),
@@ -1100,7 +1135,7 @@ class AyurvedicAlmanac:
     def insert_illness(self, id: int, english_name: str) -> bool:
         """Backward-compatible helper for the original prototype API."""
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             connection.execute(
                 """
                 INSERT INTO illness (
@@ -1131,7 +1166,7 @@ class AyurvedicAlmanac:
             raise ValueError("source_url must be an HTTP(S) URL")
 
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             cursor = connection.execute(
                 """
                 INSERT INTO herbs (
@@ -1158,7 +1193,7 @@ class AyurvedicAlmanac:
             raise ValueError("english_name cannot be empty")
 
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             cursor = connection.execute(
                 """
                 INSERT INTO illness (
@@ -1176,7 +1211,7 @@ class AyurvedicAlmanac:
             raise ValueError("herb_id and illness_id must be positive integers")
 
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             connection.execute(
                 "INSERT INTO treatment (herb_id, illness_id, source) VALUES (?, ?, 'manual')",
                 (herb_id, illness_id),
@@ -1185,7 +1220,7 @@ class AyurvedicAlmanac:
     def search_herbs(self, query: str = "") -> list[dict[str, Any]]:
         """Return herbs ranked by normalized exact, substring, and fuzzy match."""
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             rows = connection.execute(
                 """
                 SELECT id, english_name, original_name, botanical_name, family, source
@@ -1198,7 +1233,7 @@ class AyurvedicAlmanac:
     def search_illnesses(self, query: str = "") -> list[dict[str, Any]]:
         """Return illnesses whose names contain the query."""
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             rows = connection.execute(
                 """
                 SELECT id, english_name, canonical_key
@@ -1246,7 +1281,7 @@ class AyurvedicAlmanac:
     def treatment_details(self, herb_id: int) -> list[dict[str, Any]]:
         """Return illnesses associated with one herb."""
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             rows = connection.execute(
                 """
                 SELECT i.id, i.english_name
@@ -1262,7 +1297,7 @@ class AyurvedicAlmanac:
     def herb_attributes(self, herb_id: int) -> list[dict[str, Any]]:
         """Return all source attributes for one herb."""
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             rows = connection.execute(
                 """
                 SELECT h.id AS herb_id, h.english_name AS herb_name,
@@ -1280,7 +1315,7 @@ class AyurvedicAlmanac:
     def herb_doshas(self, herb_id: int) -> list[dict[str, Any]]:
         """Return normalized Dosha effects and their source expressions."""
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             rows = connection.execute(
                 """
                 SELECT herb_id, dosha, effect, source_expression, source
@@ -1295,7 +1330,7 @@ class AyurvedicAlmanac:
     def all_records(self) -> dict[str, list[dict[str, Any]]]:
         """Return all herbs, illnesses, treatments, and herb attributes."""
         self.create_database()
-        with self.connect() as connection:
+        with self._connection() as connection:
             herbs = connection.execute(
                 """
                 SELECT id, english_name, original_name, source, source_record_id,
