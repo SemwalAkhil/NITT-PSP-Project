@@ -2,9 +2,10 @@
 
 ## Status and scope
 
-This document is a design proposal. It describes the current SQLite model and a
-future normalized model for Dravyaguna data. It does not change the existing
-schema, migrations, scraper, cleaner, or database code.
+This document describes the current SQLite model and the normalized model for
+Dravyaguna data. Migration 1 implements only the core identity and provenance
+tables identified below. The remaining domain tables are still a design
+proposal and have not been implemented.
 
 The design keeps source expressions and normalized interpretations side by
 side. Normalized values are claims made about a source record, not replacements
@@ -42,6 +43,18 @@ The current implementation creates these application tables:
 | `herb_attributes` | Flexible section-qualified source fields, values, source text, language, and translation metadata. |
 | `herb_doshas` | Current normalized Dosha effects, one row per Dosha and source expression, added after the original prototype. |
 
+Migration 1 additionally creates these additive tables without changing the
+legacy application contract:
+
+| Table | Migration 1 purpose |
+|---|---|
+| `schema_migrations` | Idempotent migration version tracking. |
+| `sources` | Source/provider identity, including a `manual` source for future curation. |
+| `source_records` | Source-level record identity and retrieval metadata. |
+| `source_claims` | Source-record-owned assertions with review metadata and correction lineage. |
+| `legacy_herb_map` | One-to-one mapping from existing `herbs.id` values to themselves for staged migration. |
+| `herb_names` | Source-backed multilingual/name-type associations for existing herbs. |
+
 The generated schema uses stable integer primary keys. `herbs` has a unique
 `(source, source_record_id)` constraint. `illness` has unique display and
 canonical names. `treatment` has a composite primary key and cascading foreign
@@ -52,8 +65,9 @@ its checks currently restrict Doshas to Vata, Pitta, and Kapha and effects to
 
 Every application connection enables `PRAGMA foreign_keys = ON`. Search indexes
 cover herb and illness search keys; unique indexes cover source identity and
-illness canonical names. There are no separate source, source-record, claim,
-name, part, property, Karma, taxonomy, or condition-mapping tables yet.
+illness canonical names. No part, property, Karma, taxonomy, Dosha-effect, or
+condition-mapping tables are implemented by Migration 1; those remain proposed
+future tables.
 
 ### Current record and update behavior
 
@@ -96,12 +110,17 @@ scraped treatment links. This is intentionally not a validated disease model.
    TABLE`, and cleanup operations. They are suitable for the prototype but do
    not yet provide versioned, reversible migration history.
 
-## Proposed normalized schema
+## Proposed and implemented normalized schema
 
 The proposal uses stable internal IDs for concepts and keeps source evidence
 in separate source-record and claim tables. Names, properties, and
 relationships can therefore come from multiple sources without changing the
 identity of a herb.
+
+The `sources`, `source_records`, `source_claims`, `legacy_herb_map`, and
+`herb_names` definitions in this section are implemented by Migration 1.
+Properties, Karma, Dosha-effect, taxonomy, condition, and related vocabulary
+tables remain proposed and are not active application tables.
 
 ### Identity and taxonomy
 
@@ -316,6 +335,15 @@ old claim, and leaves the original source expression intact. Scraper upserts
 may refresh only claims owned by that scraper/source record; they must never
 delete manual claims or manual treatment relationships.
 
+Migration 1 cannot enforce that every source record describes exactly one
+herb: `source_records` intentionally has no `herb_id`, and the current legacy
+model stores source identity on `herbs`. During this migration, the one-to-one
+`legacy_herb_map` and matching external keys provide the validation boundary.
+Future writers must validate that a claim's source record and the associated
+herb refer to the same source record before inserting a domain row. A separate
+subject-association abstraction is deferred until one source claim genuinely
+needs subjects beyond the existing domain relationships.
+
 `confidence` belongs on normalized interpretation or mapping rows, not on the
 raw source claim. It is a nullable numeric value in the closed interval `[0, 1]`
 and means confidence in that normalization or mapping decision, not confidence
@@ -496,8 +524,8 @@ manual claims are never eligible for scraper-owned replacement.
   reliable language metadata?
 - Which controlled vocabularies are authorized for Rasa, Guna, Virya, Vipaka,
   Karma, and conditions?
-- Should manual curation be represented as source `manual` records, reviewer
-  claims, or both?
+- Which publisher, attribution, and reviewer identity metadata should be
+  required for manual source records?
 - How should confidence be calibrated and reviewed across different source
   types?
 - Should source publication pages, raw HTML artifacts, and page ranges receive
@@ -517,4 +545,5 @@ This design can be reviewed without changing the application:
 - Existing manual treatment links and flexible attributes have explicit staged
   migration paths.
 - The Mermaid diagram names every proposed relationship family.
-- No implementation or database migration is part of this document.
+- Migration 1 is implemented and documented here; future domain migrations and
+  application cutover are not implemented by this document.

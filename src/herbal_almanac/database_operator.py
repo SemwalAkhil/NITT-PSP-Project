@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
+from datetime import datetime, timezone
 from difflib import SequenceMatcher
 import os
 from pathlib import Path
@@ -30,6 +31,8 @@ ILLNESS_ALIASES = {
     "fevers": "jvara",
 }
 MIN_SEARCH_SCORE = 0.65
+MIGRATION_1_VERSION = 1
+MIGRATION_1_NAME = "core_identity_and_provenance"
 
 
 def default_database_path() -> Path:
@@ -134,7 +137,311 @@ class AyurvedicAlmanac:
             self._migrate_legacy_illnesses(connection)
             self._migrate_search_columns(connection)
             self._migrate_illness_canonical_keys(connection)
+            connection.commit()
+            try:
+                connection.execute("BEGIN")
+                connection.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS schema_migrations (
+                        version INTEGER PRIMARY KEY,
+                        name TEXT NOT NULL,
+                        applied_at TEXT NOT NULL
+                    )
+                    """
+                )
+                applied_versions = {
+                    row["version"]
+                    for row in connection.execute("SELECT version FROM schema_migrations")
+                }
+                if MIGRATION_1_VERSION not in applied_versions:
+                    self._migration_1_core_identity_and_provenance(connection)
+                    connection.execute(
+                        "INSERT INTO schema_migrations (version, name, applied_at) VALUES (?, ?, ?)",
+                        (
+                            MIGRATION_1_VERSION,
+                            MIGRATION_1_NAME,
+                            datetime.now(timezone.utc).isoformat(),
+                        ),
+                    )
+                connection.commit()
+            except Exception:
+                connection.rollback()
+                raise
         self._initialized = True
+
+    @staticmethod
+    def _create_migration_1_tables(connection: sqlite3.Connection) -> None:
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS sources (
+                source_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source_key TEXT NOT NULL UNIQUE,
+                publisher TEXT,
+                title TEXT,
+                edition_or_version TEXT,
+                publication_date TEXT,
+                default_url TEXT,
+                license TEXT,
+                attribution_text TEXT,
+                notes TEXT
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS source_records (
+                source_record_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source_id INTEGER NOT NULL,
+                external_record_key TEXT,
+                source_url TEXT,
+                retrieved_at TEXT,
+                published_at TEXT,
+                content_hash TEXT,
+                raw_artifact_ref TEXT,
+                FOREIGN KEY (source_id) REFERENCES sources(source_id)
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_source_records_external_key
+            ON source_records(source_id, external_record_key)
+            WHERE external_record_key IS NOT NULL
+            """
+        )
+        connection.execute(
+            "CREATE INDEX IF NOT EXISTS idx_source_records_source_id "
+            "ON source_records(source_id)"
+        )
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS source_claims (
+                source_claim_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source_record_id INTEGER NOT NULL,
+                claim_type TEXT NOT NULL,
+                source_field TEXT NOT NULL,
+                source_expression TEXT NOT NULL,
+                language_code TEXT NOT NULL DEFAULT 'und',
+                retrieved_at TEXT,
+                verification_status TEXT NOT NULL DEFAULT 'unreviewed',
+                created_by_type TEXT NOT NULL,
+                created_by TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                reviewed_by TEXT,
+                reviewed_at TEXT,
+                reviewer_notes TEXT,
+                normalization_method TEXT,
+                supersedes_claim_id INTEGER,
+                FOREIGN KEY (source_record_id) REFERENCES source_records(source_record_id),
+                FOREIGN KEY (supersedes_claim_id) REFERENCES source_claims(source_claim_id)
+                    ON DELETE SET NULL,
+                CHECK (created_by_type IN ('ingest', 'human', 'system')),
+                CHECK (verification_status IN (
+                    'unreviewed', 'reviewed', 'verified', 'rejected', 'superseded'
+                ))
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_source_claims_record_type
+            ON source_claims(source_record_id, claim_type, source_field)
+            """
+        )
+        connection.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_source_claims_supersedes
+            ON source_claims(supersedes_claim_id)
+            """
+        )
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS legacy_herb_map (
+                legacy_herb_id INTEGER PRIMARY KEY,
+                herb_id INTEGER NOT NULL UNIQUE,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (legacy_herb_id) REFERENCES herbs(id),
+                FOREIGN KEY (herb_id) REFERENCES herbs(id)
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS herb_names (
+                herb_name_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                herb_id INTEGER NOT NULL,
+                name_text TEXT NOT NULL,
+                normalized_text TEXT NOT NULL,
+                language_code TEXT NOT NULL DEFAULT 'und',
+                script_code TEXT NOT NULL DEFAULT 'Zyyy',
+                name_type TEXT NOT NULL,
+                is_preferred INTEGER NOT NULL DEFAULT 0,
+                source_claim_id INTEGER NOT NULL,
+                FOREIGN KEY (herb_id) REFERENCES herbs(id),
+                FOREIGN KEY (source_claim_id) REFERENCES source_claims(source_claim_id),
+                CHECK (is_preferred IN (0, 1)),
+                CHECK (name_type IN (
+                    'ayurvedic', 'vernacular', 'botanical_source',
+                    'accepted_botanical', 'botanical_synonym', 'historical',
+                    'trade', 'source_alias'
+                ))
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_herb_names_association
+            ON herb_names(
+                herb_id, name_text, normalized_text, language_code,
+                script_code, name_type, source_claim_id
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_herb_names_preferred
+            ON herb_names(herb_id, name_type)
+            WHERE is_preferred = 1
+            """
+        )
+        connection.execute(
+            "CREATE INDEX IF NOT EXISTS idx_herb_names_normalized "
+            "ON herb_names(normalized_text, language_code)"
+        )
+
+    @staticmethod
+    def _legacy_source_key(source: str | None) -> str:
+        cleaned = clean_text(source) if source else ""
+        return cleaned or "manual"
+
+    @classmethod
+    def _backfill_migration_1(cls, connection: sqlite3.Connection) -> None:
+        now = datetime.now(timezone.utc).isoformat()
+        source_keys = {
+            cls._legacy_source_key(row["source"])
+            for row in connection.execute("SELECT DISTINCT source FROM herbs")
+        }
+        source_keys.add("manual")
+        for source_key in sorted(source_keys):
+            connection.execute(
+                """
+                INSERT OR IGNORE INTO sources
+                    (source_key, publisher, notes)
+                VALUES (?, ?, ?)
+                """,
+                (
+                    source_key,
+                    None if source_key == "manual" else source_key,
+                    "Legacy source identifier; publication metadata unavailable.",
+                ),
+            )
+
+        source_ids = {
+            row["source_key"]: row["source_id"]
+            for row in connection.execute("SELECT source_key, source_id FROM sources")
+        }
+        for row in connection.execute(
+            """
+            SELECT id, source, source_record_id, source_url, retrieved_at,
+                   original_name, english_name
+            FROM herbs
+            ORDER BY id
+            """
+        ):
+            legacy_herb_id = row["id"]
+            source_key = cls._legacy_source_key(row["source"])
+            source_id = source_ids[source_key]
+            external_key = (
+                str(row["source_record_id"])
+                if row["source_record_id"] is not None
+                else None
+            )
+            raw_artifact_ref = (
+                None
+                if external_key is not None
+                else f"legacy_herb_id:{legacy_herb_id}"
+            )
+            connection.execute(
+                """
+                INSERT INTO source_records
+                    (source_id, external_record_key, source_url, retrieved_at,
+                     raw_artifact_ref)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    source_id,
+                    external_key,
+                    row["source_url"],
+                    row["retrieved_at"],
+                    raw_artifact_ref,
+                ),
+            )
+            source_record_id = connection.execute(
+                """
+                SELECT source_record_id
+                FROM source_records
+                WHERE source_id = ?
+                  AND (
+                      external_record_key = ?
+                      OR (external_record_key IS NULL AND raw_artifact_ref = ?)
+                  )
+                ORDER BY source_record_id DESC
+                LIMIT 1
+                """,
+                (source_id, external_key, raw_artifact_ref),
+            ).fetchone()["source_record_id"]
+            connection.execute(
+                """
+                INSERT INTO legacy_herb_map (legacy_herb_id, herb_id, created_at)
+                VALUES (?, ?, ?)
+                """,
+                (legacy_herb_id, legacy_herb_id, now),
+            )
+            name_text = row["original_name"] or row["english_name"]
+            if not name_text:
+                continue
+            claim_cursor = connection.execute(
+                """
+                INSERT INTO source_claims
+                    (source_record_id, claim_type, source_field, source_expression,
+                     language_code, retrieved_at, verification_status,
+                     created_by_type, created_by, created_at, updated_at)
+                VALUES (?, 'herb_name', ?, ?, 'und', ?, 'unreviewed',
+                        'system', 'migration:1', ?, ?)
+                """,
+                (
+                    source_record_id,
+                    "legacy.herbs.original_name"
+                    if row["original_name"]
+                    else "legacy.herbs.english_name",
+                    name_text,
+                    row["retrieved_at"],
+                    now,
+                    now,
+                ),
+            )
+            connection.execute(
+                """
+                INSERT INTO herb_names
+                    (herb_id, name_text, normalized_text, language_code,
+                     script_code, name_type, is_preferred, source_claim_id)
+                VALUES (?, ?, ?, 'und', 'Zyyy', 'source_alias', 1, ?)
+                """,
+                (
+                    legacy_herb_id,
+                    name_text,
+                    search_key(ascii_text(name_text) or name_text),
+                    claim_cursor.lastrowid,
+                ),
+            )
+
+    @classmethod
+    def _migration_1_core_identity_and_provenance(
+        cls, connection: sqlite3.Connection
+    ) -> None:
+        cls._create_migration_1_tables(connection)
+        cls._backfill_migration_1(connection)
 
     @staticmethod
     def _migrate_legacy_herbs(connection: sqlite3.Connection) -> None:

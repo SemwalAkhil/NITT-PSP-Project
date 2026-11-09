@@ -33,12 +33,15 @@ Implemented today:
 - The schema proposal was refined to define reusable source-record claims,
       append-only manual curation, one names table, and SQLite-safe uniqueness
       rules; implementation remains planned.
+- Migration 1 now implements only core identity and provenance tables through
+      an additive, transactional backfill; legacy application reads and writes
+      remain unchanged.
 
 Still planned:
 
 - Raw HTML caching, structured scrape-error reporting, and request pacing for
       large runs.
-- Dedicated normalized name/condition/taxonomy tables beyond the current
+- Dedicated normalized domain tables beyond the current
       flexible attribute store.
 - External terminology mapping, API/PDF/Excel importers,
       fuzzy multilingual search, and a public Python API.

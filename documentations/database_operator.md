@@ -127,6 +127,31 @@ clean rebuild.
 This is a lightweight migration approach suitable for the current prototype.
 A formal migration tool can be introduced when schema changes become frequent.
 
+### Migration 1: core identity and provenance
+
+Migration 1 is tracked in `schema_migrations` at version `1` with the name
+`core_identity_and_provenance`. It runs transactionally after the legacy
+prototype initialization and creates `sources`, `source_records`,
+`source_claims`, `legacy_herb_map`, and `herb_names`. A partial unique index
+enforces non-null `(source_id, external_record_key)` pairs while allowing
+multiple legacy records whose external key is unavailable.
+
+The backfill creates source rows from existing source identifiers and a
+`manual` source row for future curation. It preserves source URLs, retrieval
+timestamps, and non-null external record IDs. Records without an external key
+retain a `legacy_herb_id:<id>` artifact reference instead of receiving an
+invented key. Existing herb IDs map one-to-one through `legacy_herb_map`.
+
+One claim-backed `source_alias` name is created from each herb's existing
+`original_name` (or `english_name` when the original is absent). Existing
+attributes, treatments, Dosha rows, and herb columns are not rewritten. The
+application continues to read and write the legacy tables; the new tables are
+available for migration validation and future dual-write work.
+
+If table creation or backfill fails, the Migration 1 transaction rolls back its
+new tables and does not insert a migration-version row. Reinitialization is
+idempotent after a successful versioned run.
+
 ## `insert_record()`
 
 One record is written in a single transaction:

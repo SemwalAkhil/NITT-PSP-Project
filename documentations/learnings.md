@@ -220,9 +220,9 @@ available for review and provenance.
 The normalized Dravyaguna design separates stable herb identity from source
 records and claim-level provenance. Names, parts, properties, Karma, Dosha
 effects, taxonomy, and condition relationships can therefore receive evidence
-from multiple sources without overwriting source expressions. The design is
-documentation-only until an additive migration and compatibility adapter are
-approved.
+from multiple sources without overwriting source expressions. Migration 1
+implements only the core identity/provenance tables; the remaining domain
+tables still require an additive migration and compatibility adapter.
 
 ## Schema refinement decisions
 
@@ -234,6 +234,16 @@ multiple normalized rows. Names and synonyms share one table with a typed
 non-null identity columns because SQLite allows duplicate `NULL` values in
 UNIQUE constraints. Manual corrections append claims and supersede earlier
 claims instead of overwriting source data.
+
+## Migration 1 core identity and provenance
+
+The first normalized migration is additive and versioned. It creates source,
+source-record, claim, legacy-map, and herb-name tables while leaving the
+legacy application tables active. Legacy records without an external key retain
+an explicit artifact reference rather than receiving an invented identifier.
+The migration creates only a justified claim-backed source alias for each
+existing herb name; attributes, treatment relationships, and Dosha rows are
+preserved for later domain migrations.
 
 ## Harvard-Kyoto Convention
 

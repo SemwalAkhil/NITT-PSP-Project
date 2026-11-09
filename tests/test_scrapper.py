@@ -371,6 +371,266 @@ def test_legacy_schema_migrates_without_losing_treatments(tmp_path) -> None:
     assert dosha_table["name"] == "herb_doshas"
 
 
+def test_migration_1_is_tracked_and_idempotent(tmp_path) -> None:
+    path = tmp_path / "migration.db"
+    database = AyurvedicAlmanac(path)
+
+    database.create_database()
+    database = AyurvedicAlmanac(path)
+    database.create_database()
+
+    with database.connect() as connection:
+        tables = {
+            row["name"]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            )
+        }
+        migration = connection.execute(
+            "SELECT version, name FROM schema_migrations"
+        ).fetchall()
+        source_record_indexes = connection.execute(
+            "PRAGMA index_list(source_records)"
+        ).fetchall()
+
+    assert {
+        "schema_migrations", "sources", "source_records", "source_claims",
+        "legacy_herb_map", "herb_names",
+    } <= tables
+    assert [(row["version"], row["name"]) for row in migration] == [
+        (1, "core_identity_and_provenance")
+    ]
+    assert any("external_key" in row["name"] for row in source_record_indexes)
+
+
+def test_migration_1_enforces_claim_and_name_integrity(tmp_path) -> None:
+    database = AyurvedicAlmanac(tmp_path / "claims.db")
+    database.create_database()
+    herb_id = database.add_herb("Test Herb")
+
+    with database.connect() as connection:
+        source_id = connection.execute(
+            "INSERT INTO sources (source_key, publisher) VALUES (?, ?)",
+            ("test", "Test source"),
+        ).lastrowid
+        source_record_id = connection.execute(
+            """
+            INSERT INTO source_records (source_id, external_record_key)
+            VALUES (?, ?)
+            """,
+            (source_id, "record-1"),
+        ).lastrowid
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                "INSERT INTO source_records (source_id, external_record_key) VALUES (?, ?)",
+                (source_id, "record-1"),
+            )
+        claim_id = connection.execute(
+            """
+            INSERT INTO source_claims
+                (source_record_id, claim_type, source_field, source_expression,
+                 created_by_type, created_by, created_at, updated_at)
+            VALUES (?, 'herb_name', 'name', 'Test Herb', 'human', 'reviewer',
+                    '2026-01-01T00:00:00+00:00', '2026-01-01T00:00:00+00:00')
+            """,
+            (source_record_id,),
+        ).lastrowid
+        corrected_claim_id = connection.execute(
+            """
+            INSERT INTO source_claims
+                (source_record_id, claim_type, source_field, source_expression,
+                 created_by_type, created_by, created_at, updated_at,
+                 supersedes_claim_id)
+            VALUES (?, 'herb_name', 'name', 'Corrected Herb', 'human', 'reviewer',
+                    '2026-01-02T00:00:00+00:00', '2026-01-02T00:00:00+00:00', ?)
+            """,
+            (source_record_id, claim_id),
+        ).lastrowid
+        connection.execute(
+            """
+            INSERT INTO herb_names
+                (herb_id, name_text, normalized_text, language_code, script_code,
+                 name_type, is_preferred, source_claim_id)
+            VALUES (?, 'Test Herb', 'test herb', 'en', 'Latn', 'vernacular', 1, ?)
+            """,
+            (herb_id, claim_id),
+        )
+        connection.execute(
+            """
+            INSERT INTO herb_names
+                (herb_id, name_text, normalized_text, language_code, script_code,
+                 name_type, is_preferred, source_claim_id)
+            VALUES (?, 'Test Herb', 'test herb', 'en', 'Latn', 'vernacular', 0, ?)
+            """,
+            (herb_id, corrected_claim_id),
+        )
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                """
+                INSERT INTO herb_names
+                    (herb_id, name_text, normalized_text, language_code, script_code,
+                     name_type, is_preferred, source_claim_id)
+                VALUES (?, 'Other', 'other', 'en', 'Latn', 'vernacular', 1, ?)
+                """,
+                (herb_id, corrected_claim_id),
+            )
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(
+                """
+                INSERT INTO herb_names
+                    (herb_id, name_text, normalized_text, language_code, script_code,
+                     name_type, is_preferred, source_claim_id)
+                VALUES (?, 'Invalid', 'invalid', 'en', 'Latn', 'vernacular', 0, 999999)
+                """,
+                (herb_id,),
+            )
+        claims = connection.execute(
+            "SELECT source_claim_id, supersedes_claim_id FROM source_claims ORDER BY source_claim_id"
+        ).fetchall()
+
+    assert len(claims) == 2
+    assert claims[1]["supersedes_claim_id"] == claims[0]["source_claim_id"]
+
+
+def test_migration_1_rolls_back_new_tables_on_failure(tmp_path, monkeypatch) -> None:
+    path = tmp_path / "failed-migration.db"
+
+    def fail_migration(connection) -> None:
+        raise RuntimeError("forced migration failure")
+
+    monkeypatch.setattr(
+        AyurvedicAlmanac,
+        "_migration_1_core_identity_and_provenance",
+        staticmethod(fail_migration),
+    )
+    with pytest.raises(RuntimeError, match="forced migration failure"):
+        AyurvedicAlmanac(path).create_database()
+
+    with sqlite3.connect(path) as connection:
+        tables = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            )
+        }
+    assert "sources" not in tables
+    assert "schema_migrations" not in tables
+
+
+def test_migration_1_preserves_legacy_records_and_provenance(tmp_path) -> None:
+    path = tmp_path / "legacy-current.db"
+    with sqlite3.connect(path) as connection:
+        connection.executescript(
+            """
+            CREATE TABLE herbs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                english_name TEXT NOT NULL,
+                original_name TEXT,
+                retrieved_at TEXT,
+                search_key TEXT NOT NULL DEFAULT '',
+                source TEXT,
+                source_record_id INTEGER,
+                source_url TEXT,
+                botanical_name TEXT,
+                family TEXT,
+                UNIQUE(source, source_record_id)
+            );
+            CREATE TABLE illness (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                english_name TEXT NOT NULL UNIQUE,
+                search_key TEXT NOT NULL DEFAULT '',
+                canonical_key TEXT NOT NULL DEFAULT '',
+                machine_generated INTEGER NOT NULL DEFAULT 0,
+                verification_status TEXT NOT NULL DEFAULT 'unverified'
+            );
+            CREATE TABLE treatment (
+                herb_id INTEGER NOT NULL, illness_id INTEGER NOT NULL,
+                source TEXT NOT NULL DEFAULT 'manual',
+                PRIMARY KEY (herb_id, illness_id),
+                FOREIGN KEY (herb_id) REFERENCES herbs(id),
+                FOREIGN KEY (illness_id) REFERENCES illness(id)
+            );
+            CREATE TABLE herb_attributes (
+                herb_id INTEGER NOT NULL, field_name TEXT NOT NULL,
+                value TEXT NOT NULL, source_text TEXT NOT NULL,
+                source_language TEXT, machine_generated INTEGER NOT NULL DEFAULT 0,
+                verification_status TEXT,
+                PRIMARY KEY (herb_id, field_name, value)
+            );
+            CREATE TABLE herb_doshas (
+                herb_id INTEGER NOT NULL, dosha TEXT NOT NULL,
+                effect TEXT NOT NULL, source_expression TEXT NOT NULL,
+                source TEXT NOT NULL DEFAULT 'scraped',
+                PRIMARY KEY (herb_id, dosha, source_expression, source)
+            );
+            INSERT INTO herbs (
+                id, english_name, original_name, retrieved_at, source,
+                source_record_id, source_url
+            ) VALUES (
+                7, 'KAsa', 'Kāsa', '2026-01-01T00:00:00+00:00',
+                'CCRAS DRAVYA', 12, 'https://example.test/plant/12'
+            );
+            INSERT INTO illness (id, english_name) VALUES (3, 'KAsa');
+            INSERT INTO illness (id, english_name) VALUES (4, 'Jvara');
+            INSERT INTO treatment (herb_id, illness_id, source)
+                VALUES (7, 3, 'manual');
+            INSERT INTO treatment (herb_id, illness_id, source)
+                VALUES (7, 4, 'scraped');
+            INSERT INTO herb_attributes
+                (herb_id, field_name, value, source_text)
+                VALUES (7, 'Parts Used.Name', 'Root', 'Root');
+            INSERT INTO herb_doshas
+                (herb_id, dosha, effect, source_expression, source)
+                VALUES (7, 'Vata', 'decrease', 'Vātahara', 'scraped');
+            """
+        )
+
+    database = AyurvedicAlmanac(path)
+    database.create_database()
+
+    with database.connect() as connection:
+        herb = connection.execute(
+            "SELECT id, source, source_record_id, source_url, retrieved_at FROM herbs"
+        ).fetchone()
+        treatments = connection.execute(
+            "SELECT source FROM treatment WHERE herb_id = 7 ORDER BY source"
+        ).fetchall()
+        attribute = connection.execute(
+            "SELECT value FROM herb_attributes WHERE herb_id = 7"
+        ).fetchone()
+        dosha = connection.execute(
+            "SELECT effect, source_expression FROM herb_doshas WHERE herb_id = 7"
+        ).fetchone()
+        mapping = connection.execute(
+            "SELECT legacy_herb_id, herb_id FROM legacy_herb_map"
+        ).fetchone()
+        source_record = connection.execute(
+            """
+            SELECT sr.external_record_key, sr.source_url, sr.retrieved_at
+            FROM source_records AS sr
+            JOIN sources AS s ON s.source_id = sr.source_id
+            WHERE s.source_key = 'CCRAS DRAVYA'
+            """
+        ).fetchone()
+
+    assert dict(herb) == {
+        "id": 7,
+        "source": "CCRAS DRAVYA",
+        "source_record_id": 12,
+        "source_url": "https://example.test/plant/12",
+        "retrieved_at": "2026-01-01T00:00:00+00:00",
+    }
+    assert [row["source"] for row in treatments] == ["manual", "scraped"]
+    assert attribute["value"] == "Root"
+    assert dict(dosha) == {"effect": "decrease", "source_expression": "Vātahara"}
+    assert dict(mapping) == {"legacy_herb_id": 7, "herb_id": 7}
+    assert dict(source_record) == {
+        "external_record_key": "12",
+        "source_url": "https://example.test/plant/12",
+        "retrieved_at": "2026-01-01T00:00:00+00:00",
+    }
+
+
 def test_cli_setup_and_herb_search(tmp_path) -> None:
     path = tmp_path / "cli.db"
     runner = CliRunner()
