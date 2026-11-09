@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f4ed">
+  <title>{% block title %}Herbal Almanac{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="{{ url_for('dashboard') }}">
+        <span class="brand-mark">H</span>
+        <span><strong>Herbal Almanac</strong><small>DRAVYAGUNA LIBRARY</small></span>
+      </a>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="side-nav" aria-label="Main navigation">
+        <a class="{% if active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">⌂</span> Overview</a>
+        <a class="{% if active_page == 'herbs' %}active{% endif %}" href="{{ url_for('herb_list') }}"><span class="nav-icon">✿</span> Herb explorer</a>
+      </nav>
+      <div class="sidebar-note">
+        <span class="leaf-dot"></span>
+        <p><strong>Research library</strong><br>Explore source-backed plant records and traditional knowledge.</p>
+      </div>
+      <div class="sidebar-footer">LOCAL DATABASE<br><span>Private workspace · Read only</span></div>
+    </aside>
+    <main class="main-area">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark">H</span><strong>Herbal Almanac</strong></div>
+        <div class="topbar-caption">BOTANICAL KNOWLEDGE, ORGANIZED</div>
+        <a class="topbar-link" href="{{ url_for('herb_list') }}">Explore records <span>↗</span></a>
+      </header>
+      <section class="page-content">{% block content %}{% endblock %}</section>
+      <footer class="page-footer">Herbal Almanac <span>·</span> Research and reference only — not medical advice.</footer>
+    </main>
+  </div>
+</body>
+</html>
