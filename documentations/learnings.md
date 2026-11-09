@@ -49,7 +49,8 @@ python -m pip install -e ".[translate]"
 
 ## Foreign Keys in Python SQLite3
 
-Does not support foreign key by default you need to execute the following before each connection
+SQLite does not enforce foreign keys by default, so execute the following for
+each connection:
 
 ```python
 conn.execute("PRAGMA foreign_keys = ON;")
@@ -205,11 +206,7 @@ records. They are output formats, not intermediate stages of scraping.
 
 ## Dosha normalization
 
-Dosha expressions are normalized as a separate deterministic cleaning step.
-The normalizer preserves the source expression and assigns `decrease`,
-`increase`, or `unspecified` independently to Vata, Pitta, and Kapha. Missing
-Doshas remain `unspecified`; they are never inferred from the Doshas that are
-present.
+Dosha expressions are normalized as a separate deterministic cleaning step. The normalizer preserves the source expression and assigns `decrease`, `increase`, or `unspecified` independently to Vata, Pitta, and Kapha. Missing Doshas remain `unspecified`; they are never inferred from the Doshas that are present.
 
 ## Harvard-Kyoto Convention
 
@@ -250,7 +247,7 @@ python -m build
 python -m twine check dist/*
 ```
 
-## how automated tests work?
+## Automated tests
 
 Tests import `herbal_almanac` through the configured `src` path and use saved
 HTML strings, fake sessions, temporary SQLite files, and fake translators.
@@ -258,7 +255,7 @@ They do not contact DRAVYA or Google. The suite currently covers parser
 sections, malformed HTML, retries and failures, database migrations, search,
 CLI exports, and translation caching. CI installs `.[dev]` and runs the suite
 on Python 3.10 through 3.14.
-## orchestration module
+## Orchestration modules
 
 `cli.py` is the user-facing orchestration layer. It validates Typer arguments,
 selects the database path, calls `scrape()` or database operations, formats
@@ -277,7 +274,7 @@ backoff, while read retries remain disabled. Requests use a five-second
 connect timeout and a configurable fifteen-second read timeout. A final HTTP
 failure remains visible to the per-plant failure report instead of silently
 creating an incomplete record.
-## What is the page structure of DRAVYA what are we extracting from the page
+## DRAVYA page structure and extracted data
 
 The directory page contains links matching `/plant/` followed by a numeric ID.
 Each plant page may contain a title, a scientific-profile card, a Vernacular

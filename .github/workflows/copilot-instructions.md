@@ -21,9 +21,10 @@ Follow the strict pipeline boundary:
 ## Required Work Cycle
 For every requested change, follow this numbered cycle:
 
-1. Choose the next concrete task and identify the module, test, or documentation file that owns it.
-2. Implement the task using the existing coding style and conventions, then run the narrowest relevant test or verification command.
-3. If verification succeeds, commit the completed task with a focused commit message. If verification fails, return the actual errors and do not claim the task is complete.
-4. After each cycle, update `context.md` and all relevant files under `documentations/`. If a new documentation heading is introduced, add the corresponding learning to `documentations/learnings.md`.
+1. **Select & Scope:** Choose the next concrete task and identify the module, test, and documentation files (`context.md` and `documentations/*.md`) that own it.
+2. **Implement:** Implement the task using the existing coding style and conventions. Every new Python file must have a corresponding Markdown file in `documentations/` explaining the script's purpose, inputs, outputs, control flow, and verification steps.
+3. **Sync Context & Docs:** Update `context.md` and all relevant files under `documentations/` (`cli.md`, `scrapper.md`, `cleaning.md`, `database_operator.md`, `translation.md`, `plan.md`). If a new documentation heading is introduced, add the corresponding learning to `documentations/learnings.md`.
+4. **Verify:** Run the narrowest relevant test or verification command, followed by `python -m pytest tests/test_scrapper.py -q` if any Python or test file changed. If verification fails, return the actual errors and do not claim the task is complete.
+5. **Commit Together:** Once verification succeeds, stage the code, tests, `context.md`, and `documentations/` updates together and commit them in a single focused commit.
 
-Keep cycles focused and keep commits limited to the task. Do not overwrite unrelated user changes. Every new Python file must have a corresponding Markdown file explaining the script's purpose, inputs, outputs, control flow, and verification steps, following the documentation style already used in this repository.
+Keep cycles focused and keep commits limited to the task. Do not overwrite unrelated user changes.
