@@ -134,6 +134,28 @@ attributes. Source regional scripts and source wording are retained separately.
 Translated content is marked unverified; see
 [`documentations/translation.md`](documentations/translation.md).
 
+## Local web interface
+
+Herbal Almanac includes an optional read-only browser interface built with
+FastAPI, Uvicorn, and Jinja2. It reuses the existing SQLite database operator
+and provides an overview dashboard, searchable herb explorer, and herb detail
+pages.
+
+Install and launch it:
+
+```bash
+python -m pip install -e ".[web]"
+uvicorn herbal_almanac.web_app:app --reload
+```
+
+Open `http://127.0.0.1:8000`. The web interface uses the same per-user
+database path as the CLI. Set `HERBAL_ALMANAC_DATABASE` to use another SQLite
+file. See [`documentations/web_gui.md`](documentations/web_gui.md) for setup,
+routes, architecture, and tests.
+
+The first GUI milestone is read-only: scraping, translation, and manual
+curation remain CLI workflows.
+
 ## Architecture
 
 ```text
