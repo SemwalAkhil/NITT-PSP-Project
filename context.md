@@ -1,51 +1,75 @@
 # Project Context: Herbal Almanac
 
-## 1. Domain & Purpose
-Herbal Almanac catalogs Ayurvedic herbs, illnesses, and their therapeutic relationships. It ingests botanical and clinical data from the CCRAS DRAVYA portal into a relational SQLite database and exposes both a Python API and a Typer CLI.
+## 1. Domain and purpose
+Herbal Almanac is a research-oriented Python project for exploring Ayurvedic herbs, illness references, and herb–treatment relationships. The currently supported ingestion source is the CCRAS DRAVYA portal. The application exposes a Python package and a Typer CLI backed by SQLite.
 
-*Disclaimer: For research and software evaluation only, not medical advice.*
+This project is for research and software evaluation only; it is not medical advice. Scraped therapeutic associations and machine translations can be unverified.
 
-## 2. Repository Structure
-- `src/herbal_almanac/` — Main package source (`src/` layout).
-  - `cleaning.py` — `PlantRecord` data model, `clean_text`, Unicode normalization, and Harvard-Kyoto ASCII transliteration.
-  - `database_operator.py` — `AyurvedicAlmanac` class, SQLite connection lifecycle, schema initialization, migration locking, CRUD, fuzzy search, and transactional upserts.
-- `tests/test_scrapper.py` — Offline scraper/database regression test suite.
-- `tests/test_database_connections.py` — Independent connections, transaction rollback, connection closure, and foreign-key tests.
-- `tests/test_database_initialization.py` — Concurrent initialization, migration idempotence, rollback/retry, and schema tests.
-- `documentations/` — Detailed module docs (`cli.md`, `scrapper.md`, `cleaning.md`, `database_operator.md`, `translation.md`, `plan.md`, `learnings.md`).
-- `documentations/database_schema.md` — Proposed normalized Dravyaguna schema, provenance model, ER diagram, and staged migration design.
-- `sample.html` — Saved DRAVYA HTML fixture for offline parser development.
-- `data.txt` — Sanskrit terminology/reference sample.
+## 2. Current repository structure
+- `src/herbal_almanac/` — installable package using the `src/` layout.
+  - `cleaning.py` — `PlantRecord`, text cleanup, transliteration, Dosha-expression normalization, and validation.
+  - `scrapper.py` — DRAVYA discovery, HTTP retrieval, parsing, retries, and scrape orchestration.
+  - `translation.py` — optional machine-translation support.
+  - `database_operator.py` — `AyurvedicAlmanac`, SQLite schema, legacy compatibility migrations, versioned migrations, transactional CRUD, and search.
+  - `cli.py` — Typer commands and JSON/CSV export.
+- `tests/test_scrapper.py` — offline scraper, cleaning, translation, CLI, and legacy database regression tests.
+- `tests/test_database_connections.py` — connection isolation, commit/rollback, closure, and foreign-key tests.
+- `tests/test_database_initialization.py` — initialization concurrency, migration idempotence, rollback/retry, and closure tests.
+- `tests/smoke_installed_package.py` — clean installed-package and CLI smoke test.
+- `documentations/` — module docs, schema proposal, learning notes, and roadmap.
+- `sample.html` and `data.txt` — local parser/terminology fixtures.
 
-## 3. Data Model & Attributes
-- **Primary Herb Name:** Derived from the source title's Ayurvedic/Sanskrit name when present.
-- **Vernacular Names:** Stored in `herb_attributes` as `Vernacular Names.<Language>` (for example, `Vernacular Names.Hindi`).
-- **Translated Names:** Generated via `deep-translator` only when `--translate` is passed; stored as `Translated Names.<Language>` and flagged as machine-generated and unverified.
-- **Illness & Treatment Links:** Normalized from `Therapeutic Usage` fields into `Illnesses` and `Treatment` join tables. Manual treatment links are preserved across scrapes.
-- **Dosha Expressions:** Doshakarma expressions are parsed independently by Dosha/effect group; mixed, unknown, and conflicting expressions are handled conservatively, then persisted with their original source expressions in `herb_doshas`.
-- **Schema Design:** A normalized multi-source Dravyaguna schema has been documented without changing the existing SQLite schema or migrations.
-- **Schema Refinement:** The proposal uses source-record-owned, reusable claims, one names table with typed synonyms, non-null claim references for domain rows, append-only manual curation, and NULL-safe unique indexes.
-- **Migration 1:** Core identity/provenance tables (`schema_migrations`, `sources`, `source_records`, `source_claims`, `legacy_herb_map`, and `herb_names`) are implemented additively; legacy application reads and writes remain active.
-- **Migration 1 Integrity:** Duplicate legacy source identities fail before backfill, null IDs retain explicit artifact references, and application-level claim validation prevents cross-herb name associations under the documented manual-claim policy.
-- **Migration 2:** Botanical taxonomy tables (`taxa`, `taxon_relationships`, and `herb_taxa`) are implemented additively with source-claim provenance; legacy botanical names use unknown rank and family values use family rank without inferred hierarchy or acceptance.
+## 3. Runtime data model
+The legacy application tables remain the active read/write contract:
+- `herbs` — herb identity, source identity, original/transliterated names, botanical/family text, URL, and retrieval time.
+- `illness` — condition names and search/canonical keys, with machine-generation and verification metadata.
+- `treatment` — herb–illness relationships; `source` distinguishes scraped links from manual links.
+- `herb_attributes` — section-qualified source values, vernacular names, source text/language, and translation metadata.
+- `herb_doshas` — normalized Vata/Pitta/Kapha effects tied to their original Doshakarma expression.
 
-## 4. SQLite Connection and Concurrency Policy
-- Each database operation opens its own connection; connections are not shared between worker threads.
-- `connect()` enables SQLite foreign keys and returns rows as `sqlite3.Row`.
-- Ordinary CRUD/read methods use `_connection()`, which preserves commit/rollback semantics and always closes the connection.
-- `create_database()` has separate connection and transaction management for schema initialization and migrations.
-- A per-instance `RLock`, `BEGIN IMMEDIATE`, and a 10-second `busy_timeout` coordinate concurrent initialization from threads, independent instances, and processes.
-- Migration state is read and updated under the SQLite writer reservation; a migration and its version-ledger row commit together.
+Vernacular names are stored as `Vernacular Names.<Language>` attributes. Optional translations are added only when `--translate` is requested and are marked machine-generated/unverified. Therapeutic Usage values remain source attributes; the supported condition field also creates unverified illness rows and scraped treatment links. Re-scraping refreshes scraped relationships while preserving manual treatment links.
 
-## 5. Key Commands
-- **Install (Dev):** `pip install -e ".[dev]"` (add `".[translate]"` for translation support).
-- **Initialize DB:** `herbal-almanac setup --database /tmp/ayurvedic.db`
-- **Dev Scrape:** `herbal-almanac scrape dravya --max-pages 1 --max-plants 5 --database /tmp/ayurvedic.db`
-- **Run Tests:** `python -m pytest tests/test_scrapper.py -q`
+## 4. Versioned schema additions
+The database operator applies additive migrations after legacy schema compatibility initialization:
+- Migration 1 (`core_identity_and_provenance`) creates `schema_migrations`, `sources`, `source_records`, `source_claims`, `legacy_herb_map`, and `herb_names`.
+- Migration 2 (`normalized_botanical_taxonomy`) creates `taxa`, `taxon_relationships`, and `herb_taxa`.
 
-## 6. Upcoming Roadmap
-- Upload release candidate to TestPyPI.
-- Expand documented Dosha terminology and query capabilities.
-- Implement the remaining normalized Dravyaguna domain tables through additive, reversible migrations.
-- Build adapters for additional external herbal sources beyond CCRAS DRAVYA.
-- Provide a dedicated public Python search API.
+These migrations backfill source identity/provenance and conservative botanical taxonomy assertions. The legacy application continues to use the original tables; the new normalized tables are additive and do not yet replace legacy application reads or writes. Remaining normalized Dravyaguna domain tables described in `documentations/database_schema.md` are proposals, not implemented features.
+
+Migration preflight rejects duplicate legacy source identities instead of guessing. Each migration body and its version-ledger row are committed transactionally. Migration 2 records botanical names at unknown rank and family values at family rank without inferring accepted status or taxonomy hierarchy.
+
+## 5. SQLite lifecycle and concurrency
+- Each operation obtains an independent SQLite connection; connections are not shared between worker threads.
+- `connect()` enables foreign-key enforcement and returns `sqlite3.Row` objects.
+- Ordinary read/CRUD operations use private `_connection()`, preserving transaction commit/rollback while always closing the connection.
+- `create_database()` manages initialization separately, with an instance `RLock`, `BEGIN IMMEDIATE`, and a 10-second `busy_timeout` to coordinate concurrent initializers.
+- The initialization tests cover same-instance threads, independent instances, migration idempotence, rollback/retry, and connection closure.
+
+## 6. Installation and common commands
+Install development dependencies:
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+Initialize a selected database and run a small scrape:
+
+```bash
+herbal-almanac setup --database /tmp/ayurvedic.db
+herbal-almanac scrape dravya --max-pages 1 --max-plants 5 --database /tmp/ayurvedic.db
+```
+
+Run the mandatory scraper regression and full test suite:
+
+```bash
+python -m pytest tests/test_scrapper.py -q
+python -m pytest -q
+```
+
+Tests must remain offline and use fixtures, mocks/fakes, and temporary database paths.
+
+## 7. Roadmap snapshot
+- Publish a release candidate to TestPyPI when valid credentials are available.
+- Continue normalized Dravyaguna schema migrations beyond identity/provenance and botanical taxonomy.
+- Add further external source adapters only after the DRAVYA pipeline remains stable.
+- Expand supported query capabilities and provide a dedicated public Python search API.
