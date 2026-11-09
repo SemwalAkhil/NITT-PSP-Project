@@ -16,6 +16,7 @@ This project is for research and software evaluation only; it is not medical adv
 - `tests/test_database_connections.py` — connection isolation, commit/rollback, closure, and foreign-key tests.
 - `tests/test_database_initialization.py` — initialization concurrency, migration idempotence, rollback/retry, and closure tests.
 - `tests/smoke_installed_package.py` — clean installed-package and CLI smoke test.
+- `.github/workflows/copilot-instructions.md` and `agents.md` — contributor/agent workflow and verification guardrails.
 - `documentations/` — module docs, schema proposal, learning notes, and roadmap.
 - `sample.html` and `data.txt` — local parser/terminology fixtures.
 
