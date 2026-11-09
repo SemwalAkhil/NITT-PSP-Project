@@ -8,7 +8,7 @@ import re
 import sys
 from typing import Any, Iterable
 
-from .cleaning import PlantRecord, ascii_text, clean_text
+from .cleaning import DOSHAS, PlantRecord, ascii_text, clean_text, normalize_dosha_expression
 
 
 def search_key(value: str) -> str:
@@ -112,6 +112,18 @@ class AyurvedicAlmanac:
                     machine_generated INTEGER NOT NULL DEFAULT 0,
                     verification_status TEXT,
                     PRIMARY KEY (herb_id, field_name, value),
+                    FOREIGN KEY (herb_id) REFERENCES herbs(id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS herb_doshas (
+                    herb_id INTEGER NOT NULL,
+                    dosha TEXT NOT NULL,
+                    effect TEXT NOT NULL,
+                    source_expression TEXT NOT NULL,
+                    source TEXT NOT NULL DEFAULT 'scraped',
+                    PRIMARY KEY (herb_id, dosha, source_expression, source),
+                    CHECK (dosha IN ('Vata', 'Pitta', 'Kapha')),
+                    CHECK (effect IN ('decrease', 'increase', 'unspecified')),
                     FOREIGN KEY (herb_id) REFERENCES herbs(id) ON DELETE CASCADE
                 );
                 """
@@ -346,6 +358,10 @@ class AyurvedicAlmanac:
                 "DELETE FROM treatment WHERE herb_id = ? AND source = 'scraped'",
                 (herb_id,),
             )
+            connection.execute(
+                "DELETE FROM herb_doshas WHERE herb_id = ? AND source = 'scraped'",
+                (herb_id,),
+            )
             connection.executemany(
                 """
                 INSERT INTO herb_attributes
@@ -365,7 +381,30 @@ class AyurvedicAlmanac:
                 ),
             )
             self._insert_treatments_from_attributes(connection, herb_id, record)
+            self._insert_doshas(connection, herb_id, record)
             return herb_id
+
+    @staticmethod
+    def _insert_doshas(
+        connection: sqlite3.Connection,
+        herb_id: int,
+        record: PlantRecord,
+    ) -> None:
+        for expression in record.dosha_expressions:
+            normalized = normalize_dosha_expression(expression)
+            connection.executemany(
+                """
+                INSERT INTO herb_doshas
+                    (herb_id, dosha, effect, source_expression, source)
+                VALUES (?, ?, ?, ?, 'scraped')
+                ON CONFLICT(herb_id, dosha, source_expression, source) DO UPDATE SET
+                    effect = excluded.effect
+                """,
+                (
+                    (herb_id, dosha, normalized.effects[dosha], expression)
+                    for dosha in DOSHAS
+                ),
+            )
 
     @staticmethod
     def _insert_treatments_from_attributes(
@@ -604,6 +643,21 @@ class AyurvedicAlmanac:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    def herb_doshas(self, herb_id: int) -> list[dict[str, Any]]:
+        """Return normalized Dosha effects and their source expressions."""
+        self.create_database()
+        with self.connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT herb_id, dosha, effect, source_expression, source
+                FROM herb_doshas
+                WHERE herb_id = ?
+                ORDER BY source_expression, dosha, source
+                """,
+                (herb_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
     def all_records(self) -> dict[str, list[dict[str, Any]]]:
         """Return all herbs, illnesses, treatments, and herb attributes."""
         self.create_database()
@@ -640,11 +694,21 @@ class AyurvedicAlmanac:
                 ORDER BY a.herb_id, a.field_name, a.value
                 """
             ).fetchall()
+            doshas = connection.execute(
+                """
+                SELECT d.herb_id, h.english_name AS herb_name, d.dosha,
+                       d.effect, d.source_expression, d.source
+                FROM herb_doshas AS d
+                JOIN herbs AS h ON h.id = d.herb_id
+                ORDER BY d.herb_id, d.source_expression, d.dosha, d.source
+                """
+            ).fetchall()
         return {
             "herbs": [dict(row) for row in herbs],
             "illnesses": [dict(row) for row in illnesses],
             "treatments": [dict(row) for row in treatments],
             "attributes": [dict(row) for row in attributes],
+            "doshas": [dict(row) for row in doshas],
         }
 
 

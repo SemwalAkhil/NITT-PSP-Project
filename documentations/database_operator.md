@@ -98,6 +98,21 @@ Translated values use the same store with `Translated Names.<Language>` field
 names. They are persisted by `insert_record()` exactly like source
 attributes, so JSON and CSV exports include them automatically.
 
+### `herb_doshas`
+
+Stores one normalized effect for each Dosha documented by a source expression:
+
+- `herb_id`
+- `dosha` (`Vata`, `Pitta`, or `Kapha`)
+- `effect` (`decrease`, `increase`, or `unspecified`)
+- `source_expression`
+- `source`
+
+Every documented expression creates all three Dosha rows, including
+`unspecified` rows for Doshas that are not mentioned. This makes the absence of
+an effect explicit without inferring one. Scraped rows are replaced during a
+record refresh, while the source expression is retained for auditability.
+
 ## Schema migration
 
 `create_database()` is safe to call repeatedly. It creates missing tables and
@@ -125,7 +140,8 @@ One record is written in a single transaction:
 6. Insert the current cleaned attributes.
 7. Create or reuse unverified conditions from the source condition field and
    insert the current herb-to-illness links.
-8. Commit only after all steps succeed.
+8. Normalize and insert the current Doshakarma expressions into `herb_doshas`.
+9. Commit only after all steps succeed.
 
 If an attribute insert fails, the context manager rolls back the whole update.
 This prevents partially updated records.
@@ -154,6 +170,9 @@ full sorted listing behavior. This keeps weak whole-string matches such as
 `insert_herb()` and `insert_illness()` remain as compatibility helpers for the
 original prototype. New ingestion should use `insert_record()` to retain
 provenance and attributes.
+
+`herb_doshas(herb_id)` returns normalized effects together with their source
+expressions. `all_records()` includes a `doshas` group for JSON and CSV export.
 
 ## Design principle
 

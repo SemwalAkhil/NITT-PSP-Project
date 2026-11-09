@@ -306,6 +306,12 @@ def parse_plant(plant_id: int, url: str, html: str) -> PlantRecord:
     vernacular_attributes, vernacular_source_values = _vernacular_attributes(soup)
     attributes.update(vernacular_attributes)
     source_values.update(vernacular_source_values)
+    dosha_expressions = [
+        value
+        for field, values in attributes.items()
+        if re.search(r"dosha", field, re.I)
+        for value in values
+    ]
     english_names = attributes.get("Vernacular Names.English", [])
     profile_botanical_name, profile_family = _scientific_profile(soup)
     botanical_name = profile_botanical_name or next(
@@ -331,6 +337,7 @@ def parse_plant(plant_id: int, url: str, html: str) -> PlantRecord:
         family=family,
         attributes=attributes,
         source_values=source_values,
+        dosha_expressions=dosha_expressions,
     ).clean()
 
 

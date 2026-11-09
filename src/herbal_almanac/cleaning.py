@@ -95,6 +95,7 @@ class PlantRecord:
     attributes: dict[str, list[str]] = field(default_factory=dict)
     source_values: dict[str, str] = field(default_factory=dict)
     attribute_metadata: dict[str, dict[str, str | bool]] = field(default_factory=dict)
+    dosha_expressions: list[str] = field(default_factory=list)
     translation_failures: list[str] = field(default_factory=list)
     transliterated_name: str = ""
     transliterated_botanical_name: str | None = None
@@ -128,6 +129,7 @@ class PlantRecord:
             for field, value in self.source_values.items()
             if clean_text(field) and clean_text(value)
         }
+        self.dosha_expressions = clean_values(self.dosha_expressions)
         self.attribute_metadata = {
             clean_text(field): metadata
             for field, metadata in self.attribute_metadata.items()

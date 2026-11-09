@@ -34,7 +34,7 @@ Still planned:
       large runs.
 - Dedicated normalized name/condition/taxonomy tables beyond the current
       flexible attribute store.
-- Dosha persistence and scraper integration, external terminology mapping, API/PDF/Excel importers,
+- External terminology mapping, API/PDF/Excel importers,
       fuzzy multilingual search, and a public Python API.
 
 The status above describes the repository at the time of this documentation
@@ -816,6 +816,12 @@ Vata      = decrease
 Kapha     = decrease
 Pitta     = unspecified
 ```
+
+## Persistence
+
+Normalized effects are stored in `herb_doshas` with the original source
+expression. Scraped rows are refreshed transactionally when a source record is
+updated.
 
 ## Tests
 

@@ -33,6 +33,9 @@ CSV_FIELDS = {
         "herb_id", "herb_name", "field_name", "value", "source_text",
         "source_language", "machine_generated", "verification_status",
     ),
+    "doshas": (
+        "herb_id", "herb_name", "dosha", "effect", "source_expression", "source",
+    ),
 }
 
 
@@ -291,7 +294,7 @@ def list_attributes(
 def list_records(
     record_type: str = typer.Argument(
         "all",
-        help="Records to show: all, herbs, illnesses, treatments, or attributes.",
+        help="Records to show: all, herbs, illnesses, treatments, attributes, or doshas.",
     ),
     database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
     output: Path | None = typer.Option(
@@ -308,7 +311,7 @@ def list_records(
 ) -> None:
     """Show all records, or save them as JSON/CSV."""
     record_type = record_type.lower()
-    valid_types = {"all", "herbs", "illnesses", "treatments", "attributes"}
+    valid_types = {"all", "herbs", "illnesses", "treatments", "attributes", "doshas"}
     if record_type not in valid_types:
         raise typer.BadParameter(", ".join(sorted(valid_types)), param_hint="record_type")
 

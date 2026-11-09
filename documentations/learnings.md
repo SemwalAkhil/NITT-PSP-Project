@@ -206,7 +206,7 @@ records. They are output formats, not intermediate stages of scraping.
 
 ## Dosha normalization
 
-Dosha expressions are normalized as a separate deterministic cleaning step. The normalizer preserves the source expression and assigns `decrease`, `increase`, or `unspecified` independently to Vata, Pitta, and Kapha. Missing Doshas remain `unspecified`; they are never inferred from the Doshas that are present.
+Dosha expressions are normalized as a separate deterministic cleaning step. The normalizer preserves the source expression and assigns `decrease`, `increase`, or `unspecified` independently to Vata, Pitta, and Kapha. Missing Doshas remain `unspecified`; they are never inferred from the Doshas that are present. The normalized effects are persisted in `herb_doshas`, while the original expression remains available for review and provenance.
 
 ## Harvard-Kyoto Convention
 

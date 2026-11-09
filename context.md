@@ -19,7 +19,7 @@ Herbal Almanac catalogs Ayurvedic herbs, illnesses, and their therapeutic relati
 - **Vernacular Names:** Stored in `herb_attributes` as `Vernacular Names.<Language>` (for example, `Vernacular Names.Hindi`).
 - **Translated Names:** Generated via `deep-translator` only when `--translate` is passed; stored as `Translated Names.<Language>` and flagged as machine-generated and unverified.
 - **Illness & Treatment Links:** Normalized from `Therapeutic Usage` fields into `Illnesses` and `Treatment` join tables. Manual treatment links are preserved across scrapes.
-- **Dosha Expressions:** The cleaning layer now provides deterministic source-preserving normalization for documented Doshakarma expressions; database persistence and scraper integration remain planned.
+- **Dosha Expressions:** Doshakarma expressions are normalized into explicit Vata, Pitta, and Kapha effects and persisted with their original source expressions in `herb_doshas`.
 
 ## 4. Key Commands
 - **Install (Dev):** `pip install -e ".[dev]"` (add `".[translate]"` for translation support).

@@ -44,6 +44,8 @@ SQLite upsert
 The parser keeps each plant as an in-memory `PlantRecord`. It does not create
 an intermediate JSON file. The original source URL, source record ID, source
 values, and retrieval timestamp are stored with the database record.
+Doshakarma values are retained as source expressions and normalized into
+explicit Vata, Pitta, and Kapha effects during persistence.
 
 ## Components
 
@@ -125,6 +127,8 @@ Builds one `PlantRecord`. It extracts the source heading, the live scientific
 profile's scientific and family values, every parsed table and
 vernacular-name attribute, and source ID, URL, and the current UTC timestamp.
 The record is cleaned before being returned.
+Fields whose section-qualified name contains `Dosha` are also copied into
+`PlantRecord.dosha_expressions` for deterministic normalization and storage.
 
 ### Translation enrichment
 
@@ -175,6 +179,10 @@ When the parsed attributes contain a `Therapeutic Usage` field, the database
 operator creates unverified illness links for every value in the source
 `Therapeutic Usage.Name` condition field. Controlled-vocabulary validation is
 deferred; other therapeutic values remain attributes.
+
+When parsed attributes contain a Doshakarma field, the database operator stores
+one row for each of Vata, Pitta, and Kapha. Effects not documented by the
+source expression are stored as `unspecified`; they are never inferred.
 
 ### `main()`
 

@@ -14,6 +14,7 @@ Rich for table output. It provides commands for:
 - Searching herbs and illnesses.
 - Viewing treatment relationships.
 - Viewing or exporting all stored records.
+- Viewing or exporting normalized Dosha effects and their source expressions.
 
 Install the project from the repository root, which also configures the
 `herbal-almanac` command:
@@ -221,10 +222,11 @@ herbal-almanac records herbs
 herbal-almanac records illnesses
 herbal-almanac records treatments
 herbal-almanac records attributes
+herbal-almanac records doshas
 ```
 
-Valid record groups are `all`, `herbs`, `illnesses`, `treatments`, and
-`attributes`.
+Valid record groups are `all`, `herbs`, `illnesses`, `treatments`, `attributes`,
+and `doshas`.
 
 Records can be exported to JSON or CSV with `--output`/`-o`:
 
@@ -245,11 +247,13 @@ herbal-almanac records treatments --format csv --output treatments.csv
 When the output filename has no extension, specify `--format json` or
 `--format csv`; the command reports the missing format against `--output`.
 
-The JSON export preserves separate `herbs`, `illnesses`, and `treatments`
-and `attributes` arrays. CSV exports flatten the selected records into one file
+The JSON export preserves separate `herbs`, `illnesses`, `treatments`,
+`attributes`, and `doshas` arrays. CSV exports flatten the selected records into one file
 and add a `record_type` column. Treatment exports include both IDs and the
 related herb and illness names. Attribute exports include the herb ID, herb
 name, field name, value, and original source text.
+Dosha exports include the herb ID, Dosha, normalized effect, original source
+expression, and relationship source.
 
 To export vernacular attributes, select the `attributes` record group:
 

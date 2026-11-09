@@ -186,6 +186,22 @@ def test_live_profile_uses_sanskrit_title_and_parses_taxonomy() -> None:
     ]
 
 
+def test_parse_plant_extracts_dosha_expressions_from_section_attributes() -> None:
+        html = """
+        <h1>Test Herb - Test Herb</h1>
+        <div class="accordion-button">Ayurvedic Properties</div>
+        <table>
+            <tr><th>Doshakarma</th></tr>
+            <tr><td>KaphaVātahara</td></tr>
+            <tr><td>Pittavṛddhi</td></tr>
+        </table>
+        """
+
+        record = parse_plant(1, "https://example.test/plant/1", html)
+
+        assert record.dosha_expressions == ["KaphaVātahara", "Pittavṛddhi"]
+
+
 def test_insert_record_refreshes_treatment_links(tmp_path) -> None:
     db_path = tmp_path / "ayurvedic.db"
     database = AyurvedicAlmanac(db_path)
@@ -229,6 +245,47 @@ def test_insert_record_refreshes_treatment_links(tmp_path) -> None:
         row["english_name"]
         for row in database.treatment_details(herb_id)
     } == {"KAsa", "Manual condition"}
+
+
+def test_insert_record_persists_and_refreshes_dosha_effects(tmp_path) -> None:
+    database = AyurvedicAlmanac(tmp_path / "ayurvedic.db")
+    first_record = PlantRecord(
+        source="CCRAS DRAVYA",
+        source_record_id=2,
+        source_url="https://example.test/plant/2",
+        retrieved_at="2026-01-01T00:00:00+00:00",
+        ayurvedic_name="Test Herb",
+        dosha_expressions=["KaphaVātahara"],
+    ).clean()
+    second_record = PlantRecord(
+        source="CCRAS DRAVYA",
+        source_record_id=2,
+        source_url="https://example.test/plant/2",
+        retrieved_at="2026-01-02T00:00:00+00:00",
+        ayurvedic_name="Test Herb",
+        dosha_expressions=["Pittavṛddhi"],
+    ).clean()
+
+    herb_id = database.insert_record(first_record)
+    assert {
+        (row["dosha"], row["effect"], row["source_expression"])
+        for row in database.herb_doshas(herb_id)
+    } == {
+        ("Vata", "decrease", "KaphaVātahara"),
+        ("Pitta", "unspecified", "KaphaVātahara"),
+        ("Kapha", "decrease", "KaphaVātahara"),
+    }
+
+    database.insert_record(second_record)
+
+    assert {
+        (row["dosha"], row["effect"], row["source_expression"])
+        for row in database.herb_doshas(herb_id)
+    } == {
+        ("Vata", "unspecified", "Pittavṛddhi"),
+        ("Pitta", "increase", "Pittavṛddhi"),
+        ("Kapha", "unspecified", "Pittavṛddhi"),
+    }
 
 
 def test_retrieval_timestamp_and_fuzzy_search_are_persisted(tmp_path) -> None:
@@ -306,8 +363,12 @@ def test_legacy_schema_migrates_without_losing_treatments(tmp_path) -> None:
         source = connection.execute(
             "SELECT source FROM treatment WHERE herb_id = 1 AND illness_id = 1"
         ).fetchone()["source"]
+        dosha_table = connection.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'herb_doshas'"
+        ).fetchone()
     assert {"original_name", "search_key", "retrieved_at"} <= columns
     assert source == "manual"
+    assert dosha_table["name"] == "herb_doshas"
 
 
 def test_cli_setup_and_herb_search(tmp_path) -> None:
