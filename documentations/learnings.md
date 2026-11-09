@@ -1,5 +1,14 @@
 # Learnings
 
+## SQLite connection context managers
+
+A SQLite connection used as a context manager controls transactions but does not close the connection. Nest `with connection:` inside `try/finally` and close in the `finally` block to preserve commit/rollback behavior while guaranteeing cleanup on success and failure. `contextlib.closing()` alone is insufficient when transaction semantics are required.
+
+## SQLite initialization locking
+
+An in-memory lock protects only threads sharing the same Python object. Independent instances and processes need database-level coordination. Acquire a writer reservation with `BEGIN IMMEDIATE` before changing schema state, and keep the migration-version check, migration body, and version-row insert in the same transaction. Avoid `sqlite3.Connection.executescript()` inside an active transaction: it implicitly commits pending work. Execute trusted static DDL statements individually when the surrounding transaction must retain its writer lock. Configure a bounded busy timeout so competing initializers can wait for the lock. Use separate operation-scoped connections rather than sharing a connection across worker threads.
+
+
 ## Python environment
 
 ### Creating
