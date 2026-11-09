@@ -1,116 +1,82 @@
 # AI Agent Operating Guide (`agents.md`)
 
-## Environment Setup
-Before running commands or tests, ensure the package is installed in editable mode:
-```bash
-pip install -e ".[dev]"
+## Environment setup
 
+Before running project commands or tests, install the package and development
+dependencies from the repository root:
+
+```bash
+python -m pip install -e ".[dev]"
 ```
 
-## Agent Work Cycle
+## Agent work cycle
 
-For each requested change, follow this sequence:
+For each requested change:
 
-1. **Select & Scope:** Choose the next concrete task to perform and identify its owning module, test, and documentation files.
-2. **Implement:** Work on that task using the existing project style and conventions.
-3. **Update `context.md` & Documentation:** Before committing, update `context.md` and every relevant file under `documentations/` so the recorded architecture and behavior remain current.
-4. **Verify:** Run the narrowest relevant test or verification command (and the regression suite if code changed). If the test fails, do not claim completion; return the errors and the affected task clearly.
-5. **Commit Code + Docs Together:** When verification succeeds, stage the updated `context.md` and `documentations/` files alongside your code/test changes so that `context.md` is always part of the task commit.
+1. **Select and scope:** identify the concrete task, owning module, tests, and
+   documentation.
+2. **Implement:** follow existing conventions and preserve unrelated changes.
+3. **Synchronize documentation:** update `context.md` and every relevant
+   module document under `documentations/`. Keep implementation status
+   distinct from design proposals.
+4. **Verify:** run the narrowest relevant checks. If Python source or tests
+   changed, also run the mandatory scraper regression.
+5. **Commit together:** include code, tests, `context.md`, and relevant
+   documentation in the same focused commit.
 
-Keep each cycle focused. Do not mix unrelated refactors into the task or its commit. Never remove or overwrite user changes that are unrelated to the current task.
+Do not combine unrelated refactors or overwrite user changes.
 
-## Verification & Testing Protocol
+## Verification protocol
 
-After modifying any Python file under `src/herbal_almanac/` or `tests/`, you **must** run the regression suite before concluding your task:
+After modifying any Python file under `src/herbal_almanac/` or `tests/`,
+the mandatory regression command is:
 
 ```bash
 python -m pytest tests/test_scrapper.py -q
-
 ```
 
-## Testing & Documentation Rules for Agents
+For a complete verification pass, also run:
 
-* **Zero Network Calls in Tests:** Never write tests that hit the live CCRAS DRAVYA website or live Google Translate APIs. Always use `sample.html`, `data.txt`, mocked HTTP responses, or a fake translator class.
-* **Temporary Databases:** When testing CLI commands or `AyurvedicAlmanac` methods, always pass `--database /tmp/ayurvedic-test.db` or use pytest `tmp_path` fixtures. Clean up any temporary files created.
-* **Documentation Sync:** After every task, update `context.md` and the relevant Markdown documentation in `documentations/` (`cli.md`, `scrapper.md`, `cleaning.md`, `database_operator.md`, `translation.md`, or `plan.md`) and include them in the same commit. If a new heading is added to any documentation file, add a matching heading or learning entry in `documentations/learnings.md`.
-* **Python Module Documentation:** Every new Python file must have a matching Markdown file under `documentations/` explaining the script's purpose, inputs, outputs, main control flow, and verification steps. Update `context.md` and `documentations/learnings.md` when the new module introduces a new concept or heading, and include all of these files in the commit.
-
-## Module Boundaries
-
-* **Adding a New Scraper Source:** Keep source-specific HTML selectors isolated from `cleaning.py` and `database_operator.py`. Output validated `PlantRecord` objects so the downstream SQLite transaction layer remains source-agnostic.
-* **Modifying Schema:** Any change to SQLite tables in `database_operator.py` must support in-place migration for existing local databases without wiping manual treatment links or provenance records.
-
-### 3. `context.md`
-
-```markdown
-# Project Context: Herbal Almanac
-
-## 1. Domain & Purpose
-Herbal Almanac catalogs Ayurvedic herbs, illnesses, and their therapeutic relationships. It ingests botanical and clinical data from the CCRAS DRAVYA portal into a relational SQLite database and exposes both a Python API and a Typer CLI.
-
-*Disclaimer: For research and software evaluation only, not medical advice.*
-
-## 2. Repository Structure
-- `src/herbal_almanac/` — Main package source (`src/` layout).
-  - `cleaning.py` — `PlantRecord` data model, `clean_text`, Unicode normalization, Harvard-Kyoto ASCII transliteration.
-  - `database_operator.py` — `AyurvedicAlmanac` class, SQLite schema, migrations, fuzzy search, and transactional upserts.
-- `tests/test_scrapper.py` — Offline regression test suite.
-- `documentations/` — Detailed module docs (`cli.md`, `scrapper.md`, `cleaning.md`, `database_operator.md`, `translation.md`, `plan.md`, `learnings.md`).
-- `sample.html` — Saved DRAVYA HTML fixture for offline parser development.
-- `data.txt` — Sanskrit terminology/reference sample.
-- `.github/workflows/copilot-instructions.md` — Native GitHub Copilot instructions and work cycle rules.
-- `agents.md` — AI agent workflow, verification, and commit guardrails.
-- `context.md` — Living architectural and project state summary (updated with every task commit).
-
-## 3. Data Model & Attributes
-- **Primary Herb Name:** Derived from the source title's Ayurvedic/Sanskrit name when present.
-- **Vernacular Names:** Stored in `herb_attributes` as `Vernacular Names.<Language>` (e.g., `Vernacular Names.Hindi`).
-- **Translated Names:** Generated via `deep-translator` only when `--translate` is passed; stored as `Translated Names.<Language>` and flagged as machine-generated/unverified.
-- **Illness & Treatment Links:** Normalized from `Therapeutic Usage` fields into `Illnesses` and `Treatment` join tables. Manual treatment links are preserved across scrapes.
-
-## 4. Key Commands
-- **Install (Dev):** `pip install -e ".[dev]"` (add `".[translate]"` for translation support)
-- **Initialize DB:** `herbal-almanac setup --database /tmp/ayurvedic.db`
-- **Dev Scrape:** `herbal-almanac scrape dravya --max-pages 1 --max-plants 5 --database /tmp/ayurvedic.db`
-- **Run Tests:** `python -m pytest tests/test_scrapper.py -q`
-
-## 5. Development & Commit Protocol
-- Every task follows a strict cycle: select task → implement → update `context.md` & `documentations/` → verify with offline `pytest` → commit code and documentation together.
-- New Python modules require a companion Markdown file in `documentations/`.
-- New documentation headings require a corresponding entry in `documentations/learnings.md`.
-
-## 6. Upcoming Roadmap
-- Upload release candidate to TestPyPI.
-- Normalize Dosha attributes.
-- Build adapters for additional external herbal sources beyond CCRAS DRAVYA.
-- Dedicated public Python search API.
-
+```bash
+python -m pytest -q
 ```
 
-### 4. `.vscode/settings.json`
+The GitHub Actions workflow runs the scraper regression and full suite across
+Python 3.10, 3.11, 3.12, 3.13, and 3.14.
 
-```json
-{
-  "python.testing.pytestEnabled": true,
-  "python.testing.unittestEnabled": false,
-  "python.testing.pytestArgs": [
-    "tests"
-  ],
-  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
-  "github.copilot.chat.codeGeneration.instructions": [
-    {
-      "file": ".github/copilot-instructions.md"
-    },
-    {
-      "file": "context.md"
-    },
-    {
-      "file": "agents.md"
-    }
-  ],
-  "github.copilot.chat.testGeneration.instructions": [
-    {
-      "text": "Write offline pytest tests in tests/test_scrapper.py using local fixtures (sample.html, data.txt) and tmp_path for SQLite databases. Never make live network or live translator calls."
-    }
-  ]
-}
+## Offline testing rules
+
+- **No live network calls:** tests must not contact CCRAS DRAVYA or Google
+  Translate. Use `sample.html`, `data.txt`, mocked HTTP responses, or a fake
+  translator.
+- **Temporary SQLite databases:** use pytest `tmp_path` or an explicit
+  temporary `--database` path. Do not mutate the user's default database.
+- **Deterministic assertions:** prefer checking records, transaction state,
+  schema versions, and observable outputs over implementation details unless
+  a private helper is the precise subject of the test.
+
+## Documentation rules
+
+- Every task updates `context.md` and relevant Markdown files under
+  `documentations/`.
+- Add a matching learning note in `documentations/learnings.md` when a new
+  documentation heading or implementation concept is introduced.
+- Every new Python module requires a companion Markdown document explaining
+  purpose, inputs, outputs, main flow, and verification.
+- Keep the README, context, module docs, and roadmap consistent about what is
+  implemented, additive-only, or planned.
+
+## Module boundaries
+
+- **Scraper sources:** source-specific selectors stay in scraper modules.
+  Scrapers output validated `PlantRecord` objects; cleaning and persistence
+  remain source-agnostic.
+- **Database schema:** changes must migrate existing SQLite files in place.
+  Preserve manual treatment relationships and source/provenance data.
+- **Migrations:** validate ambiguous legacy identities before backfill;
+  migration body and version-ledger row must commit together.
+- **Connections:** use independent operation-scoped SQLite connections;
+  do not share a connection between worker threads.
+- **Normalized schema:** Migrations 1 and 2 are implemented additively.
+  Do not describe proposal tables as active application storage until their
+  migrations and tests exist.

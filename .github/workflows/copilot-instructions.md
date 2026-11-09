@@ -1,30 +1,95 @@
 # GitHub Copilot Instructions — Herbal Almanac
 
-## Project Overview
-Herbal Almanac (`herbal_almanac`) is a Python 3.10–3.14 library and Typer/Rich CLI (`herbal-almanac`) that scrapes Ayurvedic plant data from the CCRAS DRAVYA portal, cleans/validates records, optionally translates vernacular names, and persists herbs, attributes, illnesses, and treatments into SQLite.
+## Project overview
 
-## Core Architecture & Separation of Concerns
-Follow the strict pipeline boundary:
-`discover → fetch → parse → clean/validate → translate → SQLite transaction`
+Herbal Almanac (`herbal_almanac`) is a Python 3.10–3.14 library and
+Typer/Rich CLI (`herbal-almanac`). It currently ingests Ayurvedic plant data
+from the CCRAS DRAVYA portal, cleans and validates records, optionally
+translates vernacular names, and stores herbs, attributes, illnesses,
+treatments, and normalized Dosha effects in SQLite.
 
-1. **Scraper Layer (`src/herbal_almanac/`):** Handles URL discovery, retries/timeouts (`requests`, `urllib3`), and HTML parsing (`BeautifulSoup`). Never write raw SQL in the scraper.
-2. **Cleaning & Validation (`src/herbal_almanac/cleaning.py`):** Owns `PlantRecord` validation, deterministic Unicode cleanup (`clean_text`), value splitting, and Harvard-Kyoto-style ASCII transliteration for English-facing text while preserving original regional scripts.
-3. **Database Layer (`src/herbal_almanac/database_operator.py`):** `AyurvedicAlmanac` owns all SQLite schema creation, in-place migrations, provenance tracking, and transactional upserts across `Herbs`, `herb_attributes`, `Illnesses`, and `Treatment`.
-4. **Translation Layer:** Uses `deep-translator` (Google Translator) only when `--translate` is explicitly enabled. Translated attributes must be stored as `Translated Names.<Language>` and marked unverified.
+The database also has two additive, versioned schema migrations:
+Migration 1 adds source identity and claim provenance; Migration 2 adds
+botanical taxonomy. These tables do not replace the active legacy application
+read/write model yet. Treat the remaining normalized Dravyaguna schema as a
+proposal until its own migration and tests are implemented.
 
-## Strict Coding Rules
-- **No Committed Databases:** SQLite `.db` files and translation caches are runtime artifacts stored in the user data directory or `/tmp/`. Never hardcode paths inside the repo or commit `.db` files.
-- **Preserve Manual Links:** When updating or refreshing treatment links from `Therapeutic Usage`, ensure manually inserted treatment relationships survive subsequent scrapes.
-- **Offline Testing Only:** All pytest suites (`tests/test_scrapper.py`) must remain 100% offline using local fixtures (`sample.html`, `data.txt`) and fake translators/mocks. Never make live network requests in tests.
-- **Python Compatibility:** Maintain compatibility across Python 3.10 through 3.14. Use standard type hints.
+## Core architecture and separation of concerns
 
-## Required Work Cycle
-For every requested change, follow this numbered cycle:
+Follow the pipeline boundary:
 
-1. **Select & Scope:** Choose the next concrete task and identify the module, test, and documentation files (`context.md` and `documentations/*.md`) that own it.
-2. **Implement:** Implement the task using the existing coding style and conventions. Every new Python file must have a corresponding Markdown file in `documentations/` explaining the script's purpose, inputs, outputs, control flow, and verification steps.
-3. **Sync Context & Docs:** Update `context.md` and all relevant files under `documentations/` (`cli.md`, `scrapper.md`, `cleaning.md`, `database_operator.md`, `translation.md`, `plan.md`). If a new documentation heading is introduced, add the corresponding learning to `documentations/learnings.md`.
-4. **Verify:** Run the narrowest relevant test or verification command, followed by `python -m pytest tests/test_scrapper.py -q` if any Python or test file changed. If verification fails, return the actual errors and do not claim the task is complete.
-5. **Commit Together:** Once verification succeeds, stage the code, tests, `context.md`, and `documentations/` updates together and commit them in a single focused commit.
+`discover → fetch → parse → clean/validate → optional translate → SQLite transaction`
 
-Keep cycles focused and keep commits limited to the task. Do not overwrite unrelated user changes.
+1. **Scraper layer:** `src/herbal_almanac/scrapper.py` handles URL discovery,
+   retries/timeouts, and HTML parsing. Do not put raw SQL in the scraper.
+2. **Cleaning and validation:** `cleaning.py` owns `PlantRecord` validation,
+   deterministic Unicode cleanup, value splitting, transliteration, and
+   conservative Dosha-expression normalization. Preserve source wording.
+3. **Database layer:** `database_operator.py` owns SQLite connections,
+   legacy compatibility, schema migrations, transactional persistence,
+   provenance foundations, search, and read/export operations.
+4. **Translation layer:** `translation.py` uses `deep-translator` only when
+   `--translate` is explicitly enabled. Store generated values as
+   `Translated Names.<Language>` and mark them machine-generated/unverified.
+5. **CLI layer:** `cli.py` exposes setup, scraping, manual record operations,
+   search/inspection, and JSON/CSV exports. Do not treat exports as an
+   intermediate scraper stage.
+
+## Strict coding rules
+
+- **No committed databases:** SQLite files and translation caches are runtime
+  artifacts. Use the user data directory or temporary paths; never commit
+  generated databases.
+- **Preserve manual links:** refreshing scraped Therapeutic Usage relationships
+  must not delete manually curated treatment links.
+- **Preserve provenance:** keep source expressions and original fields next to
+  normalized interpretations. Do not manufacture source IDs or claim evidence.
+- **Conservative taxonomy:** do not infer accepted status, authorship, synonym
+  merges, or parent/child hierarchy from legacy botanical-name/family text.
+- **Offline tests only:** tests must use local fixtures (`sample.html`,
+  `data.txt`), mocked HTTP responses, fake translators, and temporary SQLite
+  databases. Never call CCRAS DRAVYA or Google Translate from tests.
+- **Python compatibility:** maintain compatibility with Python 3.10–3.14.
+
+## SQLite and migration rules
+
+- Open an independent connection per operation; do not share a connection
+  between worker threads.
+- Every connection must enable `PRAGMA foreign_keys = ON`.
+- Ordinary CRUD/read methods must use the operation-scoped private
+  `_connection()` context manager so transactions commit/roll back and
+  connections close on both success and failure.
+- Keep schema initialization separate from ordinary operation connection
+  handling.
+- Coordinate concurrent initialization with the existing instance lock,
+  `BEGIN IMMEDIATE`, and bounded `busy_timeout`.
+- Do not use `sqlite3.Connection.executescript()` inside an active migration
+  transaction because it implicitly commits pending work.
+- Validate ambiguous legacy natural keys before backfill; fail with an
+  actionable error rather than selecting an arbitrary row.
+- A migration body and its `schema_migrations` row must commit in the same
+  transaction. Failed migrations must roll back and remain retryable.
+- Schema changes must migrate existing databases in place and preserve manual
+  treatment links and source/provenance information.
+
+## Required work cycle
+
+For every requested change:
+
+1. **Select and scope:** identify the task, owning module, tests, and docs.
+2. **Implement:** follow existing conventions and avoid unrelated refactors.
+3. **Sync context and docs:** update `context.md` and relevant files under
+   `documentations/`. Add a learning entry for new documentation headings or
+   implementation concepts. Keep active functionality distinct from proposal.
+4. **Verify:** run the narrowest relevant tests. If any Python file under
+   `src/herbal_almanac/` or `tests/` changes, also run:
+
+   ```bash
+   python -m pytest tests/test_scrapper.py -q
+   ```
+
+   For a complete check, run `python -m pytest -q`.
+5. **Commit together:** include code, tests, `context.md`, and relevant docs in
+   one focused commit after verification.
+
+Keep cycles focused. Do not overwrite unrelated user changes.

@@ -4,8 +4,8 @@
 
 `database_operator.py` owns SQLite persistence for cleaned DRAVYA records. It
 does not download pages or interpret HTML. Its responsibilities are connection
-lifecycle, schema creation, lightweight migration, transactional persistence,
-and idempotent updates.
+lifecycle, legacy schema compatibility, versioned migrations, transactional
+persistence, search, and idempotent updates.
 
 ## `AyurvedicAlmanac`
 
@@ -137,8 +137,11 @@ redirects or removes duplicate treatment links, and creates a unique index on
 Existing SQLite files are migrated in place; use a new database path for a
 clean rebuild.
 
-This is a lightweight migration approach suitable for the current prototype.
-A formal migration tool can be introduced when schema changes become frequent.
+The initialization flow has two stages: legacy compatibility adjustments for
+the original prototype schema, followed by the versioned Migration 1 and
+Migration 2 steps described below. The version ledger tracks the normalized
+additions; the legacy compatibility phase remains idempotent for existing
+local databases.
 
 ### Initialization and migration concurrency
 

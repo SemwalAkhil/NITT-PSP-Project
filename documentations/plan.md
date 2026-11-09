@@ -7,59 +7,50 @@ The repository currently implements the DRAVYA MVP path through
 
 ```text
 DRAVYA directory
-            -> HTTP discovery and fetch with retries
-            -> semantic table and vernacular-card parsing
-            -> PlantRecord cleaning and validation
-            -> SQLite upsert of herbs and attributes
-            -> illness/treatment links from Therapeutic Usage
-            -> optional JSON/CSV CLI export
+    -> HTTP discovery and fetch with retries
+    -> semantic table and vernacular-card parsing
+    -> PlantRecord cleaning and validation
+    -> optional translation enrichment
+    -> SQLite transaction (herbs, attributes, illness/treatment, Dosha)
+    -> CLI inspection and JSON/CSV export
 ```
 
 Implemented today:
 
 - DRAVYA pagination, plant-ID discovery, timeouts, retries, and progress output.
 - Section-qualified table attributes and language-qualified vernacular names.
-- English vernacular name selection as the primary herb name, with heading
-      fallback when English is absent.
-- SQLite persistence, legacy schema migration, provenance fields, and
-      treatment-link refresh during re-scraping.
+- Unicode/source-text preservation and English-facing transliteration.
+- Optional machine translation, disabled by default.
+- Conservative Dosha-expression normalization retaining each source expression.
+- SQLite record upserts and legacy schema compatibility migrations.
+- Connection-scoped transactions with guaranteed connection closure.
+- Concurrent schema initialization protection using an instance lock and
+  SQLite writer reservation.
+- Versioned Migration 1 for source identity and claim-level provenance tables.
+- Migration 1 duplicate-identity preflight and application-level herb/claim
+  subject validation.
+- Versioned Migration 2 for botanical taxonomy tables, with conservative
+  legacy backfill and no inferred taxonomic hierarchy.
 - Typer commands for setup, scraping, manual records, searching, inspection,
-      and JSON/CSV export.
-- Regression tests for table parsing, vernacular persistence, treatment
-      refresh, cleanup, and translation enrichment.
-- A design-only proposal for a normalized, multi-source Dravyaguna schema,
-      including claim-level provenance and staged migration steps, in
-      `documentations/database_schema.md`.
-- The schema proposal was refined to define reusable source-record claims,
-      append-only manual curation, one names table, and SQLite-safe uniqueness
-      rules; implementation remains planned.
-- Migration 1 now implements only core identity and provenance tables through
-      an additive, transactional backfill; legacy application reads and writes
-      remain unchanged.
-- Migration 1 backfill integrity is hardened with duplicate-identity preflight,
-      deterministic inserted-row mapping, and application-level claim subject
-      validation; no new domain tables are included.
-- Migration 2 implements only normalized botanical taxonomy (`taxa`,
-      `taxon_relationships`, and `herb_taxa`) with conservative legacy backfill;
-      other Dravyaguna domain migrations remain planned.
+  and JSON/CSV export.
+- Offline regression, database lifecycle, initialization, and installed
+  package smoke tests; CI covers Python 3.10–3.14.
+- A broader normalized Dravyaguna data model in
+  `documentations/database_schema.md`; domain tables beyond Migrations 1–2
+  remain a staged design proposal.
 
 Still planned:
 
-- Raw HTML caching, structured scrape-error reporting, and request pacing for
-      large runs.
-- Dedicated normalized domain tables beyond the current
-      flexible attribute store.
-- External terminology mapping, API/PDF/Excel importers,
-      fuzzy multilingual search, and a public Python API.
+- More normalized domain tables for properties, parts, Karma, Dosha,
+  conditions, and controlled vocabularies.
+- External terminology mapping and source adapters beyond CCRAS DRAVYA.
+- API/PDF/Excel importers and richer data-quality reporting.
+- A dedicated public Python query API and a public package release.
 
-The status above describes the repository at the time of this documentation
-update. The detailed phase checklist below remains a design roadmap; unchecked
-items are not implemented merely because they appear in the target
-architecture.
+The detailed phase checklist below remains a design roadmap, not a claim that
+every target subsystem exists. The status snapshot above distinguishes active
+features from additive migration foundations and future proposal work.
 
-The checklist sections below describe the longer-term target architecture.
-They are planning material, not a claim that every listed subsystem already
-exists in this repository.
 
 ### Goal
 
