@@ -754,7 +754,9 @@ A clean local SQLite database can be rebuilt by scraping source pages.
 
 ## Objective
 
-Convert classical Doshakarma expressions to structured values while preserving the source expression.
+Convert documented classical Doshakarma expressions to independently
+structured values while preserving the source expression. Unknown or
+conflicting expressions remain unspecified rather than being guessed.
 
 ## Example
 
@@ -822,6 +824,14 @@ Pitta     = unspecified
 Normalized effects are stored in `herb_doshas` with the original source
 expression. Scraped rows are refreshed transactionally when a source record is
 updated.
+
+## Interpretation limits
+
+The normalizer parses only the documented Dosha names and terminology families.
+It associates each effect suffix with the Dosha group immediately preceding it,
+requires the complete expression to be recognized, and marks conflicting or
+ambiguous input as `unspecified`. It does not infer meanings for unlisted
+Sanskrit suffixes or natural-language descriptions.
 
 ## Tests
 

@@ -532,6 +532,26 @@ def test_clean_text_preserves_devanagari_joiners() -> None:
             "Tridoṣaśamana",
             {"Vata": "decrease", "Pitta": "decrease", "Kapha": "decrease"},
         ),
+        (
+            "VātavardhakaPittahara",
+            {"Vata": "increase", "Pitta": "decrease", "Kapha": "unspecified"},
+        ),
+        (
+            "Vata-vrddhi Kapha-ghna",
+            {"Vata": "increase", "Pitta": "unspecified", "Kapha": "decrease"},
+        ),
+        (
+            "Kaphaghna",
+            {"Vata": "unspecified", "Pitta": "unspecified", "Kapha": "decrease"},
+        ),
+        (
+            "VātaharaVātavardhaka",
+            {"Vata": "unspecified", "Pitta": "unspecified", "Kapha": "unspecified"},
+        ),
+        (
+            "notkaphahara",
+            {"Vata": "unspecified", "Pitta": "unspecified", "Kapha": "unspecified"},
+        ),
     ],
 )
 def test_normalize_dosha_expression_preserves_source_and_missing_doshas(

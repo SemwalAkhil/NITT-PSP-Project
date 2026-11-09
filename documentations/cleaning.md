@@ -51,11 +51,23 @@ decrease terms such as `-hara`, `-ghna`, and `-shamana`, increase terms such
 as `-vardhaka` and `-vrddhi`, and multi-Dosha expressions such as
 `KaphaVātahara` and `Tridoṣaśamana`.
 
-The result preserves the source expression and returns one effect for each of
-the three Doshas. A Dosha that is not explicitly present is returned as
-`unspecified`; the normalizer never infers an undocumented effect. This is a
-deterministic cleaning helper only. Database storage and scraper integration
-remain separate follow-up work.
+The parser reads complete Dosha/effect groups from left to right, so a mixed
+expression such as `VātavardhakaPittahara` returns Vata `increase` and Pitta
+`decrease` independently. It preserves the source expression and returns one
+effect for each of the three Doshas. A Dosha that is not explicitly present is
+returned as `unspecified`; the normalizer never infers an undocumented effect.
+
+Expressions that contain an unknown trailing term, an incomplete group, or
+conflicting effects for one Dosha are treated as ambiguous and return
+`unspecified` for every Dosha. Matching must consume the complete normalized
+expression, which prevents substrings inside unrelated words such as
+`notkaphahara` from being interpreted as evidence. Unicode diacritics,
+transliterated spellings, and separators are normalized before matching.
+
+The rules cover only the documented terminology families. The normalizer does
+not infer meanings for unlisted Sanskrit suffixes or English descriptions.
+Database persistence stores the resulting effects in `herb_doshas` together
+with the original expression.
 
 ### `PlantRecord`
 
@@ -76,6 +88,7 @@ validator, and database operator.
 | `transliterated_name` | ASCII transliteration for compatibility/search indexing. |
 | `transliterated_botanical_name` | ASCII botanical-name transliteration, when available. |
 | `transliterated_family` | ASCII family-name transliteration, when available. |
+| `dosha_expressions` | Cleaned source Doshakarma expressions for normalization. |
 
 ### `PlantRecord.clean()`
 

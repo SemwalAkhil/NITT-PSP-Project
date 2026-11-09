@@ -10,6 +10,11 @@ from urllib.parse import urlsplit
 AttributeKind = Literal["disease", "ambiguous"]
 DoshaEffect = Literal["decrease", "increase", "unspecified"]
 DOSHAS = ("Vata", "Pitta", "Kapha")
+DOSHA_ALIASES = {
+    "vata": "Vata",
+    "pitta": "Pitta",
+    "kapha": "Kapha",
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,7 +37,7 @@ ROMANIZATION = str.maketrans({
     "Ś": "Z", "Ṣ": "S", "Ḥ": "H", "Ṃ": "M",
 })
 SPLIT_PATTERN = re.compile(r"\s*(?:\n|;|\|)\s*")
-DOSHA_DECREASE_TERMS = ("hara", "ghna", "shamana", "zamana")
+DOSHA_DECREASE_TERMS = ("shamana", "zamana", "ghna", "hara")
 DOSHA_INCREASE_TERMS = ("vardhaka", "vrddhi")
 
 
@@ -169,26 +174,66 @@ class DoshaNormalization:
 def normalize_dosha_expression(expression: str) -> DoshaNormalization:
     """Normalize documented Dosha effects without inferring missing Doshas."""
     normalized = re.sub(r"[^a-z]", "", ascii_text(clean_text(expression)).casefold())
-    if "tridosa" in normalized or "tridosha" in normalized:
-        present_doshas = set(DOSHAS)
-    else:
-        present_doshas = {
-            dosha
-            for dosha in DOSHAS
-            if dosha.casefold() in normalized
-        }
+    effects_by_dosha: dict[str, set[DoshaEffect]] = {dosha: set() for dosha in DOSHAS}
+    cursor = 0
+    while cursor < len(normalized):
+        if normalized.startswith("tridosa", cursor):
+            cursor += len("tridosa")
+            present_doshas = DOSHAS
+        elif normalized.startswith("tridosha", cursor):
+            cursor += len("tridosha")
+            present_doshas = DOSHAS
+        else:
+            dosha = next(
+                (
+                    canonical
+                    for alias, canonical in DOSHA_ALIASES.items()
+                    if normalized.startswith(alias, cursor)
+                ),
+                None,
+            )
+            if dosha is None:
+                break
+            cursor += len(dosha.casefold())
+            present_doshas = (dosha,)
+            while cursor < len(normalized):
+                next_dosha = next(
+                    (
+                        canonical
+                        for alias, canonical in DOSHA_ALIASES.items()
+                        if normalized.startswith(alias, cursor)
+                    ),
+                    None,
+                )
+                if next_dosha is None:
+                    break
+                cursor += len(next_dosha.casefold())
+                present_doshas += (next_dosha,)
 
-    if any(term in normalized for term in DOSHA_DECREASE_TERMS):
-        effect: DoshaEffect = "decrease"
-    elif any(term in normalized for term in DOSHA_INCREASE_TERMS):
-        effect = "increase"
-    else:
-        effect = "unspecified"
+        effect: DoshaEffect | None = None
+        for term in DOSHA_DECREASE_TERMS:
+            if normalized.startswith(term, cursor):
+                effect = "decrease"
+                cursor += len(term)
+                break
+        if effect is None:
+            for term in DOSHA_INCREASE_TERMS:
+                if normalized.startswith(term, cursor):
+                    effect = "increase"
+                    cursor += len(term)
+                    break
+        if effect is None:
+            break
+        for dosha in present_doshas:
+            effects_by_dosha[dosha].add(effect)
+
+    if cursor != len(normalized) or not any(effects_by_dosha.values()):
+        effects_by_dosha = {dosha: set() for dosha in DOSHAS}
 
     return DoshaNormalization(
         source_expression=expression,
         effects={
-            dosha: effect if dosha in present_doshas else "unspecified"
-            for dosha in DOSHAS
+            dosha: next(iter(effects)) if len(effects) == 1 else "unspecified"
+            for dosha, effects in effects_by_dosha.items()
         },
     )
