@@ -22,6 +22,7 @@ Herbal Almanac catalogs Ayurvedic herbs, illnesses, and their therapeutic relati
 - **Illness & Treatment Links:** Normalized from `Therapeutic Usage` fields into `Illnesses` and `Treatment` join tables. Manual treatment links are preserved across scrapes.
 - **Dosha Expressions:** Doshakarma expressions are parsed independently by Dosha/effect group; mixed, unknown, and conflicting expressions are handled conservatively, then persisted with their original source expressions in `herb_doshas`.
 - **Schema Design:** A normalized multi-source Dravyaguna schema has been documented without changing the existing SQLite schema or migrations.
+- **Schema Refinement:** The proposal uses source-record-owned, reusable claims, one names table with typed synonyms, non-null claim references for domain rows, append-only manual curation, and NULL-safe unique indexes.
 
 ## 4. Key Commands
 - **Install (Dev):** `pip install -e ".[dev]"` (add `".[translate]"` for translation support).

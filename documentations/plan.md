@@ -30,6 +30,9 @@ Implemented today:
 - A design-only proposal for a normalized, multi-source Dravyaguna schema,
       including claim-level provenance and staged migration steps, in
       `documentations/database_schema.md`.
+- The schema proposal was refined to define reusable source-record claims,
+      append-only manual curation, one names table, and SQLite-safe uniqueness
+      rules; implementation remains planned.
 
 Still planned:
 

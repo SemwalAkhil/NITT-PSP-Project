@@ -11,6 +11,25 @@ side. Normalized values are claims made about a source record, not replacements
 for the source wording. An uncertain or unavailable interpretation remains
 nullable or `unspecified` rather than being guessed.
 
+## Refinement decisions
+
+- `source_claims` belongs to a `source_record`, not directly to a herb. Domain
+  rows such as names, properties, and herb-condition relationships connect the
+  claim to their subject. Reusing one claim on several rows supports a single
+  expression such as Tridosha effects without adding a subject abstraction.
+- Every claim-bearing domain row has a required, non-null `source_claim_id`.
+  Manual curation therefore creates a claim too, using a manual source record;
+  nullable normalized concept IDs represent unknown mappings instead.
+- `herb_names` is the only name table. Synonyms are name rows with a
+  `name_type`, not a second synonym table that duplicates name text.
+- Relationship tables use surrogate IDs and explicit unique indexes over
+  non-null identity columns. Nullable normalized IDs are deliberately excluded
+  from those indexes because SQLite permits duplicate `NULL` values in UNIQUE
+  constraints.
+- `confidence` describes the normalization or mapping decision and remains
+  nullable until a defensible calibration method exists. `verification_status`
+  describes review workflow; neither field claims clinical validity.
+
 ## Current schema assessment
 
 The current implementation creates these application tables:
@@ -107,36 +126,37 @@ similarity.
 | `herb_id` | INTEGER | Foreign key to `herbs`. |
 | `name_text` | TEXT | Required original or normalized name text. |
 | `normalized_text` | TEXT | Search form; not a replacement for `name_text`. |
-| `language_code` | TEXT | BCP 47-like code or project language code; nullable when unknown. |
-| `script_code` | TEXT | Script identifier such as Devanagari or Latin; nullable when unknown. |
-| `name_type` | TEXT | `ayurvedic`, `vernacular`, `botanical_source`, `accepted_botanical`, or `trade`. |
+| `language_code` | TEXT | Required BCP 47-like code or `und` when unknown. |
+| `script_code` | TEXT | Required script identifier or `Zyyy` when unknown. |
+| `name_type` | TEXT | `ayurvedic`, `vernacular`, `botanical_source`, `accepted_botanical`, `botanical_synonym`, `historical`, or `trade`. |
 | `is_preferred` | INTEGER | Boolean preference within a name type. |
-| `source_claim_id` | INTEGER | Foreign key to `source_claims`; nullable for curated values. |
+| `source_claim_id` | INTEGER | Required foreign key to `source_claims`, including manual claims. |
 
 Recommended indexes are `(herb_id, name_type)`, `(normalized_text)`, and
 `(language_code, normalized_text)`. The same text may legitimately occur in
-multiple scripts or sources, so uniqueness should not be global.
+multiple scripts or sources, so uniqueness should not be global. Use a
+surrogate `herb_name_id` primary key and a unique index on
+`(herb_id, name_text, normalized_text, language_code, script_code, name_type,
+source_claim_id)`. All columns in that index are required, so SQLite NULL
+semantics cannot create duplicate claim-backed names.
 
-#### `herb_synonyms`
-
-| Column | Type | Constraints and purpose |
-|---|---|---|
-| `herb_id` | INTEGER | Foreign key to `herbs`. |
-| `herb_name_id` | INTEGER | Foreign key to an alternative row in `herb_names`. |
-| `synonym_type` | TEXT | `classical`, `vernacular`, `trade`, `historical`, or `source_alias`. |
-| `source_claim_id` | INTEGER | Foreign key to the evidence for the synonym relationship. |
-
-The primary key is `(herb_id, herb_name_id, synonym_type)`. Keeping synonyms as
-relationships makes it possible for one name row to be associated with an
-identity only when evidence supports that association.
+Synonyms do not need a separate relationship table. A Sanskrit, vernacular,
+trade, historical, source-alias, or botanical synonym is another
+`herb_names` row with the corresponding `name_type`. `accepted_botanical` is
+the preferred accepted name row; `botanical_synonym` rows preserve alternate
+botanical names. The same spelling may occur for multiple herbs only when each
+association has a separate explicit identity-resolution decision and claim.
 
 #### `taxa` and `herb_taxa`
 
 `taxa` stores reusable taxonomy nodes: `taxon_id`, `parent_taxon_id`, `rank`,
 `scientific_name`, `accepted_name`, `authority`, and optional `registry` and
-`registry_id`. `herb_taxa` links `herb_id` to `taxon_id` with `relationship_type`
-(`source_identification`, `accepted`, or `synonym`), `is_preferred`, and
-`source_claim_id`.
+`registry_id`. `herb_taxa` has a surrogate `herb_taxon_id` primary key and
+links `herb_id` to `taxon_id` with required `relationship_type`
+(`source_identification`, `accepted`, or `synonym`), `is_preferred`, and a
+required `source_claim_id`. Use a unique index on
+`(herb_id, taxon_id, relationship_type, source_claim_id)` and indexes on
+`(taxon_id)` and `(herb_id, relationship_type)`.
 
 Taxonomy is justified as a separate concept because accepted names, source
 identifications, and taxonomic parents can be shared by many herbs and can
@@ -147,10 +167,11 @@ change independently of Ayurvedic names.
 #### `plant_parts` and `herb_parts`
 
 `plant_parts` is a controlled vocabulary with `part_id`, `canonical_name`, and
-optional `parent_part_id`. `herb_parts` stores `(herb_id, part_id,
-source_expression, source_claim_id)` and has a composite primary key over the
-herb, part, expression, and claim. A nullable `part_id` allows an unnormalized
-source expression to be retained until reviewed.
+optional `parent_part_id`. `herb_parts` has a surrogate `herb_part_id` primary
+key, required `herb_id`, required `source_expression`, and required
+`source_claim_id`; `part_id` is nullable while an expression awaits review.
+Use a unique index on `(herb_id, source_expression, source_claim_id)` and
+indexes on `(part_id)` and `(herb_id)`.
 
 #### `property_terms` and `herb_properties`
 
@@ -163,22 +184,25 @@ optional `display_value`. `herb_properties` stores:
 - `property_type`;
 - `source_expression`;
 - optional `normalized_value`;
-- `source_claim_id`;
-- `confidence` and `verification_status`.
+- required `source_claim_id`;
+- nullable `confidence` and required `verification_status`.
 
 The source expression is mandatory. A normalized term is nullable, so a new
 source expression can be ingested without inventing a controlled vocabulary
-entry. A uniqueness rule should apply only to an identical herb, property type,
-source expression, and source claim; separate sources may provide different
-values.
+entry. Use a surrogate `herb_property_id` primary key and a unique index on
+`(herb_id, property_type, source_expression, source_claim_id)`; do not include
+the nullable `property_term_id` in the duplicate key. Separate sources may
+provide different values.
 
 #### `karma_terms` and `herb_karma`
 
 `karma_terms` stores reusable Karma classifications with `karma_id`,
-`canonical_name`, and optional description. `herb_karma` stores the many-to-many
-relationship `(herb_id, karma_id, source_expression, source_claim_id,
-confidence, verification_status)`. `karma_id` may be null while a source
-expression is awaiting normalization.
+`canonical_name`, and optional description. `herb_karma` has a surrogate
+`herb_karma_id` primary key, required `herb_id`, required `source_expression`,
+required `source_claim_id`, nullable `karma_id`, nullable `confidence`, and
+required `verification_status`. Use a unique index on
+`(herb_id, source_expression, source_claim_id)` and indexes on `(karma_id)` and
+`(herb_id)`.
 
 ### Dosha effects
 
@@ -189,20 +213,22 @@ Pitta, and Kapha. `herb_dosha_effects` stores:
 
 | Column | Type | Purpose |
 |---|---|---|
-| `herb_dosha_effect_id` | INTEGER | Primary key. |
-| `herb_id` | INTEGER | Foreign key to `herbs`. |
-| `dosha_id` | INTEGER | Foreign key to `doshas`. |
+| `herb_dosha_effect_id` | INTEGER | Surrogate primary key. |
+| `herb_id` | INTEGER | Required foreign key to `herbs`. |
+| `dosha_id` | INTEGER | Required foreign key to `doshas`. |
 | `effect` | TEXT | `increase`, `decrease`, `neutral`, or `unspecified`. |
 | `source_expression` | TEXT | Required original Doshakarma expression. |
-| `source_claim_id` | INTEGER | Evidence for the expression and interpretation. |
+| `source_claim_id` | INTEGER | Required foreign key to the evidence claim. |
 | `confidence` | REAL | Nullable value from 0 to 1. |
-| `verification_status` | TEXT | `unverified`, `reviewed`, or `verified`. |
+| `verification_status` | TEXT | `unreviewed`, `reviewed`, `verified`, `rejected`, or `superseded`. |
 
 The existing `DoshaNormalization` helper supplies the rule-based starting
 point. It must remain conservative: absent Doshas are `unspecified`, conflicts
 are not forced into an effect, and the original expression is retained. The
 proposed table separates normalized effect vocabulary from source provenance
-and adds `neutral` for future reviewed data.
+and adds `neutral` for future reviewed data. Use a unique index on
+`(herb_id, dosha_id, source_expression, source_claim_id)` and indexes on
+`(dosha_id, effect)` and `(herb_id)`.
 
 ### Conditions and indications
 
@@ -210,24 +236,29 @@ and adds `neutral` for future reviewed data.
 
 `conditions` stores normalized concepts with `condition_id`, `canonical_label`,
 `vocabulary`, optional `code`, and `status`. A condition is not created merely
-because a source uses a word in `Therapeutic Usage.Name`.
+because a source uses a word in `Therapeutic Usage.Name`. Use a unique index on
+`(vocabulary, canonical_label)` and allow the vocabulary to identify the
+normalization authority.
 
 #### `herb_conditions`
 
 | Column | Type | Purpose |
 |---|---|---|
-| `herb_condition_id` | INTEGER | Primary key. |
-| `herb_id` | INTEGER | Foreign key to `herbs`. |
+| `herb_condition_id` | INTEGER | Surrogate primary key. |
+| `herb_id` | INTEGER | Required foreign key to `herbs`. |
 | `condition_id` | INTEGER | Nullable FK to `conditions`; null for an unmapped source term. |
 | `source_term` | TEXT | Required original indication wording. |
 | `mapping_type` | TEXT | `source_indication`, `candidate_mapping`, or `validated_mapping`. |
 | `confidence` | REAL | Nullable value from 0 to 1. |
-| `source_claim_id` | INTEGER | Evidence for the indication or mapping. |
-| `verification_status` | TEXT | Review state. |
+| `source_claim_id` | INTEGER | Required foreign key to the indication or mapping claim. |
+| `verification_status` | TEXT | `unreviewed`, `reviewed`, `verified`, `rejected`, or `superseded`. |
+| `clinical_validity_status` | TEXT | Separate nullable status for clinical validity; not implied by review. |
 
 This relationship explicitly distinguishes an unverified source indication from
 a validated disease mapping. A later crosswalk can create a `condition_id`
 without rewriting or deleting `source_term`.
+Use a unique index on `(herb_id, source_term, source_claim_id)` and indexes on
+`(condition_id, mapping_type)` and `(herb_id)`.
 
 ### Sources and provenance
 
@@ -250,31 +281,62 @@ successor to the current `(source, source_record_id)` identity fields on
 #### `source_claims`
 
 `source_claims` provides claim-level provenance for names, properties, parts,
-Karma, Dosha effects, taxonomy links, and conditions. It contains:
+Karma, Dosha effects, taxonomy links, and conditions. It belongs to one source
+record and deliberately does not contain a direct `herb_id`. A source claim is
+attached to its subject by one or more domain rows that reference the claim.
+This keeps the claim reusable when one expression supports several related
+rows, while an unresolved claim can exist before a normalized subject is
+known. It contains:
 
 - `source_claim_id` as the primary key;
-- `source_record_id` as a foreign key;
+- `source_record_id` as a required foreign key;
 - `claim_type` and `source_field`;
-- `source_expression` and optional `language_code`;
+- required `source_expression` and `language_code` (`und` when unknown);
 - `retrieved_at` when different from the source record;
-- `confidence` and `verification_status`;
-- optional `normalization_method` and reviewer metadata.
+- required `verification_status` for source-claim review;
+- `created_by_type` (`ingest`, `human`, or `system`), `created_by`,
+  `created_at`, and `updated_at`;
+- optional `reviewed_by`, `reviewed_at`, `reviewer_notes`,
+  `normalization_method`, and `supersedes_claim_id`.
 
 Normalized tables reference `source_claim_id`, so one source record can support
-many claims and one herb can combine claims from multiple sources. A future
+many claims and one herb can combine claims from multiple sources. The same
+claim can be referenced by several domain rows when justified, for example the
+three Dosha rows produced from one Tridosha expression. A future
 `source_claim_evidence` table can be added if a claim needs multiple page
 ranges or artifacts; it is not required for the first normalized migration.
+Index `source_claims` by `(source_record_id, claim_type, source_field)` and
+retain duplicate expressions when they represent separate claims or review
+events.
+
+Manual curation uses a `manual` source and a manual `source_record` rather than
+nullable provenance. Human claims can coexist with scraped and automated
+claims. A correction appends a new claim, points `supersedes_claim_id` to the
+old claim, and leaves the original source expression intact. Scraper upserts
+may refresh only claims owned by that scraper/source record; they must never
+delete manual claims or manual treatment relationships.
+
+`confidence` belongs on normalized interpretation or mapping rows, not on the
+raw source claim. It is a nullable numeric value in the closed interval `[0, 1]`
+and means confidence in that normalization or mapping decision, not confidence
+that the source text was copied correctly. No value is assigned when
+calibration evidence is unavailable, including for legacy backfill.
+`verification_status` tracks workflow review and acceptance; `verified` does
+not by itself mean clinical validity. `clinical_validity_status` on condition
+relationships is the separate place for that domain judgment. Source fidelity
+is represented by the unchanged `source_expression`, source field, and source
+record.
 
 ## Relationship summary
 
-- One `herb` has many names, synonyms, source claims, parts, properties, Karma
+- One `herb` has many names, source claims, parts, properties, Karma
   rows, Dosha effects, taxonomy links, and condition relationships.
 - One source has many source records; one source record has many claims.
 - A name, property, part, Karma, Dosha, taxonomy, or condition relationship may
   point to one claim, while the stable herb identity remains independent of the
-  source.
+  source. A single claim may be referenced by more than one such row.
 - One normalized condition or taxonomy node may be linked to many herbs.
-- Manual curation is represented by nullable source claims plus verification
+- Manual curation is represented by explicit manual source claims plus review
   metadata, rather than by overwriting source claims.
 
 ## Entity-relationship diagram
@@ -282,10 +344,9 @@ ranges or artifacts; it is not required for the first normalized migration.
 ```mermaid
 erDiagram
     HERBS ||--o{ HERB_NAMES : has
-    HERBS ||--o{ HERB_SYNONYMS : uses
-    HERB_NAMES ||--o{ HERB_SYNONYMS : names
     HERBS ||--o{ HERB_PARTS : uses
     PLANT_PARTS ||--o{ HERB_PARTS : classifies
+    PLANT_PARTS ||--o{ PLANT_PARTS : parent_of
     HERBS ||--o{ HERB_PROPERTIES : has
     PROPERTY_TERMS ||--o{ HERB_PROPERTIES : normalizes
     HERBS ||--o{ HERB_KARMA : has
@@ -294,10 +355,12 @@ erDiagram
     DOSHAS ||--o{ HERB_DOSHA_EFFECTS : classifies
     HERBS ||--o{ HERB_TAXA : identified_as
     TAXA ||--o{ HERB_TAXA : describes
+    TAXA ||--o{ TAXA : parent_of
     HERBS ||--o{ HERB_CONDITIONS : indicates
     CONDITIONS ||--o{ HERB_CONDITIONS : normalizes
     SOURCES ||--o{ SOURCE_RECORDS : publishes
     SOURCE_RECORDS ||--o{ SOURCE_CLAIMS : supports
+    SOURCE_CLAIMS ||--o{ SOURCE_CLAIMS : supersedes
     SOURCE_CLAIMS ||--o{ HERB_NAMES : supports
     SOURCE_CLAIMS ||--o{ HERB_PARTS : supports
     SOURCE_CLAIMS ||--o{ HERB_PROPERTIES : supports
@@ -335,9 +398,9 @@ herb_karma
   (42, karma_id=null, source_expression="Dīpana", claim_id=704)
 
 herb_dosha_effects
-  (42, Vata, decrease, "KaphaVātahara", claim_id=705, confidence=0.90)
-  (42, Kapha, decrease, "KaphaVātahara", claim_id=705, confidence=0.90)
-  (42, Pitta, unspecified, "KaphaVātahara", claim_id=705, confidence=0.90)
+  (42, Vata, decrease, "KaphaVātahara", claim_id=705, confidence=null)
+  (42, Kapha, decrease, "KaphaVātahara", claim_id=705, confidence=null)
+  (42, Pitta, unspecified, "KaphaVātahara", claim_id=705, confidence=null)
 
 herb_conditions
   (42, condition_id=null, source_term="Kāsa",
@@ -362,27 +425,34 @@ The migration should be additive and observable:
 2. **Create new tables.** Add the normalized tables and indexes without
    removing `herb_attributes`, `illness`, `treatment`, or the existing
    `herb_doshas` table. Existing application behavior continues unchanged.
-3. **Create source records.** Add a CCRAS DRAVYA `sources` row and one
-   `source_records` row for each existing `(source, source_record_id)` pair.
-   Preserve existing URLs and retrieval timestamps; use a documented legacy
-   migration marker where values are unavailable.
+3. **Create source records and claims.** Add a CCRAS DRAVYA `sources` row and
+  one `source_records` row for each existing `(source, source_record_id)` pair.
+  Preserve existing URLs and retrieval timestamps; use a documented legacy
+  migration marker where values are unavailable. Create one non-null-owned
+  claim for each backfilled source expression or relationship; use explicit
+  `manual` source records for existing manual data where its creator is known
+  only as a legacy operator.
 4. **Map stable identities.** Initially map each current `herbs.id` to one new
    `herb_id` through a temporary `legacy_herb_map`. Do not merge records during
    this mechanical migration. Later identity resolution can be reviewed as a
    separate operation.
 5. **Backfill names and attributes.** Convert `original_name` and
-   `english_name` into source-tagged `herb_names` rows. Convert only known
-   vernacular, translation, taxonomy, part, property, Karma, and Doshakarma
-   fields into structured rows. Retain every original `herb_attributes` row.
+  `english_name` into source-tagged `herb_names` rows; use `name_type` rather
+  than a synonym table. Convert only known vernacular, translation, taxonomy,
+  part, property, Karma, and Doshakarma fields into structured rows. Retain
+  every original `herb_attributes` row and require a claim reference on each
+  new structured row.
 6. **Backfill indications and Doshas.** Convert `illness` and `treatment` into
-   unverified `conditions` and `herb_conditions`, preserving whether each
-   relationship was manual or scraped. Convert current `herb_doshas` rows into
-   `herb_dosha_effects`, including their source expressions and a low or
-   explicitly unknown confidence where no legacy confidence exists.
+  unverified `conditions` and `herb_conditions`, preserving whether each
+  relationship was manual or scraped. Convert current `herb_doshas` rows into
+  `herb_dosha_effects`, including their source expressions and null confidence
+  where no legacy confidence exists. Do not mark legacy values verified merely
+  because they were present in the database.
 7. **Validate and dual-read.** Compare counts, source keys, manually inserted
-   treatment links, attribute values, and representative search results. Run
-   the existing offline regression suite and migration-specific checks before
-   changing writers.
+  treatment links, attribute values, claim references, nullable-term rows,
+  and representative search results. Check every proposed unique index for
+  duplicate non-null keys. Run the existing offline regression suite and
+  migration-specific checks before changing writers.
 8. **Switch writers gradually.** Add a compatibility adapter that writes the
    old and new representations together, then switch reads after parity is
    demonstrated. Keep the old tables read-only for a deprecation period.
@@ -393,7 +463,9 @@ The migration should be additive and observable:
 Rollback before writer cutover is a drop of only the new tables followed by
 restoring the backup if needed. After dual writes begin, rollback requires
 stopping the new writer and retaining the old tables until parity is restored.
-No migration step may delete or overwrite manually maintained records.
+No migration step may delete or overwrite manually maintained records. Existing
+manual treatment rows remain protected by their manual source marker, and
+manual claims are never eligible for scraper-owned replacement.
 
 ## Design decisions and trade-offs
 

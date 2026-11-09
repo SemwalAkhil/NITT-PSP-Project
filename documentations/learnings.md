@@ -224,6 +224,17 @@ from multiple sources without overwriting source expressions. The design is
 documentation-only until an additive migration and compatibility adapter are
 approved.
 
+## Schema refinement decisions
+
+Source claims belong to source records and are attached to herbs through the
+domain rows they support. Requiring a non-null claim reference on each
+claim-bearing row keeps provenance explicit while allowing one claim to support
+multiple normalized rows. Names and synonyms share one table with a typed
+`name_type`. Relationship rows use surrogate IDs and unique indexes over
+non-null identity columns because SQLite allows duplicate `NULL` values in
+UNIQUE constraints. Manual corrections append claims and supersede earlier
+claims instead of overwriting source data.
+
 ## Harvard-Kyoto Convention
 
 The project uses a compatibility transliteration for English-facing database
