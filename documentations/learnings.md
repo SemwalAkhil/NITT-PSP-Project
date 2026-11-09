@@ -245,6 +245,16 @@ The migration creates only a justified claim-backed source alias for each
 existing herb name; attributes, treatment relationships, and Dosha rows are
 preserved for later domain migrations.
 
+## Migration 1 provenance hardening
+
+Legacy source identity is validated before any normalized migration tables are
+created. Non-null duplicate `(source, source_record_id)` pairs fail with the
+legacy herb IDs; null IDs use explicit artifact references. Backfill keeps the
+inserted source-record ID rather than reselecting by a potentially ambiguous
+key. SQLite foreign keys provide existence checks, while `_validate_herb_claim`
+provides the application-level subject check for herb names. Manual claims are
+accepted only with an explicit `legacy_herb_id:<id>` binding.
+
 ## Harvard-Kyoto Convention
 
 The project uses a compatibility transliteration for English-facing database

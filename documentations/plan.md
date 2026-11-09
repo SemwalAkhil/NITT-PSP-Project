@@ -36,6 +36,9 @@ Implemented today:
 - Migration 1 now implements only core identity and provenance tables through
       an additive, transactional backfill; legacy application reads and writes
       remain unchanged.
+- Migration 1 backfill integrity is hardened with duplicate-identity preflight,
+      deterministic inserted-row mapping, and application-level claim subject
+      validation; no new domain tables are included.
 
 Still planned:
 

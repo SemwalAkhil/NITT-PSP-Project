@@ -339,10 +339,16 @@ Migration 1 cannot enforce that every source record describes exactly one
 herb: `source_records` intentionally has no `herb_id`, and the current legacy
 model stores source identity on `herbs`. During this migration, the one-to-one
 `legacy_herb_map` and matching external keys provide the validation boundary.
-Future writers must validate that a claim's source record and the associated
-herb refer to the same source record before inserting a domain row. A separate
+The application-level `_validate_herb_claim()` helper now validates that a
+claim's source record and the associated herb refer to the same source record
+before inserting a `herb_names` row. A separate
 subject-association abstraction is deferred until one source claim genuinely
 needs subjects beyond the existing domain relationships.
+
+Migration preflight rejects duplicate non-null normalized legacy source
+identities before creating any Migration 1 tables. Null source-record IDs use
+explicit legacy artifact references, and the backfill uses inserted row IDs
+instead of selecting a matching source record by an ambiguous query.
 
 `confidence` belongs on normalized interpretation or mapping rows, not on the
 raw source claim. It is a nullable numeric value in the closed interval `[0, 1]`
@@ -544,6 +550,10 @@ This design can be reviewed without changing the application:
   normalized links or `unspecified` values.
 - Existing manual treatment links and flexible attributes have explicit staged
   migration paths.
+- Duplicate legacy identities fail before Migration 1 tables or bookkeeping
+  are written.
+- Application-level herb/claim subject validation is distinct from SQLite
+  foreign-key existence checks.
 - The Mermaid diagram names every proposed relationship family.
 - Migration 1 is implemented and documented here; future domain migrations and
   application cutover are not implemented by this document.

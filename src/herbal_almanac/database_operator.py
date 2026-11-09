@@ -35,6 +35,14 @@ MIGRATION_1_VERSION = 1
 MIGRATION_1_NAME = "core_identity_and_provenance"
 
 
+class MigrationError(RuntimeError):
+    """Raised when legacy data cannot be migrated without ambiguity."""
+
+
+class ClaimAssociationError(ValueError):
+    """Raised when a source claim cannot be attached to a herb safely."""
+
+
 def default_database_path() -> Path:
     """Return the platform's per-user writable database location."""
     if os.name == "nt":
@@ -131,6 +139,7 @@ class AyurvedicAlmanac:
                 );
                 """
             )
+            self._validate_legacy_source_identity(connection)
             self._migrate_legacy_herbs(connection)
             self._migrate_legacy_attributes(connection)
             self._migrate_legacy_treatments(connection)
@@ -168,6 +177,44 @@ class AyurvedicAlmanac:
                 connection.rollback()
                 raise
         self._initialized = True
+
+    @classmethod
+    def _validate_legacy_source_identity(cls, connection: sqlite3.Connection) -> None:
+        columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(herbs)")
+        }
+        if not {"source", "source_record_id"} <= columns:
+            return
+        identities: dict[tuple[str, str], list[int]] = {}
+        for row in connection.execute(
+            """
+            SELECT id, source, source_record_id
+            FROM herbs
+            WHERE source_record_id IS NOT NULL
+            ORDER BY id
+            """
+        ):
+            identity = (
+                cls._legacy_source_key(row["source"]),
+                str(row["source_record_id"]),
+            )
+            identities.setdefault(identity, []).append(row["id"])
+        duplicates = {
+            identity: herb_ids
+            for identity, herb_ids in identities.items()
+            if len(herb_ids) > 1
+        }
+        if duplicates:
+            details = "; ".join(
+                f"source={source!r}, source_record_id={record_id!r}, "
+                f"legacy_herb_ids={herb_ids}"
+                for (source, record_id), herb_ids in sorted(duplicates.items())
+            )
+            raise MigrationError(
+                "Migration 1 cannot map duplicate legacy source identities: "
+                + details
+                + ". Resolve the duplicate herb rows before retrying."
+            )
 
     @staticmethod
     def _create_migration_1_tables(connection: sqlite3.Connection) -> None:
@@ -358,11 +405,11 @@ class AyurvedicAlmanac:
                 else None
             )
             raw_artifact_ref = (
-                None
-                if external_key is not None
-                else f"legacy_herb_id:{legacy_herb_id}"
+                f"legacy_herb_id:{legacy_herb_id}"
+                if external_key is None or source_key == "manual"
+                else None
             )
-            connection.execute(
+            source_record_cursor = connection.execute(
                 """
                 INSERT INTO source_records
                     (source_id, external_record_key, source_url, retrieved_at,
@@ -377,20 +424,7 @@ class AyurvedicAlmanac:
                     raw_artifact_ref,
                 ),
             )
-            source_record_id = connection.execute(
-                """
-                SELECT source_record_id
-                FROM source_records
-                WHERE source_id = ?
-                  AND (
-                      external_record_key = ?
-                      OR (external_record_key IS NULL AND raw_artifact_ref = ?)
-                  )
-                ORDER BY source_record_id DESC
-                LIMIT 1
-                """,
-                (source_id, external_key, raw_artifact_ref),
-            ).fetchone()["source_record_id"]
+            source_record_id = source_record_cursor.lastrowid
             connection.execute(
                 """
                 INSERT INTO legacy_herb_map (legacy_herb_id, herb_id, created_at)
@@ -421,20 +455,135 @@ class AyurvedicAlmanac:
                     now,
                 ),
             )
-            connection.execute(
-                """
-                INSERT INTO herb_names
-                    (herb_id, name_text, normalized_text, language_code,
-                     script_code, name_type, is_preferred, source_claim_id)
-                VALUES (?, ?, ?, 'und', 'Zyyy', 'source_alias', 1, ?)
-                """,
-                (
-                    legacy_herb_id,
-                    name_text,
-                    search_key(ascii_text(name_text) or name_text),
-                    claim_cursor.lastrowid,
-                ),
+            cls._insert_herb_name(
+                connection,
+                legacy_herb_id,
+                name_text,
+                search_key(ascii_text(name_text) or name_text),
+                "und",
+                "Zyyy",
+                "source_alias",
+                True,
+                claim_cursor.lastrowid,
             )
+
+    @classmethod
+    def _resolve_legacy_source_record_id(
+        cls, connection: sqlite3.Connection, herb_id: int
+    ) -> int:
+        herb = connection.execute(
+            """
+            SELECT h.id, h.source, h.source_record_id
+            FROM legacy_herb_map AS m
+            JOIN herbs AS h ON h.id = m.legacy_herb_id
+            WHERE m.herb_id = ?
+            """,
+            (herb_id,),
+        ).fetchone()
+        if herb is None:
+            raise ClaimAssociationError(
+                f"Herb {herb_id} has no legacy source mapping; "
+                "a claim cannot be associated safely."
+            )
+        source_key = cls._legacy_source_key(herb["source"])
+        if herb["source_record_id"] is None:
+            artifact_ref = f"legacy_herb_id:{herb['id']}"
+            rows = connection.execute(
+                """
+                SELECT sr.source_record_id
+                FROM source_records AS sr
+                JOIN sources AS s ON s.source_id = sr.source_id
+                WHERE s.source_key = ? AND sr.raw_artifact_ref = ?
+                """,
+                (source_key, artifact_ref),
+            ).fetchall()
+        else:
+            rows = connection.execute(
+                """
+                SELECT sr.source_record_id
+                FROM source_records AS sr
+                JOIN sources AS s ON s.source_id = sr.source_id
+                WHERE s.source_key = ? AND sr.external_record_key = ?
+                """,
+                (source_key, str(herb["source_record_id"])),
+            ).fetchall()
+        if len(rows) != 1:
+            raise ClaimAssociationError(
+                f"Herb {herb_id} maps to {len(rows)} source records for "
+                f"source={source_key!r}; expected exactly one."
+            )
+        return rows[0]["source_record_id"]
+
+    @classmethod
+    def _validate_herb_claim(
+        cls, connection: sqlite3.Connection, herb_id: int, source_claim_id: int
+    ) -> None:
+        claim = connection.execute(
+            """
+            SELECT sc.source_record_id, s.source_key, sr.raw_artifact_ref
+            FROM source_claims AS sc
+            JOIN source_records AS sr ON sr.source_record_id = sc.source_record_id
+            JOIN sources AS s ON s.source_id = sr.source_id
+            WHERE sc.source_claim_id = ?
+            """,
+            (source_claim_id,),
+        ).fetchone()
+        if claim is None:
+            raise ClaimAssociationError(
+                f"Source claim {source_claim_id} does not exist or is unresolved."
+            )
+        expected_source_record_id = cls._resolve_legacy_source_record_id(
+            connection, herb_id
+        )
+        if claim["source_key"] == "manual":
+            expected_artifact_ref = f"legacy_herb_id:{herb_id}"
+            if claim["raw_artifact_ref"] != expected_artifact_ref:
+                raise ClaimAssociationError(
+                    f"Manual claim {source_claim_id} is not explicitly bound to "
+                    f"herb {herb_id}; expected raw_artifact_ref="
+                    f"{expected_artifact_ref!r}."
+                )
+            return
+        if claim["source_record_id"] != expected_source_record_id:
+            raise ClaimAssociationError(
+                f"Source claim {source_claim_id} belongs to source record "
+                f"{claim['source_record_id']}, not herb {herb_id}'s source record "
+                f"{expected_source_record_id}."
+            )
+
+    @classmethod
+    def _insert_herb_name(
+        cls,
+        connection: sqlite3.Connection,
+        herb_id: int,
+        name_text: str,
+        normalized_text: str,
+        language_code: str,
+        script_code: str,
+        name_type: str,
+        is_preferred: bool,
+        source_claim_id: int,
+    ) -> int:
+        cls._validate_herb_claim(connection, herb_id, source_claim_id)
+        cursor = connection.execute(
+            """
+            INSERT INTO herb_names
+                (herb_id, name_text, normalized_text, language_code,
+                 script_code, name_type, is_preferred, source_claim_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                herb_id,
+                name_text,
+                normalized_text,
+                language_code,
+                script_code,
+                name_type,
+                int(is_preferred),
+                source_claim_id,
+            ),
+        )
+        return cursor.lastrowid
 
     @classmethod
     def _migration_1_core_identity_and_provenance(

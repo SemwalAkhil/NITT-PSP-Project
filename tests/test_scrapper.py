@@ -17,7 +17,12 @@ from herbal_almanac.cleaning import (
     normalize_dosha_expression,
 )
 from herbal_almanac.cli import app, show_rows
-from herbal_almanac.database_operator import AyurvedicAlmanac, canonical_illness_key
+from herbal_almanac.database_operator import (
+    AyurvedicAlmanac,
+    ClaimAssociationError,
+    MigrationError,
+    canonical_illness_key,
+)
 import herbal_almanac.scrapper as scrapper
 from herbal_almanac.scrapper import (
     DiscoveryError,
@@ -629,6 +634,241 @@ def test_migration_1_preserves_legacy_records_and_provenance(tmp_path) -> None:
         "source_url": "https://example.test/plant/12",
         "retrieved_at": "2026-01-01T00:00:00+00:00",
     }
+
+
+def test_migration_1_preserves_null_legacy_source_ids(tmp_path) -> None:
+    path = tmp_path / "null-source-id.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            """
+            CREATE TABLE herbs (
+                id INTEGER PRIMARY KEY, english_name TEXT NOT NULL,
+                source TEXT, source_record_id INTEGER, source_url TEXT,
+                retrieved_at TEXT
+            )
+            """
+        )
+        connection.execute(
+            "INSERT INTO herbs (id, english_name, source) VALUES (9, 'Manual herb', 'Manual')"
+        )
+
+    AyurvedicAlmanac(path).create_database()
+
+    with sqlite3.connect(path) as connection:
+        record = connection.execute(
+            """
+            SELECT sr.external_record_key, sr.raw_artifact_ref
+            FROM source_records AS sr
+            JOIN sources AS s ON s.source_id = sr.source_id
+            WHERE s.source_key = 'Manual'
+            """
+        ).fetchone()
+    assert record == (None, "legacy_herb_id:9")
+
+
+def test_migration_1_rejects_duplicate_legacy_source_identity_before_backfill(
+    tmp_path,
+) -> None:
+    path = tmp_path / "duplicate-source-id.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            """
+            CREATE TABLE herbs (
+                id INTEGER PRIMARY KEY, english_name TEXT NOT NULL,
+                source TEXT, source_record_id INTEGER
+            )
+            """
+        )
+        connection.executemany(
+            "INSERT INTO herbs (id, english_name, source, source_record_id) VALUES (?, ?, ?, ?)",
+            [(1, "First", "CCRAS DRAVYA", 12), (2, "Second", "CCRAS DRAVYA", 12)],
+        )
+
+    with pytest.raises(MigrationError, match="duplicate legacy source identities"):
+        AyurvedicAlmanac(path).create_database()
+
+    with sqlite3.connect(path) as connection:
+        tables = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            )
+        }
+    assert "schema_migrations" not in tables
+    assert "sources" not in tables
+
+
+def test_migration_1_keeps_same_external_id_separate_across_sources(tmp_path) -> None:
+    path = tmp_path / "same-external-id.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            """
+            CREATE TABLE herbs (
+                id INTEGER PRIMARY KEY, english_name TEXT NOT NULL,
+                source TEXT, source_record_id INTEGER
+            )
+            """
+        )
+        connection.executemany(
+            "INSERT INTO herbs (id, english_name, source, source_record_id) VALUES (?, ?, ?, ?)",
+            [(1, "First", "Source A", 12), (2, "Second", "Source B", 12)],
+        )
+
+    AyurvedicAlmanac(path).create_database()
+
+    with sqlite3.connect(path) as connection:
+        records = connection.execute(
+            """
+            SELECT s.source_key, sr.external_record_key, hn.herb_id
+            FROM herb_names AS hn
+            JOIN source_claims AS sc ON sc.source_claim_id = hn.source_claim_id
+            JOIN source_records AS sr ON sr.source_record_id = sc.source_record_id
+            JOIN sources AS s ON s.source_id = sr.source_id
+            WHERE s.source_key IN ('Source A', 'Source B')
+            ORDER BY s.source_key
+            """
+        ).fetchall()
+    assert records == [("Source A", "12", 1), ("Source B", "12", 2)]
+
+
+def test_herb_name_claim_validation_enforces_subject_and_manual_policy(tmp_path) -> None:
+    path = tmp_path / "claim-subjects.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            """
+            CREATE TABLE herbs (
+                id INTEGER PRIMARY KEY, english_name TEXT NOT NULL,
+                source TEXT, source_record_id INTEGER
+            )
+            """
+        )
+        connection.executemany(
+            "INSERT INTO herbs (id, english_name, source, source_record_id) VALUES (?, ?, ?, ?)",
+            [(1, "First", "Source A", 12), (2, "Second", "Source B", 12)],
+        )
+
+    database = AyurvedicAlmanac(path)
+    database.create_database()
+    with database.connect() as connection:
+        source_records = {
+            row["source_key"]: row["source_record_id"]
+            for row in connection.execute(
+                """
+                SELECT s.source_key, sr.source_record_id
+                FROM source_records AS sr
+                JOIN sources AS s ON s.source_id = sr.source_id
+                WHERE s.source_key IN ('Source A', 'Source B')
+                """
+            )
+        }
+        claim_a = connection.execute(
+            """
+            INSERT INTO source_claims
+                (source_record_id, claim_type, source_field, source_expression,
+                 created_by_type, created_by, created_at, updated_at)
+            VALUES (?, 'herb_name', 'name', 'First', 'human', 'reviewer',
+                    '2026-01-01T00:00:00+00:00', '2026-01-01T00:00:00+00:00')
+            """,
+            (source_records["Source A"],),
+        ).lastrowid
+        claim_b = connection.execute(
+            """
+            INSERT INTO source_claims
+                (source_record_id, claim_type, source_field, source_expression,
+                 created_by_type, created_by, created_at, updated_at)
+            VALUES (?, 'herb_name', 'name', 'Second', 'human', 'reviewer',
+                    '2026-01-01T00:00:00+00:00', '2026-01-01T00:00:00+00:00')
+            """,
+            (source_records["Source B"],),
+        ).lastrowid
+        database._insert_herb_name(
+            connection, 1, "First", "first", "en", "Latn", "vernacular", True, claim_a
+        )
+        with pytest.raises(ClaimAssociationError, match="belongs to source record"):
+            database._insert_herb_name(
+                connection, 1, "Second", "second", "en", "Latn", "vernacular", False, claim_b
+            )
+        with pytest.raises(ClaimAssociationError, match="no legacy source mapping"):
+            database._insert_herb_name(
+                connection, 999, "Missing", "missing", "en", "Latn", "vernacular", False, claim_a
+            )
+        with pytest.raises(ClaimAssociationError, match="does not exist"):
+            database._insert_herb_name(
+                connection, 1, "Missing", "missing", "en", "Latn", "vernacular", False, 999999
+            )
+        connection.execute(
+            "INSERT INTO sources (source_key) VALUES ('manual') ON CONFLICT(source_key) DO NOTHING"
+        )
+        manual_source_id = connection.execute(
+            "SELECT source_id FROM sources WHERE source_key = 'manual'"
+        ).fetchone()[0]
+        manual_record_id = connection.execute(
+            """
+            INSERT INTO source_records (source_id, raw_artifact_ref)
+            VALUES (?, 'legacy_herb_id:1')
+            """,
+            (manual_source_id,),
+        ).lastrowid
+        manual_claim_id = connection.execute(
+            """
+            INSERT INTO source_claims
+                (source_record_id, claim_type, source_field, source_expression,
+                 created_by_type, created_by, created_at, updated_at)
+            VALUES (?, 'herb_name', 'manual', 'Reviewed First', 'human', 'reviewer',
+                    '2026-01-01T00:00:00+00:00', '2026-01-01T00:00:00+00:00')
+            """,
+            (manual_record_id,),
+        ).lastrowid
+        database._insert_herb_name(
+            connection,
+            1,
+            "Reviewed First",
+            "reviewed first",
+            "en",
+            "Latn",
+            "historical",
+            False,
+            manual_claim_id,
+        )
+
+
+def test_herb_name_claim_validation_rejects_ambiguous_source_mapping(tmp_path) -> None:
+    path = tmp_path / "ambiguous-source-mapping.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            """
+            CREATE TABLE herbs (
+                id INTEGER PRIMARY KEY, english_name TEXT NOT NULL,
+                source TEXT, source_record_id INTEGER
+            )
+            """
+        )
+        connection.execute(
+            "INSERT INTO herbs (id, english_name, source, source_record_id) VALUES (1, 'First', 'Source A', 12)"
+        )
+    database = AyurvedicAlmanac(path)
+    database.create_database()
+    with database.connect() as connection:
+        source_id = connection.execute(
+            "SELECT source_id FROM sources WHERE source_key = 'Source A'"
+        ).fetchone()[0]
+        connection.execute("DROP INDEX idx_source_records_external_key")
+        duplicate_record_id = connection.execute(
+            "INSERT INTO source_records (source_id, external_record_key) VALUES (?, '12')",
+            (source_id,),
+        ).lastrowid
+        claim_id = connection.execute(
+            """
+            INSERT INTO source_claims
+                (source_record_id, claim_type, source_field, source_expression,
+                 created_by_type, created_by, created_at, updated_at)
+            VALUES (?, 'herb_name', 'name', 'Duplicate', 'system', 'test',
+                    '2026-01-01T00:00:00+00:00', '2026-01-01T00:00:00+00:00')
+            """,
+            (duplicate_record_id,),
+        ).lastrowid
+        with pytest.raises(ClaimAssociationError, match="expected exactly one"):
+            database._validate_herb_claim(connection, 1, claim_id)
 
 
 def test_cli_setup_and_herb_search(tmp_path) -> None:

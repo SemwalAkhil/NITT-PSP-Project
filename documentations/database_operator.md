@@ -136,6 +136,14 @@ prototype initialization and creates `sources`, `source_records`,
 enforces non-null `(source_id, external_record_key)` pairs while allowing
 multiple legacy records whose external key is unavailable.
 
+Before Migration 1 creates any of its tables, it validates normalized legacy
+identities `(cleaned source, string source_record_id)`. Duplicate non-null
+identities raise `MigrationError` with the conflicting legacy herb IDs. Null
+source-record IDs remain valid because each receives its explicit
+`legacy_herb_id:<id>` artifact reference. The backfill uses each inserted
+`source_records` row ID directly; it never selects a possibly ambiguous match
+with `ORDER BY` and `LIMIT`.
+
 The backfill creates source rows from existing source identifiers and a
 `manual` source row for future curation. It preserves source URLs, retrieval
 timestamps, and non-null external record IDs. Records without an external key
@@ -151,6 +159,22 @@ available for migration validation and future dual-write work.
 If table creation or backfill fails, the Migration 1 transaction rolls back its
 new tables and does not insert a migration-version row. Reinitialization is
 idempotent after a successful versioned run.
+
+### Application-level claim subject validation
+
+SQLite foreign keys prove that a `herb_names.herb_id` and
+`source_claims.source_claim_id` exist, but they cannot prove that the claim's
+source record describes that herb. The private `_validate_herb_claim()` helper
+resolves the herb through `legacy_herb_map`, resolves its unique source record,
+and rejects missing, cross-herb, or ambiguous claims with
+`ClaimAssociationError`. `_insert_herb_name()` invokes this helper before
+creating an association.
+
+Manual claims are accepted only when their source is `manual` and their source
+record has the explicit `raw_artifact_ref = legacy_herb_id:<herb_id>` binding.
+This is a deliberate application policy for future manual curation, not a
+database-enforced foreign key. Direct SQL inserts can bypass it and must not be
+treated as validated application operations.
 
 ## `insert_record()`
 
