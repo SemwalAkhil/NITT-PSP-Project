@@ -1,231 +1,110 @@
 # Herbal Almanac
 
----
+Herbal Almanac is a Python research library and command-line application for
+exploring Ayurvedic herbs, illness references, and herb–treatment
+relationships. The current ingestion adapter supports the CCRAS DRAVYA portal.
+SQLite is the persistence layer; Typer and Rich provide the CLI.
 
-## Goal
-
-Create a library for exploring Ayurvedic herbs, illnesses, and their treatment
-relationships in both directions.
-
----
+> **Research disclaimer:** This project is not medical advice. Scraped
+> therapeutic associations and machine translations may be unverified and must
+> not be used to diagnose, treat, or prevent illness.
 
 ## Current implementation
 
-The current MVP supports the CCRAS DRAVYA source. It discovers plant URLs,
-downloads pages with retries and timeouts, parses semantic tables and the
-Vernacular Names card, cleans and validates `PlantRecord` objects, and writes
-them directly to SQLite.
+The DRAVYA pipeline discovers plant records, fetches pages with timeouts and
+retries, parses semantic tables and the Vernacular Names card, cleans and
+validates `PlantRecord` objects, optionally enriches names through machine
+translation, and writes records to SQLite.
 
-Each vernacular language is stored as an attribute such as
-`Vernacular Names.Hindi`. The source title's Ayurvedic/Sanskrit name becomes
-the primary herb name when present; English vernacular values remain available
-in `herb_attributes`. During scraping, `deep-translator`/Google Translator adds
-corresponding English and major Indian-language values as
-`Translated Names.<Language>` attributes when `--translate` is explicitly
-enabled. English-facing text uses a Harvard-Kyoto-style ASCII transliteration,
-while source regional scripts are preserved. Therapeutic Usage values are also
-normalized into illness and treatment relationships; manual treatment links
-survive later scrapes.
+The active application schema contains:
 
-The importable code is provided by the `herbal_almanac` package, including the
-public `PlantRecord` and `AyurvedicAlmanac` classes. The configured
-`herbal-almanac` command provides the Typer CLI, which can export stored record
-groups to JSON or CSV after ingestion. Those exports are optional views of the
-database and are not an intermediate scraping stage.
+| Table | Purpose |
+|---|---|
+| `herbs` | Herb identity, source identity, names, botanical/family text, source URL, and retrieval timestamp |
+| `illness` | Condition display names and normalized search keys |
+| `treatment` | Herb–illness links, distinguished as scraped or manually curated |
+| `herb_attributes` | Flexible section-qualified fields, vernacular names, source wording, and translation metadata |
+| `herb_doshas` | Normalized Vata/Pitta/Kapha effects with their source expressions |
 
-Library consumers can use the cleaning and database APIs without starting the
-CLI or making network requests:
+Re-scraping refreshes source-derived attributes and scraped treatment/Dosha
+rows while preserving manual treatment links.
+
+### Additive schema migrations
+
+Two versioned migrations currently add normalized structures without
+replacing the legacy application tables:
+
+- **Migration 1 — identity and provenance:** `schema_migrations`, `sources`,
+  `source_records`, `source_claims`, `legacy_herb_map`, and `herb_names`.
+- **Migration 2 — botanical taxonomy:** `taxa`, `taxon_relationships`,
+  and `herb_taxa`.
+
+The migration backfills preserve source context and avoid guessing ambiguous
+legacy identities or taxonomic hierarchy. The remaining normalized domain
+schema in [`documentations/database_schema.md`](documentations/database_schema.md)
+is a design proposal, not a claim that the full target schema is implemented.
+See [`documentations/database_operator.md`](documentations/database_operator.md)
+for connection lifecycle, transaction, and migration behavior.
+
+## Package API
+
+The installable package is named `herbal_almanac`. It exports the main
+`PlantRecord` and `AyurvedicAlmanac` types:
 
 ```python
-from herbal_almanac.cleaning import PlantRecord, clean_text
-from herbal_almanac.database_operator import AyurvedicAlmanac
+from herbal_almanac import AyurvedicAlmanac, PlantRecord
+from herbal_almanac.cleaning import clean_text
 
 print(clean_text("  Tulsi  "))
 database = AyurvedicAlmanac("/tmp/ayurvedic.db")
 ```
 
-SQLite databases are generated runtime artifacts and are not committed. This
-avoids shipping stale schema migrations or incomplete scraped data. Runtime
-databases and translation caches are stored in the user data directory by
-default, outside both the repository and the installed package. To create a
-fresh database, run:
+The `herbal-almanac` console command is registered through `pyproject.toml`.
+JSON and CSV exports are views of stored database records; they are not an
+intermediate stage in the scraper pipeline.
+
+## Installation
+
+Python 3.10 or later is required. Install the package from the repository root:
 
 ```bash
-pip install -e .
+python -m pip install -e .
+```
+
+For development and release checks:
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+Translation is optional. Install it only when using `--translate`:
+
+```bash
+python -m pip install -e ".[translate]"
+```
+
+## Quick start
+
+Create a database and scrape a small number of records:
+
+```bash
 herbal-almanac setup --database /tmp/ayurvedic.db
-herbal-almanac scrape dravya --max-plants 5 --database /tmp/ayurvedic.db
+herbal-almanac scrape dravya --max-pages 1 --max-plants 5 --database /tmp/ayurvedic.db
 ```
 
-The scrape command requires network access to the CCRAS DRAVYA source. Use
-`--max-plants` or `--max-pages` for a small reproducible development run.
-Existing local databases are migrated in place, so use a new path when
-rebuilding from scratch.
+The scraper requires network access to CCRAS DRAVYA. Existing databases are
+migrated in place; choose a new path for a clean rebuild.
 
-Translation is disabled by default. Add `--translate` only when machine
-translation is desired.
-
-`data.txt` is a small Sanskrit terminology/reference sample. `sample.html` is
-a saved source-page HTML fixture for parser development; neither is required
-for a network scrape.
-
-This project is for research and software evaluation, not medical advice.
-Translations and scraped therapeutic associations are machine-generated or
-unverified and must not be used to diagnose, treat, or prevent illness.
-CCRAS data remains subject to the source site's terms and attribution
-requirements; verify permission before redistributing scraped content.
-
-## Architecture
-
-```text
-CCRAS DRAVYA
-    │
-    ▼
-discover → fetch → parse → clean/validate → translate
-                                      │
-                                      ▼
-                              SQLite transaction
-                              ├─ herbs + provenance
-                              ├─ herb_attributes
-                              └─ illness/treatment links
-```
-
-The CCRAS DRAVYA website is the source of scraped plant data. Translated
-attributes are machine-generated and marked unverified; source values are
-preserved separately. See [`documentations/scrapper.md`](documentations/scrapper.md)
-for the ingestion and recovery behavior.
-
-## Current status
-
-| Area | Status |
-|---|---|
-| DRAVYA discovery, parsing, and retrying | Implemented |
-| Cleaning, validation, provenance, and SQLite upserts | Implemented |
-| Vernacular and optional translated-name attributes | Implemented |
-| Illness/treatment links from Therapeutic Usage | Implemented |
-| Typer CLI search, inspection, manual inserts, and exports | Implemented |
-| `src/` package layout, wheel/sdist build, and console entry point | Implemented |
-| Automated regression tests and clean-install smoke test | Implemented |
-| Persistent scrape-error report, fuzzy search, and normalized search keys | Implemented |
-| TestPyPI release candidate upload | Pending valid TestPyPI credentials |
-| Dosha normalization and additional external source adapters | Planned |
-
----
-
-## Design
-
-### 1. Scraper
-
-Evaluate sites to understand their structures, parse source records, clean
-them, validate them, and insert them directly into SQLite.
-
-### 2. Database
-
-Initial tables:
-
-1. Herbs
-2. Illnesses
-3. Treatment (Join between herbs and illnesses)
-
-The database operator owns schema creation, transactions, and persistence.
-Cleaning and normalization are kept in a separate module so source parsing
-does not become coupled to SQL.
-
-### 3. Cleaning
-
-`cleaning.py` provides deterministic Unicode cleanup, ASCII normalization for
-English-facing values, value splitting, and `PlantRecord` validation.
-
-### 4. Multilingual access
-
-* Fetch data from databases and present it in multiple languages
-<br>
-* Query in a way to be able to search incomplete or misspelled queries
-
-The current CLI stores multilingual vernacular and translated-name attributes.
-Search uses normalized keys and ranked fuzzy matching; a dedicated public
-Python API remains planned.
-
-### 5. Look for further optimizations
-
----
-
-## Execution
-
-1. Python 3.10+ for the backend
-2. SQLite for persistence
-3. Typer and Rich for the CLI
-4. Requests, BeautifulSoup, and urllib3 for ingestion
-5. deep-translator for optional name enrichment
-
-The supported/tested Python range is 3.10 through 3.14. Direct dependencies
-are pinned in `requirements.txt`; CI runs the regression suite across that
-range.
-
-The project code is licensed under the MIT License. The CCRAS website,
-terminology samples, and scraped data may have separate copyright,
-attribution, or terms-of-use requirements; the MIT license does not grant
-rights to redistribute third-party source data.
-
-## Documentation map
-
-- [`documentations/cli.md`](documentations/cli.md): commands, options, and
-  export formats.
-- [`documentations/scrapper.md`](documentations/scrapper.md): source discovery,
-  parsing, translation, and ingestion flow.
-- [`documentations/cleaning.md`](documentations/cleaning.md): normalization and
-  `PlantRecord` behavior.
-- [`documentations/database_operator.md`](documentations/database_operator.md):
-  schema, migrations, and transactional persistence.
-- [`documentations/translation.md`](documentations/translation.md): optional
-  Google Translator enrichment.
-- [`documentations/plan.md`](documentations/plan.md): implemented baseline and
-  future roadmap.
-- [`documentations/learnings.md`](documentations/learnings.md): implementation
-  notes and operational patterns.
-
----
-
-## How to Use
-
-The project is accessed through the Typer command-line interface. Install the
-Python dependencies first:
+Search records and inspect relationships:
 
 ```bash
-pip install -e .
+herbal-almanac herbs tulsi --database /tmp/ayurvedic.db
+herbal-almanac illnesses fever --database /tmp/ayurvedic.db
+herbal-almanac treatments HERB_ID --database /tmp/ayurvedic.db
+herbal-almanac attributes HERB_ID --database /tmp/ayurvedic.db
 ```
 
-For development and release checks, install `pip install -e ".[dev]"`.
-Translation support is optional: install `pip install -e ".[translate]"` only
-when using `--translate`.
-
-Create the database schema:
-
-```bash
-herbal-almanac setup
-```
-
-Scrape plant records from the currently supported DRAVYA site:
-
-```bash
-herbal-almanac scrape dravya
-```
-
-For a smaller development run, limit the number of pages or plants:
-
-```bash
-herbal-almanac scrape dravya --max-pages 1 --max-plants 5
-```
-
-Search the database for herbs, illnesses, or treatments:
-
-```bash
-herbal-almanac herbs tulsi
-herbal-almanac illnesses fever
-herbal-almanac treatments HERB_ID
-herbal-almanac attributes HERB_ID
-```
-
-View all stored records, or export a record group as JSON or CSV:
+Browse/export records:
 
 ```bash
 herbal-almanac records
@@ -233,18 +112,10 @@ herbal-almanac records herbs
 herbal-almanac records attributes
 herbal-almanac records all --format json --output records.json
 herbal-almanac records treatments --format csv --output treatments.csv
-herbal-almanac records attributes --format csv --output attributes.csv
-```
-
-Attributes for one herb can also be exported directly:
-
-```bash
-herbal-almanac attributes HERB_ID --output attributes.json
 herbal-almanac attributes HERB_ID --format csv --output attributes.csv
 ```
 
-Add individual records manually. Use the IDs printed by the herb and illness
-commands when creating a treatment relationship:
+Add manual records and treatment relationships:
 
 ```bash
 herbal-almanac herb "Tulsi" --botanical-name "Ocimum tenuiflorum"
@@ -252,28 +123,62 @@ herbal-almanac illness "Cough"
 herbal-almanac treatment HERB_ID ILLNESS_ID
 ```
 
-Use a different SQLite database by passing `--database` to any command:
+Use `herbal-almanac --help` and `herbal-almanac COMMAND --help` for the
+complete command and option reference. See [`documentations/cli.md`](documentations/cli.md).
 
-```bash
-herbal-almanac setup --database /tmp/ayurvedic-test.db
-herbal-almanac herbs tulsi --database /tmp/ayurvedic-test.db
+## Translation and multilingual values
+
+Translation is disabled by default. With the optional dependency installed,
+pass `--translate` to add machine-generated `Translated Names.<Language>`
+attributes. Source regional scripts and source wording are retained separately.
+Translated content is marked unverified; see
+[`documentations/translation.md`](documentations/translation.md).
+
+## Architecture
+
+```text
+CCRAS DRAVYA
+    |
+    v
+discover -> fetch -> parse -> clean/validate -> optional translation
+                                         |
+                                         v
+                                  SQLite transaction
+                                  |- herbs + attributes
+                                  |- illness/treatment links
+                                  |- normalized Dosha effects
+                                         |
+                                         v
+                                  Typer CLI / JSON / CSV
 ```
 
-Run `herbal-almanac --help` or `herbal-almanac COMMAND --help` to see all
-available commands and options.
+See [`documentations/scrapper.md`](documentations/scrapper.md) for scraping
+and recovery behavior, [`documentations/cleaning.md`](documentations/cleaning.md)
+for record cleanup, and [`documentations/database_schema.md`](documentations/database_schema.md)
+for the current/proposed normalized model.
 
----
+## Tests and CI
 
-## Testing
+Tests are offline: use `sample.html`, `data.txt`, mocked HTTP responses,
+fake translators, and temporary SQLite files. Do not call the live source or
+translation service from tests.
 
-Run the focused regression suite:
+Run the required scraper regression and then the full suite:
 
 ```bash
 python -m pytest tests/test_scrapper.py -q
+python -m pytest -q
 ```
 
-The tests cover section-aware table parsing, malformed HTML, pagination,
-timeouts and HTTP errors, partial scrape recovery, provenance persistence,
-fuzzy search, treatment-link refresh, Unicode cleanup, and translation
-enrichment with a fake translator. Tests use fixtures and do not contact the
-live network.
+The GitHub Actions workflow runs both commands across Python 3.10–3.14.
+
+## Repository and data notes
+
+- `sample.html` is a saved source-page fixture for parser development.
+- `data.txt` is a small Sanskrit terminology/reference sample.
+- SQLite databases and translation caches are runtime artifacts and are not
+  committed; the default database is stored in the platform's user data
+  directory.
+- The project code is MIT-licensed. CCRAS source material, terminology
+  references, and scraped data may have separate copyright, attribution, or
+  terms-of-use requirements. Verify redistribution rights independently.
