@@ -68,6 +68,8 @@ Python 3.10, 3.11, 3.12, 3.13, and 3.14.
 
 ## Module boundaries
 
+- **Web GUI:** keep `web_app.py` as a thin FastAPI/Jinja2 presentation layer. Reuse `AyurvedicAlmanac` methods; do not duplicate SQL, scraping, cleaning, or translation logic in routes. The initial web interface is read-only. Test routes with temporary SQLite databases.
+
 - **Scraper sources:** source-specific selectors stay in scraper modules.
   Scrapers output validated `PlantRecord` objects; cleaning and persistence
   remain source-agnostic.

@@ -22,8 +22,16 @@ dev = [
     "deep-translator==1.11.4",
     "pytest>=8",
     "twine>=5",
+    "fastapi>=0.115,<1.0",
+    "httpx>=0.27",
+    "jinja2>=3.1",
 ]
 translate = ["deep-translator==1.11.4"]
+web = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.30",
+    "jinja2>=3.1",
+]
 
 [project.scripts]
 herbal-almanac = "herbal_almanac.cli:main"
@@ -37,3 +45,5 @@ include = ["herbal_almanac*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+[tool.setuptools.package-data]
+herbal_almanac = ["templates/*.html", "static/*.css"]

@@ -12,9 +12,12 @@ This project is for research and software evaluation only; it is not medical adv
   - `translation.py` — optional machine-translation support.
   - `database_operator.py` — `AyurvedicAlmanac`, SQLite schema, legacy compatibility migrations, versioned migrations, transactional CRUD, and search.
   - `cli.py` — Typer commands and JSON/CSV export.
+  - `web_app.py` — optional FastAPI/Jinja2 read-only browser interface.
+  - `templates/` and `static/` — server-rendered pages and local stylesheet.
 - `tests/test_scrapper.py` — offline scraper, cleaning, translation, CLI, and legacy database regression tests.
 - `tests/test_database_connections.py` — connection isolation, commit/rollback, closure, and foreign-key tests.
 - `tests/test_database_initialization.py` — initialization concurrency, migration idempotence, rollback/retry, and closure tests.
+- `tests/test_web_app.py` — dashboard, herb search, detail pages, and HTTP error behavior using a temporary database.
 - `tests/smoke_installed_package.py` — clean installed-package and CLI smoke test.
 - `.github/workflows/copilot-instructions.md` and `agents.md` — contributor/agent workflow and verification guardrails.
 - `documentations/` — module docs, schema proposal, learning notes, and roadmap.
@@ -74,3 +77,14 @@ Tests must remain offline and use fixtures, mocks/fakes, and temporary database 
 - Continue normalized Dravyaguna schema migrations beyond identity/provenance and botanical taxonomy.
 - Add further external source adapters only after the DRAVYA pipeline remains stable.
 - Expand supported query capabilities and provide a dedicated public Python search API.
+
+## 8. Optional local web GUI
+
+The FastAPI/Uvicorn/Jinja2 interface is a read-only layer over
+`AyurvedicAlmanac`. It provides the dashboard at `/`, searchable herbs at
+`/herbs`, and detail pages at `/herbs/{herb_id}`. Install with
+`python -m pip install -e ".[web]"` and run
+`uvicorn herbal_almanac.web_app:app --reload`. The default database path is
+shared with the CLI; `HERBAL_ALMANAC_DATABASE` overrides it. Scraping and
+writes remain CLI-only in this first milestone. See
+`documentations/web_gui.md`.
