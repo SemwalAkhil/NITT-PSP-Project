@@ -27,6 +27,9 @@ Implemented today:
       and JSON/CSV export.
 - Regression tests for table parsing, vernacular persistence, treatment
       refresh, cleanup, and translation enrichment.
+- A design-only proposal for a normalized, multi-source Dravyaguna schema,
+      including claim-level provenance and staged migration steps, in
+      `documentations/database_schema.md`.
 
 Still planned:
 
@@ -367,6 +370,10 @@ docs/data-flow.md
 ## Objectives
 
 Create the relational model before the full scraping pipeline.
+
+The design is documented in `documentations/database_schema.md`. The proposed
+tables are not implemented yet; the current SQLite model and migrations remain
+the active runtime contract.
 
 ## Initial tables
 

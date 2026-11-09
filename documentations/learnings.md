@@ -215,6 +215,15 @@ as ambiguous and return `unspecified` for every Dosha. The normalized effects
 are persisted in `herb_doshas`, while the original expression remains
 available for review and provenance.
 
+## Normalized schema design
+
+The normalized Dravyaguna design separates stable herb identity from source
+records and claim-level provenance. Names, parts, properties, Karma, Dosha
+effects, taxonomy, and condition relationships can therefore receive evidence
+from multiple sources without overwriting source expressions. The design is
+documentation-only until an additive migration and compatibility adapter are
+approved.
+
 ## Harvard-Kyoto Convention
 
 The project uses a compatibility transliteration for English-facing database
