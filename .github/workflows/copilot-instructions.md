@@ -51,6 +51,13 @@ Follow the pipeline boundary:
   databases. Never call CCRAS DRAVYA or Google Translate from tests.
 - **Python compatibility:** maintain compatibility with Python 3.10–3.14.
 
+## Web GUI rules
+
+- The optional web interface lives in `src/herbal_almanac/web_app.py` and uses FastAPI, Uvicorn, and Jinja2 templates.
+- Keep routes thin and reuse `AyurvedicAlmanac` read methods. Add focused database read helpers rather than embedding SQL in templates or duplicating database logic in routes.
+- The initial GUI milestone is read-only. Do not expose scraping, translation, or manual-write operations through HTTP routes until background-job and safety behavior is designed.
+- Use `create_app(database_path)` for isolated tests with temporary SQLite files. Keep templates and static assets packaged with the distribution.
+
 ## SQLite and migration rules
 
 - Open an independent connection per operation; do not share a connection
