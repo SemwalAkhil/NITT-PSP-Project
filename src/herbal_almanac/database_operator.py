@@ -1217,6 +1217,43 @@ class AyurvedicAlmanac:
                 (herb_id, illness_id),
             )
 
+    def dashboard_summary(self) -> dict[str, Any]:
+        """Return lightweight counts and recent herbs for the web dashboard."""
+        self.create_database()
+        with self._connection() as connection:
+            counts = {
+                "herbs": connection.execute("SELECT COUNT(*) FROM herbs").fetchone()[0],
+                "illnesses": connection.execute("SELECT COUNT(*) FROM illness").fetchone()[0],
+                "treatments": connection.execute("SELECT COUNT(*) FROM treatment").fetchone()[0],
+                "attributes": connection.execute("SELECT COUNT(*) FROM herb_attributes").fetchone()[0],
+            }
+            recent = connection.execute(
+                """
+                SELECT id, english_name, original_name, botanical_name, family
+                FROM herbs
+                ORDER BY id DESC
+                LIMIT 6
+                """
+            ).fetchall()
+        return {**counts, "recent_herbs": [dict(row) for row in recent]}
+
+    def get_herb(self, herb_id: int) -> dict[str, Any] | None:
+        """Return one herb's core identity, or None when it does not exist."""
+        if herb_id <= 0:
+            return None
+        self.create_database()
+        with self._connection() as connection:
+            row = connection.execute(
+                """
+                SELECT id, english_name, original_name, source, source_record_id,
+                       source_url, retrieved_at, botanical_name, family
+                FROM herbs
+                WHERE id = ?
+                """,
+                (herb_id,),
+            ).fetchone()
+        return dict(row) if row is not None else None
+
     def search_herbs(self, query: str = "") -> list[dict[str, Any]]:
         """Return herbs ranked by normalized exact, substring, and fuzzy match."""
         self.create_database()
