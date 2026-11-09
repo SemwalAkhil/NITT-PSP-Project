@@ -399,3 +399,13 @@ Legacy botanical-name text does not prove an accepted taxon, authorship, or
 parent-child relationship. Backfill botanical names at `unknown` rank and
 family values at `family` rank, preserve the original fields, and avoid
 inferring hierarchy or synonym relationships without evidence.
+
+## Web interface as a separate application layer
+
+Keep the browser interface separate from the scraper and database
+implementation. FastAPI routes should orchestrate existing domain/read methods;
+Jinja2 should render the results. Add only narrowly scoped database read
+helpers when the existing API cannot provide an efficient page model. Keep
+runtime database selection explicit and test routes against temporary SQLite
+files. A first read-only milestone avoids mixing request/response handling
+with long-running scraping or write operations.
