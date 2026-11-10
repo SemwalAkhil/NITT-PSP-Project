@@ -97,8 +97,32 @@ dedicated indexed paginated search can be introduced without changing the
 templates.
 
 Templates and CSS are package data under `templates/` and `static/`, so
-they are included in built wheels. The page does not require a JavaScript
-framework or external font/image requests.
+they are included in built wheels. The stylesheet is served at
+`/static/styles.css`; the application checks that the CSS file exists during
+startup, and the HTML uses a versioned stylesheet URL to reduce stale browser
+cache issues.
+
+### Troubleshooting a page without styling
+
+1. Open `http://127.0.0.1:8000/static/styles.css` directly. It should display
+   CSS text, not an HTML 404/error page.
+2. In browser Developer Tools → Network, reload the page and inspect the
+   `styles.css` request. It should return HTTP 200 with a `text/css`
+   content type.
+3. From the current repository checkout, reinstall the optional web extra and
+   restart Uvicorn:
+
+   ```bash
+   python -m pip install -e ".[web]"
+   uvicorn herbal_almanac.web_app:app --reload
+   ```
+
+4. Hard-refresh the browser (Ctrl+Shift+R). If the direct CSS URL still fails,
+   check that the server is running the updated checkout and that
+   `src/herbal_almanac/static/styles.css` exists in that checkout.
+
+The page does not require a JavaScript framework or external font/image
+requests.
 
 ## Verification
 

@@ -409,3 +409,13 @@ helpers when the existing API cannot provide an efficient page model. Keep
 runtime database selection explicit and test routes against temporary SQLite
 files. A first read-only milestone avoids mixing request/response handling
 with long-running scraping or write operations.
+
+## Static assets in a Python web package
+
+A Starlette/FastAPI static mount serves files from the directory supplied at
+application construction time. Keep templates and static assets inside the
+installable package and declare them as package data so wheels include them.
+A route-level test should request the CSS URL, assert HTTP 200 and
+`text/css`, and inspect a representative rule; a passing HTML route alone
+does not prove the stylesheet is available. Version static asset URLs when
+browser caching can otherwise conceal a newly deployed stylesheet.

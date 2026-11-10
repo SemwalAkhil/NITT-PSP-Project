@@ -81,7 +81,8 @@ Tests must remain offline and use fixtures, mocks/fakes, and temporary database 
 ## 8. Optional local web GUI
 
 The FastAPI/Uvicorn/Jinja2 interface is a read-only layer over
-`AyurvedicAlmanac`. It provides the dashboard at `/`, searchable herbs at
+`AyurvedicAlmanac`. Its stylesheet is served at `/static/styles.css` and is
+included in package data. It provides the dashboard at `/`, searchable herbs at
 `/herbs`, and detail pages at `/herbs/{herb_id}`. Install with
 `python -m pip install -e ".[web]"` and run
 `uvicorn herbal_almanac.web_app:app --reload`. The default database path is
