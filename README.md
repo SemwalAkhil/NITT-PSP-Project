@@ -156,6 +156,12 @@ routes, architecture, and tests.
 The first GUI milestone is read-only: scraping, translation, and manual
 curation remain CLI workflows.
 
+To verify the stylesheet separately, open
+`http://127.0.0.1:8000/static/styles.css`. It should return CSS text with
+HTTP 200. See the troubleshooting section in
+[`documentations/web_gui.md`](documentations/web_gui.md) if the page renders
+without styling.
+
 ## Architecture
 
 ```text
