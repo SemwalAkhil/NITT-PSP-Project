@@ -20,6 +20,7 @@ from .database_operator import AyurvedicAlmanac, default_database_path
 PACKAGE_DIR = Path(__file__).resolve().parent
 TEMPLATE_DIR = PACKAGE_DIR / "templates"
 STATIC_DIR = PACKAGE_DIR / "static"
+STYLESHEET_PATH = STATIC_DIR / "styles.css"
 PAGE_SIZE = 12
 
 
@@ -36,6 +37,9 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         version="0.1.0",
     )
     application.state.database_path = configured_path
+    if not STYLESHEET_PATH.is_file():
+        raise RuntimeError(f"Packaged stylesheet is missing: {STYLESHEET_PATH}")
+
     application.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
     templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
