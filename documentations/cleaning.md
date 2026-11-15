@@ -85,10 +85,12 @@ validator, and database operator.
 | `family` | Unicode-normalized botanical family, when available. |
 | `attributes` | Parsed fields mapped to Unicode-normalized value lists. |
 | `source_values` | Cleaned source field text for provenance. |
+| `attribute_metadata` | Metadata mapping field names to source language, machine generation, and verification flags. |
+| `dosha_expressions` | Cleaned source Doshakarma expressions for normalization. |
+| `translation_failures` | Structured failure messages when machine translation fails for specific names. |
 | `transliterated_name` | ASCII transliteration for compatibility/search indexing. |
 | `transliterated_botanical_name` | ASCII botanical-name transliteration, when available. |
 | `transliterated_family` | ASCII family-name transliteration, when available. |
-| `dosha_expressions` | Cleaned source Doshakarma expressions for normalization. |
 
 ### `PlantRecord.clean()`
 

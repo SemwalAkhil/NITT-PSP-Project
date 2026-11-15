@@ -276,8 +276,39 @@ full sorted listing behavior. This keeps weak whole-string matches such as
 original prototype. New ingestion should use `insert_record()` to retain
 provenance and attributes.
 
-`herb_doshas(herb_id)` returns normalized effects together with their source
-expressions. `all_records()` includes a `doshas` group for JSON and CSV export.
+### Application CRUD and curation methods
+
+- `add_herb(name, botanical_name=None, family=None, source="Manual", source_record_id=None, source_url=None)`:
+  Inserts one manually curated herb record with Unicode cleaning, ASCII transliteration,
+  and input validation (rejecting non-positive source IDs and non-HTTP(S) URLs).
+- `add_illness(name)`:
+  Inserts one illness record with cleaned display name, `search_key`, and `canonical_key`.
+- `add_treatment(herb_id, illness_id)`:
+  Links an existing herb and illness with `source = 'manual'`. Foreign key constraints
+  prevent links to non-existent entities, and duplicate pairs are rejected.
+
+### Query and presentation methods
+
+- `dashboard_summary()`:
+  Computes lightweight aggregate counts (`herbs`, `illnesses`, `treatments`, `attributes`)
+  and returns the six most recently added herb records for the web interface overview.
+- `get_herb(herb_id)`:
+  Fetches a single herb row by primary key for detail view presentation, returning `None`
+  if the herb ID does not exist.
+- `search_herbs(query="")`:
+  Searches herbs across transliterated name, original Unicode name, and botanical name
+  using ranked matching.
+- `search_illnesses(query="")`:
+  Searches illnesses across display name and search keys using ranked matching.
+- `treatment_details(herb_id)`:
+  Returns all illness records linked to the specified herb ID along with their relationship source.
+- `herb_attributes(herb_id)`:
+  Returns all section-qualified source and translated attributes recorded for the specified herb.
+- `herb_doshas(herb_id)`:
+  Returns normalized Vata, Pitta, and Kapha effects together with their source expressions.
+- `all_records()`:
+  Returns a dictionary containing full tables for `herbs`, `illnesses`, `treatments`,
+  `attributes`, and `doshas` for JSON and CSV export views.
 
 ## Connection lifecycle verification
 
