@@ -207,3 +207,15 @@ The GitHub Actions workflow runs both commands across Python 3.10–3.14.
 - The project code is MIT-licensed. CCRAS source material, terminology
   references, and scraped data may have separate copyright, attribution, or
   terms-of-use requirements. Verify redistribution rights independently.
+
+
+## Roadmap and AI coding-agent handoff
+
+Before implementing planned features, read:
+
+- [SDLC plan](documentations/plan.md)
+- [Antigravity handoff — next actions and working protocol](documentations/antigravity_handoff.md)
+- [Roadmap addendum — evidence, safety, multilingual access, and staged gates](documentations/roadmap_addendum.md)
+- [Clinical, safety, evidence, and multilingual data requirements](documentations/clinical_data_requirements.md)
+
+These documents distinguish current implementation from future requirements. Do not implement later-stage medical-history or symptom-matching features before their prerequisite gates pass.
