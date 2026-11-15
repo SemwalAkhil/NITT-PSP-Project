@@ -63,8 +63,10 @@ herbal-almanac setup
 herbal-almanac setup --database /tmp/herbal-almanac.db
 ```
 
-The command creates the `herbs`, `illness`, `treatment`, and
-`herb_attributes` tables if they do not already exist.
+The command creates the `herbs`, `illness`, `treatment`, `herb_attributes`,
+and `herb_doshas` tables if they do not already exist, and transactionally
+applies additive versioned migrations (Migration 1 for core identity and
+provenance, Migration 2 for normalized botanical taxonomy).
 
 ### `scrape`
 

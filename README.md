@@ -169,9 +169,12 @@ discover -> fetch -> parse -> clean/validate -> optional translation
                                   |- herbs + attributes
                                   |- illness/treatment links
                                   |- normalized Dosha effects
+                                  |- additive Migrations 1 & 2
                                          |
-                                         v
-                                  Typer CLI / JSON / CSV
+                                         +-----------------------+
+                                         |                       |
+                                         v                       v
+                              Typer CLI / JSON / CSV     FastAPI Web Interface
 ```
 
 See [`documentations/scrapper.md`](documentations/scrapper.md) for scraping

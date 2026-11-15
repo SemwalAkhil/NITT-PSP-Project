@@ -17,9 +17,10 @@ them to the database operator. It does not own text-cleaning rules or SQL.
 | Implemented | Optional translation enrichment |
 | Implemented | Direct SQLite insertion and upsert |
 | Implemented | Per-plant recovery, retries, and structured scrape-error reporting |
-| Planned | Dosha normalization |
+| Implemented | Conservative Dosha normalization into explicit Vata, Pitta, and Kapha effects in `herb_doshas` |
+| Implemented | Additive Migration 1 (core identity and provenance) and Migration 2 (botanical taxonomy) |
 | Planned | API PDF and NAMASTE Excel importers |
-| Planned | Botanical taxonomy resolution |
+| Planned | Broader normalized Dravyaguna domain tables (properties, parts, Karma) |
 
 ## Current direct-ingestion flow
 
@@ -216,19 +217,19 @@ after persistence, but neither is an intermediate scrape stage.
 Create the schema and scrape one page during development:
 
 ```bash
-python scrapper.py --max-pages 1 --max-plants 1
+python -m herbal_almanac.scrapper --max-pages 1 --max-plants 1
 ```
 
 Use a separate database for a test run:
 
 ```bash
-python scrapper.py --database /tmp/ayurvedic-test.db --max-plants 5
+python -m herbal_almanac.scrapper --database /tmp/ayurvedic-test.db --max-plants 5
 ```
 
 For an unreliable or slow source, the network limits can be changed:
 
 ```bash
-python scrapper.py --max-plants 1 --timeout 5 --retries 0
+python -m herbal_almanac.scrapper --max-plants 1 --timeout 5 --retries 0
 ```
 
 The scraper records network, parsing, validation, and database errors for the
@@ -241,7 +242,7 @@ The Typer CLI is the preferred project entry point:
 
 ```bash
 herbal-almanac setup
-herbal-almanac scrape --max-pages 1 --max-plants 5
+herbal-almanac scrape dravya --max-pages 1 --max-plants 5
 herbal-almanac herbs tulsi
 herbal-almanac illnesses fever
 ```
