@@ -1714,3 +1714,36 @@ Once the DRAVYA pipeline is reliable, use the same architecture to add API, NAMA
 8. **License-aware:** source availability and redistribution rights are tracked separately.
 9. **Testable:** parsers and normalization rules require regression tests.
 10. **Versioned:** source data, parser versions and database releases should be identifiable.
+
+
+---
+
+# 2026 Roadmap Additions — Product, Evidence, and Safety
+
+This section extends the original SDLC plan. These are future requirements, not claims of current implementation. Follow the dependency gates in [roadmap_addendum.md](roadmap_addendum.md), [clinical_data_requirements.md](clinical_data_requirements.md), and [antigravity_handoff.md](antigravity_handoff.md).
+
+## Newly explicit aims
+
+- [ ] Record common/reported herb side effects and safety concerns with formulation, population, context, and sources.
+- [ ] Consider relevant user medical history only in a later privacy- and clinically-reviewed caution feature.
+- [ ] Provide concise, cited herb descriptions.
+- [ ] Strengthen scientific backing and distinguish traditional, preclinical, observational, clinical, systematic-review, and regulatory evidence.
+- [ ] Corroborate claims using multiple independent sources; retain disagreements and evidence gaps.
+- [ ] Prioritize Hindi and English for user-facing content while preserving Sanskrit and original scripts.
+- [ ] Match multiple symptoms to the closest supported terminology concepts using explainable ranking, alternatives, and abstention. This is not diagnosis.
+- [ ] Record documented preparation/form (whole/solid, powder, decoction, infusion, juice, paste, extract, oil, compound form, etc.). Never infer route, vehicle, dose, or duration.
+
+## Mandatory dependency order
+
+1. Stabilize current application, GUI integration, and CI.
+2. Complete source provenance and reproducible ingestion.
+3. Complete normalized domain schema and safe migrations.
+4. Make Hindi and English first-class localized data while preserving Sanskrit/source scripts.
+5. Add licensed authoritative source adapters and independent evidence corroboration.
+6. Build cited herb descriptions and source-backed preparation records.
+7. Build side-effect, contraindication, precaution, and interaction evidence.
+8. Only then consider a privacy-controlled medical-history caution layer.
+9. Only after terminology validation, implement multi-symptom retrieval/matching.
+10. Complete public API, versioned releases, quality reports, and maintenance.
+
+Do not start later-stage user-facing features before their prerequisite gates pass. Medical-history-aware behavior and symptom matching are not part of the current MVP and must not become diagnosis or prescribing features.
