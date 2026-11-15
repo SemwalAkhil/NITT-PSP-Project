@@ -82,3 +82,20 @@ def test_dashboard_handles_empty_database(tmp_path):
 
     assert response.status_code == 200
     assert "Your library is ready to grow" in response.text
+
+def test_stylesheet_is_served_with_css_content_type(tmp_path):
+    client, _ = make_client(tmp_path)
+
+    page = client.get("/")
+    stylesheet_url = "/static/styles.css"
+
+    assert page.status_code == 200
+    assert stylesheet_url in page.text
+
+    response = client.get(stylesheet_url)
+
+    assert response.status_code == 200
+    assert "text/css" in response.headers["content-type"]
+    assert ":root" in response.text
+    assert "--paper:" in response.text
+    assert ".sidebar" in response.text

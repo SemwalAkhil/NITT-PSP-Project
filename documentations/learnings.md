@@ -410,10 +410,12 @@ runtime database selection explicit and test routes against temporary SQLite
 files. A first read-only milestone avoids mixing request/response handling
 with long-running scraping or write operations.
 
-## Application CRUD and presentation queries
+## Static assets in a Python web package
 
-Centralizing manual curation (`add_herb`, `add_illness`, `add_treatment`) and
-presentation queries (`dashboard_summary`, `get_herb`, `treatment_details`) within
-`AyurvedicAlmanac` ensures that both the CLI and the FastAPI web GUI share identical
-validation, transactional boundaries, and relevance ranking without duplicating
-SQL queries across entry points. Presentation layers remain thin and query-agnostic.
+A Starlette/FastAPI static mount serves files from the directory supplied at
+application construction time. Keep templates and static assets inside the
+installable package and declare them as package data so wheels include them.
+A route-level test should request the CSS URL, assert HTTP 200 and
+`text/css`, and inspect a representative rule; a passing HTML route alone
+does not prove the stylesheet is available. Version static asset URLs when
+browser caching can otherwise conceal a newly deployed stylesheet.
