@@ -41,6 +41,58 @@ TAXON_RANKS = (
     "unknown", "family", "genus", "species", "subspecies", "variety", "form",
     "cultivar", "unranked",
 )
+VERNACULAR_LANGUAGE_CODES = {
+    "English": "en",
+    "Assamese": "as",
+    "Bengali": "bn",
+    "Bodo": "brx",
+    "Dogri": "doi",
+    "Gujarati": "gu",
+    "Hindi": "hi",
+    "Kannada": "kn",
+    "Kashmiri": "ks",
+    "Konkani": "kok",
+    "Maithili": "mai",
+    "Malayalam": "ml",
+    "Manipuri": "mni",
+    "Marathi": "mr",
+    "Nepali": "ne",
+    "Odia": "or",
+    "Punjabi": "pa",
+    "Sanskrit": "sa",
+    "Santali": "sat",
+    "Sindhi": "sd",
+    "Tamil": "ta",
+    "Telugu": "te",
+    "Urdu": "ur",
+}
+
+
+def detect_script(text: str) -> str:
+    """Return the ISO 15924 script code for text based on Unicode character ranges."""
+    for char in text:
+        cp = ord(char)
+        if 0x0900 <= cp <= 0x097F:
+            return "Deva"
+        if 0x0980 <= cp <= 0x09FF:
+            return "Beng"
+        if 0x0A00 <= cp <= 0x0A7F:
+            return "Guru"
+        if 0x0A80 <= cp <= 0x0AFF:
+            return "Gujr"
+        if 0x0B00 <= cp <= 0x0B7F:
+            return "Orya"
+        if 0x0B80 <= cp <= 0x0BFF:
+            return "Taml"
+        if 0x0C00 <= cp <= 0x0C7F:
+            return "Telu"
+        if 0x0C80 <= cp <= 0x0CFF:
+            return "Knda"
+        if 0x0D00 <= cp <= 0x0D7F:
+            return "Mlym"
+        if ("a" <= char <= "z") or ("A" <= char <= "Z"):
+            return "Latn"
+    return "Zyyy"
 
 
 class MigrationError(RuntimeError):
@@ -614,6 +666,40 @@ class AyurvedicAlmanac:
         source_claim_id: int,
     ) -> int:
         cls._validate_herb_claim(connection, herb_id, source_claim_id)
+        existing = connection.execute(
+            """
+            SELECT herb_name_id FROM herb_names
+            WHERE herb_id = ? AND name_text = ? AND normalized_text = ?
+                  AND language_code = ? AND script_code = ? AND name_type = ?
+                  AND source_claim_id = ?
+            """,
+            (
+                herb_id,
+                name_text,
+                normalized_text,
+                language_code,
+                script_code,
+                name_type,
+                source_claim_id,
+            ),
+        ).fetchone()
+        if existing:
+            return existing["herb_name_id"]
+
+        if is_preferred:
+            existing_preferred = connection.execute(
+                """
+                SELECT herb_name_id, name_text FROM herb_names
+                WHERE herb_id = ? AND name_type = ? AND is_preferred = 1
+                """,
+                (herb_id, name_type),
+            ).fetchone()
+            if existing_preferred and existing_preferred["name_text"] != name_text:
+                connection.execute(
+                    "UPDATE herb_names SET is_preferred = 0 WHERE herb_name_id = ?",
+                    (existing_preferred["herb_name_id"],),
+                )
+
         cursor = connection.execute(
             """
             INSERT INTO herb_names
@@ -633,6 +719,468 @@ class AyurvedicAlmanac:
             ),
         )
         return cursor.lastrowid
+
+    @classmethod
+    def _ensure_source(cls, connection: sqlite3.Connection, source_name: str | None) -> int:
+        source_key = cls._legacy_source_key(source_name)
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO sources
+                (source_key, publisher, title, default_url, notes)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                source_key,
+                "CCRAS" if source_key == "CCRAS DRAVYA" else (None if source_key == "manual" else source_key),
+                "CCRAS DRAVYA Portal" if source_key == "CCRAS DRAVYA" else source_key,
+                "https://dravya.ccras.org.in" if source_key == "CCRAS DRAVYA" else None,
+                "CCRAS DRAVYA plant directory and monographs."
+                if source_key == "CCRAS DRAVYA"
+                else "Source registered during data ingestion.",
+            ),
+        )
+        row = connection.execute(
+            "SELECT source_id FROM sources WHERE source_key = ?",
+            (source_key,),
+        ).fetchone()
+        return row["source_id"]
+
+    @classmethod
+    def _ensure_source_record(
+        cls,
+        connection: sqlite3.Connection,
+        source_id: int,
+        external_record_key: str | None,
+        source_url: str | None,
+        retrieved_at: str | None,
+        raw_artifact_ref: str | None = None,
+    ) -> int:
+        if external_record_key is not None:
+            existing = connection.execute(
+                """
+                SELECT source_record_id FROM source_records
+                WHERE source_id = ? AND external_record_key = ?
+                """,
+                (source_id, external_record_key),
+            ).fetchone()
+            if existing:
+                connection.execute(
+                    """
+                    UPDATE source_records
+                    SET source_url = COALESCE(?, source_url),
+                        retrieved_at = COALESCE(?, retrieved_at)
+                    WHERE source_record_id = ?
+                    """,
+                    (source_url, retrieved_at, existing["source_record_id"]),
+                )
+                return existing["source_record_id"]
+            cursor = connection.execute(
+                """
+                INSERT INTO source_records
+                    (source_id, external_record_key, source_url, retrieved_at, raw_artifact_ref)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (source_id, external_record_key, source_url, retrieved_at, raw_artifact_ref),
+            )
+            return cursor.lastrowid
+        else:
+            if raw_artifact_ref is not None:
+                existing = connection.execute(
+                    """
+                    SELECT source_record_id FROM source_records
+                    WHERE source_id = ? AND raw_artifact_ref = ?
+                    """,
+                    (source_id, raw_artifact_ref),
+                ).fetchone()
+                if existing:
+                    return existing["source_record_id"]
+            cursor = connection.execute(
+                """
+                INSERT INTO source_records
+                    (source_id, external_record_key, source_url, retrieved_at, raw_artifact_ref)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (source_id, None, source_url, retrieved_at, raw_artifact_ref),
+            )
+            return cursor.lastrowid
+
+    @staticmethod
+    def _ensure_legacy_herb_map(connection: sqlite3.Connection, herb_id: int, now: str) -> None:
+        connection.execute(
+            """
+            INSERT OR IGNORE INTO legacy_herb_map (legacy_herb_id, herb_id, created_at)
+            VALUES (?, ?, ?)
+            """,
+            (herb_id, herb_id, now),
+        )
+
+    @classmethod
+    def _record_claim(
+        cls,
+        connection: sqlite3.Connection,
+        source_record_id: int,
+        claim_type: str,
+        source_field: str,
+        source_expression: str,
+        language_code: str = "und",
+        retrieved_at: str | None = None,
+        created_by_type: str = "ingest",
+        created_by: str = "scraper:dravya",
+        verification_status: str = "unreviewed",
+        now: str | None = None,
+        is_single_value_field: bool = False,
+    ) -> int:
+        now = now or datetime.now(timezone.utc).isoformat()
+        existing = connection.execute(
+            """
+            SELECT source_claim_id
+            FROM source_claims
+            WHERE source_record_id = ? AND claim_type = ? AND source_field = ?
+                  AND source_expression = ? AND verification_status != 'superseded'
+            """,
+            (source_record_id, claim_type, source_field, source_expression),
+        ).fetchone()
+        if existing:
+            return existing["source_claim_id"]
+
+        supersedes_claim_id = None
+        if is_single_value_field:
+            old_claim = connection.execute(
+                """
+                SELECT source_claim_id
+                FROM source_claims
+                WHERE source_record_id = ? AND claim_type = ? AND source_field = ?
+                      AND verification_status != 'superseded'
+                ORDER BY source_claim_id DESC
+                LIMIT 1
+                """,
+                (source_record_id, claim_type, source_field),
+            ).fetchone()
+            if old_claim:
+                supersedes_claim_id = old_claim["source_claim_id"]
+                connection.execute(
+                    """
+                    UPDATE source_claims
+                    SET verification_status = 'superseded', updated_at = ?
+                    WHERE source_claim_id = ?
+                    """,
+                    (now, supersedes_claim_id),
+                )
+
+        cursor = connection.execute(
+            """
+            INSERT INTO source_claims
+                (source_record_id, claim_type, source_field, source_expression,
+                 language_code, retrieved_at, verification_status, created_by_type,
+                 created_by, created_at, updated_at, supersedes_claim_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                source_record_id,
+                claim_type,
+                source_field,
+                source_expression,
+                language_code,
+                retrieved_at,
+                verification_status,
+                created_by_type,
+                created_by,
+                now,
+                now,
+                supersedes_claim_id,
+            ),
+        )
+        return cursor.lastrowid
+
+    @classmethod
+    def _sync_herb_names(
+        cls,
+        connection: sqlite3.Connection,
+        herb_id: int,
+        source_record_id: int,
+        record: PlantRecord,
+        now: str,
+    ) -> None:
+        ayurvedic_name = clean_text(record.ayurvedic_name)
+        if ayurvedic_name:
+            claim_id = cls._record_claim(
+                connection,
+                source_record_id=source_record_id,
+                claim_type="herb_name",
+                source_field="heading.ayurvedic_name",
+                source_expression=ayurvedic_name,
+                language_code="sa",
+                retrieved_at=record.retrieved_at,
+                now=now,
+                is_single_value_field=True,
+            )
+            cls._validate_herb_claim(connection, herb_id, claim_id)
+            norm_text = search_key(ascii_text(ayurvedic_name) or ayurvedic_name)
+            script_code = detect_script(ayurvedic_name)
+            cls._insert_herb_name(
+                connection,
+                herb_id=herb_id,
+                name_text=ayurvedic_name,
+                normalized_text=norm_text,
+                language_code="sa",
+                script_code=script_code,
+                name_type="ayurvedic",
+                is_preferred=True,
+                source_claim_id=claim_id,
+            )
+
+        translit_name = clean_text(record.transliterated_name)
+        if translit_name and translit_name != ayurvedic_name:
+            claim_id = cls._record_claim(
+                connection,
+                source_record_id=source_record_id,
+                claim_type="herb_name",
+                source_field="transliterated_name",
+                source_expression=translit_name,
+                language_code="en",
+                retrieved_at=record.retrieved_at,
+                now=now,
+                is_single_value_field=True,
+            )
+            cls._validate_herb_claim(connection, herb_id, claim_id)
+            norm_translit = search_key(translit_name)
+            cls._insert_herb_name(
+                connection,
+                herb_id=herb_id,
+                name_text=translit_name,
+                normalized_text=norm_translit,
+                language_code="en",
+                script_code="Latn",
+                name_type="source_alias",
+                is_preferred=False,
+                source_claim_id=claim_id,
+            )
+
+        for field, values in record.attributes.items():
+            if not field.startswith("Vernacular Names."):
+                continue
+            lang_name = field.split(".", 1)[1]
+            lang_code = VERNACULAR_LANGUAGE_CODES.get(lang_name, "und")
+            for val in values:
+                cleaned_val = clean_text(val)
+                if not cleaned_val:
+                    continue
+                claim_id = cls._record_claim(
+                    connection,
+                    source_record_id=source_record_id,
+                    claim_type="herb_name",
+                    source_field=field,
+                    source_expression=cleaned_val,
+                    language_code=lang_code,
+                    retrieved_at=record.retrieved_at,
+                    now=now,
+                )
+                cls._validate_herb_claim(connection, herb_id, claim_id)
+                norm_val = search_key(ascii_text(cleaned_val) or cleaned_val)
+                script = detect_script(cleaned_val)
+                cls._insert_herb_name(
+                    connection,
+                    herb_id=herb_id,
+                    name_text=cleaned_val,
+                    normalized_text=norm_val,
+                    language_code=lang_code,
+                    script_code=script,
+                    name_type="vernacular",
+                    is_preferred=False,
+                    source_claim_id=claim_id,
+                )
+
+        for field, values in record.attributes.items():
+            if not field.startswith("Translated Names."):
+                continue
+            lang_name = field.split(".", 1)[1]
+            lang_code = VERNACULAR_LANGUAGE_CODES.get(lang_name, "und")
+            for val in values:
+                cleaned_val = clean_text(val)
+                if not cleaned_val:
+                    continue
+                claim_id = cls._record_claim(
+                    connection,
+                    source_record_id=source_record_id,
+                    claim_type="herb_name",
+                    source_field=field,
+                    source_expression=cleaned_val,
+                    language_code=lang_code,
+                    retrieved_at=record.retrieved_at,
+                    created_by_type="system",
+                    created_by="translation:google",
+                    verification_status="unreviewed",
+                    now=now,
+                )
+                cls._validate_herb_claim(connection, herb_id, claim_id)
+                norm_val = search_key(ascii_text(cleaned_val) or cleaned_val)
+                script = detect_script(cleaned_val)
+                cls._insert_herb_name(
+                    connection,
+                    herb_id=herb_id,
+                    name_text=cleaned_val,
+                    normalized_text=norm_val,
+                    language_code=lang_code,
+                    script_code=script,
+                    name_type="source_alias",
+                    is_preferred=False,
+                    source_claim_id=claim_id,
+                )
+
+    @classmethod
+    def _sync_herb_taxa(
+        cls,
+        connection: sqlite3.Connection,
+        herb_id: int,
+        source_record_id: int,
+        record: PlantRecord,
+        now: str,
+    ) -> None:
+        if record.botanical_name:
+            botanical = clean_text(record.botanical_name)
+            if botanical:
+                claim_id = cls._record_claim(
+                    connection,
+                    source_record_id=source_record_id,
+                    claim_type="taxonomy_name",
+                    source_field="scientific_profile.botanical_name",
+                    source_expression=botanical,
+                    language_code="la",
+                    retrieved_at=record.retrieved_at,
+                    now=now,
+                    is_single_value_field=True,
+                )
+                cls._validate_herb_claim(connection, herb_id, claim_id)
+                norm_name = search_key(ascii_text(botanical) or botanical)
+                taxon = connection.execute(
+                    "SELECT taxon_id FROM taxa WHERE scientific_name = ? AND rank = 'unknown'",
+                    (botanical,),
+                ).fetchone()
+                if taxon:
+                    taxon_id = taxon["taxon_id"]
+                else:
+                    taxon_id = connection.execute(
+                        """
+                        INSERT INTO taxa (scientific_name, normalized_name, rank, created_at)
+                        VALUES (?, ?, 'unknown', ?)
+                        """,
+                        (botanical, norm_name, now),
+                    ).lastrowid
+                existing_ht = connection.execute(
+                    """
+                    SELECT herb_taxon_id FROM herb_taxa
+                    WHERE herb_id = ? AND taxon_id = ? AND relationship_type = 'source_identification'
+                          AND source_claim_id = ?
+                    """,
+                    (herb_id, taxon_id, claim_id),
+                ).fetchone()
+                if not existing_ht:
+                    connection.execute(
+                        """
+                        INSERT INTO herb_taxa
+                            (herb_id, taxon_id, relationship_type, source_claim_id, is_preferred, created_at)
+                        VALUES (?, ?, 'source_identification', ?, 0, ?)
+                        """,
+                        (herb_id, taxon_id, claim_id, now),
+                    )
+
+        if record.family:
+            family = clean_text(record.family)
+            if family:
+                claim_id = cls._record_claim(
+                    connection,
+                    source_record_id=source_record_id,
+                    claim_type="taxonomy_name",
+                    source_field="scientific_profile.family",
+                    source_expression=family,
+                    language_code="la",
+                    retrieved_at=record.retrieved_at,
+                    now=now,
+                    is_single_value_field=True,
+                )
+                cls._validate_herb_claim(connection, herb_id, claim_id)
+                norm_fam = search_key(ascii_text(family) or family)
+                taxon = connection.execute(
+                    "SELECT taxon_id FROM taxa WHERE scientific_name = ? AND rank = 'family'",
+                    (family,),
+                ).fetchone()
+                if taxon:
+                    taxon_id = taxon["taxon_id"]
+                else:
+                    taxon_id = connection.execute(
+                        """
+                        INSERT INTO taxa (scientific_name, normalized_name, rank, created_at)
+                        VALUES (?, ?, 'family', ?)
+                        """,
+                        (family, norm_fam, now),
+                    ).lastrowid
+                existing_ht = connection.execute(
+                    """
+                    SELECT herb_taxon_id FROM herb_taxa
+                    WHERE herb_id = ? AND taxon_id = ? AND relationship_type = 'source_identification'
+                          AND source_claim_id = ?
+                    """,
+                    (herb_id, taxon_id, claim_id),
+                ).fetchone()
+                if not existing_ht:
+                    connection.execute(
+                        """
+                        INSERT INTO herb_taxa
+                            (herb_id, taxon_id, relationship_type, source_claim_id, is_preferred, created_at)
+                        VALUES (?, ?, 'source_identification', ?, 0, ?)
+                        """,
+                        (herb_id, taxon_id, claim_id, now),
+                    )
+
+    @classmethod
+    def _sync_attribute_claims(
+        cls,
+        connection: sqlite3.Connection,
+        herb_id: int,
+        source_record_id: int,
+        record: PlantRecord,
+        now: str,
+    ) -> None:
+        for field, values in record.attributes.items():
+            if field.startswith(("Vernacular Names.", "Translated Names.")):
+                continue
+            meta = record.attribute_metadata.get(field, {})
+            lang = meta.get("source_language") or "und"
+            ver_status = meta.get("verification_status") or "unreviewed"
+            created_by_type = "system" if meta.get("machine_generated") else "ingest"
+            for val in values:
+                cleaned_val = clean_text(val)
+                if not cleaned_val:
+                    continue
+                cls._record_claim(
+                    connection,
+                    source_record_id=source_record_id,
+                    claim_type="attribute",
+                    source_field=field,
+                    source_expression=cleaned_val,
+                    language_code=lang,
+                    retrieved_at=record.retrieved_at,
+                    created_by_type=created_by_type,
+                    created_by="scraper:dravya",
+                    verification_status=ver_status,
+                    now=now,
+                )
+        for expr in record.dosha_expressions:
+            cleaned_expr = clean_text(expr)
+            if cleaned_expr:
+                cls._record_claim(
+                    connection,
+                    source_record_id=source_record_id,
+                    claim_type="dosha_expression",
+                    source_field="Doshakarma",
+                    source_expression=cleaned_expr,
+                    language_code="sa",
+                    retrieved_at=record.retrieved_at,
+                    created_by_type="ingest",
+                    created_by="scraper:dravya",
+                    verification_status="unreviewed",
+                    now=now,
+                )
 
     @classmethod
     def _migration_1_core_identity_and_provenance(
@@ -1051,6 +1599,20 @@ class AyurvedicAlmanac:
             )
             self._insert_treatments_from_attributes(connection, herb_id, record)
             self._insert_doshas(connection, herb_id, record)
+
+            now = datetime.now(timezone.utc).isoformat()
+            source_id = self._ensure_source(connection, record.source)
+            source_record_id = self._ensure_source_record(
+                connection,
+                source_id=source_id,
+                external_record_key=str(record.source_record_id),
+                source_url=record.source_url,
+                retrieved_at=record.retrieved_at,
+            )
+            self._ensure_legacy_herb_map(connection, herb_id, now)
+            self._sync_herb_names(connection, herb_id, source_record_id, record, now)
+            self._sync_herb_taxa(connection, herb_id, source_record_id, record, now)
+            self._sync_attribute_claims(connection, herb_id, source_record_id, record, now)
             return herb_id
 
     @staticmethod
@@ -1184,7 +1746,26 @@ class AyurvedicAlmanac:
                     search_key(name),
                 ),
             )
-            return cursor.lastrowid
+            herb_id = cursor.lastrowid
+            now = datetime.now(timezone.utc).isoformat()
+            self._ensure_legacy_herb_map(connection, herb_id, now)
+            source_key = self._legacy_source_key(source)
+            source_id = self._ensure_source(connection, source_key)
+            ext_key = str(source_record_id) if source_record_id is not None else None
+            raw_ref = (
+                f"legacy_herb_id:{herb_id}"
+                if ext_key is None or source_key == "manual"
+                else None
+            )
+            self._ensure_source_record(
+                connection,
+                source_id=source_id,
+                external_record_key=ext_key,
+                source_url=source_url,
+                retrieved_at=now,
+                raw_artifact_ref=raw_ref,
+            )
+            return herb_id
 
     def add_illness(self, english_name: str) -> int:
         """Insert one illness and return its database ID."""
@@ -1321,7 +1902,7 @@ class AyurvedicAlmanac:
         with self._connection() as connection:
             rows = connection.execute(
                 """
-                SELECT i.id, i.english_name
+                SELECT i.id, i.english_name, t.source
                 FROM treatment AS t
                 JOIN illness AS i ON i.id = t.illness_id
                 WHERE t.herb_id = ?
@@ -1363,6 +1944,72 @@ class AyurvedicAlmanac:
                 (herb_id,),
             ).fetchall()
         return [dict(row) for row in rows]
+
+    def herb_claims(self, herb_id: int) -> list[dict[str, Any]]:
+        """Return all traceable source claims associated with a herb."""
+        self.create_database()
+        with self._connection() as connection:
+            herb = connection.execute(
+                "SELECT id, source, source_record_id FROM herbs WHERE id = ?",
+                (herb_id,),
+            ).fetchone()
+            if not herb:
+                return []
+            source_key = self._legacy_source_key(herb["source"])
+            if herb["source_record_id"] is not None:
+                sr_clause = "sr.external_record_key = ? AND s.source_key = ?"
+                sr_param = (str(herb["source_record_id"]), source_key)
+            else:
+                sr_clause = "sr.raw_artifact_ref = ? AND s.source_key = ?"
+                sr_param = (f"legacy_herb_id:{herb_id}", source_key)
+
+            rows = connection.execute(
+                f"""
+                SELECT sc.source_claim_id, sc.source_record_id, s.source_key,
+                       sr.external_record_key, sr.source_url, sc.claim_type,
+                       sc.source_field, sc.source_expression, sc.language_code,
+                       sc.verification_status, sc.created_by_type, sc.created_by,
+                       sc.created_at, sc.updated_at, sc.supersedes_claim_id
+                FROM source_claims AS sc
+                JOIN source_records AS sr ON sr.source_record_id = sc.source_record_id
+                JOIN sources AS s ON s.source_id = sr.source_id
+                WHERE {sr_clause}
+                ORDER BY sc.source_claim_id
+                """,
+                sr_param,
+            ).fetchall()
+            return [dict(row) for row in rows]
+
+    def herb_source_record(self, herb_id: int) -> dict[str, Any] | None:
+        """Return the source record metadata for a herb."""
+        self.create_database()
+        with self._connection() as connection:
+            herb = connection.execute(
+                "SELECT id, source, source_record_id FROM herbs WHERE id = ?",
+                (herb_id,),
+            ).fetchone()
+            if not herb:
+                return None
+            source_key = self._legacy_source_key(herb["source"])
+            if herb["source_record_id"] is not None:
+                sr_clause = "sr.external_record_key = ? AND s.source_key = ?"
+                sr_param = (str(herb["source_record_id"]), source_key)
+            else:
+                sr_clause = "sr.raw_artifact_ref = ? AND s.source_key = ?"
+                sr_param = (f"legacy_herb_id:{herb_id}", source_key)
+
+            row = connection.execute(
+                f"""
+                SELECT sr.source_record_id, sr.source_id, s.source_key,
+                       sr.external_record_key, sr.source_url, sr.retrieved_at,
+                       sr.raw_artifact_ref, s.title AS source_title, s.publisher
+                FROM source_records AS sr
+                JOIN sources AS s ON s.source_id = sr.source_id
+                WHERE {sr_clause}
+                """,
+                sr_param,
+            ).fetchone()
+            return dict(row) if row else None
 
     def all_records(self) -> dict[str, list[dict[str, Any]]]:
         """Return all herbs, illnesses, treatments, and herb attributes."""

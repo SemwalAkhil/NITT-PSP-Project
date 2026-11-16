@@ -314,6 +314,7 @@ def test_retrieval_timestamp_and_fuzzy_search_are_persisted(tmp_path) -> None:
 def test_default_database_uses_user_data_directory(tmp_path, monkeypatch) -> None:
     data_home = tmp_path / "user-data"
     monkeypatch.setenv("XDG_DATA_HOME", str(data_home))
+    monkeypatch.setenv("APPDATA", str(data_home))
 
     database = AyurvedicAlmanac()
     expected_path = data_home / "herbal-almanac" / "AyurvedicDB.db"

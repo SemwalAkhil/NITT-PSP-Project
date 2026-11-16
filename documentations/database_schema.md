@@ -88,9 +88,15 @@ the record to the database operator.
 transaction. It replaces all flexible attributes and scraped treatment links,
 then recreates the current scraped links. Manual treatment links survive
 because only rows with `source = 'scraped'` are deleted. Scraped Dosha rows are
-refreshed in the same transaction. The original source URL, source record ID,
-and retrieval timestamp remain on the herb row, but provenance is currently
-record-level rather than claim-level.
+refreshed in the same transaction.
+
+With Stage B operational provenance integration, `insert_record()` also
+synchronizes the provenance tables within the same atomic transaction:
+1. `sources`: registers or reuses the external source (e.g. `'CCRAS DRAVYA'`).
+2. `source_records`: creates or updates the specific external record by `(source_id, external_record_key)`.
+3. `legacy_herb_map`: ensures the herb ID is mapped for claim-to-subject resolution.
+4. `source_claims`: records distinct claims for Ayurvedic names, vernacular names, botanical names, families, section attributes, and Dosha expressions. Re-scraping the same page is idempotent (existing active claims are deduplicated). When single-value fields change at the source, old claims are marked `superseded` and new claims record `supersedes_claim_id` lineage.
+5. `herb_names` and `herb_taxa`: connects herb identities and taxonomic concepts to their verified source claims.
 
 Therapeutic Usage values are stored as source attributes and the exact
 `Therapeutic Usage.Name` field currently creates unverified illness rows and

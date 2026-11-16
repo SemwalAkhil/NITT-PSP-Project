@@ -153,3 +153,14 @@ The module provides deterministic text cleanup and Dosha-expression
 normalization. Google translation is kept in `translation.py` so cleaning
 remains independent of network access. Condition mapping and Dosha persistence
 should remain separate concerns until their storage contracts are defined.
+
+### Provenance consumption
+
+In Stage B operational provenance integration, the cleaned `PlantRecord` feeds
+directly into the provenance ledger:
+- `source`, `source_record_id`, `source_url`, and `retrieved_at` populate `sources` and `source_records`.
+- `ayurvedic_name` generates primary `source_alias` claims and preferred Devanagari names in `herb_names`.
+- `botanical_name` and `family` generate `taxonomy_name` claims in `taxa` and `herb_taxa`.
+- `attributes` with prefix `Vernacular Names.` generate `vernacular_name` claims and multilingual `herb_names` rows with detected ISO 15924 scripts.
+- General section attributes generate `source_attribute` claims preserving raw `source_values` verbatim alongside normalized values.
+- `dosha_expressions` generate `dosha_expression` claims alongside normalized effects in `herb_doshas`.

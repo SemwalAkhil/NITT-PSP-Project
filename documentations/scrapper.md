@@ -19,6 +19,7 @@ them to the database operator. It does not own text-cleaning rules or SQL.
 | Implemented | Per-plant recovery, retries, and structured scrape-error reporting |
 | Implemented | Conservative Dosha normalization into explicit Vata, Pitta, and Kapha effects in `herb_doshas` |
 | Implemented | Additive Migration 1 (core identity and provenance) and Migration 2 (botanical taxonomy) |
+| Implemented | Stage B operational provenance integration: source records, claims, claim deduplication, and supersession lineage |
 | Planned | API PDF and NAMASTE Excel importers |
 | Planned | Broader normalized Dravyaguna domain tables (properties, parts, Karma) |
 
@@ -39,12 +40,22 @@ Google translation enrichment
       ↓
 Validation
       ↓
-SQLite upsert
+SQLite upsert & provenance synchronization:
+      ├── herbs & legacy_herb_map
+      ├── sources & source_records
+      ├── source_claims (deduplication & supersession)
+      ├── herb_names & herb_taxa
+      ├── herb_attributes & herb_doshas
+      └── unverified treatments
 ```
 
 The parser keeps each plant as an in-memory `PlantRecord`. It does not create
-an intermediate JSON file. The original source URL, source record ID, source
-values, and retrieval timestamp are stored with the database record.
+an intermediate JSON file. Ingestion writes the entire record and its provenance
+within a single atomic database transaction. Every factual assertion (Ayurvedic
+names, vernacular names, botanical identity, section attributes, and Dosha
+expressions) is stored as a traceable `source_claim`. Re-scraping is idempotent,
+and source changes preserve an immutable history of earlier claims via
+`supersedes_claim_id`.
 Doshakarma values are retained as source expressions and normalized into
 explicit Vata, Pitta, and Kapha effects during persistence.
 

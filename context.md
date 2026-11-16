@@ -15,6 +15,7 @@ This project is for research and software evaluation only; it is not medical adv
   - `web_app.py` — optional FastAPI/Jinja2 read-only browser interface.
   - `templates/` and `static/` — server-rendered pages and local stylesheet.
 - `tests/test_scrapper.py` — offline scraper, cleaning, translation, CLI, and legacy database regression tests.
+- `tests/test_provenance_integration.py` — operational provenance tests (source records, claim extraction, supersession lineage, claim-to-subject validation, and idempotency).
 - `tests/test_database_connections.py` — connection isolation, commit/rollback, closure, and foreign-key tests.
 - `tests/test_database_initialization.py` — initialization concurrency, migration idempotence, rollback/retry, and closure tests.
 - `tests/test_web_app.py` — dashboard, herb search, detail pages, and HTTP error behavior using a temporary database.
@@ -33,14 +34,18 @@ The legacy application tables remain the active read/write contract:
 
 Vernacular names are stored as `Vernacular Names.<Language>` attributes. Optional translations are added only when `--translate` is requested and are marked machine-generated/unverified. Therapeutic Usage values remain source attributes; the supported condition field also creates unverified illness rows and scraped treatment links. Re-scraping refreshes scraped relationships while preserving manual treatment links.
 
-## 4. Versioned schema additions
+## 4. Versioned schema additions and operational provenance
 The database operator applies additive migrations after legacy schema compatibility initialization:
 - Migration 1 (`core_identity_and_provenance`) creates `schema_migrations`, `sources`, `source_records`, `source_claims`, `legacy_herb_map`, and `herb_names`.
 - Migration 2 (`normalized_botanical_taxonomy`) creates `taxa`, `taxon_relationships`, and `herb_taxa`.
 
-These migrations backfill source identity/provenance and conservative botanical taxonomy assertions. The legacy application continues to use the original tables; the new normalized tables are additive and do not yet replace legacy application reads or writes. Remaining normalized Dravyaguna domain tables described in `documentations/database_schema.md` are proposals, not implemented features.
+With Stage B operational provenance integration, the live ingestion pipeline actively populates and synchronizes these provenance tables:
+- `insert_record()` creates/reuses `sources` and `source_records`, generates traceable `source_claims` for names, taxonomy, section attributes, and Dosha expressions, and links `herb_names` and `herb_taxa` via validated claims within the same atomic transaction.
+- Re-scraping is idempotent: unchanged claims are reused, while source updates mark old claims as `superseded` (`verification_status = 'superseded'`) and set `supersedes_claim_id`, ensuring an immutable audit trail without data loss.
+- Manual curation via `add_herb()` registers `legacy_herb_map` and dedicated manual `source_records` (`raw_artifact_ref = legacy_herb_id:<herb_id>`), preserving manual links and relationships across scraping runs.
+- `AyurvedicAlmanac` exposes public inspection APIs: `herb_claims(herb_id)` and `herb_source_record(herb_id)`.
 
-Migration preflight rejects duplicate legacy source identities instead of guessing. Each migration body and its version-ledger row are committed transactionally. Migration 2 records botanical names at unknown rank and family values at family rank without inferring accepted status or taxonomy hierarchy.
+Migration preflight rejects duplicate legacy source identities instead of guessing. Each migration body and its version-ledger row are committed transactionally. Migration 2 records botanical names at unknown rank and family values at family rank without inferring accepted status or taxonomy hierarchy. Remaining normalized Dravyaguna domain tables described in `documentations/database_schema.md` are proposals, not implemented features.
 
 ## 5. SQLite lifecycle and concurrency
 - Each operation obtains an independent SQLite connection; connections are not shared between worker threads.
@@ -74,7 +79,8 @@ Tests must remain offline and use fixtures, mocks/fakes, and temporary database 
 
 ## 7. Roadmap snapshot
 - Publish a release candidate to TestPyPI when valid credentials are available.
-- Continue normalized Dravyaguna schema migrations beyond identity/provenance and botanical taxonomy.
+- Stage B (operational provenance integration) is complete.
+- Next priority: Stage C (normalized domain model for parts, properties, Karma, Dosha, indications, and controlled vocabularies).
 - Add further external source adapters only after the DRAVYA pipeline remains stable.
 - Expand supported query capabilities and provide a dedicated public Python search API.
 

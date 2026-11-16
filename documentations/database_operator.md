@@ -246,14 +246,62 @@ One record is written in a single transaction:
 7. Create or reuse unverified conditions from the source condition field and
    insert the current herb-to-illness links.
 8. Normalize and insert the current Doshakarma expressions into `herb_doshas`.
-9. Commit only after all steps succeed.
+9. Synchronize operational provenance in the same transaction:
+   - Ensure the source provider exists in `sources` (`_ensure_source`).
+   - Create or update the specific `source_records` row (`_ensure_source_record`).
+   - Ensure `legacy_herb_map` maps `herb_id` (`_ensure_legacy_herb_map`).
+   - Synchronize multilingual names into `herb_names` linked to provenance claims (`_sync_herb_names`).
+   - Synchronize botanical identity and family into `taxa` and `herb_taxa` linked to taxonomy claims (`_sync_herb_taxa`).
+   - Record section-qualified attributes and Dosha expressions as distinct `source_claims` (`_sync_attribute_claims`).
+10. Commit only after all steps succeed.
 
-If an attribute insert fails, the `_connection()` context manager rolls back the whole update and closes the connection.
-This prevents partially updated records.
+If any attribute, relation, or provenance insert fails, the `_connection()` context manager rolls back the whole update and closes the connection.
+This prevents partially updated or orphaned records.
 
 The local ID is queried after the upsert instead of relying on `lastrowid`.
 When SQLite takes the conflict-update path, `lastrowid` is not a reliable way
 to identify the existing row.
+
+### Operational provenance and claim supersession
+
+Stage B integrates operational provenance tracking directly into the ingestion pipeline.
+Every claim preserved in `source_claims` maintains:
+- `source_record_id`: Links to the source page record.
+- `claim_type`: Category of assertion (`source_alias`, `vernacular_name`, `taxonomy_name`, `source_attribute`, `dosha_expression`).
+- `source_field`: Exact source section or field path (e.g. `heading.ayurvedic_name`, `scientific_profile.botanical_name`, `Habit and Habitat.Habitat`).
+- `source_expression`: Verbatim original text extracted from the source.
+- `normalized_value`: Cleaned or standard interpretation.
+- `language_code` and `script_code`: Detected or specified language and ISO 15924 script codes.
+- `verification_status`: Initialized to `unverified`.
+- `supersedes_claim_id`: Lineage pointer to a previous claim replaced by a changed source assertion.
+
+When re-scraping a source:
+- If an assertion is unchanged, the existing active claim is reused idempotently.
+- If a single-value source field changes (e.g. revised botanical name or primary Ayurvedic name), the previous active claim is marked `superseded` (`verification_status = 'superseded'`), and the new claim points to the superseded claim via `supersedes_claim_id`.
+- Re-scraping never deletes historical claims, guaranteeing an immutable audit trail.
+
+### Inspecting source provenance
+
+Developers and API consumers can inspect the exact provenance backing any herb record using `AyurvedicAlmanac`:
+
+```python
+from herbal_almanac.database_operator import AyurvedicAlmanac
+
+almanac = AyurvedicAlmanac()
+
+# 1. Inspect source record metadata (URL, retrieval time, provider)
+source_info = almanac.herb_source_record(herb_id)
+print(f"Source: {source_info['source_name']}, URL: {source_info['source_url']}")
+
+# 2. Inspect all claims recorded for the herb
+claims = almanac.herb_claims(herb_id)
+for claim in claims:
+    print(
+        f"[{claim['claim_type']}] {claim['source_field']}: "
+        f"'{claim['source_expression']}' -> '{claim['normalized_value']}' "
+        f"(status: {claim['verification_status']}, supersedes: {claim['supersedes_claim_id']})"
+    )
+```
 
 ## Other methods
 
@@ -280,7 +328,9 @@ provenance and attributes.
 
 - `add_herb(name, botanical_name=None, family=None, source="Manual", source_record_id=None, source_url=None)`:
   Inserts one manually curated herb record with Unicode cleaning, ASCII transliteration,
-  and input validation (rejecting non-positive source IDs and non-HTTP(S) URLs).
+  and input validation (rejecting non-positive source IDs and non-HTTP(S) URLs). Registers
+  the herb in `legacy_herb_map` and creates a corresponding manual `source_records` entry
+  with `raw_artifact_ref = legacy_herb_id:<herb_id>`.
 - `add_illness(name)`:
   Inserts one illness record with cleaned display name, `search_key`, and `canonical_key`.
 - `add_treatment(herb_id, illness_id)`:
@@ -306,6 +356,13 @@ provenance and attributes.
   Returns all section-qualified source and translated attributes recorded for the specified herb.
 - `herb_doshas(herb_id)`:
   Returns normalized Vata, Pitta, and Kapha effects together with their source expressions.
+- `herb_claims(herb_id)`:
+  Returns all provenance claims linked to the specified herb through its source record, ordered by
+  claim ID. Each entry includes claim identity, type, source field, source expression, normalized value,
+  language, script, verification status, and supersession lineage.
+- `herb_source_record(herb_id)`:
+  Returns provenance source-record metadata (source record ID, provider name, external record key,
+  canonical source URL, retrieval timestamp, and artifact reference) for the specified herb.
 - `all_records()`:
   Returns a dictionary containing full tables for `herbs`, `illnesses`, `treatments`,
   `attributes`, and `doshas` for JSON and CSV export views.

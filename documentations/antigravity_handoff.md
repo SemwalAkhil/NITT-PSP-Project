@@ -32,58 +32,24 @@ Verify current source code and migrations. Documentation describes intended/curr
 - Do not introduce a new ORM, framework, or migration system without documenting rationale.
 - A proposed table in documentation is not an implemented feature.
 
-## 3. Immediate next priority: operational provenance integration
+## 3. Current status: operational provenance integration complete (Stage B)
+
+Stage B's first vertical slice is implemented and verified:
+- Source and source-record registration/reuse in `sources` and `source_records`.
+- Traceable factual assertions stored as `source_claims` for Ayurvedic names, vernacular names, botanical names, families, section attributes, and Dosha expressions.
+- Strict claim-to-subject validation linking `herb_names` and `herb_taxa` to claims.
+- Idempotent repeated ingestion and claim supersession lineage (`supersedes_claim_id`, `verification_status = 'superseded'`).
+- Manual curation survival with dedicated manual source records and legacy mapping.
+- Public inspection methods `herb_claims(herb_id)` and `herb_source_record(herb_id)`.
+
+### Immediate next priority: Stage C — Normalized domain model and multilingual identity
 
 Do not begin side-effect extraction, medical-history functionality, symptom matching, or treatment recommendation logic yet.
 
-### Task 0 — Re-establish repository state
-- Inspect branch, working tree, latest commit, open PRs, and PR-specific CI.
-- Check whether previously mentioned stylesheet PR remains open, merged, or superseded.
-- Run tests before changes and record baseline.
-- Confirm referenced docs and paths exist.
-- Do not overwrite unrelated work.
-
-### Task 1 — Trace DRAVYA ingestion end-to-end
-Trace discovery/fetch -> PlantRecord -> cleaning -> optional translation -> insert_record().
-Document:
-- Source metadata captured.
-- Values stored in flexible attributes.
-- Normalized Dosha/treatment rows written.
-- Whether source, source_record, and source_claim are created/reused.
-- Whether names/taxa/attributes link to correct claims.
-- Re-scrape behavior when page is unchanged or changed.
-- Behavior for parser failure and partial data.
-
-Confirm each behavior in code/tests, not docs alone.
-
-### Task 2 — Design provenance integration before coding
-Document:
-- Stable source key and source-record identity.
-- Source record version/retrieval metadata.
-- Claim granularity (field/value or justified grouped assertion).
-- Exact source expression and section/field path.
-- Review/verification status.
-- Links to herbs, names, taxonomy, Dosha, properties, indications, and future safety/preparation claims.
-- Correction/supersession without history loss.
-- Idempotency rules.
-- Transaction and partial-failure behavior.
-- Legacy migration/backfill treatment.
-
-Every claim-bearing normalized domain row must have a valid source_claim_id. Manual curation must create a manual source record and claim.
-
-### Task 3 — Implement the smallest safe vertical slice
-Start with DRAVYA identity and names:
-1. Ensure DRAVYA source row exists.
-2. Upsert source_record using stable DRAVYA record identity.
-3. Create/reuse claims for source-authored names and extracted attributes.
-4. Connect herb_names and herb_taxa to valid claims where schema supports it.
-5. Preserve legacy herbs, herb_attributes, herb_doshas, illness, and treatment behavior.
-6. Add raw-page hash/artifact metadata only after selecting cache location and retention policy.
-7. Make repeated ingestion idempotent.
-8. Preserve manual records, links, and claim correction history.
-9. Add migration and regression tests.
-
-Avoid a broad rewrite. Each slice must be reviewable and tested.
+The next engineering priority is Stage C:
+1. Implement normalized domain concepts for plant parts, Rasa, Guna, Virya, Vipaka, Karma, Dosha effects, indications/conditions, and preparations.
+2. Establish controlled vocabulary mapping tables with explicit evidence links to `source_claims`.
+3. Support Hindi and English as first-class languages across all normalized concepts while preserving Sanskrit terms and ISO 15924 scripts.
 
 ## 4. Required tests
 
@@ -151,12 +117,12 @@ For every task:
 9. Report exact changes, tests run, failures, limitations, and next dependency.
 10. Never mark a feature complete because a table, placeholder, or mockup exists.
 
-## 8. Definition of done for the next task
+## 8. Status of definition of done for Stage B
 
-- Provenance integration design documented.
-- Tested DRAVYA vertical slice creates/reuses source records and claims.
-- Existing behavior and legacy databases remain compatible.
-- Re-ingestion is idempotent and source updates preserve correction history.
-- Failure/partial-data and manual-curation tests exist.
-- Full offline test suite passes.
-- README, plan, schema, scraper, and database docs accurately describe implementation.
+- [x] Provenance integration design documented.
+- [x] Tested DRAVYA vertical slice creates/reuses source records and claims.
+- [x] Existing behavior and legacy databases remain compatible.
+- [x] Re-ingestion is idempotent and source updates preserve correction history.
+- [x] Failure/partial-data and manual-curation tests exist.
+- [x] Full offline test suite passes (88 tests).
+- [x] README, plan, schema, scraper, and database docs accurately describe implementation.

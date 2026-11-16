@@ -31,6 +31,10 @@ Implemented today:
   subject validation.
 - Versioned Migration 2 for botanical taxonomy tables, with conservative
   legacy backfill and no inferred taxonomic hierarchy.
+- Stage B operational provenance integration: linking `insert_record()` and
+  `add_herb()` to `sources`, `source_records`, `source_claims`, `herb_names`,
+  and `herb_taxa` with idempotent re-ingestion, claim supersession lineage,
+  and subject validation.
 - Typer commands for setup, scraping, manual records, searching, inspection,
   and JSON/CSV export.
 - Offline regression, database lifecycle, initialization, and installed

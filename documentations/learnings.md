@@ -419,3 +419,21 @@ A route-level test should request the CSS URL, assert HTTP 200 and
 `text/css`, and inspect a representative rule; a passing HTML route alone
 does not prove the stylesheet is available. Version static asset URLs when
 browser caching can otherwise conceal a newly deployed stylesheet.
+
+## Application CRUD and presentation queries
+
+Centralizing manual curation (`add_herb`, `add_illness`, `add_treatment`) and
+presentation queries (`dashboard_summary`, `get_herb`, `treatment_details`) within
+`AyurvedicAlmanac` ensures that both the CLI and the FastAPI web GUI share identical
+validation, transactional boundaries, and relevance ranking without duplicating
+SQL queries across entry points. Presentation layers remain thin and query-agnostic.
+
+## Operational provenance and claim supersession
+
+Connecting scraping pipelines to claim-level provenance requires separating assertion
+extraction from destructive overwrites. When a web page or source document is re-ingested:
+1. Active claims that match the current source text are reused idempotently without churn.
+2. When single-value fields (such as primary Ayurvedic name, botanical identity, or family) change at the source, earlier assertions are marked `superseded` (`verification_status = 'superseded'`) and new claims record `supersedes_claim_id`, retaining an immutable history of revisions.
+3. Multi-value attributes (vernacular names, section attributes, Dosha expressions) record separate claims per value, preserving the exact source wording, normalized value, and detected ISO 15924 scripts.
+4. Domain relationships (`herb_names`, `herb_taxa`) validate that a claim's source record belongs to the target entity before creating an association, preventing cross-record data corruption.
+5. Ingestion transactions commit legacy tables, normalized tables, and provenance claims atomically, ensuring rollback on failure leaves zero orphaned claims.
