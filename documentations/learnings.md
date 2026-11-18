@@ -514,6 +514,11 @@ Moving from lexical string attributes to a normalized semantic ontology requires
 21. **Formal milestone gate verification protocol:**
     - *Multi-dimensional milestone readiness:* Closing a database-driven semantic architecture gate requires auditing across five orthogonal vectors: (1) schema and constraint alignment across DDL, triggers, and service code; (2) legacy database preservation and cryptographic row invariance; (3) epistemic and multilingual representation fidelity; (4) complete test runner and CI matrix parity; and (5) adherence to non-clinical domain boundaries (no medical recommendations, no symptom matching).
     - *Distinguishing active production baseline from supported capabilities:* In phased database migrations, establishing an explicit, user-authorized upgrade path allows a repository to achieve complete milestone capability readiness without mutating existing production databases prior to operator sign-off.
+22. **Multi-source evidence architecture and epistemic deduplication:**
+    - *The false corroboration hazard:* Repeating secondary or tertiary claims across multiple internet sources creates artificial epistemic consensus unless claims are anchored to their primary publication, treatise, or monograph.
+    - *Canonical persistent identifiers and mirror tagging:* Using normalized persistent identifiers (`doi`, `pmid`) alongside text shingling detects derivative sources, enabling the ingestion pipeline to record multiple citations while preventing duplicate evidence weighting.
+    - *Strict segregation of traditional and biomedical models:* Scientific pharmacology findings must be recorded as distinct, evidence-anchored claims without mutating, replacing, or retrofitting classical Ayurvedic concepts.
+
 
 
 
