@@ -7,6 +7,7 @@ from __future__ import annotations
 import math
 import os
 from pathlib import Path
+import sqlite3
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Request
@@ -15,6 +16,15 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from .database_operator import AyurvedicAlmanac, default_database_path
+from .schema_capability_gate import (
+    FeatureUnavailableError,
+    MigrationError,
+    validate_schema_migration_ledger,
+)
+from .repository_api import (
+    herb_dravyaguna_profile,
+    reconcile_herb_virya,
+)
 
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -22,6 +32,32 @@ TEMPLATE_DIR = PACKAGE_DIR / "templates"
 STATIC_DIR = PACKAGE_DIR / "static"
 STYLESHEET_PATH = STATIC_DIR / "styles.css"
 PAGE_SIZE = 12
+
+
+def get_database_capability(conn: sqlite3.Connection) -> dict[str, Any]:
+    """Inspects schema_migrations ledger and determines Stage C feature availability."""
+    try:
+        version = validate_schema_migration_ledger(conn)
+        return {
+            "version": version,
+            "stage_c_available": (version == 3),
+            "is_corrupt_ledger": False,
+            "error": None,
+        }
+    except MigrationError as e:
+        return {
+            "version": None,
+            "stage_c_available": False,
+            "is_corrupt_ledger": True,
+            "error": str(e),
+        }
+    except Exception as e:
+        return {
+            "version": None,
+            "stage_c_available": False,
+            "is_corrupt_ledger": True,
+            "error": str(e),
+        }
 
 
 def create_app(database_path: str | Path | None = None) -> FastAPI:
@@ -82,22 +118,163 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         )
 
     @application.get("/herbs/{herb_id}", response_class=HTMLResponse, name="herb_detail")
-    def herb_detail(request: Request, herb_id: int) -> Any:
+    def herb_detail(
+        request: Request,
+        herb_id: int,
+        language: str = Query(default="en", pattern="^(en|hi|sa)$"),
+        include_disputed: bool = Query(default=False),
+        include_provisional: bool = Query(default=False),
+    ) -> Any:
         database = get_database()
         herb = database.get_herb(herb_id)
         if herb is None:
             raise HTTPException(status_code=404, detail="Herb not found")
-        return templates.TemplateResponse(
-            request=request,
-            name="herb_detail.html",
-            context={
-                "herb": herb,
-                "attributes": database.herb_attributes(herb_id),
-                "doshas": database.herb_doshas(herb_id),
-                "treatments": database.treatment_details(herb_id),
-                "active_page": "herbs",
-            },
-        )
+
+        conn = sqlite3.connect(application.state.database_path)
+        conn.execute("PRAGMA foreign_keys = ON;")
+        try:
+            capability = get_database_capability(conn)
+            is_v3 = capability["stage_c_available"]
+
+            semantic_profile: dict[str, Any] | None = None
+            virya_recon: dict[str, Any] | None = None
+
+            if is_v3:
+                semantic_profile = herb_dravyaguna_profile(
+                    conn,
+                    herb_id,
+                    language=language,
+                    include_disputed=include_disputed,
+                    include_provisional=include_provisional,
+                )
+                virya_recon = reconcile_herb_virya(conn, herb_id)
+
+            return templates.TemplateResponse(
+                request=request,
+                name="herb_detail_semantic.html",
+                context={
+                    "herb": herb,
+                    "attributes": database.herb_attributes(herb_id),
+                    "doshas": database.herb_doshas(herb_id),
+                    "treatments": database.treatment_details(herb_id),
+                    "is_version_3": is_v3,
+                    "semantic_profile": semantic_profile,
+                    "virya_reconciliation": virya_recon,
+                    "active_page": "herbs",
+                },
+            )
+        finally:
+            conn.close()
+
+    @application.get("/stage-c/reconciliation/{herb_id}", response_class=HTMLResponse, name="virya_reconciliation_gui")
+    def virya_reconciliation_dashboard(request: Request, herb_id: int) -> Any:
+        database = get_database()
+        herb = database.get_herb(herb_id)
+        if herb is None:
+            raise HTTPException(status_code=404, detail="Herb not found")
+
+        conn = sqlite3.connect(application.state.database_path)
+        conn.execute("PRAGMA foreign_keys = ON;")
+        try:
+            capability = get_database_capability(conn)
+            if capability.get("is_corrupt_ledger"):
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Database migration ledger error: {capability['error']}",
+                )
+            if not capability["stage_c_available"]:
+                raise HTTPException(
+                    status_code=501,
+                    detail="Stage C normalized semantic features require schema version 3 (current database version is 2). Apply Migration 3 to enable Dravyaguna semantic profiles.",
+                )
+
+            report = reconcile_herb_virya(conn, herb_id)
+            return templates.TemplateResponse(
+                request=request,
+                name="virya_reconciliation.html",
+                context={
+                    "herb": herb,
+                    "report": report,
+                    "active_page": "herbs",
+                },
+            )
+        finally:
+            conn.close()
+
+    @application.get("/api/stage-c/status")
+    def api_stage_c_status() -> Any:
+        conn = sqlite3.connect(application.state.database_path)
+        conn.execute("PRAGMA foreign_keys = ON;")
+        try:
+            capability = get_database_capability(conn)
+            try:
+                ledger = [r[0] for r in conn.execute("SELECT version FROM schema_migrations ORDER BY rowid ASC").fetchall()]
+            except Exception:
+                ledger = []
+            return {
+                "schema_version": capability["version"],
+                "stage_c_available": capability["stage_c_available"],
+                "is_corrupt_ledger": capability["is_corrupt_ledger"],
+                "ledger": ledger,
+                "error": capability["error"],
+            }
+        finally:
+            conn.close()
+
+    @application.get("/api/stage-c/herbs/{herb_id}/profile")
+    def api_herb_dravyaguna_profile(
+        herb_id: int,
+        language: str = Query(default="en", pattern="^(en|hi|sa)$"),
+        include_disputed: bool = Query(default=False),
+        include_provisional: bool = Query(default=False),
+    ) -> Any:
+        conn = sqlite3.connect(application.state.database_path)
+        conn.execute("PRAGMA foreign_keys = ON;")
+        try:
+            capability = get_database_capability(conn)
+            if capability.get("is_corrupt_ledger"):
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Database migration ledger error: {capability['error']}",
+                )
+            if not capability["stage_c_available"]:
+                raise HTTPException(
+                    status_code=501,
+                    detail="Stage C normalized semantic features require schema version 3 (current database version is 2). Apply Migration 3 to enable Dravyaguna semantic profiles.",
+                )
+            return herb_dravyaguna_profile(
+                conn,
+                herb_id,
+                language=language,
+                include_disputed=include_disputed,
+                include_provisional=include_provisional,
+            )
+        except KeyError:
+            raise HTTPException(status_code=404, detail=f"Herb with id {herb_id} not found")
+        finally:
+            conn.close()
+
+    @application.get("/api/stage-c/herbs/{herb_id}/reconciliation")
+    def api_herb_virya_reconciliation(herb_id: int) -> Any:
+        conn = sqlite3.connect(application.state.database_path)
+        conn.execute("PRAGMA foreign_keys = ON;")
+        try:
+            capability = get_database_capability(conn)
+            if capability.get("is_corrupt_ledger"):
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Database migration ledger error: {capability['error']}",
+                )
+            if not capability["stage_c_available"]:
+                raise HTTPException(
+                    status_code=501,
+                    detail="Stage C normalized semantic features require schema version 3 (current database version is 2). Apply Migration 3 to enable Dravyaguna semantic profiles.",
+                )
+            return reconcile_herb_virya(conn, herb_id)
+        except KeyError:
+            raise HTTPException(status_code=404, detail=f"Herb with id {herb_id} not found")
+        finally:
+            conn.close()
 
     return application
 

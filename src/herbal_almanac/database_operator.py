@@ -12,6 +12,32 @@ from typing import Any, Iterable, Iterator
 from threading import RLock
 
 from .cleaning import DOSHAS, PlantRecord, ascii_text, clean_text, normalize_dosha_expression
+try:
+    from .schema_capability_gate import (
+        validate_schema_migration_ledger,
+        require_stage_c_schema_v3,
+        get_schema_version,
+    )
+    from .migrations import migration_0003_semantic_dravyaguna
+    from .concept_catalog import seed_canonical_concept_catalog
+    from .backfill_engine import (
+        capture_stage_b_table_snapshot,
+        verify_stage_b_row_invariance,
+        run_stage_c_semantic_backfill,
+    )
+except ImportError:
+    from herbal_almanac.schema_capability_gate import (
+        validate_schema_migration_ledger,
+        require_stage_c_schema_v3,
+        get_schema_version,
+    )
+    from herbal_almanac.migrations import migration_0003_semantic_dravyaguna
+    from herbal_almanac.concept_catalog import seed_canonical_concept_catalog
+    from herbal_almanac.backfill_engine import (
+        capture_stage_b_table_snapshot,
+        verify_stage_b_row_invariance,
+        run_stage_c_semantic_backfill,
+    )
 
 
 def search_key(value: str) -> str:
@@ -2063,6 +2089,89 @@ class AyurvedicAlmanac:
             "attributes": [dict(row) for row in attributes],
             "doshas": [dict(row) for row in doshas],
         }
+
+    def upgrade_to_stage_c(self, now: str | None = None) -> dict[str, Any]:
+        """Upgrades the database to Schema Version 3 (Semantic Dravyaguna).
+
+        Applies Migration 3 and seeds the canonical concept catalog inside a
+        serialized transaction while cryptographically verifying
+        pre- and post-upgrade Stage B row invariance.
+        """
+        if now is None:
+            now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        with self._initialization_lock:
+            connection = self.connect()
+            try:
+                connection.execute("PRAGMA busy_timeout = 10000")
+
+                # Verify current ledger: must be exactly [1, 2]
+                current_version = validate_schema_migration_ledger(connection)
+                if current_version == 3:
+                    return {"status": "already_upgraded", "version": 3}
+
+                # Capture pre-migration snapshot of all 13 Stage B tables
+                pre_snapshot = capture_stage_b_table_snapshot(connection)
+
+                # Apply Migration 3 (atomically acquires write transaction, executes DDL, and commits)
+                migration_0003_semantic_dravyaguna.apply_migration(connection, applied_at=now)
+
+                # Seed Canonical Concept Catalog and verify Stage B row invariance
+                connection.execute("BEGIN IMMEDIATE")
+                seed_counts = seed_canonical_concept_catalog(connection, now=now)
+                post_snapshot = capture_stage_b_table_snapshot(connection)
+                verify_stage_b_row_invariance(pre_snapshot, post_snapshot)
+                connection.commit()
+
+                return {
+                    "status": "upgraded",
+                    "version": 3,
+                    "seeded_catalog": seed_counts,
+                }
+            except Exception:
+                if connection.in_transaction:
+                    connection.rollback()
+                raise
+            finally:
+                connection.close()
+
+    def run_stage_c_backfill(self, now: str | None = None) -> dict[str, Any]:
+        """Backfills legacy Stage B claims into normalized Stage C tables.
+
+        Requires Schema Version 3 and operates inside a BEGIN IMMEDIATE
+        transaction while cryptographically verifying pre- and post-backfill
+        Stage B row invariance.
+        """
+        if now is None:
+            now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        with self._initialization_lock:
+            connection = self.connect()
+            try:
+                connection.execute("PRAGMA busy_timeout = 10000")
+                connection.execute("BEGIN IMMEDIATE")
+
+                require_stage_c_schema_v3(connection)
+
+                # Capture pre-backfill snapshot of all 13 Stage B tables
+                pre_snapshot = capture_stage_b_table_snapshot(connection)
+
+                # Run Stage C semantic backfill
+                backfill_stats = run_stage_c_semantic_backfill(connection, now=now)
+
+                # Verify post-backfill Stage B row invariance
+                post_snapshot = capture_stage_b_table_snapshot(connection)
+                verify_stage_b_row_invariance(pre_snapshot, post_snapshot)
+
+                connection.commit()
+                return {
+                    "status": "backfilled",
+                    "version": 3,
+                    "backfill_stats": backfill_stats,
+                }
+            except Exception:
+                connection.rollback()
+                raise
+            finally:
+                connection.close()
 
 
 if __name__ == "__main__":

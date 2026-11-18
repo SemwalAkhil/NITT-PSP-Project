@@ -269,6 +269,24 @@ include the complete header for their selected record group.
 
 `--format` requires `--output`, and only `json` and `csv` are supported.
 
+### `upgrade-stage-c`
+
+Upgrades a target database to Stage C (Schema Version 3), seeds the canonical concept catalog (136 concepts across 11 domains, 649 multilingual labels, 136 citations), runs the semantic backfill engine, and verifies Stage B table invariance via SHA-256 snapshots.
+
+```bash
+herbal-almanac upgrade-stage-c --database /path/to/database.db [--yes]
+```
+
+Requires an explicit `--database` path. If `--yes` / `-y` is omitted, the command prompts for confirmation before proceeding.
+
+### `stage-c-status`
+
+Inspects and reports the schema migration ledger version and Stage C concept, mapping, property, and relationship counts for a target database.
+
+```bash
+herbal-almanac stage-c-status [--database /path/to/database.db]
+```
+
 ## Error handling and constraints
 
 The CLI reports invalid input and database errors as user-facing error

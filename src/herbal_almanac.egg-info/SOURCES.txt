@@ -21,5 +21,6 @@ src/herbal_almanac/templates/herb_detail.html
 src/herbal_almanac/templates/herbs.html
 tests/test_database_connections.py
 tests/test_database_initialization.py
+tests/test_provenance_integration.py
 tests/test_scrapper.py
 tests/test_web_app.py

@@ -2,10 +2,14 @@
 
 ## Status and scope
 
-This document describes the current SQLite model and the normalized model for
-Dravyaguna data. Migrations 1 and 2 implement core identity, provenance, and
-botanical taxonomy tables identified below. The remaining domain tables are
-still a design proposal and have not been implemented.
+This document describes the SQLite model and the normalized model for
+Dravyaguna data. Migrations 1, 2, and 3 are implemented in the production package.
+Migrations 1 and 2 implement core identity, provenance, and botanical taxonomy
+tables, and are applied by default when creating a database. Migration 3 implements
+the normalized Stage C semantic Dravyaguna schema (concepts, multilingual labels,
+citations, claim mappings, Dosha assertions, properties, parts, preparations,
+and indications) along with 44 integrity triggers, and is available via explicit
+upgrade (`upgrade_to_stage_c()` / `herbal-almanac upgrade-stage-c`).
 
 The design keeps source expressions and normalized interpretations side by
 side. Normalized values are claims made about a source record, not replacements
@@ -62,6 +66,21 @@ Migration 2 additionally creates these additive taxonomy tables:
 | `taxa` | Taxonomic concepts with conservative rank and normalized-name search fields. |
 | `taxon_relationships` | Provenance-backed parent-child or synonym relationships between taxa. |
 | `herb_taxa` | Provenance-backed associations between existing herbs and taxonomic concepts. |
+
+Migration 3 (`semantic_dravyaguna`) creates these additive semantic knowledge graph tables:
+
+| Table | Migration 3 purpose |
+|---|---|
+| `dravyaguna_concepts` | Canonical concepts across 11 domains with hierarchical parent links and lifecycle status (`active`, `provisional`, `deprecated`). |
+| `concept_labels` | Multilingual lexical labels across Sanskrit (Devanagari/IAST), Hindi, and English with verification lifecycles. |
+| `concept_label_sources` | Treatise and monograph citations anchoring verified label assertions. |
+| `concept_claim_mappings` | Grounded mappings linking source claims to canonical concepts with calibrated confidence and review status. |
+| `dosha_claim_assertions` | Discrete directional Dosha assertions (`dosha_concept_id` + `effect_concept_id`). |
+| `herb_dravyaguna_properties` | Normalized Dravyaguna property assertions (Rasa, Guna, Virya, Vipaka, Prabhava, Karma) with plant part associations. |
+| `herb_dosha_effects` | Normalized Dosha effect relationships linked to directional assertions. |
+| `herb_plant_parts` | Officinal plant parts linked to verified claims and canonical part concepts. |
+| `herb_preparations` | Formulations and dosage forms linked to officinal plant parts. |
+| `herb_indications` | Clinical indications and therapeutic usages linked to canonical concepts. |
 
 The generated schema uses stable integer primary keys. `herbs` has a unique
 `(source, source_record_id)` constraint. `illness` has unique display and

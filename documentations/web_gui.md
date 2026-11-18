@@ -53,9 +53,18 @@ or the package's normal per-user database location.
   records.
 - **Herb explorer (`/herbs`):** search using the existing ranked
   `search_herbs()` behavior, with 12 results displayed per page.
-- **Herb detail (`/herbs/{herb_id}`):** botanical identity and provenance,
-  flexible source attributes, normalized Dosha effects with source expressions,
-  and linked illness terms.
+- **Herb detail (`/herbs/{herb_id}`):** version-aware botanical profile.
+  - *On Schema Version 2 databases:* displays an informative capability degradation banner (`"Stage C Semantic Dravyaguna features require Schema Version 3"`), while rendering the full legacy botanical profile, source attributes, Dosha effects, and illness links.
+  - *On Schema Version 3 databases:* dynamically unlocks normalized Stage C Dravyaguna property cards (Rasa, Guna, Virya, Vipaka, Prabhava, Karma), officinal plant parts (Prayojyāṅga), multilingual labels via `?language=en|hi|sa`, canonical Sanskrit script (Devanagari) and IAST transliterations, preparations, clinical indications, and a Virya consensus indicator pill linking to the reconciliation dashboard.
+- **Virya reconciliation dashboard (`/stage-c/reconciliation/{herb_id}`):** an interactive 4-tier audit dashboard displaying classical source agreement, candidate divergence (unreviewed / reviewed), and verified contradictions across botanical peers. Returns HTTP 501 on Schema Version 2.
+
+## Stage C REST API Endpoints
+
+The web application exposes capability-gated REST API endpoints:
+
+- `GET /api/stage-c/status`: reports schema version, migration ledger sequence, and Stage C feature availability.
+- `GET /api/stage-c/herbs/{herb_id}/profile`: returns localized Dravyaguna semantic profile JSON with optional `language` (`en`, `hi`, `sa`), `include_disputed`, and `include_provisional` query parameters. Returns HTTP 501 on Schema Version 2, HTTP 500 on corrupted ledgers.
+- `GET /api/stage-c/herbs/{herb_id}/reconciliation`: returns 4-tier Virya reconciliation report JSON with summary counts and pairwise divergence records. Returns HTTP 501 on Schema Version 2, HTTP 500 on corrupted ledgers.
 
 Unknown herb IDs return HTTP 404. Search input is capped at 100 characters.
 The UI does not infer missing botanical data or reinterpret source claims.
