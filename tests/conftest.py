@@ -1,0 +1,37 @@
+"""
+Pytest configuration and session-scoped hermetic test fixtures.
+Provides an offline, deterministic Schema Version 2 SQLite database
+seeded from sample.html without any live network access.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+import pytest
+
+from herbal_almanac.database_operator import AyurvedicAlmanac
+from herbal_almanac.scrapper import parse_plant
+
+
+@pytest.fixture(scope="session")
+def hermetic_v2_db_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Builds a hermetic Schema Version 2 database from sample.html.
+
+    Session-scoped, strictly offline, no live network calls.
+    Generates a database at schema version 2 ([1, 2]) containing realistic
+    CCRAS DRAVYA plant records and claims parsed from sample.html.
+    """
+    tmp_dir = tmp_path_factory.mktemp("hermetic_db_session")
+    db_path = tmp_dir / "hermetic_v2.db"
+
+    almanac = AyurvedicAlmanac(db_path)
+    almanac.create_database()
+
+    project_root = Path(__file__).resolve().parent.parent
+    sample_html_path = project_root / "sample.html"
+    if sample_html_path.is_file():
+        html_content = sample_html_path.read_text(encoding="utf-8")
+        record = parse_plant(plant_id=1, url="https://example.com/plant/1", html=html_content)
+        almanac.insert_record(record)
+
+    return db_path

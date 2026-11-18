@@ -58,24 +58,16 @@ def v2_db():
 
 
 @pytest.fixture
-def inspection_db_copy():
-    """Provides a temporary, disposable copy of data/inspection.db (v2)."""
-    orig_path = PROJECT_ROOT / "data" / "inspection.db"
-    assert orig_path.exists(), "data/inspection.db must exist for test copy"
-    fd, copy_path = tempfile.mkstemp(suffix="_inspection_copy.db")
-    os.close(fd)
-    shutil.copy2(orig_path, copy_path)
+def inspection_db_copy(tmp_path: Path, hermetic_v2_db_path: Path):
+    """Provides a temporary, disposable copy of the hermetic v2 database."""
+    copy_path = tmp_path / "hermetic_backfill_copy.db"
+    shutil.copy2(hermetic_v2_db_path, copy_path)
+    conn = sqlite3.connect(copy_path)
+    conn.execute("PRAGMA foreign_keys = ON;")
     try:
-        conn = sqlite3.connect(copy_path)
-        conn.execute("PRAGMA foreign_keys = ON;")
         yield conn, copy_path
-        conn.close()
     finally:
-        if os.path.exists(copy_path):
-            try:
-                os.remove(copy_path)
-            except OSError:
-                pass
+        conn.close()
 
 
 def _seed_stage_b_test_herb_and_claims(conn: sqlite3.Connection) -> dict[str, int]:

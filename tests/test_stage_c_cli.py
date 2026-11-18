@@ -17,12 +17,10 @@ runner = CliRunner()
 
 
 @pytest.fixture
-def sample_v2_db(tmp_path: Path) -> Path:
-    """Creates a temporary, disposable copy of data/inspection.db (v2) for CLI testing."""
-    orig_path = Path("data/inspection.db")
-    assert orig_path.exists(), "data/inspection.db must exist for test copy"
+def sample_v2_db(tmp_path: Path, hermetic_v2_db_path: Path) -> Path:
+    """Creates a temporary, disposable copy of the hermetic v2 database for CLI testing."""
     db_path = tmp_path / "cli_test_v2.db"
-    shutil.copy2(orig_path, db_path)
+    shutil.copy2(hermetic_v2_db_path, db_path)
     return db_path
 
 
