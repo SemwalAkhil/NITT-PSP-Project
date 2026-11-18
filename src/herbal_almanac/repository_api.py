@@ -13,18 +13,11 @@ from pathlib import Path
 import sqlite3
 from typing import Any, Literal, TypedDict, cast
 
-try:
-    from .concept_catalog import (
-        resolve_concept_display_label,
-        resolve_concept_sanskrit_references,
-    )
-    from .schema_capability_gate import FeatureUnavailableError, require_stage_c_schema_v3
-except ImportError:
-    from concept_catalog import (
-        resolve_concept_display_label,
-        resolve_concept_sanskrit_references,
-    )
-    from schema_capability_gate import FeatureUnavailableError, require_stage_c_schema_v3
+from .concept_catalog import (
+    resolve_concept_display_label,
+    resolve_concept_sanskrit_references,
+)
+from .schema_capability_gate import FeatureUnavailableError, require_stage_c_schema_v3
 
 # Resolve path to accepted Stage C.1 virya_reconciliation.sql
 RECONCILIATION_SQL_PATH = Path(__file__).resolve().parent / "migrations" / "virya_reconciliation.sql"

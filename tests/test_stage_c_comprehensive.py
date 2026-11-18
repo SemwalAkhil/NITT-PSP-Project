@@ -6,26 +6,13 @@ import hashlib
 import tempfile
 from pathlib import Path
 
-# Resolve review directory and project root dynamically
-REVIEW_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = REVIEW_DIR.parent
-SRC_DIR = PROJECT_ROOT / "src"
-
-# Add project src directory and review directory to sys.path
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-if str(REVIEW_DIR) not in sys.path:
-    sys.path.insert(0, str(REVIEW_DIR))
-
 from herbal_almanac.database_operator import AyurvedicAlmanac
 from herbal_almanac.cleaning import PlantRecord
+from herbal_almanac.migrations import migration_0003_semantic_dravyaguna as migration_3
+from herbal_almanac.repository_api import RECONCILIATION_SQL_PATH
 
-# Load DDL, Triggers, and Queries directly from the delivered artifact files
-DIR_PATH = REVIEW_DIR
-DDL_FILE = REVIEW_DIR / "stage_c_ddl_and_triggers.sql"
-RECONCILIATION_FILE = REVIEW_DIR / "virya_reconciliation.sql"
-MIGRATION_MODULE = REVIEW_DIR / "migration_0003_semantic_dravyaguna.py"
-
+DDL_FILE = migration_3.DDL_FILE
+RECONCILIATION_FILE = RECONCILIATION_SQL_PATH
 STAGE_C_SQL = DDL_FILE.read_text(encoding="utf-8")
 RECONCILIATION_SQL = RECONCILIATION_FILE.read_text(encoding="utf-8")
 
@@ -1295,9 +1282,7 @@ def test_stage_b_upgrade_and_rollback():
     conn, db_path = get_actual_stage_b_connection()
     conn.isolation_level = None
     try:
-        if str(DIR_PATH) not in sys.path:
-            sys.path.insert(0, str(DIR_PATH))
-        import migration_0003_semantic_dravyaguna as mig3
+        mig3 = migration_3
 
         # Seed an actual PlantRecord through AyurvedicAlmanac
         almanac = AyurvedicAlmanac(db_path)

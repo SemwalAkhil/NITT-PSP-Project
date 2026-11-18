@@ -11,10 +11,7 @@ from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any
 
-try:
-    from .schema_capability_gate import require_stage_c_schema_v3
-except ImportError:
-    from schema_capability_gate import require_stage_c_schema_v3
+from .schema_capability_gate import require_stage_c_schema_v3
 
 
 # ============================================================================

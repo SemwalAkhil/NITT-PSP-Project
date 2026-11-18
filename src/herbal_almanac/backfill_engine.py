@@ -12,12 +12,8 @@ import unicodedata
 from datetime import datetime, timezone
 from typing import Any
 
-try:
-    from .schema_capability_gate import require_stage_c_schema_v3
-    from .concept_catalog import seed_canonical_concept_catalog, normalize_label
-except ImportError:
-    from schema_capability_gate import require_stage_c_schema_v3
-    from concept_catalog import seed_canonical_concept_catalog, normalize_label
+from .schema_capability_gate import require_stage_c_schema_v3
+from .concept_catalog import seed_canonical_concept_catalog, normalize_label
 
 
 # ============================================================================

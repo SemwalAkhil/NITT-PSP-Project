@@ -12,32 +12,18 @@ from typing import Any, Iterable, Iterator
 from threading import RLock
 
 from .cleaning import DOSHAS, PlantRecord, ascii_text, clean_text, normalize_dosha_expression
-try:
-    from .schema_capability_gate import (
-        validate_schema_migration_ledger,
-        require_stage_c_schema_v3,
-        get_schema_version,
-    )
-    from .migrations import migration_0003_semantic_dravyaguna
-    from .concept_catalog import seed_canonical_concept_catalog
-    from .backfill_engine import (
-        capture_stage_b_table_snapshot,
-        verify_stage_b_row_invariance,
-        run_stage_c_semantic_backfill,
-    )
-except ImportError:
-    from herbal_almanac.schema_capability_gate import (
-        validate_schema_migration_ledger,
-        require_stage_c_schema_v3,
-        get_schema_version,
-    )
-    from herbal_almanac.migrations import migration_0003_semantic_dravyaguna
-    from herbal_almanac.concept_catalog import seed_canonical_concept_catalog
-    from herbal_almanac.backfill_engine import (
-        capture_stage_b_table_snapshot,
-        verify_stage_b_row_invariance,
-        run_stage_c_semantic_backfill,
-    )
+from .schema_capability_gate import (
+    validate_schema_migration_ledger,
+    require_stage_c_schema_v3,
+    get_schema_version,
+)
+from .migrations import migration_0003_semantic_dravyaguna
+from .concept_catalog import seed_canonical_concept_catalog
+from .backfill_engine import (
+    capture_stage_b_table_snapshot,
+    verify_stage_b_row_invariance,
+    run_stage_c_semantic_backfill,
+)
 
 
 def search_key(value: str) -> str:

@@ -10,16 +10,6 @@ import sys
 from pathlib import Path
 import pytest
 
-# Ensure stage_c_review and src are in sys.path
-REVIEW_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = REVIEW_DIR.parent
-SRC_DIR = PROJECT_ROOT / "src"
-
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-if str(REVIEW_DIR) not in sys.path:
-    sys.path.insert(0, str(REVIEW_DIR))
-
 from herbal_almanac.database_operator import AyurvedicAlmanac
 from herbal_almanac.migrations import migration_0003_semantic_dravyaguna
 from herbal_almanac.schema_capability_gate import FeatureUnavailableError

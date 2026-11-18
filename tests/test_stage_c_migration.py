@@ -41,14 +41,9 @@ import pytest
 from herbal_almanac.cleaning import PlantRecord
 from herbal_almanac.database_operator import AyurvedicAlmanac
 
-REVIEW_DIR = Path(__file__).resolve().parent.parent / "stage_c_review"
-DDL_PATH = REVIEW_DIR / "stage_c_ddl_and_triggers.sql"
+from herbal_almanac.migrations import migration_0003_semantic_dravyaguna as mig3
 
-import sys
-if str(REVIEW_DIR) not in sys.path:
-    sys.path.insert(0, str(REVIEW_DIR))
-
-import migration_0003_semantic_dravyaguna as mig3
+DDL_PATH = mig3.DDL_FILE
 
 
 def snapshot_stage_b_tables(conn: sqlite3.Connection) -> dict[str, list[dict]]:

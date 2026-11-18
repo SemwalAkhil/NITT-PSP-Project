@@ -11,10 +11,13 @@ Stage C introduces a normalized, 3-layer semantic architecture:
 
 Stage C operates strictly additively on top of Stage B (Migration 1: Base Provenance & Clean Architecture; Migration 2: Classical Taxon Hierarchy). All Stage B legacy tables (`herbs`, `sources`, `source_records`, `source_claims`, `legacy_herb_map`, `herb_attributes`, `herb_doshas`, `taxa`, `taxon_relationships`, `herb_taxa`, and `schema_migrations`) remain intact and unaltered.
 
-> **CRITICAL ARCHITECTURAL CONSTRAINTS:**
-> 1. Migration 3 is **NOT** executed against the working project database.
-> 2. Application code under `src/herbal_almanac/` and tests under `tests/` remain untouched.
-> 3. This directory provides the exact files, queries, schema, and standalone verification suite for independent architectural sign-off.
+> **POST-PROMOTION ARCHITECTURAL NOTE (Stage C.2 Completed):**
+> Following formal review sign-off and completion of Work Packages WP-0 through WP-7, all executable modules, SQL schemas, and test suites have been promoted to canonical locations:
+> - DDL & SQL: `src/herbal_almanac/migrations/stage_c_ddl_and_triggers.sql` and `virya_reconciliation.sql`
+> - Migration 3: `src/herbal_almanac/migrations/migration_0003_semantic_dravyaguna.py`
+> - Work package modules: `src/herbal_almanac/` (`concept_catalog.py`, `schema_capability_gate.py`, `claim_lifecycle.py`, `backfill_engine.py`, `repository_api.py`, `web_app.py`, `cli.py`)
+> - Full test suites: `tests/` (`test_stage_c_*.py`)
+> This directory (`stage_c_review/`) is retained exclusively for architectural decision records (`ADR_STAGE_C2_ARCHITECTURE.md`), concept catalog coverage reports (`WP1_CATALOG_COVERAGE_REPORT.md`), and historical milestone review documentation.
 
 ---
 

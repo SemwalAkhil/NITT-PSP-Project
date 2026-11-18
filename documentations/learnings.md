@@ -506,6 +506,12 @@ Moving from lexical string attributes to a normalized semantic ontology requires
 19. **Continuous integration packaging smoke testing:**
     - *Distinguishing editable test runs from wheel consumers:* Running unit tests with `pip install -e .[dev]` tests the Python source tree with all development tools, but fails to detect missing non-Python package data, broken wheel installation metadata, or malformed console script entry points.
     - *Independent package-smoke CI jobs:* Incorporating an isolated CI job that executes `python -m build`, installs the resulting wheel artifact into an unadorned environment without editable links, and executes smoke suites (`smoke_installed_package.py`) and CLI entry points (`herbal-almanac --help`) guarantees that binary distribution packages distributed to users are completely functional.
+20. **Post-promotion repository hygiene and de-duplication:**
+    - *Staging artifact retirement:* Once staging review packages (such as `stage_c_review/`) are formally accepted and their components are promoted into the canonical package namespace (`src/herbal_almanac/`) and official test runner (`tests/`), all duplicate code, SQL, and test files must be deleted from staging to avoid code drift, duplicate test executions, and stale imports.
+    - *Preservation of architectural decision records:* Design review directories are retained as documentation archives housing only accepted ADRs, coverage reports, and technical manuals.
+    - *Clean relative imports over fallback imports:* Inside promoted package modules, fragile runtime import fallbacks (`try: from .xxx import ... except ImportError: from xxx import ...`) and `sys.path` injections should be replaced with direct, canonical intra-package relative imports (`from .xxx import yyy`), guaranteeing consistent module resolution and static type analyzer correctness.
+    - *Git hygiene for distribution artifacts:* Generated build directories (`build/`, `dist/`, `*.egg-info/`) must never be committed to source control and must be untracked (`git rm -r --cached`) and ignored in `.gitignore`.
+
 
 
 
