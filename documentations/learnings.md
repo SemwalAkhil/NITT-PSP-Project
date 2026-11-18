@@ -503,6 +503,10 @@ Moving from lexical string attributes to a normalized semantic ontology requires
 18. **Packaging non-Python assets (SQL scripts, templates, static files) in standard wheels:**
     - *Explicit package-data inclusion:* When runtime modules depend on non-Python assets (such as SQL DDL files, migration scripts, Jinja2 HTML templates, or CSS stylesheets), these files must be explicitly declared in `pyproject.toml` under `[tool.setuptools.package-data]`. Omitting them results in source installations succeeding while built binary wheels (`.whl`) silently omit the files, causing unexpected `FileNotFoundError` exceptions in downstream environments.
     - *Canonical path resolution:* Resolving asset paths relative to the locating module's directory (`Path(__file__).resolve().parent / "migrations" / "virya_reconciliation.sql"`) rather than relying on current working directories (`cwd`) or fragile relative traversal ensures reliable asset discovery across editable developer installations, standalone wheel installations, and virtual environments.
+19. **Continuous integration packaging smoke testing:**
+    - *Distinguishing editable test runs from wheel consumers:* Running unit tests with `pip install -e .[dev]` tests the Python source tree with all development tools, but fails to detect missing non-Python package data, broken wheel installation metadata, or malformed console script entry points.
+    - *Independent package-smoke CI jobs:* Incorporating an isolated CI job that executes `python -m build`, installs the resulting wheel artifact into an unadorned environment without editable links, and executes smoke suites (`smoke_installed_package.py`) and CLI entry points (`herbal-almanac --help`) guarantees that binary distribution packages distributed to users are completely functional.
+
 
 
 

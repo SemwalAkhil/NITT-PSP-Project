@@ -19,3 +19,21 @@ jobs:
       - run: python -m pip install -e ".[dev]"
       - run: python -m pytest tests/test_scrapper.py -q
       - run: python -m pytest -q
+
+  package-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip build
+      - run: python -m build
+      - name: Install built wheel
+        run: python -m pip install dist/*.whl
+      - name: Run smoke tests and CLI checks
+        run: |
+          python tests/smoke_installed_package.py
+          herbal-almanac --help
+          herbal-almanac stage-c-status --help
+
