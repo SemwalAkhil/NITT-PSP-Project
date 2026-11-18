@@ -511,6 +511,10 @@ Moving from lexical string attributes to a normalized semantic ontology requires
     - *Preservation of architectural decision records:* Design review directories are retained as documentation archives housing only accepted ADRs, coverage reports, and technical manuals.
     - *Clean relative imports over fallback imports:* Inside promoted package modules, fragile runtime import fallbacks (`try: from .xxx import ... except ImportError: from xxx import ...`) and `sys.path` injections should be replaced with direct, canonical intra-package relative imports (`from .xxx import yyy`), guaranteeing consistent module resolution and static type analyzer correctness.
     - *Git hygiene for distribution artifacts:* Generated build directories (`build/`, `dist/`, `*.egg-info/`) must never be committed to source control and must be untracked (`git rm -r --cached`) and ignored in `.gitignore`.
+21. **Formal milestone gate verification protocol:**
+    - *Multi-dimensional milestone readiness:* Closing a database-driven semantic architecture gate requires auditing across five orthogonal vectors: (1) schema and constraint alignment across DDL, triggers, and service code; (2) legacy database preservation and cryptographic row invariance; (3) epistemic and multilingual representation fidelity; (4) complete test runner and CI matrix parity; and (5) adherence to non-clinical domain boundaries (no medical recommendations, no symptom matching).
+    - *Distinguishing active production baseline from supported capabilities:* In phased database migrations, establishing an explicit, user-authorized upgrade path allows a repository to achieve complete milestone capability readiness without mutating existing production databases prior to operator sign-off.
+
 
 
 
