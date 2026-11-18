@@ -403,11 +403,11 @@ def test_semantic_backfill_rollback_safety_on_error(v2_db, monkeypatch):
 
 
 # ============================================================================
-# 6. Full End-to-End Test on Copy of data/inspection.db
+# 6. Full End-to-End Test on Copy of Hermetic v2 Database
 # ============================================================================
 
-def test_end_to_end_backfill_on_inspection_db_copy(inspection_db_copy):
-    """Executes full migration and semantic backfill on a disposable copy of data/inspection.db.
+def test_end_to_end_backfill_on_hermetic_v2_db_copy(inspection_db_copy):
+    """Executes full migration and semantic backfill on a disposable copy of the hermetic v2 database.
 
     Proves:
     1. Schema version 2 baseline invariance.
@@ -438,7 +438,7 @@ def test_end_to_end_backfill_on_inspection_db_copy(inspection_db_copy):
     metrics1 = run_stage_c_semantic_backfill(conn, now)
     conn.commit()
 
-    # Backfill must have processed genuine inspection.db claims
+    # Backfill must have processed genuine claims
     assert metrics1["processed_claims"] > 0
     assert metrics1["inserted_mappings"] > 0
     assert metrics1["inserted_properties"] > 0

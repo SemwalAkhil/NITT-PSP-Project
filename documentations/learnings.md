@@ -518,6 +518,10 @@ Moving from lexical string attributes to a normalized semantic ontology requires
     - *The false corroboration hazard:* Repeating secondary or tertiary claims across multiple internet sources creates artificial epistemic consensus unless claims are anchored to their primary publication, treatise, or monograph.
     - *Canonical persistent identifiers and mirror tagging:* Using normalized persistent identifiers (`doi`, `pmid`) alongside text shingling detects derivative sources, enabling the ingestion pipeline to record multiple citations while preventing duplicate evidence weighting.
     - *Strict segregation of traditional and biomedical models:* Scientific pharmacology findings must be recorded as distinct, evidence-anchored claims without mutating, replacing, or retrofitting classical Ayurvedic concepts.
+23. **Automated packaging asset verification and AST skip-guard enforcement:**
+    - *Wheel asset inspection testing:* Unit tests can dynamically execute `build --wheel --no-isolation` into a temporary directory and inspect the wheel archive's internal ZIP manifest (`zipfile.ZipFile.namelist()`), verifying that every SQL migration file, HTML template, and CSS stylesheet is bundled prior to distribution.
+    - *Static AST skip-guard enforcement:* By parsing all test modules via `ast.parse` and inspecting functions referencing uncommitted databases (`data/inspection.db`), tests can programmatically fail if any developer introduces an unguarded query or test that assumes the local database exists, protecting against CI breaks before code merges.
+
 
 
 
