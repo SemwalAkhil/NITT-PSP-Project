@@ -27,9 +27,7 @@ except ImportError:
     from schema_capability_gate import FeatureUnavailableError, require_stage_c_schema_v3
 
 # Resolve path to accepted Stage C.1 virya_reconciliation.sql
-_local_sql = Path(__file__).resolve().parent / "virya_reconciliation.sql"
-_migrations_sql = Path(__file__).resolve().parent / "migrations" / "virya_reconciliation.sql"
-RECONCILIATION_SQL_PATH = _local_sql if _local_sql.exists() else _migrations_sql
+RECONCILIATION_SQL_PATH = Path(__file__).resolve().parent / "migrations" / "virya_reconciliation.sql"
 
 
 # ============================================================================
