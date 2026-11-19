@@ -61,8 +61,8 @@ Every Stage C database entity, constraint, and lifecycle contract was audited ac
 
 ## 4. Test Suite and Verification Parity
 
-- **Total Test Count:** 190 tests passing locally (100% green).
-- **CI Test Count:** 187 passing, 3 cleanly skipped in headless CI runner without `data/inspection.db`.
+- **Total Test Count:** 192 tests passing locally (100% green).
+- **CI Test Count:** 189 passing, 3 cleanly skipped in headless CI runner without `data/inspection.db`.
 - **Mandatory Scraper Regression:** 57 tests passing in 0.8s (`tests/test_scrapper.py`).
 - **Comprehensive Stage C Harness:** 6 suites passing in 6.3s (`tests/test_stage_c_comprehensive.py`).
 - **Package Wheel Smoke Test:** Passing (`tests/smoke_installed_package.py`) with all SQL migrations, Jinja2 templates, and CSS stylesheets bundled.

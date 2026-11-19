@@ -83,6 +83,91 @@ Translation is optional. Install it only when using `--translate`:
 python -m pip install -e ".[translate]"
 ```
 
+## Demo in 5 minutes
+
+Evaluate the full Herbal Almanac system—including the Typer CLI, FastAPI Web GUI, Stage B provenance tracking, and Stage C semantic Dravyaguna features—in under 5 minutes.
+
+### 1. Install with Web Dependencies
+
+```bash
+python -m pip install -e ".[web]"
+```
+
+### 2. Build the Demo Database
+
+Choose either the instant offline demo database (recommended for quick evaluation without network calls) or a live scrape:
+
+**Option A: Instant Offline Demo Database (Recommended)**
+```bash
+python scripts/make_demo_db.py
+```
+*Builds `data/demo.db` offline from `sample.html`, creates 2 manual illnesses and treatment links, applies Stage C Migration 3, seeds the 136-concept catalog, and runs semantic backfill.*
+
+**Option B: Live Scrape (Requires Internet Access to CCRAS DRAVYA)**
+```bash
+herbal-almanac setup --database data/demo.db
+herbal-almanac scrape dravya --max-plants 25 --database data/demo.db
+herbal-almanac upgrade-stage-c --database data/demo.db --yes
+```
+
+### 3. Launch the Web Interface
+
+Point the application to the demo database and start the server:
+
+- **Linux / macOS:**
+  ```bash
+  HERBAL_ALMANAC_DATABASE=data/demo.db uvicorn herbal_almanac.web_app:app --reload
+  ```
+- **Windows (PowerShell):**
+  ```powershell
+  $env:HERBAL_ALMANAC_DATABASE="data/demo.db"; uvicorn herbal_almanac.web_app:app --reload
+  ```
+- **Windows (Command Prompt):**
+  ```cmd
+  set HERBAL_ALMANAC_DATABASE=data/demo.db && uvicorn herbal_almanac.web_app:app --reload
+  ```
+
+### 4. Pages to Open in Your Browser
+
+Open `http://127.0.0.1:8000` and explore:
+
+1. **Dashboard (`/`):** Summary cards displaying counts of herbs, illnesses, treatment relationships, and attributes alongside recent herbs.
+2. **Herb Catalog (`/herbs`):** Searchable, paginated directory of herbs with text filtering.
+3. **Semantic Herb Detail (`/herbs/1`):** Complete Stage C presentation showcasing:
+   - **Classical Dravyaguna Properties:** Rasa (taste), Guna (qualities), Virya (potency), Vipaka (post-digestive effect), Prabhava (specific action), and Karma (actions).
+   - **Plant Part Associations:** Officinal plant parts (leaves, seeds, roots).
+   - **Sanskrit Lexical References:** Multi-script terms in Devanagari script and IAST Latin transliteration.
+   - **Directional Dosha Effects:** Normalized Vata/Pitta/Kapha decrease and increase assertions.
+   - **Virya Reconciliation Summary Pill:** Multi-source concordance indicator.
+4. **Virya Reconciliation Dashboard (`/stage-c/reconciliation/1`):** Detailed 4-tier audit report classifying concordance across sources, candidate divergence, and intra-claim ambiguity.
+5. **REST JSON Endpoint (`/api/stage-c/herbs/1/profile`):** Machine-readable JSON representation of the herb's semantic Dravyaguna profile.
+
+### 5. CLI Commands to Show
+
+Demonstrate the command-line interface against the demo database:
+
+```bash
+# 1. Inspect Stage C schema capability, migration ledger, and table counts
+herbal-almanac stage-c-status --database data/demo.db
+
+# 2. Search and list herbs
+herbal-almanac herbs --database data/demo.db
+
+# 3. List illnesses (shows both scraped and manually curated illnesses)
+herbal-almanac illnesses --database data/demo.db
+
+# 4. View treatment links for Herb 1 (distinguishes scraped from manual treatments)
+herbal-almanac treatments 1 --database data/demo.db
+
+# 5. Inspect extracted section attributes
+herbal-almanac attributes 1 --database data/demo.db
+
+# 6. Export the full database to a single JSON archive
+herbal-almanac records all --format json --output demo_records.json --database data/demo.db
+```
+
+---
+
 ## Quick start
 
 Create a database and scrape a small number of records:

@@ -532,6 +532,10 @@ Moving from lexical string attributes to a normalized semantic ontology requires
 27. **Pre-push verification protocol and disciplined commit boundaries:**
     - *Eliminating false green declarations:* Declaring CI check failures resolved without local verification against the exact failure modes (e.g. testing with `build`, inspecting wheel archives, smoke-testing clean virtual environments with and without extras) risks repeated broken builds.
     - *Deterministic pre-push checklist:* Formalizing a 6-step checklist in developer guidelines (`agents.md`)—covering mandatory scraper regression, full test suite pass, wheel build, multi-tier clean venv smoke installation, git status artifact checks, and strict commit truthfulness—ensures all contributors and agents verify package health before pushing to remotes.
+28. **Deterministic offline demo database synthesis and multi-milestone evaluation workflows:**
+    - *Bridging uncommitted database policies and evaluation needs:* In projects enforcing strict 'no committed databases' policies, prospective evaluators, instructors, and CI runners require a turnkey, zero-network mechanism to generate a rich database containing multi-milestone artifacts (scraped records, manual curations, schema upgrades, seeded concept ontologies, and backfilled semantic profiles).
+    - *End-to-end orchestration scripts:* Providing an explicit script (`scripts/make_demo_db.py`) that chains baseline schema creation (`create_database`), offline HTML parsing (`parse_plant`), record upsert (`insert_record`), manual entity creation (`add_illness`, `add_treatment`), Stage C migration (`upgrade_to_stage_c`), and ruleset backfill (`run_stage_c_backfill`) outputs a deterministic SQLite artifact to a gitignored location (`data/demo.db`) and prints ready-to-run server commands, enabling instant multi-layer evaluation without external dependencies.
+
 
 
 
