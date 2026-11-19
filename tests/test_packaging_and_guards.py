@@ -67,12 +67,63 @@ def test_wheel_archive_contains_all_runtime_assets(tmp_path: Path):
         assert "SELECT" in virya_content
 
 
+def check_test_function_for_unguarded_inspection_db(
+    func_node: ast.FunctionDef | ast.AsyncFunctionDef, full_code: str
+) -> tuple[bool, bool]:
+    """Inspects a test function AST for executable references to inspection.db and skip guards.
+
+    Returns (has_executable_reference, has_skip_guard).
+    Docstrings and comments are strictly ignored.
+    """
+    docstring_node = None
+    if func_node.body and isinstance(func_node.body[0], ast.Expr) and isinstance(func_node.body[0].value, ast.Constant):
+        docstring_node = func_node.body[0].value
+
+    # Collect string constants in executable code (strictly excluding docstring)
+    code_strings: list[str] = [
+        c.value
+        for c in ast.walk(func_node)
+        if isinstance(c, ast.Constant) and isinstance(c.value, str) and c is not docstring_node
+    ]
+
+    has_ref = any("inspection.db" in s for s in code_strings)
+    if not has_ref:
+        return False, False
+
+    # Check for skip guard via decorator or pytest.skip call
+    has_skip = False
+    for dec in func_node.decorator_list:
+        dec_seg = ast.get_source_segment(full_code, dec) or ""
+        if "skip" in dec_seg:
+            has_skip = True
+            break
+
+    if not has_skip:
+        for c in ast.walk(func_node):
+            if isinstance(c, ast.Call):
+                if isinstance(c.func, ast.Attribute) and c.func.attr == "skip":
+                    has_skip = True
+                    break
+                elif isinstance(c.func, ast.Name) and c.func.id == "skip":
+                    has_skip = True
+                    break
+
+    if not has_skip:
+        func_seg = ast.get_source_segment(full_code, func_node) or ""
+        if "pytest.skip" in func_seg or "skipif" in func_seg:
+            has_skip = True
+
+    return has_ref, has_skip
+
+
 def test_all_inspection_db_references_have_skip_guards():
-    """Guarantees that no test references data/inspection.db without an explicit pytest.skip guard."""
+    """Guarantees that no test references data/inspection.db in executable code without an explicit pytest.skip guard."""
     tests_dir = REPO_ROOT / "tests"
     violating_tests: list[str] = []
 
     for py_path in sorted(tests_dir.glob("test_*.py")):
+        if py_path.name == "test_packaging_and_guards.py":
+            continue
         code = py_path.read_text(encoding="utf-8")
         if "inspection.db" not in code:
             continue
@@ -80,13 +131,53 @@ def test_all_inspection_db_references_have_skip_guards():
         tree = ast.parse(code, filename=str(py_path))
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith("test_"):
-                func_code = ast.get_source_segment(code, node)
-                if func_code and "inspection.db" in func_code:
-                    has_skip = "pytest.skip" in func_code or "skipif" in func_code
-                    if not has_skip:
-                        violating_tests.append(f"{py_path.name}::{node.name}")
+                has_ref, has_skip = check_test_function_for_unguarded_inspection_db(node, code)
+                if has_ref and not has_skip:
+                    violating_tests.append(f"{py_path.name}::{node.name}")
 
     assert not violating_tests, (
-        f"The following tests reference 'inspection.db' without an explicit pytest.skip guard: {violating_tests}. "
+        f"The following tests reference 'inspection.db' in executable code without an explicit pytest.skip guard: {violating_tests}. "
         "In CI environments without data/inspection.db, tests must skip cleanly rather than failing."
     )
+
+
+def test_inspection_db_guard_detects_unguarded_and_ignores_docstring_only():
+    """Unit test proving the guard accurately catches executable references while ignoring docstrings/comments."""
+    sample_code = '''
+def test_docstring_and_comment_only():
+    """This test mentions data/inspection.db in its docstring."""
+    # A comment mentioning inspection.db should be ignored by the AST
+    val = 1 + 1
+    assert val == 2
+
+def test_unguarded_code_reference():
+    """Docstring without mention."""
+    from pathlib import Path
+    db_path = Path("data") / "inspection.db"
+    assert db_path.name == "inspection.db"
+
+def test_guarded_code_reference():
+    """Guarded test."""
+    import pytest
+    from pathlib import Path
+    db_path = Path("data") / "inspection.db"
+    if not db_path.exists():
+        pytest.skip("DB absent")
+    assert db_path.name == "inspection.db"
+'''
+    tree = ast.parse(sample_code)
+    results: dict[str, tuple[bool, bool]] = {}
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            has_ref, has_skip = check_test_function_for_unguarded_inspection_db(node, sample_code)
+            results[node.name] = (has_ref, has_skip)
+
+    # 1. Docstring and comment only -> no executable reference
+    assert results["test_docstring_and_comment_only"] == (False, False)
+
+    # 2. Unguarded code reference -> detected and flagged as missing skip
+    assert results["test_unguarded_code_reference"] == (True, False)
+
+    # 3. Guarded code reference -> detected and recognized as guarded
+    assert results["test_guarded_code_reference"] == (True, True)
+
