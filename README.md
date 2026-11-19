@@ -67,21 +67,29 @@ intermediate stage in the scraper pipeline.
 
 Python 3.10 or later is required. Install the package from the repository root:
 
-```bash
-python -m pip install -e .
-```
+- **Core CLI and Library (Default):**
+  ```bash
+  python -m pip install -e .
+  ```
+  *Provides the `herbal-almanac` CLI, SQLite database operator, scraper, DDL migrations, and demo generator (`scripts/make_demo_db.py`). No web dependencies required.*
 
-For development and release checks:
+- **Web Interface Extra (`[web]`):**
+  ```bash
+  python -m pip install -e ".[web]"
+  ```
+  *Required for running the local FastAPI web server (`uvicorn herbal_almanac.web_app:app`) and browsing the web GUI.*
 
-```bash
-python -m pip install -e ".[dev]"
-```
+- **Translation Extra (`[translate]`):**
+  ```bash
+  python -m pip install -e ".[translate]"
+  ```
+  *Optional. Required only when running scraper with the `--translate` flag.*
 
-Translation is optional. Install it only when using `--translate`:
-
-```bash
-python -m pip install -e ".[translate]"
-```
+- **Development Extra (`[dev]`):**
+  ```bash
+  python -m pip install -e ".[dev]"
+  ```
+  *For running tests (`pytest`), packaging checks (`build`), and static analysis.*
 
 ## Demo in 5 minutes
 
@@ -131,16 +139,30 @@ Point the application to the demo database and start the server:
 
 Open `http://127.0.0.1:8000` and explore:
 
-1. **Dashboard (`/`):** Summary cards displaying counts of herbs, illnesses, treatment relationships, and attributes alongside recent herbs.
-2. **Herb Catalog (`/herbs`):** Searchable, paginated directory of herbs with text filtering.
+1. **Dashboard (`/`):** Summary cards displaying counts of herbs, illnesses, treatment relationships, and attributes alongside recent herbs and dual search actions.
+2. **Herb Catalog (`/herbs`):** Searchable, paginated directory of herbs with text filtering and pagination.
 3. **Semantic Herb Detail (`/herbs/1`):** Complete Stage C presentation showcasing:
    - **Classical Dravyaguna Properties:** Rasa (taste), Guna (qualities), Virya (potency), Vipaka (post-digestive effect), Prabhava (specific action), and Karma (actions).
    - **Plant Part Associations:** Officinal plant parts (leaves, seeds, roots).
    - **Sanskrit Lexical References:** Multi-script terms in Devanagari script and IAST Latin transliteration.
    - **Directional Dosha Effects:** Normalized Vata/Pitta/Kapha decrease and increase assertions.
+   - **Linked Conditions:** Illnesses linking to their dedicated condition detail pages.
    - **Virya Reconciliation Summary Pill:** Multi-source concordance indicator.
-4. **Virya Reconciliation Dashboard (`/stage-c/reconciliation/1`):** Detailed 4-tier audit report classifying concordance across sources, candidate divergence, and intra-claim ambiguity.
-5. **REST JSON Endpoint (`/api/stage-c/herbs/1/profile`):** Machine-readable JSON representation of the herb's semantic Dravyaguna profile.
+4. **Illness Explorer (`/illnesses`):** Therapeutic index of conditions with alias-aware search (e.g. searching "fever" finds "Jvara"), condition IDs, and linked herb counts.
+5. **Illness Detail (`/illnesses/1`):** Detailed condition profile listing all associated herbs, distinguishing between scraped and manually curated relationships, with mandatory medical disclaimer.
+6. **Virya Reconciliation Dashboard (`/stage-c/reconciliation/1`):** Detailed 4-tier audit report classifying concordance across sources, candidate divergence, and intra-claim ambiguity.
+7. **REST JSON Endpoints:**
+   - Herb Semantic Profile: `GET /api/stage-c/herbs/1/profile`
+   - Illness Search: `GET /api/illnesses?q=`
+   - Condition Herbs: `GET /api/illnesses/1/herbs`
+
+### Windows Troubleshooting (Application Control / Smart App Control)
+
+If Windows Application Control or Smart App Control blocks direct execution of `.exe` launcher stubs in Python virtual environments (such as `pip.exe`, `herbal-almanac.exe`, or `uvicorn.exe` with error `WinError 4551`), invoke them directly via Python module syntax:
+
+- Instead of `pip install ...` &rarr; `python -m pip install ...`
+- Instead of `herbal-almanac ...` &rarr; `python -m herbal_almanac ...`
+- Instead of `uvicorn ...` &rarr; `python -m uvicorn herbal_almanac.web_app:app --reload`
 
 ### 5. CLI Commands to Show
 

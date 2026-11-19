@@ -4,6 +4,8 @@ Tests for 'upgrade-stage-c' and 'stage-c-status' commands.
 """
 
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 import sqlite3
 import pytest
@@ -139,4 +141,17 @@ def test_cli_upgrade_stage_c_backfill_stats_are_nonzero_and_match(tmp_path: Path
     assert f"Backfilled Preparations       │ {api_backfill['inserted_preparations']}" in output
     assert f"Backfilled Indications        │ {api_backfill['inserted_indications']}" in output
     assert f"Concept Claim Mappings        │ {api_backfill['inserted_mappings']}" in output
+
+
+def test_module_execution_via_python_m():
+    """Proves python -m herbal_almanac works via __main__.py delegation."""
+    res = subprocess.run(
+        [sys.executable, "-m", "herbal_almanac", "--help"],
+        capture_output=True,
+        text=True,
+    )
+    assert res.returncode == 0
+    assert "Usage: " in res.stdout
+    assert "Manage the Herbal Almanac database" in res.stdout
+
 
