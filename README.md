@@ -139,26 +139,27 @@ Point the application to the demo database and start the server:
 
 Open `http://127.0.0.1:8000` and explore:
 
-1. **Dashboard (`/`):** Summary cards displaying counts of herbs, illnesses, treatment relationships, and attributes alongside recent herbs and dual search actions.
-2. **Herb Catalog (`/herbs`):** Searchable, paginated directory of herbs with text filtering and pagination.
-3. **Semantic Herb Detail (`/herbs/1`):** Complete Stage C presentation showcasing:
-   - **Classical Dravyaguna Properties:** Rasa (taste), Guna (qualities), Virya (potency), Vipaka (post-digestive effect), Prabhava (specific action), and Karma (actions).
+1. **User Guide & Ayurveda Primer (`/guide`):** Introductory guide and conceptual reference explaining what the site is, 3 numbered navigation flows, a 19-term glossary of classical Ayurvedic concepts (Rasa, Guna, Virya, Vipaka, Prabhava, Doshas) and architectural mechanisms (Claims, Concepts, Provenance, Virya Reconciliation), data sources (CCRAS DRAVYA, 15 languages), and research safety boundaries.
+2. **Dashboard (`/`):** Summary cards displaying counts of herbs, illnesses, treatment relationships, and attributes alongside recent herbs, top frequent conditions, and dual search actions. Includes a prominent "New here? Read the guide" callout.
+3. **Herb Catalog (`/herbs`):** Searchable, paginated directory of herbs with text filtering and pagination.
+4. **Semantic Herb Detail (`/herbs/1`):** Complete Stage C presentation showcasing:
+   - **Classical Dravyaguna Properties:** Rasa (taste), Guna (qualities), Virya (potency), Vipaka (post-digestive effect), Prabhava (specific action), and Karma (actions), with links to the Guide glossary.
    - **Plant Part Associations:** Officinal plant parts (leaves, seeds, roots).
    - **Sanskrit Lexical References:** Multi-script terms in Devanagari script and IAST Latin transliteration.
    - **Directional Dosha Effects:** Normalized Vata/Pitta/Kapha decrease and increase assertions.
    - **Linked Conditions:** Illnesses linking to their dedicated condition detail pages.
    - **Virya Reconciliation Summary Pill:** Multi-source concordance indicator.
-4. **Illness Explorer (`/illnesses`):** Therapeutic index of conditions with:
+5. **Illness Explorer (`/illnesses`):** Therapeutic index of conditions with:
    - **Multilingual Language Selector:** Switch between 15 Indian languages (English, हिन्दी, संस्कृतम्, বাংলা, தமிழ், తెలుగు, etc.) with native script buttons and URL persistence (`?language=hi`).
    - **Multilingual Search:** Query conditions by English common name ("fever", "cough", "piles"), classical transliteration ("jvara", "kasa", "arsha"), or vernacular scripts ("बुखार", "खांसी", "बवासीर").
    - **Clear Heading Hierarchy:** English name displayed as main heading, selected language script beneath it with `<span lang="...">`, and original scraped transliteration preserved in small monospace code tags.
-   - **Disclaimers:** CCRAS DRAVYA medical research disclaimer and a machine-translation notice on non-English views.
-5. **Illness Detail (`/illnesses/1`):** Detailed condition profile listing all associated herbs with:
+   - **Disclaimers:** CCRAS DRAVYA medical research disclaimer and a machine-translation notice on non-English views, linking to the Guide limits.
+6. **Illness Detail (`/illnesses/1`):** Detailed condition profile listing all associated herbs with:
    - Preserved language selection across links.
    - Distinct badges for scraped vs. manually curated herb-treatment relationships.
    - Mandatory medical disclaimer and machine translation notices.
-6. **Virya Reconciliation Dashboard (`/stage-c/reconciliation/1`):** Detailed 4-tier audit report classifying concordance across sources, candidate divergence, and intra-claim ambiguity.
-7. **REST JSON Endpoints:**
+7. **Virya Reconciliation Dashboard (`/stage-c/reconciliation/1`):** Detailed 4-tier audit report classifying concordance across sources, candidate divergence, and intra-claim ambiguity, with direct links to the Guide glossary.
+8. **REST JSON Endpoints:**
    - Herb Semantic Profile: `GET /api/stage-c/herbs/1/profile`
    - Illness Search: `GET /api/illnesses?q=`
    - Condition Herbs: `GET /api/illnesses/1/herbs`

@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% block title %}User Guide &amp; Ayurvedic Reference · Herbal Almanac{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">ABOUT &amp; REFERENCE</p>
+    <h1>User Guide &amp; <em>Ayurvedic Concepts</em></h1>
+    <p class="subheading">A plain-English guide to navigating botanical records, classical Dravyaguna pharmacology, and multilingual terminology.</p>
+  </div>
+  <a class="button button-primary" href="{{ url_for('herb_list') }}">Explore Herbs <span>→</span></a>
+</section>
+
+<!-- TABLE OF CONTENTS -->
+<nav class="content-card" style="margin-bottom: 24px; padding: 18px 22px;" aria-label="Guide Table of Contents">
+  <p class="eyebrow" style="margin: 0 0 10px 0; color: #214632;">TABLE OF CONTENTS</p>
+  <div style="display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px;">
+    <a href="#what-is-this" class="button" style="background:#eaf2e8;color:#214632;border:1px solid #c2d9bf;text-decoration:none;">1. What is this site?</a>
+    <a href="#how-to-use" class="button" style="background:#eaf2e8;color:#214632;border:1px solid #c2d9bf;text-decoration:none;">2. How to use it</a>
+    <a href="#glossary" class="button" style="background:#eaf2e8;color:#214632;border:1px solid #c2d9bf;text-decoration:none;">3. Glossary of terms</a>
+    <a href="#data-sources" class="button" style="background:#eaf2e8;color:#214632;border:1px solid #c2d9bf;text-decoration:none;">4. Data and sources</a>
+    <a href="#limits" class="button" style="background:#eaf2e8;color:#214632;border:1px solid #c2d9bf;text-decoration:none;">5. Limits and safety</a>
+  </div>
+</nav>
+
+<!-- SECTION 1: WHAT IS THIS SITE -->
+<section class="content-card" id="what-is-this" tabindex="-1" style="margin-bottom: 24px;">
+  <div class="card-heading">
+    <div>
+      <p class="eyebrow">SECTION 1</p>
+      <h2>What is this site?</h2>
+    </div>
+  </div>
+  <p style="font-size: 14px; line-height: 1.7; color: #34463a; margin-bottom: 14px;">
+    <strong>Herbal Almanac</strong> is a read-only research library of traditional Ayurvedic plant (<em>dravya</em>) records scraped directly from the official <strong>CCRAS DRAVYA</strong> portal (Central Council for Research in Ayurvedic Sciences, Ministry of Ayush, Government of India).
+  </p>
+  <p style="font-size: 14px; line-height: 1.7; color: #34463a; margin-bottom: 14px;">
+    The system systematically structures and connects medicinal plants, traditional illness and indication references, classical <strong>Dravyaguna</strong> pharmacology (Rasa, Guna, Virya, Vipaka, Prabhava, Karma), and directional Dosha effects (Vata, Pitta, Kapha pacification or aggravation).
+  </p>
+  <p style="font-size: 14px; line-height: 1.7; color: #34463a; margin: 0;">
+    Designed for students, researchers, and developers, Herbal Almanac combines traditional Ayurvedic terminology with rigorous software engineering: immutable claim-level provenance tracking, normalized semantic catalog ontologies, automated Virya multi-source reconciliation, and multi-script translations across 15 Indian languages.
+  </p>
+</section>
+
+<!-- SECTION 2: HOW TO USE IT -->
+<section class="content-card" id="how-to-use" tabindex="-1" style="margin-bottom: 24px;">
+  <div class="card-heading">
+    <div>
+      <p class="eyebrow">SECTION 2</p>
+      <h2>How to use it</h2>
+    </div>
+  </div>
+  <p class="subheading" style="margin-bottom: 18px;">Follow these three primary flows to navigate botanical records and classical therapeutic relationships:</p>
+  
+  <div style="display: grid; gap: 16px;">
+    <!-- Flow 1 -->
+    <div style="background: #f8faf7; border: 1px solid #e1e9de; border-radius: 8px; padding: 18px 20px;">
+      <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #214632;">1. Search and Explore Herbs</h3>
+      <p style="font-size: 13px; line-height: 1.6; color: #425247; margin: 0 0 10px 0;">
+        Open the <a href="{{ url_for('herb_list') }}" class="text-link">Herb Explorer (/herbs) ↗</a> to browse paginated botanical records. Search by common English name, botanical Latin binomial, or classical transliteration (e.g., "Tulsi", "Ocimum"). Click any herb card to inspect its full profile: botanical taxonomy, officinal plant parts, and classical Dravyaguna property cards.
+      </p>
+    </div>
+
+    <!-- Flow 2 -->
+    <div style="background: #f8faf7; border: 1px solid #e1e9de; border-radius: 8px; padding: 18px 20px;">
+      <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #214632;">2. Search Conditions and Indications Across 15 Languages</h3>
+      <p style="font-size: 13px; line-height: 1.6; color: #425247; margin: 0 0 10px 0;">
+        Open the <a href="{{ url_for('illness_list') }}" class="text-link">Illness Explorer (/illnesses) ↗</a> to search traditional clinical indications. Query conditions in English ("fever", "cough", "piles"), classical transliteration ("jvara", "kasa", "arsha"), or vernacular scripts ("बुखार", "खांसी", "बवासीर"). Click any condition to view all associated herbs in the library, with clear badges distinguishing scraped source associations from manually curated links.
+      </p>
+    </div>
+
+    <!-- Flow 3 -->
+    <div style="background: #f8faf7; border: 1px solid #e1e9de; border-radius: 8px; padding: 18px 20px;">
+      <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #214632;">3. Inspect Pharmacological Properties and Virya Reconciliation</h3>
+      <p style="font-size: 13px; line-height: 1.6; color: #425247; margin: 0 0 10px 0;">
+        Open any herb detail page (such as {% if example_herb_id %}<a href="{{ url_for('herb_detail', herb_id=example_herb_id) }}" class="text-link">Herb {{ "%04d"|format(example_herb_id) }} ↗</a>{% else %}<code>/herbs/{id}</code>{% endif %}) to inspect normalized Dravyaguna properties and directional Dosha balances. For herbs with multi-source claims, click the Virya reconciliation pill or visit {% if example_herb_id %}<a href="/stage-c/reconciliation/{{ example_herb_id }}" class="text-link">Virya Reconciliation for Herb {{ "%04d"|format(example_herb_id) }} ↗</a>{% else %}<code>/stage-c/reconciliation/{id}</code>{% endif %} to view an audit report comparing classical source claims, candidate divergence, and cross-monograph disagreements.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: GLOSSARY OF TERMS -->
+<section class="content-card" id="glossary" tabindex="-1" style="margin-bottom: 24px;">
+  <div class="card-heading">
+    <div>
+      <p class="eyebrow">SECTION 3</p>
+      <h2>Glossary of Terms</h2>
+    </div>
+    <span class="count-pill">19 Core Concepts</span>
+  </div>
+  <p class="subheading" style="margin-bottom: 20px;">Descriptive definitions of the classical Ayurvedic and architectural terms used across this library:</p>
+
+  <dl class="attribute-list" style="margin: 0;">
+    <!-- Ayurveda -->
+    <div class="attribute-item" id="term-ayurveda" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Ayurveda</strong><span>TRADITIONAL SYSTEM</span></div>
+      <p>The classical Indian system of holistic healthcare, documented in foundational Sanskrit treatises (such as the <em>Charaka Samhita</em>, <em>Sushruta Samhita</em>, and <em>Astanga Hridaya</em>) over several millennia.</p>
+    </div>
+
+    <!-- Dravya -->
+    <div class="attribute-item" id="term-dravya" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Dravya</strong><span>MATERIA MEDICA</span></div>
+      <p>A medicinal substance or material (principally botanical plants, parts, or minerals) possessing inherent pharmacological properties (<em>Gunas</em>) and therapeutic actions (<em>Karmas</em>).</p>
+    </div>
+
+    <!-- Dravyaguna -->
+    <div class="attribute-item" id="term-dravyaguna" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Dravyaguna</strong><span>PHARMACOLOGY</span></div>
+      <p>The classical Ayurvedic science of pharmacology and materia medica (<em>Dravyaguna Vijnana</em>), which studies the identification, properties, actions, and therapeutic applications of dravyas.</p>
+    </div>
+
+    <!-- Rasa (taste) -->
+    <div class="attribute-item" id="term-rasa" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Rasa (Taste)</strong><span>GUSTATORY SENSATION</span></div>
+      <p>The immediate taste perceived by the tongue upon contact with a herb. Ayurveda identifies six primary tastes: <em>Madhura</em> (Sweet), <em>Amla</em> (Sour), <em>Lavana</em> (Salty), <em>Katu</em> (Pungent), <em>Tikta</em> (Bitter), and <em>Kashaya</em> (Astringent), each acting as a clinical indicator of pharmacological effects.</p>
+    </div>
+
+    <!-- Guna (qualities) -->
+    <div class="attribute-item" id="term-guna" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Guna (Qualities)</strong><span>PHYSICAL ATTRIBUTES</span></div>
+      <p>The intrinsic physical and bio-energetic qualities of a herb (e.g., <em>Guru</em> / Heavy vs. <em>Laghu</em> / Light, <em>Snigdha</em> / Unctuous vs. <em>Ruksha</em> / Dry), classically catalogued into 10 opposing pairs (20 total gunas) that influence bodily tissues.</p>
+    </div>
+
+    <!-- Virya (potency, Ushna/Sheeta) -->
+    <div class="attribute-item" id="term-virya" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Virya (Potency, Ushna/Sheeta)</strong><span>THERMAL POTENCY</span></div>
+      <p>The fundamental active thermodynamic and metabolic potency through which a herb performs its physiological action, primarily classified as <em>Ushna</em> (heating / hot) or <em>Sheeta</em> (cooling / cold).</p>
+    </div>
+
+    <!-- Vipaka (post-digestive effect) -->
+    <div class="attribute-item" id="term-vipaka" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Vipaka (Post-Digestive Effect)</strong><span>METABOLIC TASTE</span></div>
+      <p>The transformed taste and biochemical effect that manifests after a substance has undergone complete gastric digestion and assimilation (<em>Jatharagni paka</em>), classified into <em>Madhura</em> (sweet), <em>Amla</em> (sour), or <em>Katu</em> (pungent).</p>
+    </div>
+
+    <!-- Prabhava -->
+    <div class="attribute-item" id="term-prabhava" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Prabhava</strong><span>SPECIFIC ACTION</span></div>
+      <p>The unique, idiosyncratic, or specific therapeutic action of a herb that cannot be predicted or explained strictly by the combined sum of its Rasa, Guna, Virya, and Vipaka alone.</p>
+    </div>
+
+    <!-- Dosha (Vata, Pitta, Kapha) and "dosha effects" -->
+    <div class="attribute-item" id="term-doshas" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Dosha (Vata, Pitta, Kapha) and "Dosha Effects"</strong><span>BIOLOGICAL ENERGIES</span></div>
+      <p>The three regulatory psycho-physiological energies (<em>Tridosha</em>) governing bodily functions. "Dosha effects" record whether a herb pacifies/decreases (<em>shamana</em>, <em>hara</em>, <em>ghna</em>) or aggravates/increases (<em>vardhaka</em>, <em>vrddhi</em>) Vata (movement), Pitta (metabolism/heat), or Kapha (structure/fluid balance).</p>
+    </div>
+
+    <!-- Karma / therapeutic action -->
+    <div class="attribute-item" id="term-karma" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Karma / Therapeutic Action</strong><span>PHYSIOLOGICAL ACTION</span></div>
+      <p>The clinical or physiological action produced by a herb, such as <em>Deepana</em> (appetite kindling), <em>Pachana</em> (digestive processing), or <em>Rasayana</em> (rejuvenating / adaptogenic nourishment).</p>
+    </div>
+
+    <!-- Part used / plant part -->
+    <div class="attribute-item" id="term-part-used" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Part Used / Plant Part</strong><span>OFFICINAL MORPHOLOGY</span></div>
+      <p>The specific botanical organ of the medicinal plant employed in formulations (<em>Prayojyāṅga</em>), such as <em>Moola</em> (root), <em>Patra</em> (leaf), <em>Phala</em> (fruit), <em>Twak</em> (bark), or <em>Beeja</em> (seed).</p>
+    </div>
+
+    <!-- Preparation / Kalpana -->
+    <div class="attribute-item" id="term-preparation" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Preparation / Kalpana</strong><span>PHARMACEUTICAL FORM</span></div>
+      <p>The traditional pharmaceutical formulation process or dosage form applied to plant materials, such as <em>Churna</em> (fine powder), <em>Kwatha</em> (decoction), <em>Swarasa</em> (fresh juice), or <em>Taila</em> (medicated oil).</p>
+    </div>
+
+    <!-- Indication / Therapeutic usage / Illness -->
+    <div class="attribute-item" id="term-indication" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Indication / Therapeutic Usage / Illness</strong><span>CLINICAL CONDITION</span></div>
+      <p>Pathological conditions, clinical symptoms, or disorders (<em>Roga</em>) for which classical Ayurvedic texts recommend the administration of a particular medicinal plant.</p>
+    </div>
+
+    <!-- Vernacular name / Sanskrit name / botanical name / family -->
+    <div class="attribute-item" id="term-names-taxonomy" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Vernacular Name / Sanskrit Name / Botanical Name / Family</strong><span>NOMENCLATURE</span></div>
+      <p>The multi-tiered naming taxonomy: standardized Latin botanical binomial and plant family (e.g. <em>Ocimum tenuiflorum</em>, <em>Lamiaceae</em>), classical Sanskrit names (in Devanagari and transliteration), and regional vernacular names across Indian states.</p>
+    </div>
+
+    <!-- Concept (canonical concept) and Claim -->
+    <div class="attribute-item" id="term-concept-claim" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Concept (Canonical Concept) and Claim</strong><span>KNOWLEDGE ARCHITECTURE</span></div>
+      <p>In our architecture, a <em>Claim</em> is an atomic assertion extracted verbatim from a primary source document (e.g., "potency is Ushna"), while a <em>Concept</em> is a standardized, language-agnostic ontology node (e.g. <code>PROP_VIRYA_USHNA</code>) to which claims are mapped.</p>
+    </div>
+
+    <!-- Source / provenance -->
+    <div class="attribute-item" id="term-source-provenance" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Source / Provenance</strong><span>AUDIT TRAIL</span></div>
+      <p>The exact digital monograph, portal record, or classical text from which a botanical assertion was extracted, providing an immutable audit trail from source text to UI presentation.</p>
+    </div>
+
+    <!-- Reconciliation (what "Virya reconciliation" shows: where sources disagree) -->
+    <div class="attribute-item" id="term-reconciliation" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Reconciliation (What "Virya Reconciliation" Shows)</strong><span>SOURCE CONFLICT AUDIT</span></div>
+      <p>An automated comparison report that evaluates multiple independent classical treatises or monograph claims for a herb, identifying unanimous concordance, candidate divergence under review, or verified historical source disagreements.</p>
+    </div>
+
+    <!-- Unreviewed / unverified / machine-generated labels -->
+    <div class="attribute-item" id="term-verification-status" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Unreviewed / Unverified / Machine-Generated Labels</strong><span>EPISTEMIC STATUS</span></div>
+      <p>Status indicators explaining data certainty: <em>Machine-generated</em> signifies translations produced by automated AI models (such as Gemini or Google Translate); <em>Unreviewed</em> or <em>Unverified</em> signifies scraped records that have not yet been evaluated by certified domain scholars or clinical trials.</p>
+    </div>
+
+    <!-- Original term (scraped transliteration, e.g. KAsa) vs. resolved English/Hindi name -->
+    <div class="attribute-item" id="term-original-vs-resolved" tabindex="-1">
+      <div class="attribute-meta"><strong style="color: #214632; font-size: 14px;">Original Term vs. Resolved English/Hindi Name</strong><span>TRANSLITERATION</span></div>
+      <p>The raw scraped transliteration (often featuring Harvard-Kyoto or ITRANS capital letters such as <code>KAsa</code> or <code>jvaraH</code>) preserved verbatim for scholarly integrity, alongside human-readable English names ("Cough", "Fever") and localized vernacular scripts resolved by our glossary engine.</p>
+    </div>
+  </dl>
+</section>
+
+<!-- SECTION 4: DATA AND SOURCES -->
+<section class="content-card" id="data-sources" tabindex="-1" style="margin-bottom: 24px;">
+  <div class="card-heading">
+    <div>
+      <p class="eyebrow">SECTION 4</p>
+      <h2>Data and Sources</h2>
+    </div>
+  </div>
+  <p style="font-size: 14px; line-height: 1.7; color: #34463a; margin-bottom: 14px;">
+    The data presented in Herbal Almanac originates from three distinct layers:
+  </p>
+  <ol style="font-size: 13px; line-height: 1.8; color: #34463a; margin-bottom: 18px; padding-left: 20px;">
+    <li>
+      <strong>CCRAS DRAVYA Portal:</strong> Primary botanical records, morphology, and therapeutic attributes scraped from the Central Council for Research in Ayurvedic Sciences (Ministry of Ayush, Government of India).
+    </li>
+    <li>
+      <strong>Curated Multilingual Concept Catalog:</strong> 136 canonical Stage C concepts spanning 11 pharmacological domains, with 649 scholarly bilingual/multilingual labels covering English (Latin), Hindi (Devanagari), and Sanskrit (Devanagari and IAST). Curated catalog labels take strict precedence on conflict.
+    </li>
+    <li>
+      <strong>Multilingual Illness Glossary:</strong> A 227-condition translation glossary generated with AI assistance via <strong>Gemini Deep Research</strong>. These translations are machine-generated and not clinically verified.
+    </li>
+  </ol>
+
+  <p class="eyebrow" style="margin: 18px 0 8px 0; color: #214632;">15 SUPPORTED REGIONAL LANGUAGES</p>
+  <p style="font-size: 13px; line-height: 1.6; color: #425247; margin-bottom: 12px;">
+    The interface offers translation and search support across 15 official Indian languages:
+  </p>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+    {% for lang in languages %}
+    <span style="display: inline-flex; align-items: center; gap: 6px; background: #f0f4ee; border: 1px solid #d4e2d1; border-radius: 6px; padding: 6px 10px; font-size: 12px; color: #214632;">
+      <strong>{{ lang.name }}</strong>
+      <span lang="{{ lang.code }}" style="color: #4a6252;">({{ lang.native_name }})</span>
+    </span>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- SECTION 5: LIMITS AND SAFETY -->
+<section class="content-card" id="limits" tabindex="-1">
+  <div class="card-heading">
+    <div>
+      <p class="eyebrow" style="color: #b91c1c;">SECTION 5</p>
+      <h2>Limits and Safety Boundaries</h2>
+    </div>
+  </div>
+  <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px 20px; color: #991b1b; font-size: 13px; line-height: 1.7; margin-bottom: 16px;">
+    <strong style="display: block; font-size: 14px; margin-bottom: 6px;">Important Research Disclaimer:</strong>
+    Herbal Almanac is strictly an academic research and software engineering evaluation project. It is <strong>not</strong> a medical prescribing tool, diagnostic device, or clinical decision support system.
+  </div>
+  <ul style="font-size: 13px; line-height: 1.8; color: #425247; padding-left: 20px; margin: 0;">
+    <li><strong>Unverified Associations:</strong> Therapeutic indications and herb-disease links are scraped from external web portals and may be incomplete, unverified, or subject to conflicting classical interpretations.</li>
+    <li><strong>No Medical Advice:</strong> Nothing on this website constitutes medical advice, clinical diagnosis, prevention, or treatment recommendations.</li>
+    <li><strong>No Recommendation Algorithms:</strong> The platform contains no symptom-matching or automated prescribing algorithms.</li>
+    <li><strong>Consult Professionals:</strong> Always consult a qualified, registered Ayurvedic physician or healthcare professional before making any health or medicinal decisions.</li>
+  </ul>
+</section>
+{% endblock %}

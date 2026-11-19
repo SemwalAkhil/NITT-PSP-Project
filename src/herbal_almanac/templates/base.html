@@ -17,6 +17,7 @@
       <div class="nav-label">WORKSPACE</div>
       <nav class="side-nav" aria-label="Main navigation">
         <a class="{% if active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">⌂</span> Overview</a>
+        <a class="{% if active_page == 'guide' %}active{% endif %}" href="{{ url_for('guide') }}"><span class="nav-icon">📖</span> Guide &amp; About</a>
         <a class="{% if active_page == 'herbs' %}active{% endif %}" href="{{ url_for('herb_list') }}"><span class="nav-icon">✿</span> Herb explorer</a>
         <a class="{% if active_page == 'illnesses' %}active{% endif %}" href="{{ url_for('illness_list') }}"><span class="nav-icon">✚</span> Illness explorer</a>
       </nav>

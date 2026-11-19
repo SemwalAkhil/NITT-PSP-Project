@@ -140,6 +140,29 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
             },
         )
 
+    @application.get("/guide", response_class=HTMLResponse, name="guide")
+    def guide(request: Request) -> Any:
+        example_herb_id = None
+        try:
+            if application.state.database_path.is_file():
+                db = get_database()
+                with db._connection() as conn:
+                    row = conn.execute("SELECT id FROM herbs ORDER BY id LIMIT 1").fetchone()
+                    if row:
+                        example_herb_id = row[0]
+        except Exception:
+            example_herb_id = None
+
+        return templates.TemplateResponse(
+            request=request,
+            name="guide.html",
+            context={
+                "active_page": "guide",
+                "example_herb_id": example_herb_id,
+                "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
+            },
+        )
+
     @application.get("/herbs", response_class=HTMLResponse, name="herb_list")
     def herb_list(
         request: Request,

@@ -437,6 +437,154 @@ def test_global_search_box_routes_illness_query_to_illnesses(tmp_path):
     assert "Cough" in r_followed.text
 
 
+def test_guide_renders_with_and_without_database(tmp_path):
+    # 1. With existing seeded database
+    client, database = make_client(tmp_path)
+    database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    res_seeded = client.get("/guide")
+    assert res_seeded.status_code == 200
+    assert "User Guide" in res_seeded.text
+    assert "Ayurvedic Concepts" in res_seeded.text
+
+    # 2. Without database (missing file)
+    missing_path = tmp_path / "nonexistent" / "absent.db"
+    client_no_db = TestClient(create_app(missing_path))
+    res_no_db = client_no_db.get("/guide")
+    assert res_no_db.status_code == 200
+    assert "What is this site?" in res_no_db.text
+
+
+def test_guide_contains_all_glossary_terms_and_anchors(tmp_path):
+    client, _ = make_client(tmp_path)
+    res = client.get("/guide")
+    assert res.status_code == 200
+    body = res.text
+
+    # Verify required anchor IDs
+    required_anchors = ["what-is-this", "how-to-use", "glossary", "data-sources", "limits"]
+    for anchor in required_anchors:
+        assert f'id="{anchor}"' in body, f"Anchor id='{anchor}' missing from /guide"
+
+    # Verify TOC links point to existing anchors
+    for anchor in required_anchors:
+        assert f'href="#{anchor}"' in body, f"TOC link href='#{anchor}' missing from /guide"
+
+    # Verify required glossary terms
+    required_terms = [
+        "Ayurveda",
+        "Dravya",
+        "Dravyaguna",
+        "Rasa",
+        "Guna",
+        "Virya",
+        "Vipaka",
+        "Prabhava",
+        "Dosha",
+        "dosha effects",
+        "Karma",
+        "Part used",
+        "Preparation",
+        "Indication",
+        "Vernacular name",
+        "Concept",
+        "Claim",
+        "Source",
+        "provenance",
+        "Reconciliation",
+        "Unreviewed",
+        "unverified",
+        "machine-generated",
+        "Original term",
+    ]
+    for term in required_terms:
+        assert term.lower() in body.lower(), f"Glossary term '{term}' missing from /guide"
+
+    # Verify 15 supported languages rendered with native scripts
+    assert "हिन्दी" in body
+    assert "संस्कृतम्" in body
+    assert "தமிழ்" in body
+    assert "اردو" in body
+    assert "বাংলা" in body
+
+
+def test_guide_navigation_and_cross_links(tmp_path):
+    client, database = make_client(tmp_path)
+    h1 = database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    i1 = database.add_illness("KAsa")
+    database.add_treatment(h1, i1)
+    database.upgrade_to_stage_c()
+    database.run_stage_c_backfill()
+
+    # 1. Nav active state on /guide
+    res_guide = client.get("/guide")
+    assert res_guide.status_code == 200
+    assert 'class="active"' in res_guide.text
+    assert "/guide" in res_guide.text
+    assert "Guide &amp; About" in res_guide.text
+
+    # 2. Dashboard contains link to guide
+    res_dash = client.get("/")
+    assert res_dash.status_code == 200
+    assert "/guide" in res_dash.text
+    assert "New here? Read the guide" in res_dash.text
+
+    # 3. Virya reconciliation links to guide glossary
+    res_recon = client.get(f"/stage-c/reconciliation/{h1}")
+    assert res_recon.status_code == 200
+    assert '/guide#glossary' in res_recon.text
+
+    # 4. Herb detail semantic links to guide glossary
+    res_herb = client.get(f"/herbs/{h1}")
+    assert res_herb.status_code == 200
+    assert '/guide#glossary' in res_herb.text
+
+    # 5. Illness explorer and illness detail link to guide limits
+    res_illnesses = client.get("/illnesses")
+    assert res_illnesses.status_code == 200
+    assert '/guide#limits' in res_illnesses.text
+
+    res_ill_detail = client.get(f"/illnesses/{i1}")
+    assert res_ill_detail.status_code == 200
+    assert '/guide#limits' in res_ill_detail.text
+
+
+def test_guide_internal_links_resolve_with_seeded_db(tmp_path):
+    import re
+    from urllib.parse import urlparse
+
+    client, database = make_client(tmp_path)
+    h1 = database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    i1 = database.add_illness("KAsa")
+    database.add_treatment(h1, i1)
+    database.upgrade_to_stage_c()
+    database.run_stage_c_backfill()
+
+    res = client.get("/guide")
+    assert res.status_code == 200
+
+    # Extract all hrefs
+    hrefs = re.findall(r'href="([^"]+)"', res.text)
+    checked_paths = set()
+
+    for href in hrefs:
+        if href.startswith("#"):
+            continue
+        parsed = urlparse(href)
+        path = parsed.path
+        if not path or path.startswith("http") or path.startswith("//"):
+            continue
+        if path in checked_paths:
+            continue
+        checked_paths.add(path)
+
+        target_res = client.get(path)
+        assert target_res.status_code == 200, f"Internal link '{path}' in /guide returned status {target_res.status_code}"
+
+    assert "/herbs" in checked_paths
+    assert "/illnesses" in checked_paths
+
+
+
 
 
 

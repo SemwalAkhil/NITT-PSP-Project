@@ -17,6 +17,14 @@
   <div class="welcome-copy"><span class="panel-kicker">THE DRAVYAGUNA COLLECTION</span><h2>Traditional knowledge,<br><em>thoughtfully catalogued.</em></h2><p>Browse plant identities, regional names, traditional attributes and Dosha effects preserved with their source context.</p><a href="{{ url_for('herb_list') }}" class="text-link">Discover the collection <span>→</span></a></div>
   <div class="botanical-art" aria-hidden="true"><div class="sun"></div><div class="stem"></div><i class="leaf leaf-one"></i><i class="leaf leaf-two"></i><i class="leaf leaf-three"></i><i class="leaf leaf-four"></i><i class="leaf leaf-five"></i></div>
 </section>
+<section class="guide-callout" style="background:#eaf2e8;border:1px solid #c2d9bf;border-radius:12px;padding:16px 20px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+  <div style="max-width:720px;">
+    <p class="eyebrow" style="margin:0 0 4px 0;color:#356345;">FIRST TIME VISITOR?</p>
+    <strong style="color:#1d432b;display:block;font-size:15px;margin-bottom:4px;">New here? Read the guide</strong>
+    <p style="color:#4a6252;font-size:13px;margin:0;line-height:1.5;">Learn what this library contains, how classical Ayurvedic concepts (Rasa, Virya, Doshas) are organized, and how to navigate herbs and multilingual illness terms.</p>
+  </div>
+  <a class="button button-primary" href="{{ url_for('guide') }}" style="white-space:nowrap;">Open User Guide <span>→</span></a>
+</section>
 <section class="section-block">
   <div class="section-title"><div><p class="eyebrow">LIBRARY AT A GLANCE</p><h2>Your collection</h2></div><span class="muted">Live counts from your SQLite database</span></div>
   <div class="stat-grid">

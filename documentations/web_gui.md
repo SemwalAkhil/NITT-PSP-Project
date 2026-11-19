@@ -51,7 +51,14 @@ or the package's normal per-user database location.
 - **Overview (`/`):** lightweight counts for herbs, illness terms, treatment
   links, and flexible attributes, the six most recently inserted herb
   records, and frequent conditions ranked by linked herb count with direct
-  links to condition details. Includes dual search inputs for herbs and conditions.
+  links to condition details. Includes dual search inputs for herbs and conditions,
+  and a prominent "New here? Read the guide" callout linking to `/guide`.
+- **User guide & reference (`/guide`):** an introductory primer and domain reference for first-time visitors, completely decoupled from database access (renders identically with, without, or on empty databases). Features:
+  - Table of contents with keyboard-focusable in-page anchor links (`#what-is-this`, `#how-to-use`, `#glossary`, `#data-sources`, `#limits`).
+  - Plain-English explanations of the platform and 3 numbered workflow guides with direct links to `/herbs`, `/illnesses`, and `/stage-c/reconciliation/{id}`.
+  - A comprehensive 19-term glossary (`<dl>`) defining classical Dravyaguna concepts (Rasa, Guna, Virya, Vipaka, Prabhava, Doshas, Karma, Part used, Kalpana, Indications), botanical nomenclature, and architectural constructs (Claims, Concepts, Provenance, Virya Reconciliation, Epistemic status labels, Scraped transliteration vs. resolved names).
+  - Attribution for CCRAS DRAVYA, the curated concept catalog (136 concepts), Gemini Deep Research translations, and the 15 supported Indian regional languages rendered with native scripts.
+  - Ethical research boundaries and medical disclaimers, with cross-links from illness disclaimers and reconciliation views.
 - **Herb explorer (`/herbs`):** search using the existing ranked
   `search_herbs()` behavior, with 12 results displayed per page and query
   preservation across pagination controls. If an entered query yields no matching
