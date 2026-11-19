@@ -92,8 +92,11 @@ Tests must remain offline and use fixtures, mocks/fakes, and temporary database 
 The FastAPI/Uvicorn/Jinja2 interface is a read-only layer over
 `AyurvedicAlmanac`. Its stylesheet is served at `/static/styles.css` and is
 included in package data. It provides the dashboard at `/`, searchable herbs at
-`/herbs`, and detail pages at `/herbs/{herb_id}`. Install with
-`python -m pip install -e ".[web]"` and run
+`/herbs`, detail pages at `/herbs/{herb_id}`, searchable illness directory at
+`/illnesses`, condition detail at `/illnesses/{illness_id}`, and REST endpoints under
+`/api/`. Transliterated illness names are formatted into readable title case via
+`format_readable_illness` (`readable_illness` filter) without mutating stored database records.
+Install with `python -m pip install -e ".[web]"` and run
 `uvicorn herbal_almanac.web_app:app --reload`. The default database path is
 shared with the CLI; `HERBAL_ALMANAC_DATABASE` overrides it. Scraping and
 writes remain CLI-only in this first milestone. See

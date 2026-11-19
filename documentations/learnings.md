@@ -541,6 +541,9 @@ Moving from lexical string attributes to a normalized semantic ontology requires
 30. **Condition-first botanical exploration and clinical attribution boundaries:**
     - *Bidirectional knowledge exploration:* Users often query botanical repositories from the condition perspective rather than plant names. Implementing `illness_summaries()` and `herbs_for_illness()` enables bidirectional discovery (browsing diseases to find candidate herbs) using existing `search_illnesses()` ranking with `ILLNESS_ALIASES` (e.g. mapping colloquial "fever" to classical "jvara") and treatment aggregations without altering normalized database schemas.
     - *Preserving provenance and epistemic safety in UI presentation:* When presenting disease-herb relationships, presentation layers must explicitly distinguish between scraped associations (`link_source = 'scraped'`) and verified manual links (`link_source = 'manual'`), while rendering prominent medical disclaimers to prevent users from mistaking scraped research associations for clinical guidance.
+31. **Display-only transliteration normalization without database mutation:**
+    - *Harvard-Kyoto / ITRANS capitalization artifacts:* Classical Ayurvedic terms scraped from botanical sources like CCRAS DRAVYA often feature internal capital letters denoting phonetic distinctions (e.g. `KAsa` for cough, `AgnimAndya` for impaired digestion, `khAlityam/khalati` for alopecia). Storing these verbatim preserves provenance and transliteration fidelity.
+    - *Presentation-layer filtering:* To provide human-readable typography in web views without altering underlying SQLite data, a presentation filter (`format_readable_illness` / Jinja `readable_illness`) splits compound words and slashes, applying title casing (`Kasa`, `Agnimandya`, `Khalityam/Khalati`). This decouples textual presentation from canonical database storage.
 
 
 

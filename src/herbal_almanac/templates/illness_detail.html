@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ illness.english_name }} · Illness Explorer · Herbal Almanac{% endblock %}
+{% block title %}{{ illness.english_name|readable_illness }} · Illness Explorer · Herbal Almanac{% endblock %}
 {% block content %}
 <a class="back-link" href="{{ url_for('illness_list') }}">← Back to Illness explorer</a>
 
@@ -10,7 +10,7 @@
 <header class="detail-heading">
   <div>
     <p class="eyebrow">CONDITION DETAIL · {{ "%04d"|format(illness.id) }}</p>
-    <h1>{{ illness.english_name }}</h1>
+    <h1>{{ illness.english_name|readable_illness }}</h1>
     <p class="detail-common">
       Verification: <strong>{{ illness.verification_status|title }}</strong>
       {% if illness.machine_generated %}<span style="color:#a27c42;margin-left:8px;">(Machine-generated)</span>{% endif %}

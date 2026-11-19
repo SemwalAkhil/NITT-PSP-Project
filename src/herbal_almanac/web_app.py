@@ -34,6 +34,29 @@ STYLESHEET_PATH = STATIC_DIR / "styles.css"
 PAGE_SIZE = 12
 
 
+def format_readable_illness(name: str | None) -> str:
+    """Format ITRANS/Harvard-Kyoto transliterated illness names into readable text.
+
+    Renders readable text (first letter uppercase, rest lowercase) without
+    altering stored database records.
+    Examples:
+        'KAsa' -> 'Kasa'
+        'AgnimAndya' -> 'Agnimandya'
+        'khAlityam/khalati' -> 'Khalityam/Khalati'
+    """
+    if not name:
+        return ""
+    stripped = name.strip()
+    if not stripped:
+        return ""
+    slash_parts = stripped.split("/")
+    formatted_slash_parts = []
+    for slash_part in slash_parts:
+        words = slash_part.split()
+        formatted_slash_parts.append(" ".join(w.capitalize() for w in words))
+    return "/".join(formatted_slash_parts)
+
+
 def get_database_capability(conn: sqlite3.Connection) -> dict[str, Any]:
     """Inspects schema_migrations ledger and determines Stage C feature availability."""
     try:
@@ -78,6 +101,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
 
     application.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
     templates = Jinja2Templates(directory=TEMPLATE_DIR)
+    templates.env.filters["readable_illness"] = format_readable_illness
 
     def get_database() -> AyurvedicAlmanac:
         return AyurvedicAlmanac(application.state.database_path)

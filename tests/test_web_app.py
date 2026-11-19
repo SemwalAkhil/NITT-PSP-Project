@@ -287,4 +287,59 @@ def test_herb_explorer_devanagari_sanskrit_and_botanical_search(tmp_path):
     assert "Ocimum tenuiflorum" in res_bot.text
 
 
+def test_format_readable_illness_unit():
+    from herbal_almanac.web_app import format_readable_illness
+
+    assert format_readable_illness("KAsa") == "Kasa"
+    assert format_readable_illness("AgnimAndya") == "Agnimandya"
+    assert format_readable_illness("khAlityam/khalati") == "Khalityam/Khalati"
+    assert format_readable_illness("arditaH") == "Arditah"
+    assert format_readable_illness("rAjayakSmA") == "Rajayaksma"
+    assert format_readable_illness("KAsa Roga") == "Kasa Roga"
+    assert format_readable_illness("Cough") == "Cough"
+    assert format_readable_illness("") == ""
+    assert format_readable_illness("   ") == ""
+    assert format_readable_illness(None) == ""
+
+
+def test_readable_illness_rendered_in_templates_without_altering_db(tmp_path):
+    client, database = make_client(tmp_path)
+    from herbal_almanac.web_app import format_readable_illness
+
+    herb_id = database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    i1 = database.add_illness("KAsa")
+    i2 = database.add_illness("AgnimAndya")
+    database.add_treatment(herb_id, i1)
+
+    # Stored database names must remain untouched
+    with database._connection() as conn:
+        row1 = conn.execute("SELECT english_name FROM illness WHERE id = ?", (i1,)).fetchone()
+        row2 = conn.execute("SELECT english_name FROM illness WHERE id = ?", (i2,)).fetchone()
+        assert row1[0] == "KAsa"
+        assert row2[0] == "AgnimAndya"
+
+    # Template list view renders readable names
+    r_list = client.get("/illnesses")
+    assert r_list.status_code == 200
+    assert "<strong>Kasa</strong>" in r_list.text
+    assert "<strong>Agnimandya</strong>" in r_list.text
+    assert "<strong>KAsa</strong>" not in r_list.text
+
+    # Detail view renders readable title and heading
+    r_detail = client.get(f"/illnesses/{i1}")
+    assert r_detail.status_code == 200
+    assert "<h1>Kasa</h1>" in r_detail.text
+    assert "<title>Kasa · Illness Explorer · Herbal Almanac</title>" in r_detail.text
+
+    # Herb detail renders readable linked condition
+    r_herb = client.get(f"/herbs/{herb_id}")
+    assert r_herb.status_code == 200
+    assert f">{format_readable_illness('KAsa')}<" in r_herb.text
+
+    # DB records remain unchanged after template rendering
+    with database._connection() as conn:
+        assert conn.execute("SELECT english_name FROM illness WHERE id = ?", (i1,)).fetchone()[0] == "KAsa"
+
+
+
 

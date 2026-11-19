@@ -32,7 +32,7 @@
   <a class="herb-row" href="{{ url_for('illness_detail', illness_id=illness.id) }}">
     <span class="herb-symbol">✚</span>
     <span class="herb-main">
-      <strong>{{ illness.english_name }}</strong>
+      <strong>{{ illness.english_name|readable_illness }}</strong>
       <small>Condition ID · {{ "%04d"|format(illness.id) }}</small>
     </span>
     <span class="count-pill" style="align-self:center;">{{ illness.herb_count }} {% if illness.herb_count == 1 %}herb{% else %}herbs{% endif %}</span>

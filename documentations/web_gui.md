@@ -59,6 +59,7 @@ or the package's normal per-user database location.
 - **Virya reconciliation dashboard (`/stage-c/reconciliation/{herb_id}`):** an interactive 4-tier audit dashboard displaying classical source agreement, candidate divergence (unreviewed / reviewed), and verified contradictions across botanical peers. Returns HTTP 501 on Schema Version 2.
 - **Illness explorer (`/illnesses`):** searchable, paginated directory of illness terms with alias-aware matching (`ILLNESS_ALIASES`, e.g. "fever" matching "Jvara"), showing the count of linked herbs per condition.
 - **Illness detail (`/illnesses/{illness_id}`):** condition profile listing all associated herbs with links to `/herbs/{herb_id}`, distinguishing between scraped and manually curated links. Displays a mandatory medical disclaimer on every illness view: *"Associations are scraped from the CCRAS DRAVYA source, are unverified, and are not medical advice."*
+- **Display-only illness name formatting (`readable_illness` Jinja filter):** transliterated illness names from source databases often contain internal Harvard-Kyoto/ITRANS capitals (e.g. `KAsa`, `AgnimAndya`, `khAlityam/khalati`). The `format_readable_illness` presentation helper and Jinja filter formats these into readable title case (`Kasa`, `Agnimandya`, `Khalityam/Khalati`) in presentation templates without modifying underlying SQLite records.
 
 ## Illness & Stage C REST API Endpoints
 
