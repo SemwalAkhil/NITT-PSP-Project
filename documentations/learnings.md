@@ -523,6 +523,10 @@ Moving from lexical string attributes to a normalized semantic ontology requires
     - *Static AST skip-guard enforcement:* By parsing all test modules via `ast.parse` and inspecting functions referencing uncommitted databases (`data/inspection.db`), tests can programmatically fail if any developer introduces an unguarded query or test that assumes the local database exists, protecting against CI breaks before code merges.
 24. **AST-based guard discrimination vs naive substring searching:**
     - *Avoiding false positives in static test guards:* Naive string search (e.g. searching raw file text for `"inspection.db"`) fails when a test's name, docstring, or explanatory comments mention the artifact while the executable code uses a hermetic synthetic fixture. By using `ast.parse`, explicitly excluding the docstring node (`node.body[0]`), and collecting string constants from executable AST nodes only, static analysis guards avoid false positives while strictly catching un-guarded runtime references in executable expressions.
+25. **Multi-tier packaging verification: core vs optional extras:**
+    - *Distinguishing core installability from extras:* Packages with optional presentation layers (such as FastAPI/Jinja2 under `[web]`) must ensure the core engine functions cleanly without optional dependencies. Testing the built wheel in an environment installed with only core dependencies proves that non-web workflows (data operations, DDL upgrades, CLI commands) never inadvertently import optional packages at the root module level.
+    - *Explicit extras installation in CI smoke jobs:* Smoke tests targeting presentation layers (`smoke_installed_package.py`) must install the wheel specifying the required extra (`python -m pip install "dist/*.whl[web]"`) to avoid `ModuleNotFoundError` during CI package verification.
+
 
 
 

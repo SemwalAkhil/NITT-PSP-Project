@@ -29,9 +29,42 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip build
       - run: python -m build
-      - name: Install built wheel
-        run: python -m pip install dist/*.whl
-      - name: Run smoke tests and CLI checks
+      - name: Test core install without extras in clean venv
+        run: |
+          python -m venv /tmp/core_env
+          /tmp/core_env/bin/python -m pip install --upgrade pip
+          /tmp/core_env/bin/python -m pip install $(ls dist/*.whl)
+          /tmp/core_env/bin/python -c "
+          import tempfile
+          from pathlib import Path
+          from herbal_almanac import PlantRecord
+          from herbal_almanac.cleaning import clean_text
+          from herbal_almanac.database_operator import AyurvedicAlmanac
+          import herbal_almanac.migrations.migration_0003_semantic_dravyaguna as migration_3
+          import herbal_almanac.repository_api as repo_api
+          import herbal_almanac.schema_capability_gate as gate
+          import herbal_almanac.concept_catalog as catalog
+          import herbal_almanac.claim_lifecycle as lifecycle
+          import herbal_almanac.backfill_engine as backfill
+          import herbal_almanac.cli as cli
+
+          assert clean_text('  Tulsi  ') == 'Tulsi'
+          assert PlantRecord.__module__ == 'herbal_almanac.cleaning'
+          assert migration_3.MIGRATION_VERSION == 3
+          assert hasattr(repo_api, 'herb_dravyaguna_profile')
+          with tempfile.TemporaryDirectory() as td:
+              db_path = Path(td) / 'test_core.db'
+              db = AyurvedicAlmanac(db_path)
+              db.create_database()
+              upgrade_res = db.upgrade_to_stage_c()
+              assert upgrade_res['version'] == 3
+          print('Core install smoke verification passed!')
+          "
+          /tmp/core_env/bin/herbal-almanac --help
+          /tmp/core_env/bin/herbal-almanac stage-c-status --help
+      - name: Install built wheel with [web] extra
+        run: python -m pip install "$(ls dist/*.whl)[web]"
+      - name: Run smoke tests and CLI checks with web
         run: |
           python tests/smoke_installed_package.py
           herbal-almanac --help
