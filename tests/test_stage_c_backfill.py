@@ -11,6 +11,16 @@ import sys
 from pathlib import Path
 import pytest
 
+# Ensure stage_c_review and src are in sys.path
+REVIEW_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = REVIEW_DIR.parent
+SRC_DIR = PROJECT_ROOT / "src"
+
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+if str(REVIEW_DIR) not in sys.path:
+    sys.path.insert(0, str(REVIEW_DIR))
+
 from herbal_almanac.database_operator import AyurvedicAlmanac
 from herbal_almanac.migrations import migration_0003_semantic_dravyaguna
 from herbal_almanac.schema_capability_gate import validate_schema_migration_ledger, get_schema_version
@@ -403,11 +413,11 @@ def test_semantic_backfill_rollback_safety_on_error(v2_db, monkeypatch):
 
 
 # ============================================================================
-# 6. Full End-to-End Test on Copy of Hermetic v2 Database
+# 6. Full End-to-End Test on Copy of data/inspection.db
 # ============================================================================
 
-def test_end_to_end_backfill_on_hermetic_v2_db_copy(inspection_db_copy):
-    """Executes full migration and semantic backfill on a disposable copy of the hermetic v2 database.
+def test_end_to_end_backfill_on_inspection_db_copy(inspection_db_copy):
+    """Executes full migration and semantic backfill on a disposable copy of data/inspection.db.
 
     Proves:
     1. Schema version 2 baseline invariance.
@@ -438,7 +448,7 @@ def test_end_to_end_backfill_on_hermetic_v2_db_copy(inspection_db_copy):
     metrics1 = run_stage_c_semantic_backfill(conn, now)
     conn.commit()
 
-    # Backfill must have processed genuine claims
+    # Backfill must have processed genuine inspection.db claims
     assert metrics1["processed_claims"] > 0
     assert metrics1["inserted_mappings"] > 0
     assert metrics1["inserted_properties"] > 0

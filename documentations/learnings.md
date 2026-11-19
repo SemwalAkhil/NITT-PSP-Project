@@ -500,33 +500,6 @@ Moving from lexical string attributes to a normalized semantic ontology requires
     - *Decoupling CI test runs from uncommitted local databases:* In open-source and collaborative Python packages where database files (`*.db`) are gitignored and forbidden from being committed, test suites that depend on pre-scraped local databases fail immediately in fresh CI environments.
     - *Synthesizing realistic offline baselines:* By creating a session-scoped fixture (`hermetic_v2_db_path` in `tests/conftest.py`) that initializes a pristine Schema Version 2 database via `AyurvedicAlmanac.create_database()` and populates it through `parse_plant()` and `insert_record()` using repository HTML fixtures (`sample.html`), tests acquire a realistic, fully populated database with genuine claims, attributes, and relationships without live network calls.
     - *Skip-guarding developer environment safeguards:* Local integrity tests that verify an author's development database remains unmutated are valuable safeguards during development. Marking these tests with `pytest.skip` when the local database file is absent preserves local protection while guaranteeing 100% green builds in clean CI runner environments.
-18. **Packaging non-Python assets (SQL scripts, templates, static files) in standard wheels:**
-    - *Explicit package-data inclusion:* When runtime modules depend on non-Python assets (such as SQL DDL files, migration scripts, Jinja2 HTML templates, or CSS stylesheets), these files must be explicitly declared in `pyproject.toml` under `[tool.setuptools.package-data]`. Omitting them results in source installations succeeding while built binary wheels (`.whl`) silently omit the files, causing unexpected `FileNotFoundError` exceptions in downstream environments.
-    - *Canonical path resolution:* Resolving asset paths relative to the locating module's directory (`Path(__file__).resolve().parent / "migrations" / "virya_reconciliation.sql"`) rather than relying on current working directories (`cwd`) or fragile relative traversal ensures reliable asset discovery across editable developer installations, standalone wheel installations, and virtual environments.
-19. **Continuous integration packaging smoke testing:**
-    - *Distinguishing editable test runs from wheel consumers:* Running unit tests with `pip install -e .[dev]` tests the Python source tree with all development tools, but fails to detect missing non-Python package data, broken wheel installation metadata, or malformed console script entry points.
-    - *Independent package-smoke CI jobs:* Incorporating an isolated CI job that executes `python -m build`, installs the resulting wheel artifact into an unadorned environment without editable links, and executes smoke suites (`smoke_installed_package.py`) and CLI entry points (`herbal-almanac --help`) guarantees that binary distribution packages distributed to users are completely functional.
-20. **Post-promotion repository hygiene and de-duplication:**
-    - *Staging artifact retirement:* Once staging review packages (such as `stage_c_review/`) are formally accepted and their components are promoted into the canonical package namespace (`src/herbal_almanac/`) and official test runner (`tests/`), all duplicate code, SQL, and test files must be deleted from staging to avoid code drift, duplicate test executions, and stale imports.
-    - *Preservation of architectural decision records:* Design review directories are retained as documentation archives housing only accepted ADRs, coverage reports, and technical manuals.
-    - *Clean relative imports over fallback imports:* Inside promoted package modules, fragile runtime import fallbacks (`try: from .xxx import ... except ImportError: from xxx import ...`) and `sys.path` injections should be replaced with direct, canonical intra-package relative imports (`from .xxx import yyy`), guaranteeing consistent module resolution and static type analyzer correctness.
-    - *Git hygiene for distribution artifacts:* Generated build directories (`build/`, `dist/`, `*.egg-info/`) must never be committed to source control and must be untracked (`git rm -r --cached`) and ignored in `.gitignore`.
-21. **Formal milestone gate verification protocol:**
-    - *Multi-dimensional milestone readiness:* Closing a database-driven semantic architecture gate requires auditing across five orthogonal vectors: (1) schema and constraint alignment across DDL, triggers, and service code; (2) legacy database preservation and cryptographic row invariance; (3) epistemic and multilingual representation fidelity; (4) complete test runner and CI matrix parity; and (5) adherence to non-clinical domain boundaries (no medical recommendations, no symptom matching).
-    - *Distinguishing active production baseline from supported capabilities:* In phased database migrations, establishing an explicit, user-authorized upgrade path allows a repository to achieve complete milestone capability readiness without mutating existing production databases prior to operator sign-off.
-22. **Multi-source evidence architecture and epistemic deduplication:**
-    - *The false corroboration hazard:* Repeating secondary or tertiary claims across multiple internet sources creates artificial epistemic consensus unless claims are anchored to their primary publication, treatise, or monograph.
-    - *Canonical persistent identifiers and mirror tagging:* Using normalized persistent identifiers (`doi`, `pmid`) alongside text shingling detects derivative sources, enabling the ingestion pipeline to record multiple citations while preventing duplicate evidence weighting.
-    - *Strict segregation of traditional and biomedical models:* Scientific pharmacology findings must be recorded as distinct, evidence-anchored claims without mutating, replacing, or retrofitting classical Ayurvedic concepts.
-23. **Automated packaging asset verification and AST skip-guard enforcement:**
-    - *Wheel asset inspection testing:* Unit tests can dynamically execute `build --wheel --no-isolation` into a temporary directory and inspect the wheel archive's internal ZIP manifest (`zipfile.ZipFile.namelist()`), verifying that every SQL migration file, HTML template, and CSS stylesheet is bundled prior to distribution.
-    - *Static AST skip-guard enforcement:* By parsing all test modules via `ast.parse` and inspecting functions referencing uncommitted databases (`data/inspection.db`), tests can programmatically fail if any developer introduces an unguarded query or test that assumes the local database exists, protecting against CI breaks before code merges.
-
-
-
-
-
-
 
 
 
