@@ -148,8 +148,15 @@ Open `http://127.0.0.1:8000` and explore:
    - **Directional Dosha Effects:** Normalized Vata/Pitta/Kapha decrease and increase assertions.
    - **Linked Conditions:** Illnesses linking to their dedicated condition detail pages.
    - **Virya Reconciliation Summary Pill:** Multi-source concordance indicator.
-4. **Illness Explorer (`/illnesses`):** Therapeutic index of conditions with alias-aware search (e.g. searching "fever" finds "Jvara"), condition IDs, and linked herb counts.
-5. **Illness Detail (`/illnesses/1`):** Detailed condition profile listing all associated herbs, distinguishing between scraped and manually curated relationships, with mandatory medical disclaimer.
+4. **Illness Explorer (`/illnesses`):** Therapeutic index of conditions with:
+   - **Multilingual Language Selector:** Switch between 15 Indian languages (English, हिन्दी, संस्कृतम्, বাংলা, தமிழ், తెలుగు, etc.) with native script buttons and URL persistence (`?language=hi`).
+   - **Multilingual Search:** Query conditions by English common name ("fever", "cough", "piles"), classical transliteration ("jvara", "kasa", "arsha"), or vernacular scripts ("बुखार", "खांसी", "बवासीर").
+   - **Clear Heading Hierarchy:** English name displayed as main heading, selected language script beneath it with `<span lang="...">`, and original scraped transliteration preserved in small monospace code tags.
+   - **Disclaimers:** CCRAS DRAVYA medical research disclaimer and a machine-translation notice on non-English views.
+5. **Illness Detail (`/illnesses/1`):** Detailed condition profile listing all associated herbs with:
+   - Preserved language selection across links.
+   - Distinct badges for scraped vs. manually curated herb-treatment relationships.
+   - Mandatory medical disclaimer and machine translation notices.
 6. **Virya Reconciliation Dashboard (`/stage-c/reconciliation/1`):** Detailed 4-tier audit report classifying concordance across sources, candidate divergence, and intra-claim ambiguity.
 7. **REST JSON Endpoints:**
    - Herb Semantic Profile: `GET /api/stage-c/herbs/1/profile`
@@ -240,6 +247,38 @@ pass `--translate` to add machine-generated `Translated Names.<Language>`
 attributes. Source regional scripts and source wording are retained separately.
 Translated content is marked unverified; see
 [`documentations/translation.md`](documentations/translation.md).
+
+### Multilingual Illness Glossary and Language Selector
+
+To bridge classical Ayurvedic nomenclature and modern vernacular understanding, Herbal Almanac bundles an in-memory multilingual illness glossary (`src/herbal_almanac/data/illness_glossary.csv`, 227 conditions, 16 language columns) supported by a resolution engine (`src/herbal_almanac/illness_glossary.py`).
+
+1. **15 Supported Indian Languages:**
+   - Quick selector buttons: **English**, **हिन्दी** (Hindi), **संस्कृतम्** (Sanskrit).
+   - Additional regional scripts: **অসমীয়া** (Assamese), **বাংলা** (Bengali), **ગુજરાતી** (Gujarati), **ಕನ್ನಡ** (Kannada), **മലയാളം** (Malayalam), **मराठी** (Marathi), **नेपाली** (Nepali), **ଓଡ଼ିଆ** (Odia), **ਪੰਜਾਬੀ** (Punjabi), **தமிழ்** (Tamil), **తెలుగు** (Telugu), and **اردو** (Urdu).
+   - Selection persists via URL query parameter (`?language=hi`) across condition and herb links.
+
+2. **Fault-Tolerant Resolution:**
+   - Classical scraped transliterations often include case variations, diacritics, Sanskrit visargas (`-H`, `-h`), phonetic alternatives (`w`/`v`, `sh`/`s`, `ch`/`cch`), and slash compounds (e.g. `ArtavadoSaH/ArtavaduSTiH/rajodoSaH`).
+   - The resolver (`resolve_illness()`) handles all of these variations transparently and maps compound terms to both full and individual concepts without modifying stored database records.
+
+3. **Multilingual and Alias Search:**
+   - Searches across all 15 language columns as well as English clinical synonyms (e.g. searching "bawasir" or "piles" matches "Arsha / Piles").
+   - **Cross-Explorer Redirection:** When a user searches for an illness term (e.g. "cough" or "बुखार") in the Herb Explorer and no herb matches, the GUI automatically redirects (HTTP 303) to `/illnesses?q=...`.
+
+4. **Extending the Glossary:**
+   - To add new conditions or regional synonyms, edit `src/herbal_almanac/data/illness_glossary.csv` following the 16-column UTF-8 format (`Original_Term, English, Assamese, Bengali, Gujarati, Hindi, Kannada, Malayalam, Marathi, Nepali, Odia, Punjabi, Sanskrit, Tamil, Telugu, Urdu`). The in-memory resolver reloads on application startup.
+
+5. **AI Attribution & Scholarly Precedence:**
+   - Translations in the CSV were generated with AI assistance via **Gemini Deep Research**. They are machine-generated and **not clinically verified**.
+   - **Scholarly Precedence:** Curated Stage C canonical concepts (the 24 `IND_*` indications in `concept_catalog.py`) take strict precedence over CSV translations for English, Hindi, and Sanskrit on conflict. All discrepancies are audited transparently via `scripts/illness_coverage.py --conflicts`.
+   - Non-English pages display an explicit disclaimer banner: *"Translations are machine-generated (Gemini) and not clinically verified."* alongside standard CCRAS research disclaimers.
+
+6. **Database Coverage Audit:**
+   - Check database illness resolution coverage at any time:
+     ```bash
+     python scripts/illness_coverage.py --database data/demo.db
+     ```
+   - See [`documentations/illness_glossary.md`](documentations/illness_glossary.md) for full architecture and resolution specifications.
 
 ## Local web interface
 

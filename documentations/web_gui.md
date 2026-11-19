@@ -51,25 +51,47 @@ or the package's normal per-user database location.
 - **Overview (`/`):** lightweight counts for herbs, illness terms, treatment
   links, and flexible attributes, the six most recently inserted herb
   records, and frequent conditions ranked by linked herb count with direct
-  links to condition details.
+  links to condition details. Includes dual search inputs for herbs and conditions.
 - **Herb explorer (`/herbs`):** search using the existing ranked
-  `search_herbs()` behavior, with 12 results displayed per page.
+  `search_herbs()` behavior, with 12 results displayed per page and query
+  preservation across pagination controls. If an entered query yields no matching
+  herbs but matches an illness term or synonym in the multilingual glossary, the
+  route automatically redirects (HTTP 303) to `/illnesses?q=...`.
 - **Herb detail (`/herbs/{herb_id}`):** version-aware botanical profile.
   - *On Schema Version 2 databases:* displays an informative capability degradation banner (`"Stage C Semantic Dravyaguna features require Schema Version 3"`), while rendering the full legacy botanical profile, source attributes, Dosha effects, and illness links.
-  - *On Schema Version 3 databases:* dynamically unlocks normalized Stage C Dravyaguna property cards (Rasa, Guna, Virya, Vipaka, Prabhava, Karma), officinal plant parts (Prayojyāṅga), multilingual labels via `?language=en|hi|sa`, canonical Sanskrit script (Devanagari) and IAST transliterations, preparations, clinical indications, and a Virya consensus indicator pill linking to the reconciliation dashboard.
+  - *On Schema Version 3 databases:* dynamically unlocks normalized Stage C Dravyaguna property cards (Rasa, Guna, Virya, Vipaka, Prabhava, Karma), officinal plant parts (Prayojyāṅga), multilingual labels via `?language=<code>`, canonical Sanskrit script (Devanagari) and IAST transliterations, preparations, clinical indications, and a Virya consensus indicator pill linking to the reconciliation dashboard.
 - **Virya reconciliation dashboard (`/stage-c/reconciliation/{herb_id}`):** an interactive 4-tier audit dashboard displaying classical source agreement, candidate divergence (unreviewed / reviewed), and verified contradictions across botanical peers. Returns HTTP 501 on Schema Version 2.
-- **Illness explorer (`/illnesses`):** searchable, paginated directory of illness terms with alias-aware matching (`ILLNESS_ALIASES`, e.g. "fever" matching "Jvara"), showing the count of linked herbs per condition.
-- **Illness detail (`/illnesses/{illness_id}`):** condition profile listing all associated herbs with links to `/herbs/{herb_id}`, distinguishing between scraped and manually curated links. Displays a mandatory medical disclaimer on every illness view: *"Associations are scraped from the CCRAS DRAVYA source, are unverified, and are not medical advice."*
+- **Illness explorer (`/illnesses`):** searchable, paginated directory of illness terms featuring:
+  - **15-Language Selector:** One-click language switching between English, हिन्दी, संस्कृतम्, and 12 regional Indic scripts (Assamese, Bengali, Gujarati, Kannada, Malayalam, Marathi, Nepali, Odia, Punjabi, Tamil, Telugu, Urdu) with accessible `aria-label` and `<span lang="...">` attributes. Selected language persists across pagination and entity links via `?language=<code>`.
+  - **Multilingual Search:** Matches queries across English names, clinical synonyms (e.g., "piles", "fever"), and all 15 native Indic scripts (e.g., "खांसी", "बुखार", "बवासीर") using `database_operator.py` and `illness_glossary.py`.
+  - **Structured Heading Hierarchy:** Displays the readable English name as primary heading, the selected language term beneath it, and the original scraped transliteration in small code tags (`Original term · <code>...</code>`).
+  - **Ethical Disclaimers:** Preserves the mandatory CCRAS DRAVYA medical research disclaimer on every page, and renders an explicit translation notice on non-English views: *"Translations are machine-generated (Gemini) and not clinically verified."*
+- **Illness detail (`/illnesses/{illness_id}`):** condition profile listing all associated herbs with links to `/herbs/{herb_id}`, distinguishing between scraped and manually curated links, with preserved language selection across navigation.
 - **Display-only illness name formatting (`readable_illness` Jinja filter):** transliterated illness names from source databases often contain internal Harvard-Kyoto/ITRANS capitals (e.g. `KAsa`, `AgnimAndya`, `khAlityam/khalati`). The `format_readable_illness` presentation helper and Jinja filter formats these into readable title case (`Kasa`, `Agnimandya`, `Khalityam/Khalati`) in presentation templates without modifying underlying SQLite records.
 
 ## Illness & Stage C REST API Endpoints
 
 The web application exposes read-only REST API endpoints:
 
-- `GET /api/illnesses?q=`: returns ranked list of `{id, english_name, herb_count}` matching the query (alias-aware).
-- `GET /api/illnesses/{illness_id}/herbs`: returns list of `{id, english_name, original_name, botanical_name, family, link_source}` for a specific illness. Returns HTTP 404 for unknown illness IDs.
-- `GET /api/stage-c/status`: reports schema version, migration ledger sequence, and Stage C feature availability.
-
+- `GET /api/illnesses?q=`: returns ranked list of condition objects matching the query:
+  ```json
+  [
+    {
+      "id": 1,
+      "english_name": "Cough",
+      "original_name": "KAsa",
+      "label": "खांसी",
+      "language": "hi",
+      "hindi": "खांसी",
+      "sanskrit": "कासः",
+      "herb_count": 5,
+      "origin": "catalog",
+      "verification": "curated",
+      "kind": "disease"
+    }
+  ]
+  ```
+- `GET /api/illnesses/{illness_id}/herbs`: returns list of associated herb objects enriched with multilingual metadata and link source (`scraped` vs `manual`). Returns HTTP 404 for unknown illness IDs.
 - `GET /api/stage-c/status`: reports schema version, migration ledger sequence, and Stage C feature availability.
 - `GET /api/stage-c/herbs/{herb_id}/profile`: returns localized Dravyaguna semantic profile JSON with optional `language` (`en`, `hi`, `sa`), `include_disputed`, and `include_provisional` query parameters. Returns HTTP 501 on Schema Version 2, HTTP 500 on corrupted ledgers.
 - `GET /api/stage-c/herbs/{herb_id}/reconciliation`: returns 4-tier Virya reconciliation report JSON with summary counts and pairwise divergence records. Returns HTTP 501 on Schema Version 2, HTTP 500 on corrupted ledgers.

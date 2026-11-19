@@ -48,6 +48,7 @@ Herbal Almanac employs an offline-first, 4-tier modular architecture built with 
 │  - Claim Lifecycle & Adjudication Engine (claim_lifecycle.py)          │
 │  - Semantic Backfill Engine with Row Invariance (backfill_engine.py)   │
 │  - Localized Repository API & Virya Reconciliation (repository_api.py) │
+│  - Multilingual Illness Glossary & Resolution (illness_glossary.py)    │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
                                     ├──────────────────────────┐
@@ -78,7 +79,8 @@ To maintain strict scientific and engineering integrity, the repository maintain
 | **Claim Lifecycle Engine** | **IMPLEMENTED** | Dual-pathway transitions (routine progression vs. administrative adjudication), trigger hazard defense, selective child reopening, and section omission detection. |
 | **Semantic Backfill Engine** | **IMPLEMENTED** | Automated ruleset extraction mapping Stage B claims to Stage C concepts with SHA-256 legacy row invariance checks and compound Dosha decomposition. |
 | **Repository API & Reconciliation** | **IMPLEMENTED** | Localized multi-concept profile queries (`herb_dravyaguna_profile`) and 4-tier Virya reconciliation executor (`reconcile_herb_virya`). |
-| **Version-Aware Web GUI** | **IMPLEMENTED** | FastAPI/Jinja2 presentation (`web_app.py`) with HTTP 501 capability degradation on Schema v2 and full semantic property cards on Schema v3. |
+| **Multilingual Illness Glossary** | **IMPLEMENTED** | In-memory 15-language translation resolver (`illness_glossary.py`) with packaged UTF-8 glossary (`data/illness_glossary.csv`, 227 conditions), fault-tolerant Sanskrit normalization, catalog precedence, cross-script search, and coverage auditor (`scripts/illness_coverage.py`). |
+| **Version-Aware Web GUI** | **IMPLEMENTED** | FastAPI/Jinja2 presentation (`web_app.py`) with HTTP 501 capability degradation on Schema v2, full semantic property cards on Schema v3, 15-language selector, and search redirection. |
 | **CLI Management & Migration Tooling** | **IMPLEMENTED** | Interactive `upgrade-stage-c` with `--yes` confirmation and `stage-c-status` capability inspection. |
 | **Stage D Multi-Source & Evidence** | **PROPOSED ONLY** | Formal architecture proposal in `stage_d_feasibility_and_schema.md`. **Not implemented in active storage.** No `evidence_records` table exists in runtime schemas. |
 | **Stages E–I (Descriptions, Safety, Clinical Matching)** | **PROPOSED ONLY** | Future roadmap milestones (clinical matching, symptom search, medical-history screening) reserved for later stages per `roadmap_addendum.md`. |
@@ -93,8 +95,9 @@ The codebase enforces strict verification protocols to prevent regressions:
 2. **Hermetic CI Environment:** Local databases (`data/inspection.db`) are gitignored and never committed. Hermetic tests synthesize realistic Schema v2 databases dynamically via `hermetic_v2_db_path` in `tests/conftest.py`.
 3. **AST-Based Skip Guards:** Static AST analysis in `tests/test_packaging_and_guards.py` scans test modules to ensure any test referencing local database paths contains explicit `pytest.skip` guards, preventing false CI failures.
 4. **CI Matrix Coverage:** GitHub Actions (`.github/workflows/tests.yml`) executes against Python 3.10, 3.11, 3.12, 3.13, and 3.14 with `fail-fast: false`.
-5. **Multi-Tier Packaging Verification:** Automated smoke tests build the binary distribution wheel (`python -m build`), verify non-Python asset bundling (SQL scripts, templates, CSS), and smoke-test clean virtual environments in both core-only and `[web]` configurations.
-6. **Pre-Push Checklist:** Mandatory 6-step verification codified in `agents.md` ensures no code is pushed without scraper regression (57 tests) and full test runner passes.
+5. **Multi-Tier Packaging Verification:** Automated smoke tests build the binary distribution wheel (`python -m build`), verify non-Python asset bundling (SQL scripts, templates, CSS, and `illness_glossary.csv`), and smoke-test clean virtual environments in both core-only and `[web]` configurations.
+6. **Glossary & Coverage Auditing:** Dedicated hermetic suite (`tests/test_illness_glossary.py`, 12 tests) verifies CSV data integrity, phonetic tolerance, compound parsing, catalog precedence, and search; database coverage auditor (`scripts/illness_coverage.py`) verifies 100% resolution on production inspection data.
+7. **Pre-Push Checklist:** Mandatory 6-step verification codified in `agents.md` ensures no code is pushed without scraper regression (57 tests) and full test runner passes.
 
 ---
 
@@ -102,7 +105,7 @@ The codebase enforces strict verification protocols to prevent regressions:
 
 1. **Academic and Research Use Only:** Herbal Almanac is explicitly an academic research and software engineering evaluation platform. It is **not** a clinical decision support system, diagnostic engine, or medical prescribing tool.
 2. **No Symptom Matching or Recommendation Algorithms:** The system contains zero clinical diagnostic or treatment recommendation logic. No algorithms match patient symptoms to herbs.
-3. **Unverified Machine Translations:** All machine-translated terms are permanently tagged with `machine_generated = 1` and `verification_status = 'unverified'` until reviewed by certified domain experts.
+3. **Unverified Machine Translations:** All machine-translated terms (from Google Translate and Gemini Deep Research glossary) are permanently tagged with `origin = 'machine_generated'` and `verification_status = 'unverified'` until reviewed by certified domain experts. Non-English web views render explicit warning banners, and 39 Stage C catalog-vs-CSV label disagreements are tracked and audited rather than silently overwritten.
 4. **Source Attribution & Copyright:** Ingested textual data originates from the CCRAS DRAVYA portal (Ministry of Ayush, Govt. of India). While the software engine is licensed under the MIT License, primary classical and statutory source texts retain their respective institutional copyright and terms of use.
 5. **No Synthetic Clinical Claims:** Automated backfill algorithms strictly assign `mapping_method = 'lexicon_exact'`, `mapping_confidence = NULL`, and `verification_status = 'unreviewed'`, avoiding artificial probability inflation.
 
