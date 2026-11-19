@@ -380,11 +380,13 @@ def upgrade_stage_c(
 
         if "backfill_stats" in backfill_res:
             bs = backfill_res["backfill_stats"]
-            table.add_row("Backfilled Properties", str(bs.get("properties_created", 0)))
-            table.add_row("Backfilled Plant Parts", str(bs.get("parts_created", 0)))
-            table.add_row("Backfilled Dosha Effects", str(bs.get("dosha_effects_created", 0)))
-            table.add_row("Backfilled Preparations", str(bs.get("preparations_created", 0)))
-            table.add_row("Backfilled Indications", str(bs.get("indications_created", 0)))
+            table.add_row("Processed Source Claims", str(bs.get("processed_claims", 0)))
+            table.add_row("Concept Claim Mappings", str(bs.get("inserted_mappings", 0)))
+            table.add_row("Backfilled Properties", str(bs.get("inserted_properties", 0)))
+            table.add_row("Backfilled Plant Parts", str(bs.get("inserted_plant_parts", 0)))
+            table.add_row("Backfilled Dosha Effects", str(bs.get("inserted_dosha_effects", 0)))
+            table.add_row("Backfilled Preparations", str(bs.get("inserted_preparations", 0)))
+            table.add_row("Backfilled Indications", str(bs.get("inserted_indications", 0)))
 
         table.add_row("Stage B Legacy Row Invariance", "Cryptographically Verified (100% SHA-256 match)")
         console.print(table)

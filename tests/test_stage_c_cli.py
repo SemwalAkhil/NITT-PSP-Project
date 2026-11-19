@@ -103,3 +103,40 @@ def test_cli_upgrade_missing_database(tmp_path: Path):
     result = runner.invoke(app, ["upgrade-stage-c", "--database", str(missing_path), "--yes"])
     assert result.exit_code != 0
     assert "Target database file does not exist" in result.output
+
+
+def test_cli_upgrade_stage_c_backfill_stats_are_nonzero_and_match(tmp_path: Path, hermetic_v2_db_path: Path):
+    """Proves CLI upgrade-stage-c prints non-zero backfill counts matching backfill_stats."""
+    # DB 1: upgraded via programmatic API to get backfill_stats directly
+    db_api = tmp_path / "api_upg.db"
+    shutil.copy2(hermetic_v2_db_path, db_api)
+    almanac = AyurvedicAlmanac(db_api)
+    almanac.upgrade_to_stage_c()
+    api_backfill = almanac.run_stage_c_backfill()["backfill_stats"]
+
+    # Assert API stats are non-zero
+    assert api_backfill["inserted_properties"] > 0
+    assert api_backfill["inserted_dosha_effects"] > 0
+    assert api_backfill["inserted_plant_parts"] > 0
+    assert api_backfill["inserted_preparations"] > 0
+    assert api_backfill["inserted_indications"] > 0
+    assert api_backfill["inserted_mappings"] > 0
+
+    # DB 2: upgraded via CLI
+    db_cli = tmp_path / "cli_upg.db"
+    shutil.copy2(hermetic_v2_db_path, db_cli)
+    result = runner.invoke(
+        app,
+        ["upgrade-stage-c", "--database", str(db_cli), "--yes"],
+    )
+    assert result.exit_code == 0
+    output = result.output
+
+    # Assert printed counts in CLI output match run_stage_c_backfill()'s stats
+    assert f"Backfilled Properties         │ {api_backfill['inserted_properties']}" in output
+    assert f"Backfilled Plant Parts        │ {api_backfill['inserted_plant_parts']}" in output
+    assert f"Backfilled Dosha Effects      │ {api_backfill['inserted_dosha_effects']}" in output
+    assert f"Backfilled Preparations       │ {api_backfill['inserted_preparations']}" in output
+    assert f"Backfilled Indications        │ {api_backfill['inserted_indications']}" in output
+    assert f"Concept Claim Mappings        │ {api_backfill['inserted_mappings']}" in output
+
