@@ -38,4 +38,21 @@
   <div class="empty-state"><span>✿</span><h3>Your library is ready to grow</h3><p>No herb records are stored yet. Use the existing CLI scraper to populate your database, then return here to explore them.</p></div>
   {% endif %}
 </section>
+<section class="section-block">
+  <div class="section-title"><div><p class="eyebrow">TOP CONDITIONS</p><h2>Frequent conditions in your collection</h2></div><a class="text-link" href="{{ url_for('illness_list') }}">View all illnesses <span>→</span></a></div>
+  {% if summary.top_illnesses %}
+  <div class="herb-grid">
+    {% for illness in summary.top_illnesses %}
+    <a class="herb-card" href="{{ url_for('illness_detail', illness_id=illness.id) }}">
+      <span class="card-index">CONDITION · {{ "%04d"|format(illness.id) }}</span>
+      <h3>{{ illness.english_name|readable_illness }}</h3>
+      <p class="latin">{{ illness.herb_count }} linked {% if illness.herb_count == 1 %}herb{% else %}herbs{% endif %}</p>
+      <span class="card-arrow">↗</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state"><span>✚</span><h3>No therapeutic links recorded yet</h3><p>As you add herbs and therapeutic usages to your database, the most frequently addressed conditions will appear here.</p></div>
+  {% endif %}
+</section>
 {% endblock %}

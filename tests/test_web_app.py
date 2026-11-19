@@ -13,16 +13,32 @@ def make_client(tmp_path):
 
 def test_dashboard_shows_database_counts_and_recent_herbs(tmp_path):
     client, database = make_client(tmp_path)
-    database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
-    illness_id = database.add_illness("Cough")
-    database.add_treatment(1, illness_id)
+    h1 = database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    h2 = database.add_herb("Neem", botanical_name="Azadirachta indica")
+    i1 = database.add_illness("KAsa")
+    i2 = database.add_illness("Jvara")
+    database.add_treatment(h1, i1)
+    database.add_treatment(h2, i1)
+    database.add_treatment(h1, i2)
+
+    summary = database.dashboard_summary()
+    assert "top_illnesses" in summary
+    assert len(summary["top_illnesses"]) == 2
+    assert summary["top_illnesses"][0]["english_name"] == "KAsa"
+    assert summary["top_illnesses"][0]["herb_count"] == 2
+    assert summary["top_illnesses"][1]["english_name"] == "Jvara"
+    assert summary["top_illnesses"][1]["herb_count"] == 1
 
     response = client.get("/")
 
     assert response.status_code == 200
     assert "Herbal Almanac" in response.text
     assert "Ocimum tenuiflorum" in response.text
-    assert ">1<" in response.text
+    assert "Frequent conditions in your collection" in response.text
+    assert "Kasa" in response.text
+    assert "2 linked herbs" in response.text
+    assert f"/illnesses/{i1}" in response.text
+    assert "View all illnesses" in response.text
 
 
 def test_herb_explorer_lists_and_searches_records(tmp_path):
@@ -76,12 +92,15 @@ def test_herb_search_rejects_unreasonably_long_query(tmp_path):
 
 
 def test_dashboard_handles_empty_database(tmp_path):
-    client, _ = make_client(tmp_path)
+    client, database = make_client(tmp_path)
+    summary = database.dashboard_summary()
+    assert summary["top_illnesses"] == []
 
     response = client.get("/")
 
     assert response.status_code == 200
     assert "Your library is ready to grow" in response.text
+    assert "No therapeutic links recorded yet" in response.text
 
 def test_stylesheet_is_served_with_css_content_type(tmp_path):
     client, _ = make_client(tmp_path)

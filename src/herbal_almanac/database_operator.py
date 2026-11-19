@@ -1828,7 +1828,21 @@ class AyurvedicAlmanac:
                 LIMIT 6
                 """
             ).fetchall()
-        return {**counts, "recent_herbs": [dict(row) for row in recent]}
+            top_illnesses = connection.execute(
+                """
+                SELECT i.id, i.english_name, COUNT(t.herb_id) AS herb_count
+                FROM illness i
+                JOIN treatment t ON i.id = t.illness_id
+                GROUP BY i.id, i.english_name
+                ORDER BY herb_count DESC, i.english_name ASC
+                LIMIT 6
+                """
+            ).fetchall()
+        return {
+            **counts,
+            "recent_herbs": [dict(row) for row in recent],
+            "top_illnesses": [dict(row) for row in top_illnesses],
+        }
 
     def get_herb(self, herb_id: int) -> dict[str, Any] | None:
         """Return one herb's core identity, or None when it does not exist."""

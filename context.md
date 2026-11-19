@@ -91,7 +91,7 @@ Tests must remain offline and use fixtures, mocks/fakes, and temporary database 
 
 The FastAPI/Uvicorn/Jinja2 interface is a read-only layer over
 `AyurvedicAlmanac`. Its stylesheet is served at `/static/styles.css` and is
-included in package data. It provides the dashboard at `/`, searchable herbs at
+included in package data. It provides the dashboard at `/` (counts, recent herbs, top conditions), searchable herbs at
 `/herbs`, detail pages at `/herbs/{herb_id}`, searchable illness directory at
 `/illnesses`, condition detail at `/illnesses/{illness_id}`, and REST endpoints under
 `/api/`. Transliterated illness names are formatted into readable title case via

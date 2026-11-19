@@ -49,8 +49,9 @@ or the package's normal per-user database location.
 ## First milestone screens
 
 - **Overview (`/`):** lightweight counts for herbs, illness terms, treatment
-  links, and flexible attributes, plus the six most recently inserted herb
-  records.
+  links, and flexible attributes, the six most recently inserted herb
+  records, and frequent conditions ranked by linked herb count with direct
+  links to condition details.
 - **Herb explorer (`/herbs`):** search using the existing ranked
   `search_herbs()` behavior, with 12 results displayed per page.
 - **Herb detail (`/herbs/{herb_id}`):** version-aware botanical profile.
