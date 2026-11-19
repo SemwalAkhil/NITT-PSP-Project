@@ -255,3 +255,36 @@ def test_api_illness_endpoints(tmp_path):
     assert r_unknown.status_code == 404
 
 
+def test_herb_explorer_devanagari_sanskrit_and_botanical_search(tmp_path):
+    client, database = make_client(tmp_path)
+    from herbal_almanac.cleaning import PlantRecord
+    rec = PlantRecord(
+        ayurvedic_name="तुलसी",
+        transliterated_name="Tulsi",
+        source="ccras_dravya",
+        source_record_id=101,
+        source_url="https://example.com/plant/101",
+        botanical_name="Ocimum tenuiflorum",
+        family="Lamiaceae",
+        retrieved_at="2025-01-01T12:00:00Z",
+    )
+    database.insert_record(rec)
+
+    # 1. Search by Devanagari Sanskrit name
+    res_deva = client.get("/herbs", params={"q": "तुलसी"})
+    assert res_deva.status_code == 200
+    assert "तुलसी" in res_deva.text
+    assert "Browse illnesses" in res_deva.text
+
+    # 2. Search by transliterated English name
+    res_en = client.get("/herbs", params={"q": "Tulsi"})
+    assert res_en.status_code == 200
+    assert "तुलसी" in res_en.text
+
+    # 3. Search by botanical name
+    res_bot = client.get("/herbs", params={"q": "Ocimum"})
+    assert res_bot.status_code == 200
+    assert "Ocimum tenuiflorum" in res_bot.text
+
+
+
