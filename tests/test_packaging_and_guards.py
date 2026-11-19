@@ -43,6 +43,7 @@ def test_wheel_archive_contains_all_runtime_assets(tmp_path: Path):
     wheel_path = wheel_files[0]
 
     expected_assets = [
+        "herbal_almanac/data/illness_glossary.csv",
         "herbal_almanac/migrations/stage_c_ddl_and_triggers.sql",
         "herbal_almanac/migrations/virya_reconciliation.sql",
         "herbal_almanac/static/styles.css",
@@ -60,6 +61,10 @@ def test_wheel_archive_contains_all_runtime_assets(tmp_path: Path):
         namelist = zf.namelist()
         for asset in expected_assets:
             assert asset in namelist, f"Asset '{asset}' missing from built wheel archive!"
+
+        # Verify CSV content readability
+        csv_content = zf.read("herbal_almanac/data/illness_glossary.csv").decode("utf-8")
+        assert "Original_Term,English," in csv_content
 
         # Verify SQL content readability
         ddl_content = zf.read("herbal_almanac/migrations/stage_c_ddl_and_triggers.sql").decode("utf-8")

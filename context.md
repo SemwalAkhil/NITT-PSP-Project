@@ -12,9 +12,13 @@ This project is for research and software evaluation only; it is not medical adv
   - `translation.py` — optional machine-translation support.
   - `database_operator.py` — `AyurvedicAlmanac`, SQLite schema, legacy compatibility migrations, versioned migrations, transactional CRUD, and search.
   - `cli.py` — Typer commands and JSON/CSV export.
+  - `illness_glossary.py` — multilingual machine-generated glossary loader (15 languages), fault-tolerant resolution, and catalog-precedence engine.
+  - `data/illness_glossary.csv` — packaged UTF-8 multilingual illness glossary (227 rows, 16 columns).
   - `web_app.py` — optional FastAPI/Jinja2 read-only browser interface.
   - `templates/` and `static/` — server-rendered pages and local stylesheet.
 - `tests/test_scrapper.py` — offline scraper, cleaning, translation, CLI, and legacy database regression tests.
+- `tests/test_illness_glossary.py` — CSV integrity, phonetic tolerance, catalog precedence, fallback, and multilingual search tests.
+- `tests/test_packaging_and_guards.py` — packaging integrity (including CSV data assets) and hermetic skip-guard checks.
 - `tests/test_provenance_integration.py` — operational provenance tests (source records, claim extraction, supersession lineage, claim-to-subject validation, and idempotency).
 - `tests/test_database_connections.py` — connection isolation, commit/rollback, closure, and foreign-key tests.
 - `tests/test_database_initialization.py` — initialization concurrency, migration idempotence, rollback/retry, and closure tests.
