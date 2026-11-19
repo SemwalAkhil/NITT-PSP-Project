@@ -526,6 +526,10 @@ Moving from lexical string attributes to a normalized semantic ontology requires
 25. **Multi-tier packaging verification: core vs optional extras:**
     - *Distinguishing core installability from extras:* Packages with optional presentation layers (such as FastAPI/Jinja2 under `[web]`) must ensure the core engine functions cleanly without optional dependencies. Testing the built wheel in an environment installed with only core dependencies proves that non-web workflows (data operations, DDL upgrades, CLI commands) never inadvertently import optional packages at the root module level.
     - *Explicit extras installation in CI smoke jobs:* Smoke tests targeting presentation layers (`smoke_installed_package.py`) must install the wheel specifying the required extra (`python -m pip install "dist/*.whl[web]"`) to avoid `ModuleNotFoundError` during CI package verification.
+26. **Explicit build dependencies in development extras for PEP 517 non-isolated builds:**
+    - *Default environment omissions in Python 3.12+:* Python 3.12 and newer standard library virtual environments no longer include `setuptools` or `wheel` by default. When tests execute `python -m build --no-isolation` to test wheel generation offline without network access to PyPI, the build backend (`setuptools.build_meta`) fails with `ModuleNotFoundError: No module named 'setuptools'` unless `setuptools>=68` and `wheel` are explicitly declared in `[project.optional-dependencies] dev`.
+    - *Non-short-circuiting CI matrices:* Configuring `fail-fast: false` on GitHub Actions test matrix runners prevents a failure on one Python version from aborting the remaining matrix jobs, ensuring complete diagnostics across Python 3.10 through 3.14.
+
 
 
 
