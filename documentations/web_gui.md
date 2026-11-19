@@ -57,10 +57,16 @@ or the package's normal per-user database location.
   - *On Schema Version 2 databases:* displays an informative capability degradation banner (`"Stage C Semantic Dravyaguna features require Schema Version 3"`), while rendering the full legacy botanical profile, source attributes, Dosha effects, and illness links.
   - *On Schema Version 3 databases:* dynamically unlocks normalized Stage C Dravyaguna property cards (Rasa, Guna, Virya, Vipaka, Prabhava, Karma), officinal plant parts (Prayojyāṅga), multilingual labels via `?language=en|hi|sa`, canonical Sanskrit script (Devanagari) and IAST transliterations, preparations, clinical indications, and a Virya consensus indicator pill linking to the reconciliation dashboard.
 - **Virya reconciliation dashboard (`/stage-c/reconciliation/{herb_id}`):** an interactive 4-tier audit dashboard displaying classical source agreement, candidate divergence (unreviewed / reviewed), and verified contradictions across botanical peers. Returns HTTP 501 on Schema Version 2.
+- **Illness explorer (`/illnesses`):** searchable, paginated directory of illness terms with alias-aware matching (`ILLNESS_ALIASES`, e.g. "fever" matching "Jvara"), showing the count of linked herbs per condition.
+- **Illness detail (`/illnesses/{illness_id}`):** condition profile listing all associated herbs with links to `/herbs/{herb_id}`, distinguishing between scraped and manually curated links. Displays a mandatory medical disclaimer on every illness view: *"Associations are scraped from the CCRAS DRAVYA source, are unverified, and are not medical advice."*
 
-## Stage C REST API Endpoints
+## Illness & Stage C REST API Endpoints
 
-The web application exposes capability-gated REST API endpoints:
+The web application exposes read-only REST API endpoints:
+
+- `GET /api/illnesses?q=`: returns ranked list of `{id, english_name, herb_count}` matching the query (alias-aware).
+- `GET /api/illnesses/{illness_id}/herbs`: returns list of `{id, english_name, original_name, botanical_name, family, link_source}` for a specific illness. Returns HTTP 404 for unknown illness IDs.
+- `GET /api/stage-c/status`: reports schema version, migration ledger sequence, and Stage C feature availability.
 
 - `GET /api/stage-c/status`: reports schema version, migration ledger sequence, and Stage C feature availability.
 - `GET /api/stage-c/herbs/{herb_id}/profile`: returns localized Dravyaguna semantic profile JSON with optional `language` (`en`, `hi`, `sa`), `include_disputed`, and `include_provisional` query parameters. Returns HTTP 501 on Schema Version 2, HTTP 500 on corrupted ledgers.
@@ -89,11 +95,10 @@ SQLite database
 Jinja2 templates + local CSS
 ```
 
-The routes call the existing database operator. The only new database read
-helpers are `dashboard_summary()`, which performs aggregate counts and
-returns a small recent-record sample, and `get_herb()`, which retrieves one
-herb by ID. Each helper uses the database operator's managed connection
-lifecycle.
+The routes call the existing database operator. The database read helpers
+include `dashboard_summary()`, `get_herb()`, `get_illness()`, `illness_summaries()`,
+and `herbs_for_illness()`. Each helper uses the database operator's managed connection
+lifecycle with parameterized SQL queries.
 
 The web interface is intentionally read-only in this milestone. It does not
 start scraping or translation work, write manual curation, or expose migration

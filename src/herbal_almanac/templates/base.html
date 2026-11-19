@@ -18,6 +18,7 @@
       <nav class="side-nav" aria-label="Main navigation">
         <a class="{% if active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">⌂</span> Overview</a>
         <a class="{% if active_page == 'herbs' %}active{% endif %}" href="{{ url_for('herb_list') }}"><span class="nav-icon">✿</span> Herb explorer</a>
+        <a class="{% if active_page == 'illnesses' %}active{% endif %}" href="{{ url_for('illness_list') }}"><span class="nav-icon">✚</span> Illness explorer</a>
       </nav>
       <div class="sidebar-note">
         <span class="leaf-dot"></span>

@@ -538,6 +538,10 @@ Moving from lexical string attributes to a normalized semantic ontology requires
 29. **Starlette `url_for` query parameter constraints and multi-page pagination test fixtures:**
     - *Starlette URL generation contract:* Starlette's `url_for()` only matches and interpolates declared path template parameters (e.g. `{herb_id}`). Passing unexpected keyword arguments for query parameters (e.g. `url_for('herb_list', q=query, page=page+1)`) raises `starlette.routing.NoMatchFound` (HTTP 500) rather than appending them as a query string. Query strings must be built explicitly via query-string formatting or Jinja's `urlencode` filter (e.g. `{{ url_for('herb_list') }}?{{ {'q': query, 'page': page+1}|urlencode }}`).
     - *Multi-page fixture testing discipline:* Pagination logic cannot be verified with minimal fixtures of 1–2 records. Regression test suites for paginated views must construct fixtures that span across multiple pages (e.g. 35+ records with `PAGE_SIZE=12`) to exercise forward/backward pagination links, search query preservation across pages, and out-of-range page clamping.
+30. **Condition-first botanical exploration and clinical attribution boundaries:**
+    - *Bidirectional knowledge exploration:* Users often query botanical repositories from the condition perspective rather than plant names. Implementing `illness_summaries()` and `herbs_for_illness()` enables bidirectional discovery (browsing diseases to find candidate herbs) using existing `search_illnesses()` ranking with `ILLNESS_ALIASES` (e.g. mapping colloquial "fever" to classical "jvara") and treatment aggregations without altering normalized database schemas.
+    - *Preserving provenance and epistemic safety in UI presentation:* When presenting disease-herb relationships, presentation layers must explicitly distinguish between scraped associations (`link_source = 'scraped'`) and verified manual links (`link_source = 'manual'`), while rendering prominent medical disclaimers to prevent users from mistaking scraped research associations for clinical guidance.
+
 
 
 

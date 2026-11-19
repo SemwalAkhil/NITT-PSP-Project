@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ illness.english_name }} · Illness Explorer · Herbal Almanac{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('illness_list') }}">← Back to Illness explorer</a>
+
+<div class="disclaimer-banner" style="background:#fef7e7;border:1px solid #f2e2be;border-radius:8px;padding:12px 16px;margin-bottom:24px;color:#7a5814;font-size:12px;line-height:1.5;">
+  <strong>Disclaimer:</strong> Associations are scraped from the CCRAS DRAVYA source, are unverified, and are not medical advice.
+</div>
+
+<header class="detail-heading">
+  <div>
+    <p class="eyebrow">CONDITION DETAIL · {{ "%04d"|format(illness.id) }}</p>
+    <h1>{{ illness.english_name }}</h1>
+    <p class="detail-common">
+      Verification: <strong>{{ illness.verification_status|title }}</strong>
+      {% if illness.machine_generated %}<span style="color:#a27c42;margin-left:8px;">(Machine-generated)</span>{% endif %}
+    </p>
+  </div>
+  <div class="detail-stamp">
+    <strong>{{ herbs|length }}</strong>
+    <small>LINKED<br>HERBS</small>
+  </div>
+</header>
+
+<section class="content-card">
+  <div class="card-heading">
+    <div>
+      <p class="eyebrow">BOTANICAL RELATIONSHIPS</p>
+      <h2>Associated herbs</h2>
+    </div>
+    <span class="count-pill">{{ herbs|length }} {% if herbs|length == 1 %}herb{% else %}herbs{% endif %}</span>
+  </div>
+
+  {% if herbs %}
+  <div class="herb-list">
+    {% for herb in herbs %}
+    <a class="herb-row" href="{{ url_for('herb_detail', herb_id=herb.id) }}">
+      <span class="herb-symbol">✿</span>
+      <span class="herb-main">
+        <strong>{{ herb.original_name or herb.english_name }}</strong>
+        <small>{{ herb.english_name }}</small>
+      </span>
+      <span class="herb-botanical">
+        {{ herb.botanical_name or "Botanical identity not recorded" }}
+        {% if herb.family %}<small>{{ herb.family }}</small>{% endif %}
+      </span>
+      <span class="count-pill" style="align-self:center;{% if herb.link_source == 'manual' %}background:#e1e9de;color:#214632;font-weight:bold;{% endif %}">
+        {{ herb.link_source|title }}
+      </span>
+      <span class="row-arrow">↗</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted empty-inline">No herbs are currently associated with this illness record.</p>
+  {% endif %}
+</section>
+{% endblock %}

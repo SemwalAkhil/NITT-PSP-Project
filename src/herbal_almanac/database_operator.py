@@ -1924,6 +1924,64 @@ class AyurvedicAlmanac:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    def get_illness(self, illness_id: int) -> dict[str, Any] | None:
+        """Return one illness's core identity, or None when it does not exist."""
+        if illness_id <= 0:
+            return None
+        self.create_database()
+        with self._connection() as connection:
+            row = connection.execute(
+                """
+                SELECT id, english_name, canonical_key, machine_generated, verification_status
+                FROM illness
+                WHERE id = ?
+                """,
+                (illness_id,),
+            ).fetchone()
+        return dict(row) if row is not None else None
+
+    def illness_summaries(self, query: str = "") -> list[dict[str, Any]]:
+        """Return illnesses matching query with associated herb counts, ranked."""
+        self.create_database()
+        with self._connection() as connection:
+            rows = connection.execute(
+                """
+                SELECT i.id, i.english_name, i.canonical_key, COUNT(t.herb_id) AS herb_count
+                FROM illness i
+                LEFT JOIN treatment t ON i.id = t.illness_id
+                GROUP BY i.id, i.english_name, i.canonical_key
+                ORDER BY i.english_name
+                """,
+            ).fetchall()
+        ranked = self._rank_rows(rows, query, ("english_name", "canonical_key"), aliases_enabled=True)
+        return [
+            {
+                "id": item["id"],
+                "english_name": item["english_name"],
+                "herb_count": item["herb_count"],
+            }
+            for item in ranked
+        ]
+
+    def herbs_for_illness(self, illness_id: int) -> list[dict[str, Any]]:
+        """Return herbs associated with one illness, parameterized."""
+        if illness_id <= 0:
+            return []
+        self.create_database()
+        with self._connection() as connection:
+            rows = connection.execute(
+                """
+                SELECT h.id, h.english_name, h.original_name, h.botanical_name, h.family,
+                       t.source AS link_source
+                FROM treatment AS t
+                JOIN herbs AS h ON h.id = t.herb_id
+                WHERE t.illness_id = ?
+                ORDER BY h.english_name, h.original_name
+                """,
+                (illness_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
     def herb_attributes(self, herb_id: int) -> list[dict[str, Any]]:
         """Return all source attributes for one herb."""
         self.create_database()

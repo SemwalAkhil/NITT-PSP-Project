@@ -202,6 +202,63 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         finally:
             conn.close()
 
+    @application.get("/illnesses", response_class=HTMLResponse, name="illness_list")
+    def illness_list(
+        request: Request,
+        q: str = Query(default="", max_length=100),
+        page: int = Query(default=1, ge=1),
+    ) -> Any:
+        database = get_database()
+        matching = database.illness_summaries(q.strip())
+        total = len(matching)
+        page_count = max(1, math.ceil(total / PAGE_SIZE))
+        current_page = min(page, page_count)
+        start = (current_page - 1) * PAGE_SIZE
+        illnesses = matching[start : start + PAGE_SIZE]
+        return templates.TemplateResponse(
+            request=request,
+            name="illnesses.html",
+            context={
+                "illnesses": illnesses,
+                "query": q,
+                "total": total,
+                "page": current_page,
+                "page_count": page_count,
+                "page_size": PAGE_SIZE,
+                "active_page": "illnesses",
+            },
+        )
+
+    @application.get("/illnesses/{illness_id}", response_class=HTMLResponse, name="illness_detail")
+    def illness_detail(request: Request, illness_id: int) -> Any:
+        database = get_database()
+        illness = database.get_illness(illness_id)
+        if illness is None:
+            raise HTTPException(status_code=404, detail="Illness not found")
+        herbs = database.herbs_for_illness(illness_id)
+        return templates.TemplateResponse(
+            request=request,
+            name="illness_detail.html",
+            context={
+                "illness": illness,
+                "herbs": herbs,
+                "active_page": "illnesses",
+            },
+        )
+
+    @application.get("/api/illnesses")
+    def api_illness_list(q: str = Query(default="", max_length=100)) -> Any:
+        database = get_database()
+        return database.illness_summaries(q.strip())
+
+    @application.get("/api/illnesses/{illness_id}/herbs")
+    def api_illness_herbs(illness_id: int) -> Any:
+        database = get_database()
+        illness = database.get_illness(illness_id)
+        if illness is None:
+            raise HTTPException(status_code=404, detail=f"Illness with id {illness_id} not found")
+        return database.herbs_for_illness(illness_id)
+
     @application.get("/api/stage-c/status")
     def api_stage_c_status() -> Any:
         conn = sqlite3.connect(application.state.database_path)

@@ -5,6 +5,14 @@
   <div><p class="eyebrow">YOUR KNOWLEDGE SPACE</p><h1>Good day. <em>Explore nature.</em></h1><p class="subheading">A clear view of the botanical records in your local library.</p></div>
   <a class="button button-primary" href="{{ url_for('herb_list') }}">Explore herbs <span>→</span></a>
 </section>
+<form class="search-form" method="get" action="{{ url_for('herb_list') }}" style="margin-bottom:28px;">
+  <label class="search-box">
+    <span>⌕</span>
+    <input type="search" name="q" placeholder="Search across herbs or illnesses…" aria-label="Search">
+    <button type="submit" formaction="{{ url_for('herb_list') }}">Search Herbs</button>
+    <button type="submit" formaction="{{ url_for('illness_list') }}" class="button" style="background:#e8eee3;color:#214632;border:1px solid #c8d6c4;">Search Illnesses</button>
+  </label>
+</form>
 <section class="welcome-panel">
   <div class="welcome-copy"><span class="panel-kicker">THE DRAVYAGUNA COLLECTION</span><h2>Traditional knowledge,<br><em>thoughtfully catalogued.</em></h2><p>Browse plant identities, regional names, traditional attributes and Dosha effects preserved with their source context.</p><a href="{{ url_for('herb_list') }}" class="text-link">Discover the collection <span>→</span></a></div>
   <div class="botanical-art" aria-hidden="true"><div class="sun"></div><div class="stem"></div><i class="leaf leaf-one"></i><i class="leaf leaf-two"></i><i class="leaf leaf-three"></i><i class="leaf leaf-four"></i><i class="leaf leaf-five"></i></div>

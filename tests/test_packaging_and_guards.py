@@ -51,6 +51,8 @@ def test_wheel_archive_contains_all_runtime_assets(tmp_path: Path):
         "herbal_almanac/templates/herb_detail.html",
         "herbal_almanac/templates/herb_detail_semantic.html",
         "herbal_almanac/templates/herbs.html",
+        "herbal_almanac/templates/illness_detail.html",
+        "herbal_almanac/templates/illnesses.html",
         "herbal_almanac/templates/virya_reconciliation.html",
     ]
 

@@ -151,3 +151,107 @@ def test_herb_pagination_with_many_records(tmp_path):
     assert "Showing 25–35 of 35" in r_out.text
     assert "Page 3 of 3" in r_out.text
 
+
+def test_illness_explorer_lists_illnesses_with_counts(tmp_path):
+    client, database = make_client(tmp_path)
+    h1 = database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    h2 = database.add_herb("Neem", botanical_name="Azadirachta indica")
+    i1 = database.add_illness("Cough")
+    i2 = database.add_illness("Fever")
+    database.add_treatment(h1, i1)
+    database.add_treatment(h2, i1)
+    database.add_treatment(h1, i2)
+
+    response = client.get("/illnesses")
+    assert response.status_code == 200
+    assert "Illness explorer" in response.text
+    assert "Cough" in response.text
+    assert "Fever" in response.text
+    assert "2 herbs" in response.text
+    assert "1 herb" in response.text
+    assert "Associations are scraped from the CCRAS DRAVYA source, are unverified, and are not medical advice." in response.text
+
+
+def test_illness_explorer_search_by_name_and_alias(tmp_path):
+    client, database = make_client(tmp_path)
+    i1 = database.add_illness("Cough")
+    i2 = database.add_illness("Jvara")
+
+    # 1. Search by exact name
+    r_name = client.get("/illnesses", params={"q": "cough"})
+    assert r_name.status_code == 200
+    assert "<strong>Cough</strong>" in r_name.text
+    assert "<strong>Jvara</strong>" not in r_name.text
+
+    # 2. Search by alias ("fever" -> "jvara")
+    r_alias = client.get("/illnesses", params={"q": "fever"})
+    assert r_alias.status_code == 200
+    assert "<strong>Jvara</strong>" in r_alias.text
+    assert "<strong>Cough</strong>" not in r_alias.text
+
+
+def test_illness_detail_shows_herbs_and_distinguishes_manual(tmp_path):
+    client, database = make_client(tmp_path)
+    h1 = database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    h2 = database.add_herb("Neem", botanical_name="Azadirachta indica")
+    illness_id = database.add_illness("Cough")
+    database.add_treatment(h1, illness_id)  # manual treatment link
+
+    # Also add a scraped treatment link to verify link_source distinction
+    with database._connection() as conn:
+        conn.execute("INSERT INTO treatment (herb_id, illness_id, source) VALUES (?, ?, 'scraped')", (h2, illness_id))
+
+    response = client.get(f"/illnesses/{illness_id}")
+    assert response.status_code == 200
+    assert "Cough" in response.text
+    assert "Tulsi" in response.text
+    assert "Neem" in response.text
+    assert "Manual" in response.text
+    assert "Scraped" in response.text
+    assert f"/herbs/{h1}" in response.text
+    assert "Associations are scraped from the CCRAS DRAVYA source, are unverified, and are not medical advice." in response.text
+
+
+def test_missing_illness_returns_404(tmp_path):
+    client, _ = make_client(tmp_path)
+    response = client.get("/illnesses/9999")
+    assert response.status_code == 404
+    assert "Illness not found" in response.text
+
+
+def test_api_illness_endpoints(tmp_path):
+    client, database = make_client(tmp_path)
+    h1 = database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    i1 = database.add_illness("Cough")
+    i2 = database.add_illness("Jvara")
+    database.add_treatment(h1, i1)
+
+    # 1. GET /api/illnesses
+    r_list = client.get("/api/illnesses")
+    assert r_list.status_code == 200
+    data = r_list.json()
+    assert len(data) == 2
+    names = [item["english_name"] for item in data]
+    assert "Cough" in names
+    assert "Jvara" in names
+
+    # 2. GET /api/illnesses?q=fever (alias search)
+    r_search = client.get("/api/illnesses", params={"q": "fever"})
+    assert r_search.status_code == 200
+    s_data = r_search.json()
+    assert len(s_data) == 1
+    assert s_data[0]["english_name"] == "Jvara"
+
+    # 3. GET /api/illnesses/{id}/herbs
+    r_herbs = client.get(f"/api/illnesses/{i1}/herbs")
+    assert r_herbs.status_code == 200
+    h_data = r_herbs.json()
+    assert len(h_data) == 1
+    assert h_data[0]["english_name"] == "Tulsi"
+    assert h_data[0]["link_source"] == "manual"
+
+    # 4. Unknown illness 404
+    r_unknown = client.get("/api/illnesses/9999/herbs")
+    assert r_unknown.status_code == 404
+
+

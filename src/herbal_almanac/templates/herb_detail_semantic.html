@@ -285,7 +285,7 @@
       {% if treatments %}
       <ul class="condition-list">
         {% for treatment in treatments %}
-        <li>{{ treatment.english_name }}</li>
+        <li><a href="{{ url_for('illness_detail', illness_id=treatment.id) }}">{{ treatment.english_name }}</a></li>
         {% endfor %}
       </ul>
       <p class="footnote">Scraped condition associations may be unverified and are not clinical guidance.</p>
