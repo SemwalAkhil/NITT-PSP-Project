@@ -535,6 +535,10 @@ Moving from lexical string attributes to a normalized semantic ontology requires
 28. **Deterministic offline demo database synthesis and multi-milestone evaluation workflows:**
     - *Bridging uncommitted database policies and evaluation needs:* In projects enforcing strict 'no committed databases' policies, prospective evaluators, instructors, and CI runners require a turnkey, zero-network mechanism to generate a rich database containing multi-milestone artifacts (scraped records, manual curations, schema upgrades, seeded concept ontologies, and backfilled semantic profiles).
     - *End-to-end orchestration scripts:* Providing an explicit script (`scripts/make_demo_db.py`) that chains baseline schema creation (`create_database`), offline HTML parsing (`parse_plant`), record upsert (`insert_record`), manual entity creation (`add_illness`, `add_treatment`), Stage C migration (`upgrade_to_stage_c`), and ruleset backfill (`run_stage_c_backfill`) outputs a deterministic SQLite artifact to a gitignored location (`data/demo.db`) and prints ready-to-run server commands, enabling instant multi-layer evaluation without external dependencies.
+29. **Starlette `url_for` query parameter constraints and multi-page pagination test fixtures:**
+    - *Starlette URL generation contract:* Starlette's `url_for()` only matches and interpolates declared path template parameters (e.g. `{herb_id}`). Passing unexpected keyword arguments for query parameters (e.g. `url_for('herb_list', q=query, page=page+1)`) raises `starlette.routing.NoMatchFound` (HTTP 500) rather than appending them as a query string. Query strings must be built explicitly via query-string formatting or Jinja's `urlencode` filter (e.g. `{{ url_for('herb_list') }}?{{ {'q': query, 'page': page+1}|urlencode }}`).
+    - *Multi-page fixture testing discipline:* Pagination logic cannot be verified with minimal fixtures of 1–2 records. Regression test suites for paginated views must construct fixtures that span across multiple pages (e.g. 35+ records with `PAGE_SIZE=12`) to exercise forward/backward pagination links, search query preservation across pages, and out-of-range page clamping.
+
 
 
 

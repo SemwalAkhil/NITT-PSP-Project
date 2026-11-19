@@ -4,7 +4,7 @@
 <section class="page-heading compact-heading"><div><p class="eyebrow">BOTANICAL INDEX</p><h1>Herb <em>explorer.</em></h1><p class="subheading">Search and browse the plants in your collection.</p></div><span class="result-count">{{ "{:,}".format(total) }} RECORDS</span></section>
 <form class="search-form" method="get" action="{{ url_for('herb_list') }}"><label class="search-box"><span>⌕</span><input type="search" name="q" value="{{ query }}" placeholder="Search by herb, Sanskrit or botanical name…" aria-label="Search herbs"><button type="submit">Search</button></label></form>
 {% if herbs %}
-<div class="results-heading"><span>Showing {{ (page - 1) * 12 + 1 }}–{{ (page - 1) * 12 + herbs|length }} of {{ total }}</span><span>Sorted by relevance</span></div>
+<div class="results-heading"><span>Showing {{ (page - 1) * page_size + 1 }}–{{ (page - 1) * page_size + herbs|length }} of {{ total }}</span><span>Sorted by relevance</span></div>
 <div class="herb-list">
 {% for herb in herbs %}
 <a class="herb-row" href="{{ url_for('herb_detail', herb_id=herb.id) }}"><span class="herb-symbol">✿</span><span class="herb-main"><strong>{{ herb.original_name or herb.english_name }}</strong><small>{{ herb.english_name }}</small></span><span class="herb-botanical">{{ herb.botanical_name or "Botanical name unavailable" }}{% if herb.family %}<small>{{ herb.family }}</small>{% endif %}</span><span class="row-arrow">↗</span></a>
@@ -12,9 +12,9 @@
 </div>
 {% if page_count > 1 %}
 <nav class="pagination" aria-label="Pagination">
-{% if page > 1 %}<a href="{{ url_for('herb_list', q=query, page=page-1) }}">← Previous</a>{% else %}<span class="disabled">← Previous</span>{% endif %}
+{% if page > 1 %}<a href="{{ url_for('herb_list') }}?{% if query %}{{ {'q': query, 'page': page - 1}|urlencode }}{% else %}page={{ page - 1 }}{% endif %}">← Previous</a>{% else %}<span class="disabled">← Previous</span>{% endif %}
 <span>Page {{ page }} of {{ page_count }}</span>
-{% if page < page_count %}<a href="{{ url_for('herb_list', q=query, page=page+1) }}">Next →</a>{% else %}<span class="disabled">Next →</span>{% endif %}
+{% if page < page_count %}<a href="{{ url_for('herb_list') }}?{% if query %}{{ {'q': query, 'page': page + 1}|urlencode }}{% else %}page={{ page + 1 }}{% endif %}">Next →</a>{% else %}<span class="disabled">Next →</span>{% endif %}
 </nav>
 {% endif %}
 {% else %}

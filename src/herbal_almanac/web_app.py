@@ -113,6 +113,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 "total": total,
                 "page": current_page,
                 "page_count": page_count,
+                "page_size": PAGE_SIZE,
                 "active_page": "herbs",
             },
         )

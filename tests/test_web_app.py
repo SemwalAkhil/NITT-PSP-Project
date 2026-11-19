@@ -99,3 +99,55 @@ def test_stylesheet_is_served_with_css_content_type(tmp_path):
     assert ":root" in response.text
     assert "--paper:" in response.text
     assert ".sidebar" in response.text
+
+
+def test_herb_pagination_with_many_records(tmp_path):
+    client, database = make_client(tmp_path)
+    # Seed 35 herbs so we span 3 pages (PAGE_SIZE=12: 12, 12, 11)
+    for i in range(1, 36):
+        name = f"Tulsi Specimen {i:02d}" if i <= 25 else f"Neem Specimen {i:02d}"
+        database.add_herb(name, botanical_name=f"Botanical {i:02d}")
+
+    # 1. Page 1 (/herbs)
+    r1 = client.get("/herbs")
+    assert r1.status_code == 200
+    assert "Showing 1–12 of 35" in r1.text
+    assert "page=2" in r1.text
+    assert "Page 1 of 3" in r1.text
+
+    # 2. Page 2 (/herbs?page=2)
+    r2 = client.get("/herbs?page=2")
+    assert r2.status_code == 200
+    assert "Showing 13–24 of 35" in r2.text
+    assert "page=1" in r2.text
+    assert "page=3" in r2.text
+    assert "Page 2 of 3" in r2.text
+
+    # 3. Page 3 (/herbs?page=3)
+    r3 = client.get("/herbs?page=3")
+    assert r3.status_code == 200
+    assert "Showing 25–35 of 35" in r3.text
+    assert "page=2" in r3.text
+    assert "Page 3 of 3" in r3.text
+
+    # 4. Search query spanning multiple pages (/herbs?q=Tulsi)
+    # 25 Tulsi herbs span 3 pages: 12, 12, 1
+    rq1 = client.get("/herbs?q=Tulsi")
+    assert rq1.status_code == 200
+    assert "Showing 1–12 of 25" in rq1.text
+    assert "q=Tulsi" in rq1.text
+    assert "page=2" in rq1.text
+
+    rq2 = client.get("/herbs?q=Tulsi&page=2")
+    assert rq2.status_code == 200
+    assert "Showing 13–24 of 25" in rq2.text
+    assert "q=Tulsi" in rq2.text
+    assert "page=1" in rq2.text
+    assert "page=3" in rq2.text
+
+    # 5. Out-of-range page clamps safely and returns 200
+    r_out = client.get("/herbs?page=999")
+    assert r_out.status_code == 200
+    assert "Showing 25–35 of 35" in r_out.text
+    assert "Page 3 of 3" in r_out.text
+
