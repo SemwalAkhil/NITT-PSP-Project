@@ -1,19 +1,63 @@
 {% extends "base.html" %}
-{% block title %}{{ illness.english_name|readable_illness }} · Illness Explorer · Herbal Almanac{% endblock %}
+{% set res = resolve_illness(illness.english_name) %}
+{% block title %}{{ res.english }} · Illness Explorer · Herbal Almanac{% endblock %}
 {% block content %}
-<a class="back-link" href="{{ url_for('illness_list') }}">← Back to Illness explorer</a>
+<a class="back-link" href="{{ url_for('illness_list') }}{% if current_language != 'en' %}?language={{ current_language }}{% endif %}">← Back to Illness explorer</a>
 
-<div class="disclaimer-banner" style="background:#fef7e7;border:1px solid #f2e2be;border-radius:8px;padding:12px 16px;margin-bottom:24px;color:#7a5814;font-size:12px;line-height:1.5;">
+<div class="disclaimer-banner" style="background:#fef7e7;border:1px solid #f2e2be;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#7a5814;font-size:12px;line-height:1.5;">
   <strong>Disclaimer:</strong> Associations are scraped from the CCRAS DRAVYA source, are unverified, and are not medical advice.
 </div>
+
+{% if is_non_english %}
+<div class="translation-notice" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;margin-bottom:16px;color:#1e40af;font-size:12px;line-height:1.5;">
+  <strong>Notice:</strong> Translations are machine-generated (Gemini) and not clinically verified.
+</div>
+{% endif %}
+
+<nav class="language-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:20px;padding:8px 12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;" aria-label="Language selection">
+  <span style="font-weight:600;color:#374151;margin-right:4px;">Language:</span>
+  {% for code in ['en', 'hi', 'sa'] %}
+    {% set lmeta = supported_languages[code] %}
+    <a href="{{ url_for('illness_detail', illness_id=illness.id) }}?language={{ code }}"
+       class="lang-pill"
+       style="padding:3px 10px;border-radius:14px;text-decoration:none;font-weight:{% if current_language == code %}bold{% else %}normal{% endif %};background:{% if current_language == code %}#214632{% else %}#ffffff{% endif %};color:{% if current_language == code %}#ffffff{% else %}#374151{% endif %};border:1px solid {% if current_language == code %}#214632{% else %}#d1d5db{% endif %};">
+      {{ lmeta.native_name }}
+    </a>
+  {% endfor %}
+  <span style="color:#d1d5db;margin:0 4px;">|</span>
+  {% for code in ordered_language_codes %}
+    {% if code not in ['en', 'hi', 'sa'] %}
+      {% set lmeta = supported_languages[code] %}
+      <a href="{{ url_for('illness_detail', illness_id=illness.id) }}?language={{ code }}"
+         class="lang-pill"
+         style="padding:3px 8px;border-radius:14px;text-decoration:none;font-size:12px;font-weight:{% if current_language == code %}bold{% else %}normal{% endif %};background:{% if current_language == code %}#214632{% else %}#ffffff{% endif %};color:{% if current_language == code %}#ffffff{% else %}#4b5563{% endif %};border:1px solid {% if current_language == code %}#214632{% else %}#e5e7eb{% endif %};">
+        {{ lmeta.native_name }}
+      </a>
+    {% endif %}
+  {% endfor %}
+</nav>
 
 <header class="detail-heading">
   <div>
     <p class="eyebrow">CONDITION DETAIL · {{ "%04d"|format(illness.id) }}</p>
-    <h1>{{ illness.english_name|readable_illness }}</h1>
+    <h1>{{ res.english }}</h1>
+    {% if current_language != 'en' and res.get_label(current_language) and res.get_label(current_language) != res.english %}
+      <h2 lang="{{ current_language }}" style="color:#214632;font-size:1.3em;margin:4px 0 8px 0;font-weight:600;">
+        {{ res.get_label(current_language) }}
+      </h2>
+    {% endif %}
     <p class="detail-common">
-      Verification: <strong>{{ illness.verification_status|title }}</strong>
-      {% if illness.machine_generated %}<span style="color:#a27c42;margin-left:8px;">(Machine-generated)</span>{% endif %}
+      Original term · <code>{{ illness.english_name }}</code>
+      {% if res.kind %}<span class="kind-tag" style="background:#e5e7eb;color:#374151;padding:2px 8px;border-radius:4px;margin-left:8px;font-size:0.85em;">{{ res.kind }}</span>{% endif %}
+      {% if not res.matched %}<span class="unmatched-note" style="color:#9ca3af;margin-left:8px;font-style:italic;">(translation not available)</span>{% endif %}
+    </p>
+    {% if res.english_synonyms %}
+      <p style="margin:6px 0;color:#4b5563;font-size:0.9em;">
+        <strong>English synonyms:</strong> {{ res.english_synonyms|join(', ') }}
+      </p>
+    {% endif %}
+    <p class="detail-common" style="margin-top:6px;font-size:0.85em;color:#6b7280;">
+      Translation provenance: <strong>{{ res.origin }}</strong> · <strong>{{ res.verification }}</strong>
     </p>
   </div>
   <div class="detail-stamp">

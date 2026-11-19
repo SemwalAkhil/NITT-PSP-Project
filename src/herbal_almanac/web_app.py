@@ -10,7 +10,7 @@ from pathlib import Path
 import sqlite3
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -25,6 +25,12 @@ from .repository_api import (
     herb_dravyaguna_profile,
     reconcile_herb_virya,
 )
+from .illness_glossary import (
+    ORDERED_LANGUAGE_CODES,
+    SUPPORTED_LANGUAGES,
+    resolve_illness,
+    search_glossary,
+)
 
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -32,6 +38,14 @@ TEMPLATE_DIR = PACKAGE_DIR / "templates"
 STATIC_DIR = PACKAGE_DIR / "static"
 STYLESHEET_PATH = STATIC_DIR / "styles.css"
 PAGE_SIZE = 12
+
+
+def clean_language_param(language: str | None) -> str:
+    """Validates language query parameter, falling back to 'en' if unknown."""
+    if not language:
+        return "en"
+    clean = language.strip().lower()
+    return clean if clean in SUPPORTED_LANGUAGES else "en"
 
 
 def format_readable_illness(name: str | None) -> str:
@@ -102,17 +116,28 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
     application.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
     templates = Jinja2Templates(directory=TEMPLATE_DIR)
     templates.env.filters["readable_illness"] = format_readable_illness
+    templates.env.globals["resolve_illness"] = resolve_illness
+    templates.env.filters["resolve_illness"] = resolve_illness
+    templates.env.globals["supported_languages"] = SUPPORTED_LANGUAGES
+    templates.env.globals["ordered_language_codes"] = ORDERED_LANGUAGE_CODES
 
     def get_database() -> AyurvedicAlmanac:
         return AyurvedicAlmanac(application.state.database_path)
 
     @application.get("/", response_class=HTMLResponse, name="dashboard")
-    def dashboard(request: Request) -> Any:
+    def dashboard(request: Request, language: str = Query(default="en")) -> Any:
+        clean_lang = clean_language_param(language)
         summary = get_database().dashboard_summary()
         return templates.TemplateResponse(
             request=request,
             name="dashboard.html",
-            context={"summary": summary, "active_page": "dashboard"},
+            context={
+                "summary": summary,
+                "active_page": "dashboard",
+                "current_language": clean_lang,
+                "is_non_english": (clean_lang != "en"),
+                "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
+            },
         )
 
     @application.get("/herbs", response_class=HTMLResponse, name="herb_list")
@@ -120,9 +145,24 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         request: Request,
         q: str = Query(default="", max_length=100),
         page: int = Query(default=1, ge=1),
+        language: str = Query(default="en"),
     ) -> Any:
+        import urllib.parse
+        from fastapi.responses import RedirectResponse
+
+        clean_lang = clean_language_param(language)
         database = get_database()
-        matching_herbs = database.search_herbs(q.strip())
+        clean_q = q.strip()
+        matching_herbs = database.search_herbs(clean_q)
+
+        # Route illness queries from global/herb search box to /illnesses if 0 herbs match
+        if clean_q and not matching_herbs:
+            if search_glossary(clean_q) or resolve_illness(clean_q).matched or database.search_illnesses(clean_q):
+                return RedirectResponse(
+                    url=f"/illnesses?q={urllib.parse.quote(clean_q)}&language={clean_lang}",
+                    status_code=303,
+                )
+
         total = len(matching_herbs)
         page_count = max(1, math.ceil(total / PAGE_SIZE))
         current_page = min(page, page_count)
@@ -139,6 +179,9 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 "page_count": page_count,
                 "page_size": PAGE_SIZE,
                 "active_page": "herbs",
+                "current_language": clean_lang,
+                "is_non_english": (clean_lang != "en"),
+                "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
             },
         )
 
@@ -146,10 +189,11 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
     def herb_detail(
         request: Request,
         herb_id: int,
-        language: str = Query(default="en", pattern="^(en|hi|sa)$"),
+        language: str = Query(default="en"),
         include_disputed: bool = Query(default=False),
         include_provisional: bool = Query(default=False),
     ) -> Any:
+        clean_lang = clean_language_param(language)
         database = get_database()
         herb = database.get_herb(herb_id)
         if herb is None:
@@ -165,10 +209,11 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
             virya_recon: dict[str, Any] | None = None
 
             if is_v3:
+                dravyaguna_lang = clean_lang if clean_lang in ("en", "hi", "sa") else "en"
                 semantic_profile = herb_dravyaguna_profile(
                     conn,
                     herb_id,
-                    language=language,
+                    language=dravyaguna_lang,
                     include_disputed=include_disputed,
                     include_provisional=include_provisional,
                 )
@@ -186,6 +231,9 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                     "semantic_profile": semantic_profile,
                     "virya_reconciliation": virya_recon,
                     "active_page": "herbs",
+                    "current_language": clean_lang,
+                    "is_non_english": (clean_lang != "en"),
+                    "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
                 },
             )
         finally:
@@ -231,7 +279,9 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         request: Request,
         q: str = Query(default="", max_length=100),
         page: int = Query(default=1, ge=1),
+        language: str = Query(default="en"),
     ) -> Any:
+        clean_lang = clean_language_param(language)
         database = get_database()
         matching = database.illness_summaries(q.strip())
         total = len(matching)
@@ -250,11 +300,19 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 "page_count": page_count,
                 "page_size": PAGE_SIZE,
                 "active_page": "illnesses",
+                "current_language": clean_lang,
+                "is_non_english": (clean_lang != "en"),
+                "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
             },
         )
 
     @application.get("/illnesses/{illness_id}", response_class=HTMLResponse, name="illness_detail")
-    def illness_detail(request: Request, illness_id: int) -> Any:
+    def illness_detail(
+        request: Request,
+        illness_id: int,
+        language: str = Query(default="en"),
+    ) -> Any:
+        clean_lang = clean_language_param(language)
         database = get_database()
         illness = database.get_illness(illness_id)
         if illness is None:
@@ -267,21 +325,65 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 "illness": illness,
                 "herbs": herbs,
                 "active_page": "illnesses",
+                "current_language": clean_lang,
+                "is_non_english": (clean_lang != "en"),
+                "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
             },
         )
 
     @application.get("/api/illnesses")
-    def api_illness_list(q: str = Query(default="", max_length=100)) -> Any:
+    def api_illness_list(
+        q: str = Query(default="", max_length=100),
+        language: str = Query(default="en"),
+    ) -> Any:
+        clean_lang = clean_language_param(language)
         database = get_database()
-        return database.illness_summaries(q.strip())
+        matching = database.illness_summaries(q.strip())
+        enriched: list[dict[str, Any]] = []
+        for item in matching:
+            res = resolve_illness(item.get("english_name"))
+            enriched.append({
+                **item,
+                "english": res.english,
+                "english_synonyms": res.english_synonyms,
+                "hindi": res.get_label("hi"),
+                "sanskrit": res.get_label("sa"),
+                "label": res.get_label(clean_lang),
+                "language": clean_lang,
+                "kind": res.kind,
+                "matched": res.matched,
+                "origin": res.origin,
+                "verification": res.verification,
+            })
+        return enriched
 
     @application.get("/api/illnesses/{illness_id}/herbs")
-    def api_illness_herbs(illness_id: int) -> Any:
+    def api_illness_herbs(
+        illness_id: int,
+        language: str = Query(default="en"),
+    ) -> Any:
+        clean_lang = clean_language_param(language)
         database = get_database()
         illness = database.get_illness(illness_id)
         if illness is None:
             raise HTTPException(status_code=404, detail=f"Illness with id {illness_id} not found")
-        return database.herbs_for_illness(illness_id)
+        herbs = database.herbs_for_illness(illness_id)
+        res = resolve_illness(illness.get("english_name"))
+        enriched: list[dict[str, Any]] = []
+        for h in herbs:
+            enriched.append({
+                **h,
+                "english": res.english,
+                "english_synonyms": res.english_synonyms,
+                "hindi": res.get_label("hi"),
+                "sanskrit": res.get_label("sa"),
+                "label": res.get_label(clean_lang),
+                "language": clean_lang,
+                "origin": res.origin,
+                "verification": res.verification,
+                "kind": res.kind,
+            })
+        return enriched
 
     @application.get("/api/stage-c/status")
     def api_stage_c_status() -> Any:

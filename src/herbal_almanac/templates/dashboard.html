@@ -43,9 +43,14 @@
   {% if summary.top_illnesses %}
   <div class="herb-grid">
     {% for illness in summary.top_illnesses %}
-    <a class="herb-card" href="{{ url_for('illness_detail', illness_id=illness.id) }}">
+    {% set res = resolve_illness(illness.english_name) %}
+    <a class="herb-card" href="{{ url_for('illness_detail', illness_id=illness.id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">
       <span class="card-index">CONDITION · {{ "%04d"|format(illness.id) }}</span>
-      <h3>{{ illness.english_name|readable_illness }}</h3>
+      <h3>{{ res.english }}</h3>
+      {% if current_language and current_language != 'en' and res.get_label(current_language) and res.get_label(current_language) != res.english %}
+      <p style="color:#214632;font-weight:600;margin:2px 0;" lang="{{ current_language }}">{{ res.get_label(current_language) }}</p>
+      {% endif %}
+      <p class="latin" style="margin-top:2px;">Original: {{ illness.english_name }}</p>
       <p class="latin">{{ illness.herb_count }} linked {% if illness.herb_count == 1 %}herb{% else %}herbs{% endif %}</p>
       <span class="card-arrow">↗</span>
     </a>

@@ -43,6 +43,7 @@ def canonical_illness_key(value: str) -> str:
 ILLNESS_ALIASES = {
     "fever": "jvara",
     "fevers": "jvara",
+    "bawasir": "arsha",
 }
 MIN_SEARCH_SCORE = 0.65
 MIGRATION_1_VERSION = 1
@@ -1896,9 +1897,29 @@ class AyurvedicAlmanac:
     ) -> list[dict[str, Any]]:
         normalized = search_key(query)
         aliases = [normalized]
-        alias = ILLNESS_ALIASES.get(normalized) if aliases_enabled else None
-        if alias:
-            aliases.append(canonical_illness_key(alias))
+        if aliases_enabled and query.strip():
+            alias = ILLNESS_ALIASES.get(normalized)
+            if alias:
+                aliases.append(canonical_illness_key(alias))
+            try:
+                from .illness_glossary import search_glossary, tolerant_illness_key
+
+                for g in search_glossary(query):
+                    for term_candidate in (
+                        g.original_term,
+                        canonical_illness_key(g.original_term),
+                        tolerant_illness_key(g.original_term),
+                        g.english,
+                    ):
+                        if term_candidate:
+                            aliases.append(search_key(term_candidate))
+                    for syn in g.english_synonyms:
+                        aliases.append(search_key(syn))
+                    for part in g.original_term.split("/"):
+                        aliases.append(search_key(part))
+                        aliases.append(canonical_illness_key(part))
+            except Exception:
+                pass
         ranked: list[tuple[float, dict[str, Any]]] = []
         for row in rows:
             item = dict(row)

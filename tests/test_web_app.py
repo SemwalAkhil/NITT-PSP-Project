@@ -35,7 +35,8 @@ def test_dashboard_shows_database_counts_and_recent_herbs(tmp_path):
     assert "Herbal Almanac" in response.text
     assert "Ocimum tenuiflorum" in response.text
     assert "Frequent conditions in your collection" in response.text
-    assert "Kasa" in response.text
+    assert "Cough" in response.text
+    assert "Original: KAsa" in response.text
     assert "2 linked herbs" in response.text
     assert f"/illnesses/{i1}" in response.text
     assert "View all illnesses" in response.text
@@ -205,7 +206,8 @@ def test_illness_explorer_search_by_name_and_alias(tmp_path):
     # 2. Search by alias ("fever" -> "jvara")
     r_alias = client.get("/illnesses", params={"q": "fever"})
     assert r_alias.status_code == 200
-    assert "<strong>Jvara</strong>" in r_alias.text
+    assert "<strong>Fever</strong>" in r_alias.text
+    assert "<code>Jvara</code>" in r_alias.text
     assert "<strong>Cough</strong>" not in r_alias.text
 
 
@@ -253,21 +255,39 @@ def test_api_illness_endpoints(tmp_path):
     names = [item["english_name"] for item in data]
     assert "Cough" in names
     assert "Jvara" in names
+    # Verify P0-4 API multilingual and provenance fields
+    jvara_item = next(item for item in data if item["english_name"] == "Jvara")
+    assert jvara_item["english"] == "Fever"
+    assert "ज्वर" in jvara_item["hindi"]
+    assert "ज्वर" in jvara_item["sanskrit"]
+    assert jvara_item["origin"] == "machine_generated"
+    assert jvara_item["verification"] == "unverified"
 
-    # 2. GET /api/illnesses?q=fever (alias search)
+    # 2. GET /api/illnesses?q=fever (alias search) & Hindi search ?q=बुखार
     r_search = client.get("/api/illnesses", params={"q": "fever"})
     assert r_search.status_code == 200
     s_data = r_search.json()
     assert len(s_data) == 1
     assert s_data[0]["english_name"] == "Jvara"
 
+    r_search_hi = client.get("/api/illnesses", params={"q": "बुखार", "language": "hi"})
+    assert r_search_hi.status_code == 200
+    hi_data = r_search_hi.json()
+    assert len(hi_data) == 1
+    assert hi_data[0]["english_name"] == "Jvara"
+    assert "ज्वर" in hi_data[0]["label"]
+
     # 3. GET /api/illnesses/{id}/herbs
-    r_herbs = client.get(f"/api/illnesses/{i1}/herbs")
+    r_herbs = client.get(f"/api/illnesses/{i1}/herbs", params={"language": "hi"})
     assert r_herbs.status_code == 200
     h_data = r_herbs.json()
     assert len(h_data) == 1
     assert h_data[0]["english_name"] == "Tulsi"
     assert h_data[0]["link_source"] == "manual"
+    assert h_data[0]["english"] == "Cough"
+    assert "कास" in h_data[0]["hindi"]
+    assert h_data[0]["origin"] == "machine_generated"
+    assert h_data[0]["verification"] == "unverified"
 
     # 4. Unknown illness 404
     r_unknown = client.get("/api/illnesses/9999/herbs")
@@ -323,11 +343,11 @@ def test_format_readable_illness_unit():
 
 def test_readable_illness_rendered_in_templates_without_altering_db(tmp_path):
     client, database = make_client(tmp_path)
-    from herbal_almanac.web_app import format_readable_illness
 
     herb_id = database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
     i1 = database.add_illness("KAsa")
     i2 = database.add_illness("AgnimAndya")
+    i3 = database.add_illness("SpecialUnmatchedTerm")
     database.add_treatment(herb_id, i1)
 
     # Stored database names must remain untouched
@@ -337,27 +357,85 @@ def test_readable_illness_rendered_in_templates_without_altering_db(tmp_path):
         assert row1[0] == "KAsa"
         assert row2[0] == "AgnimAndya"
 
-    # Template list view renders readable names
+    # Template list view renders English name as main heading + original term in small text
     r_list = client.get("/illnesses")
     assert r_list.status_code == 200
-    assert "<strong>Kasa</strong>" in r_list.text
-    assert "<strong>Agnimandya</strong>" in r_list.text
-    assert "<strong>KAsa</strong>" not in r_list.text
+    assert "<strong>Cough</strong>" in r_list.text
+    assert "<strong>Weak digestive fire</strong>" in r_list.text
+    assert "Original term · <code>KAsa</code>" in r_list.text
+    assert "Specialunmatchedterm" in r_list.text
+    assert "(translation not available)" in r_list.text
 
-    # Detail view renders readable title and heading
+    # Detail view renders English heading and back-link
     r_detail = client.get(f"/illnesses/{i1}")
     assert r_detail.status_code == 200
-    assert "<h1>Kasa</h1>" in r_detail.text
-    assert "<title>Kasa · Illness Explorer · Herbal Almanac</title>" in r_detail.text
+    assert "<h1>Cough</h1>" in r_detail.text
+    assert "<title>Cough · Illness Explorer · Herbal Almanac</title>" in r_detail.text
+    assert "Original term · <code>KAsa</code>" in r_detail.text
 
-    # Herb detail renders readable linked condition
+    # Herb detail renders English primary condition link
     r_herb = client.get(f"/herbs/{herb_id}")
     assert r_herb.status_code == 200
-    assert f">{format_readable_illness('KAsa')}<" in r_herb.text
+    assert "Cough" in r_herb.text
+    assert "· KAsa" in r_herb.text
 
     # DB records remain unchanged after template rendering
     with database._connection() as conn:
         assert conn.execute("SELECT english_name FROM illness WHERE id = ?", (i1,)).fetchone()[0] == "KAsa"
+
+
+def test_illness_multilingual_language_selector_and_disclaimer(tmp_path):
+    client, database = make_client(tmp_path)
+    i1 = database.add_illness("KAsa")
+
+    # 1. English (default) has no machine translation notice
+    r_en = client.get("/illnesses")
+    assert r_en.status_code == 200
+    assert "Translations are machine-generated (Gemini) and not clinically verified." not in r_en.text
+    assert "<strong>Cough</strong>" in r_en.text
+
+    # 2. Hindi language parameter
+    r_hi = client.get("/illnesses", params={"language": "hi"})
+    assert r_hi.status_code == 200
+    assert "Translations are machine-generated (Gemini) and not clinically verified." in r_hi.text
+    assert "कास (खांसी)" in r_hi.text
+    assert 'lang="hi"' in r_hi.text
+
+    # 3. Tamil language parameter on detail page
+    r_ta = client.get(f"/illnesses/{i1}", params={"language": "ta"})
+    assert r_ta.status_code == 200
+    assert "Translations are machine-generated (Gemini) and not clinically verified." in r_ta.text
+    assert "இருமல்" in r_ta.text
+    assert 'lang="ta"' in r_ta.text
+
+    # 4. Unknown language parameter falls back to 'en' cleanly without error
+    r_fallback = client.get("/illnesses", params={"language": "unknown_code"})
+    assert r_fallback.status_code == 200
+    assert "Translations are machine-generated (Gemini) and not clinically verified." not in r_fallback.text
+    assert "<strong>Cough</strong>" in r_fallback.text
+
+
+def test_global_search_box_routes_illness_query_to_illnesses(tmp_path):
+    client, database = make_client(tmp_path)
+    database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    database.add_illness("KAsa")
+
+    # 1. Searching a herb name stays on /herbs
+    r_herb = client.get("/herbs", params={"q": "Tulsi"}, follow_redirects=False)
+    assert r_herb.status_code == 200
+    assert "Tulsi" in r_herb.text
+
+    # 2. Searching an illness term on /herbs (0 herb matches) redirects to /illnesses
+    r_illness = client.get("/herbs", params={"q": "cough"}, follow_redirects=False)
+    assert r_illness.status_code == 303
+    assert "/illnesses?q=cough" in r_illness.headers["location"]
+
+    # Following redirect yields illness explorer results
+    r_followed = client.get("/herbs", params={"q": "cough"}, follow_redirects=True)
+    assert r_followed.status_code == 200
+    assert "Illness explorer" in r_followed.text
+    assert "Cough" in r_followed.text
+
 
 
 

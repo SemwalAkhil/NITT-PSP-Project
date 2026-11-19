@@ -12,6 +12,12 @@
   <div class="detail-stamp">✿<small>HERBAL<br>ALMANAC</small></div>
 </section>
 
+{% if is_non_english %}
+<div class="translation-notice" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;margin-bottom:16px;color:#1e40af;font-size:12px;line-height:1.5;">
+  <strong>Notice:</strong> Translations are machine-generated (Gemini) and not clinically verified.
+</div>
+{% endif %}
+
 {% if not is_version_3 %}
 <div class="content-card" style="border-left: 4px solid #b45309; background: #fffbeb; padding: 16px; margin-bottom: 24px; border-radius: 6px;">
   <p class="eyebrow" style="color: #b45309; margin: 0 0 6px 0; font-weight: 700;">STAGE C CAPABILITY STATUS</p>
@@ -285,7 +291,16 @@
       {% if treatments %}
       <ul class="condition-list">
         {% for treatment in treatments %}
-        <li><a href="{{ url_for('illness_detail', illness_id=treatment.id) }}">{{ treatment.english_name|readable_illness }}</a></li>
+        {% set res = resolve_illness(treatment.english_name) %}
+        <li>
+          <a href="{{ url_for('illness_detail', illness_id=treatment.id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">
+            <strong>{{ res.english }}</strong>
+            {% if current_language and current_language != 'en' and res.get_label(current_language) and res.get_label(current_language) != res.english %}
+              <span lang="{{ current_language }}" style="color:#214632;font-weight:600;margin-left:4px;">({{ res.get_label(current_language) }})</span>
+            {% endif %}
+            <small class="muted" style="margin-left:6px;font-size:0.85em;">· {{ treatment.english_name }}</small>
+          </a>
+        </li>
         {% endfor %}
       </ul>
       <p class="footnote">Scraped condition associations may be unverified and are not clinical guidance.</p>
