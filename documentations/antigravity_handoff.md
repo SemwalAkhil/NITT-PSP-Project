@@ -32,24 +32,23 @@ Verify current source code and migrations. Documentation describes intended/curr
 - Do not introduce a new ORM, framework, or migration system without documenting rationale.
 - A proposed table in documentation is not an implemented feature.
 
-## 3. Current status: operational provenance integration complete (Stage B)
+## 3. Current status: Stage B and Stage C complete; Stage D preparation
 
-Stage B's first vertical slice is implemented and verified:
-- Source and source-record registration/reuse in `sources` and `source_records`.
-- Traceable factual assertions stored as `source_claims` for Ayurvedic names, vernacular names, botanical names, families, section attributes, and Dosha expressions.
-- Strict claim-to-subject validation linking `herb_names` and `herb_taxa` to claims.
-- Idempotent repeated ingestion and claim supersession lineage (`supersedes_claim_id`, `verification_status = 'superseded'`).
-- Manual curation survival with dedicated manual source records and legacy mapping.
-- Public inspection methods `herb_claims(herb_id)` and `herb_source_record(herb_id)`.
+Stage B (operational provenance integration) and Stage C (normalized semantic Dravyaguna architecture & multilingual catalog) are complete, fully verified, and promoted into `src/herbal_almanac/`:
+- **Stage B Baseline:** Provenance-tracked source records, source claims, supersession lineage, manual curation survival, and public claim inspection APIs.
+- **Stage C Architecture:** 11 tables, 2 views, 44 triggers, Migration 3 (`migration_0003_semantic_dravyaguna.py`), 136 canonical concepts with 649 multilingual labels (`concept_catalog.py`), deterministic capability gating (`schema_capability_gate.py`), claim lifecycle engine (`claim_lifecycle.py`), semantic backfill engine (`backfill_engine.py`), localized repository API (`repository_api.py`), version-aware web presentation (`web_app.py`), and CLI upgrade tools (`cli.py`).
+- **Production Baseline:** Production database (`data/inspection.db`) remains unmutated at Schema Version 2 (`[1, 2]`), with an explicit on-demand upgrade pathway (`upgrade-stage-c`).
+- **Test Suite Health:** All 190 tests pass locally (187 pass / 3 skip cleanly in CI without uncommitted databases), including the mandatory scraper regression (57 tests).
 
-### Immediate next priority: Stage C — Normalized domain model and multilingual identity
+### Immediate next priority: Stage D — Multi-source scientific evidence and independent corroboration
 
 Do not begin side-effect extraction, medical-history functionality, symptom matching, or treatment recommendation logic yet.
 
-The next engineering priority is Stage C:
-1. Implement normalized domain concepts for plant parts, Rasa, Guna, Virya, Vipaka, Karma, Dosha effects, indications/conditions, and preparations.
-2. Establish controlled vocabulary mapping tables with explicit evidence links to `source_claims`.
-3. Support Hindi and English as first-class languages across all normalized concepts while preserving Sanskrit terms and ISO 15924 scripts.
+The next engineering priority is Stage D (Step 5 in dependency order):
+1. Complete source licensing, copyright, and feasibility reviews before authoring any source adapter.
+2. Implement standalone, offline-testable parsers for statutory pharmacopoeias (e.g. Ayurvedic Pharmacopoeia of India) and regulatory compendia (e.g. WHO monographs) using local fixtures.
+3. Design and implement epistemic deduplication to prevent false corroboration from secondary mirrors and derivative citations.
+4. Integrate peer-reviewed scientific literature (e.g. PubMed/PMC) using persistent identifiers (`doi`, `pmid`) side-by-side with classical Dravyaguna assertions without overwriting classical concepts.
 
 ## 4. Required tests
 

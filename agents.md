@@ -44,6 +44,17 @@ python -m pytest -q
 The GitHub Actions workflow runs the scraper regression and full suite across
 Python 3.10, 3.11, 3.12, 3.13, and 3.14.
 
+## Pre-push checklist
+
+Before pushing commits to remote or declaring check failures resolved:
+
+1. **Mandatory scraper regression:** `python -m pytest tests/test_scrapper.py -q`
+2. **Full test runner pass:** `python -m pytest -q`
+3. **Build distribution wheel:** `python -m build`
+4. **Smoke test wheel installation:** Install wheel into a clean virtual environment and run `python tests/smoke_installed_package.py` and CLI `--help` entry points.
+5. **No committed databases or build artifacts:** Verify `git status` shows no `*.db`, `dist/`, `build/`, or `*.egg-info/` files.
+6. **Strict commit truthfulness:** Never describe a fix commit as "resolving check failures" without having run and verified these steps locally.
+
 ## Offline testing rules
 
 - **No live network calls:** tests must not contact CCRAS DRAVYA or Google

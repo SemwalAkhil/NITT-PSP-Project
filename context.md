@@ -80,9 +80,9 @@ Tests must remain offline and use fixtures, mocks/fakes, and temporary database 
 
 ## 7. Roadmap snapshot
 - Publish a release candidate to TestPyPI when valid credentials are available.
-- Stage B (operational provenance integration) is complete.
-- Next priority: Stage C (normalized domain model for parts, properties, Karma, Dosha, indications, and controlled vocabularies).
-- Add further external source adapters only after the DRAVYA pipeline remains stable.
+- Stage B (operational provenance integration) and Stage C (semantic Dravyaguna architecture & multilingual catalog) are complete.
+- Next priority: Stage D (multi-source scientific evidence, statutory pharmacopoeia adapters, and independent corroboration).
+- Add further external source adapters only after licensing and feasibility review.
 - Expand supported query capabilities and provide a dedicated public Python search API.
 
 ## 8. Optional local web GUI

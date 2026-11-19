@@ -529,6 +529,10 @@ Moving from lexical string attributes to a normalized semantic ontology requires
 26. **Explicit build dependencies in development extras for PEP 517 non-isolated builds:**
     - *Default environment omissions in Python 3.12+:* Python 3.12 and newer standard library virtual environments no longer include `setuptools` or `wheel` by default. When tests execute `python -m build --no-isolation` to test wheel generation offline without network access to PyPI, the build backend (`setuptools.build_meta`) fails with `ModuleNotFoundError: No module named 'setuptools'` unless `setuptools>=68` and `wheel` are explicitly declared in `[project.optional-dependencies] dev`.
     - *Non-short-circuiting CI matrices:* Configuring `fail-fast: false` on GitHub Actions test matrix runners prevents a failure on one Python version from aborting the remaining matrix jobs, ensuring complete diagnostics across Python 3.10 through 3.14.
+27. **Pre-push verification protocol and disciplined commit boundaries:**
+    - *Eliminating false green declarations:* Declaring CI check failures resolved without local verification against the exact failure modes (e.g. testing with `build`, inspecting wheel archives, smoke-testing clean virtual environments with and without extras) risks repeated broken builds.
+    - *Deterministic pre-push checklist:* Formalizing a 6-step checklist in developer guidelines (`agents.md`)—covering mandatory scraper regression, full test suite pass, wheel build, multi-tier clean venv smoke installation, git status artifact checks, and strict commit truthfulness—ensures all contributors and agents verify package health before pushing to remotes.
+
 
 
 
