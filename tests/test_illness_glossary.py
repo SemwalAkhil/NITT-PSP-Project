@@ -196,3 +196,33 @@ def test_tolerant_illness_key():
     assert tolerant_illness_key("Svasa") == "svasa"
     assert tolerant_illness_key("Mutrakrichha") == "mutrakrica"
     assert tolerant_illness_key("") == ""
+
+
+def test_audit_illness_coverage_hermetic(tmp_path):
+    """Verifies that audit_illness_coverage correctly calculates resolution percentages and conflicts."""
+    import sys
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parent.parent
+    if str(repo_root / "scripts") not in sys.path:
+        sys.path.insert(0, str(repo_root / "scripts"))
+
+    from illness_coverage import audit_illness_coverage
+    from herbal_almanac.database_operator import AyurvedicAlmanac
+
+    db_path = tmp_path / "test_coverage.db"
+    alm = AyurvedicAlmanac(db_path)
+    alm.create_database()
+    alm.add_illness("KAsa")
+    alm.add_illness("Garbhanirodha")
+    alm.add_illness("UnknownSpecialDisease")
+
+    res = audit_illness_coverage(db_path, print_conflicts=True)
+    assert res["total_illnesses"] == 3
+    assert res["resolved_count"] == 2
+    assert res["unresolved_count"] == 1
+    assert res["unresolved"] == ["UnknownSpecialDisease"]
+    assert res["kind_counts"]["non-disease concept"] == 1
+    assert res["kind_counts"]["standard"] == 1
+    assert len(res["conflicts"]) > 0
+
