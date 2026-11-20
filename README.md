@@ -1,71 +1,251 @@
 # Herbal Almanac
 
-Herbal Almanac is a Python research library and command-line application for
-exploring Ayurvedic herbs, illness references, and herb–treatment
-relationships. The current ingestion adapter supports the CCRAS DRAVYA portal.
-SQLite is the persistence layer; Typer and Rich provide the CLI.
+Herbal Almanac is a Python research library, command-line interface, and local web application for exploring Ayurvedic herbs, clinical indications, pharmacological properties (*Dravyaguna*), and herb-treatment relationships. The primary data adapter ingests monographs from the CCRAS DRAVYA portal.
 
-> **Research disclaimer:** This project is not medical advice. Scraped
-> therapeutic associations and machine translations may be unverified and must
-> not be used to diagnose, treat, or prevent illness.
+> **Research disclaimer:** This software is for educational, historical, and software evaluation purposes only. It is **not medical advice**. Scraped therapeutic associations, botanical classifications, and machine translations may be unverified and must not be used to diagnose, treat, cure, or prevent any illness.
 
-## Current implementation
+---
 
-The DRAVYA pipeline discovers plant records, fetches pages with timeouts and
-retries, parses semantic tables and the Vernacular Names card, cleans and
-validates `PlantRecord` objects, optionally enriches names through machine
-translation, and writes records to SQLite.
+## Architecture & Data Flow
 
-The active application schema contains:
-
-| Table | Purpose |
-|---|---|
-| `herbs` | Herb identity, source identity, names, botanical/family text, source URL, and retrieval timestamp |
-| `illness` | Condition display names and normalized search keys |
-| `treatment` | Herb–illness links, distinguished as scraped or manually curated |
-| `herb_attributes` | Flexible section-qualified fields, vernacular names, source wording, and translation metadata |
-| `herb_doshas` | Normalized Vata/Pitta/Kapha effects with their source expressions |
-
-Re-scraping refreshes source-derived attributes and scraped treatment/Dosha
-rows while preserving manual treatment links.
-
-### Additive schema migrations
-
-Two versioned migrations currently add normalized structures without
-replacing the legacy application tables:
-
-- **Migration 1 — identity and provenance:** `schema_migrations`, `sources`,
-  `source_records`, `source_claims`, `legacy_herb_map`, and `herb_names`.
-- **Migration 2 — botanical taxonomy:** `taxa`, `taxon_relationships`,
-  and `herb_taxa`.
-
-The migration backfills preserve source context and avoid guessing ambiguous
-legacy identities or taxonomic hierarchy. The remaining normalized domain
-schema in [`documentations/database_schema.md`](documentations/database_schema.md)
-is a design proposal, not a claim that the full target schema is implemented.
-See [`documentations/database_operator.md`](documentations/database_operator.md)
-for connection lifecycle, transaction, and migration behavior.
-
-## Package API
-
-The installable package is named `herbal_almanac`. It exports the main
-`PlantRecord` and `AyurvedicAlmanac` types:
-
-```python
-from herbal_almanac import AyurvedicAlmanac, PlantRecord
-from herbal_almanac.cleaning import clean_text
-
-print(clean_text("  Tulsi  "))
-database = AyurvedicAlmanac("/tmp/ayurvedic.db")
+### Level 0: System Context Diagram
+```mermaid
+flowchart TD
+    CCRAS["CCRAS DRAVYA Portal (Govt of India)"] -->|Monograph HTML Pages| HA["Herbal Almanac System"]
+    HA -->|SQLite Storage & Knowledge Graph| DB[("Local SQLite Database")]
+    HA -->|Command Line Interface| CLI_USER["Researchers & CLI Users"]
+    HA -->|FastAPI Web GUI & REST API| WEB_USER["Clinicians & Evaluators"]
 ```
 
-The `herbal-almanac` console command is registered through `pyproject.toml`.
-JSON and CSV exports are views of stored database records; they are not an
-intermediate stage in the scraper pipeline.
+### Level 1: System Data Flow Diagram
+```mermaid
+flowchart LR
+    SRC["CCRAS DRAVYA Website"] --> SCRAPE["1. Scraper (scrapper.py)"]
+    SCRAPE --> CLEAN["2. Cleaning & Validation (cleaning.py)"]
+    CLEAN -->|Optional --translate| TRANS["3. Translation (translation.py)"]
+    CLEAN --> SQLITE["4. SQLite Persistence (database_operator.py)"]
+    TRANS --> SQLITE
+    SQLITE --> STAGE_B["5. Operational Provenance (sources, source_claims, taxa)"]
+    STAGE_B --> STAGE_C["6. Semantic Backfill (backfill_engine.py & concept_catalog.py)"]
+    STAGE_C --> VIEW["7. View-Model Layer (herb_view.py & illness_glossary.py)"]
+    STAGE_C --> CLI["8. Typer CLI (cli.py)"]
+    VIEW --> WEB["9. Web GUI & REST API (web_app.py)"]
+    CLI --> USERS["CLI Researchers"]
+    WEB --> BROWSERS["Web Users & Evaluators"]
+```
+
+---
+
+## Database Entity-Relationship Diagram
+
+Built from the actual SQLite application schema (`database_operator.py`) and Stage C DDL (`migrations/*.sql`):
+
+```mermaid
+erDiagram
+    herbs ||--o{ treatment : "links"
+    illness ||--o{ treatment : "references"
+    herbs ||--o{ herb_attributes : "has"
+    herbs ||--o{ herb_doshas : "has"
+
+    sources ||--o{ source_records : "provides"
+    source_records ||--o{ source_claims : "contains"
+    source_claims ||--o{ source_claims : "supersedes"
+
+    herbs ||--|| legacy_herb_map : "maps"
+    herbs ||--o{ herb_names : "named"
+    source_claims ||--o{ herb_names : "verifies"
+
+    taxa ||--o{ taxon_relationships : "subject"
+    taxa ||--o{ taxon_relationships : "object"
+    source_claims ||--o{ taxon_relationships : "verifies"
+    herbs ||--o{ herb_taxa : "classified"
+    taxa ||--o{ herb_taxa : "applies_to"
+    source_claims ||--o{ herb_taxa : "verifies"
+
+    dravyaguna_concepts ||--o{ dravyaguna_concepts : "parent"
+    dravyaguna_concepts ||--o{ concept_labels : "labeled_by"
+    concept_labels ||--o{ concept_label_sources : "cited_by"
+
+    source_claims ||--o{ concept_claim_mappings : "mapped_from"
+    dravyaguna_concepts ||--o{ concept_claim_mappings : "maps_to"
+
+    herbs ||--o{ herb_dravyaguna_properties : "has"
+    concept_claim_mappings ||--o{ herb_dravyaguna_properties : "grounds"
+    dravyaguna_concepts ||--o{ herb_dravyaguna_properties : "part_concept"
+
+    source_claims ||--o{ dosha_claim_assertions : "asserts"
+    dravyaguna_concepts ||--o{ dosha_claim_assertions : "dosha"
+    dravyaguna_concepts ||--o{ dosha_claim_assertions : "effect"
+
+    herbs ||--o{ herb_dosha_effects : "has"
+    dosha_claim_assertions ||--o{ herb_dosha_effects : "grounded_in"
+
+    herbs ||--o{ herb_plant_parts : "uses"
+    concept_claim_mappings ||--o{ herb_plant_parts : "part_mapping"
+
+    herbs ||--o{ herb_preparations : "formulated_as"
+    concept_claim_mappings ||--o{ herb_preparations : "prep_mapping"
+
+    herbs ||--o{ herb_indications : "treats"
+    concept_claim_mappings ||--o{ herb_indications : "ind_mapping"
+
+    herbs {
+        int id PK
+        string english_name
+        string original_name
+        string botanical_name
+        string family
+        string source
+        int source_record_id
+        string source_url
+        string retrieved_at
+    }
+    illness {
+        int id PK
+        string english_name
+        string canonical_key
+        int machine_generated
+        string verification_status
+    }
+    treatment {
+        int herb_id PK
+        int illness_id PK
+        string source
+    }
+    herb_attributes {
+        int herb_id PK
+        string field_name PK
+        string value PK
+        string source_text
+        string source_language
+        int machine_generated
+        string verification_status
+    }
+    herb_doshas {
+        int herb_id PK
+        string dosha PK
+        string effect
+        string source_expression PK
+        string source PK
+    }
+    sources {
+        int source_id PK
+        string source_key
+        string publisher
+    }
+    source_records {
+        int source_record_id PK
+        int source_id FK
+        string external_record_key
+    }
+    source_claims {
+        int source_claim_id PK
+        int source_record_id FK
+        string claim_type
+        string source_field
+        string source_expression
+        string language_code
+        string verification_status
+        int supersedes_claim_id FK
+    }
+    legacy_herb_map {
+        int legacy_herb_id PK
+        int herb_id FK
+        string created_at
+    }
+    herb_names {
+        int herb_name_id PK
+        int herb_id FK
+        string name_text
+        string language_code
+        string name_type
+        int source_claim_id FK
+    }
+    taxa {
+        int taxon_id PK
+        string canonical_name
+        string rank
+    }
+    taxon_relationships {
+        int relationship_id PK
+        int subject_taxon_id FK
+        int object_taxon_id FK
+        string relationship_type
+        int source_claim_id FK
+    }
+    herb_taxa {
+        int herb_taxon_id PK
+        int herb_id FK
+        int taxon_id FK
+        int source_claim_id FK
+    }
+    dravyaguna_concepts {
+        int concept_id PK
+        string concept_code
+        string concept_domain
+        string canonical_sanskrit_deva
+        string canonical_sanskrit_iast
+        int parent_concept_id FK
+    }
+    concept_labels {
+        int concept_label_id PK
+        int concept_id FK
+        string language_code
+        string label_text
+        int is_preferred
+    }
+    concept_label_sources {
+        int label_source_id PK
+        int concept_label_id FK
+        string treatise_citation
+    }
+    concept_claim_mappings {
+        int mapping_id PK
+        int source_claim_id FK
+        int concept_id FK
+        string mapping_type
+        float mapping_confidence
+    }
+    herb_dravyaguna_properties {
+        int herb_property_id PK
+        int herb_id FK
+        int mapping_id FK
+        int part_concept_id FK
+    }
+    dosha_claim_assertions {
+        int dosha_assertion_id PK
+        int source_claim_id FK
+        int dosha_concept_id FK
+        int effect_concept_id FK
+    }
+    herb_dosha_effects {
+        int herb_dosha_effect_id PK
+        int herb_id FK
+        int dosha_assertion_id FK
+    }
+    herb_plant_parts {
+        int herb_part_id PK
+        int herb_id FK
+        int mapping_id FK
+    }
+    herb_preparations {
+        int herb_preparation_id PK
+        int herb_id FK
+        int prep_mapping_id FK
+        int part_mapping_id FK
+    }
+    herb_indications {
+        int herb_indication_id PK
+        int herb_id FK
+        int mapping_id FK
+    }
+```
+
+---
 
 ## Installation
 
-Python 3.10 or later is required. Install the package from the repository root:
+Python 3.10 or later is required. Install from the repository root:
 
 - **Core CLI and Library (Default):**
   ```bash
@@ -89,7 +269,14 @@ Python 3.10 or later is required. Install the package from the repository root:
   ```bash
   python -m pip install -e ".[dev]"
   ```
-  *For running tests (`pytest`), packaging checks (`build`), and static analysis.*
+  *For running tests (`pytest`), packaging checks (`build`), and smoke testing.*
+
+> **Windows Note:** If Windows Application Control or Smart App Control restricts `.exe` launcher stubs, prefix commands with `python -m`:
+> - `python -m pip install ...`
+> - `python -m herbal_almanac ...`
+> - `python -m uvicorn herbal_almanac.web_app:app --reload`
+
+---
 
 ## Demo in 5 minutes
 
@@ -139,38 +326,24 @@ Point the application to the demo database and start the server:
 
 Open `http://127.0.0.1:8000` and explore:
 
-1. **User Guide & Ayurveda Primer (`/guide`):** Introductory guide and conceptual reference explaining what the site is, 3 numbered navigation flows, a 19-term glossary of classical Ayurvedic concepts (Rasa, Guna, Virya, Vipaka, Prabhava, Doshas) and architectural mechanisms (Claims, Concepts, Provenance, Virya Reconciliation), data sources (CCRAS DRAVYA, 15 languages), and research safety boundaries.
-2. **Dashboard (`/`):** Summary cards displaying counts of herbs, illnesses, treatment relationships, and attributes alongside recent herbs, top frequent conditions, and dual search actions. Includes a prominent "New here? Read the guide" callout.
-3. **Herb Catalog (`/herbs`):** Searchable, paginated directory of herbs with text filtering and pagination.
+1. **User Guide & Ayurveda Primer (`/guide`):** Introductory guide and conceptual reference explaining what the site is, 3 numbered navigation flows with dynamic examples, a 19-term glossary of classical Ayurvedic concepts (Rasa, Guna, Virya, Vipaka, Prabhava, Doshas) and architectural mechanisms (Claims, Concepts, Provenance, Virya Reconciliation), data sources, and research safety boundaries.
+2. **Dashboard (`/`):** Summary cards displaying counts of herbs, illnesses, treatment relationships, and attributes alongside recent herbs, top frequent conditions, and search inputs. Includes a prominent "New here? Read the guide" callout.
+3. **Herb Catalog (`/herbs`):** Searchable, paginated directory of herbs with text filtering and pagination. Supports search in English, Latin botanical names, transliteration, and native Indic scripts (e.g. "तुलसी").
 4. **Semantic Herb Detail (`/herbs/1`):** Complete Stage C presentation showcasing:
-   - **Classical Dravyaguna Properties:** Rasa (taste), Guna (qualities), Virya (potency), Vipaka (post-digestive effect), Prabhava (specific action), and Karma (actions), with links to the Guide glossary.
-   - **Plant Part Associations:** Officinal plant parts (leaves, seeds, roots).
-   - **Sanskrit Lexical References:** Multi-script terms in Devanagari script and IAST Latin transliteration.
-   - **Directional Dosha Effects:** Normalized Vata/Pitta/Kapha decrease and increase assertions.
-   - **Linked Conditions:** Illnesses linking to their dedicated condition detail pages.
-   - **Virya Reconciliation Summary Pill:** Multi-source concordance indicator.
+   - **Unified 6-Column Matrix:** Rasa (taste), Guna (qualities), Virya (potency), Vipaka (post-digestive effect), Prabhava (specific action), and Karma (actions) in a single deduped row with claim badges (`×N`) and collapsible source details.
+   - **3-Row Dosha Table:** Deterministic Vata, Pitta, and Kapha states with explicit "Not recorded" fallback.
+   - **Structured Characteristics:** Vernacular names across regional languages, officinal plant parts (Prayojyāṅga), preparations, dosage statements, and classical etymology.
+   - **Virya Consensus Indicator:** Consensus status and direct link to the Virya reconciliation dashboard.
 5. **Illness Explorer (`/illnesses`):** Therapeutic index of conditions with:
-   - **Multilingual Language Selector:** Switch between 15 Indian languages (English, हिन्दी, संस्कृतम्, বাংলা, தமிழ், తెలుగు, etc.) with native script buttons and URL persistence (`?language=hi`).
+   - **15-Language Selector:** Switch between 15 Indian languages (English, हिन्दी, संस्कृतम्, বাংলা, தமிழ், తెలుగు, etc.) with native script buttons and URL persistence (`?language=hi`).
    - **Multilingual Search:** Query conditions by English common name ("fever", "cough", "piles"), classical transliteration ("jvara", "kasa", "arsha"), or vernacular scripts ("बुखार", "खांसी", "बवासीर").
-   - **Clear Heading Hierarchy:** English name displayed as main heading, selected language script beneath it with `<span lang="...">`, and original scraped transliteration preserved in small monospace code tags.
-   - **Disclaimers:** CCRAS DRAVYA medical research disclaimer and a machine-translation notice on non-English views, linking to the Guide limits.
-6. **Illness Detail (`/illnesses/1`):** Detailed condition profile listing all associated herbs with:
-   - Preserved language selection across links.
-   - Distinct badges for scraped vs. manually curated herb-treatment relationships.
-   - Mandatory medical disclaimer and machine translation notices.
-7. **Virya Reconciliation Dashboard (`/stage-c/reconciliation/1`):** Detailed 4-tier audit report classifying concordance across sources, candidate divergence, and intra-claim ambiguity, with direct links to the Guide glossary.
+   - **Heading Hierarchy:** Readable English primary heading, localized native script subtitle, and original scraped transliteration in code tags.
+6. **Illness Detail (`/illnesses/1`):** Detailed condition profile listing all associated herbs with distinct badges for scraped vs. manually curated links.
+7. **Virya Reconciliation Dashboard (`/stage-c/reconciliation/1`):** Detailed 4-tier audit report classifying concordance across sources, candidate divergence, and intra-claim ambiguity.
 8. **REST JSON Endpoints:**
    - Herb Semantic Profile: `GET /api/stage-c/herbs/1/profile`
    - Illness Search: `GET /api/illnesses?q=`
    - Condition Herbs: `GET /api/illnesses/1/herbs`
-
-### Windows Troubleshooting (Application Control / Smart App Control)
-
-If Windows Application Control or Smart App Control blocks direct execution of `.exe` launcher stubs in Python virtual environments (such as `pip.exe`, `herbal-almanac.exe`, or `uvicorn.exe` with error `WinError 4551`), invoke them directly via Python module syntax:
-
-- Instead of `pip install ...` &rarr; `python -m pip install ...`
-- Instead of `herbal-almanac ...` &rarr; `python -m herbal_almanac ...`
-- Instead of `uvicorn ...` &rarr; `python -m uvicorn herbal_almanac.web_app:app --reload`
 
 ### 5. CLI Commands to Show
 
@@ -198,177 +371,27 @@ herbal-almanac records all --format json --output demo_records.json --database d
 
 ---
 
-## Quick start
+## Documentation Index
 
-Create a database and scrape a small number of records:
+Comprehensive project documentation is organized in `documentations/`:
 
-```bash
-herbal-almanac setup --database /tmp/ayurvedic.db
-herbal-almanac scrape dravya --max-pages 1 --max-plants 5 --database /tmp/ayurvedic.db
-```
+- **[Project Plan & SDLC Roadmap](documentations/plan.md):** Architectural principles, milestone history, future roadmap, and pre-push verification checklist.
 
-The scraper requires network access to CCRAS DRAVYA. Existing databases are
-migrated in place; choose a new path for a clean rebuild.
+### Package Modules (`src/herbal_almanac/`)
+- **[backfill_engine.md](documentations/backfill_engine.md):** Semantic ingestion engine migrating Stage B claims to Stage C concepts.
+- **[claim_lifecycle.md](documentations/claim_lifecycle.md):** State transitions for claims (supersede, restore, reject, review).
+- **[cleaning.md](documentations/cleaning.md):** Unicode NFC normalization, ASCII transliteration, and Dosha expression parsing.
+- **[cli.md](documentations/cli.md):** Typer command line interface commands and console entry points.
+- **[concept_catalog.md](documentations/concept_catalog.md):** Canonical Dravyaguna concept catalog across 11 domains and 640+ multilingual labels.
+- **[database_operator.md](documentations/database_operator.md):** SQLite CRUD operator, migrations, concurrency management, and schema reference.
+- **[herb_view.md](documentations/herb_view.md):** Pure view-model functions for property deduplication and attribute grouping.
+- **[illness_glossary.md](documentations/illness_glossary.md):** Multilingual illness translation across 15 Indian languages and catalog precedence.
+- **[repository_api.md](documentations/repository_api.md):** Read-only presentation service for Dravyaguna profiles and Virya reconciliation.
+- **[schema_capability_gate.md](documentations/schema_capability_gate.md):** Migration ledger inspection and Version 2/3 capability gating.
+- **[scrapper.md](documentations/scrapper.md):** CCRAS DRAVYA discovery, HTTP fetching, and HTML monograph parsing.
+- **[translation.md](documentations/translation.md):** Optional English machine translation adapter and protocol.
+- **[web_app.md](documentations/web_app.md):** FastAPI read-only presentation layer, Jinja2 routing, and REST endpoints.
 
-Search records and inspect relationships:
-
-```bash
-herbal-almanac herbs tulsi --database /tmp/ayurvedic.db
-herbal-almanac illnesses fever --database /tmp/ayurvedic.db
-herbal-almanac treatments HERB_ID --database /tmp/ayurvedic.db
-herbal-almanac attributes HERB_ID --database /tmp/ayurvedic.db
-```
-
-Browse/export records:
-
-```bash
-herbal-almanac records
-herbal-almanac records herbs
-herbal-almanac records attributes
-herbal-almanac records all --format json --output records.json
-herbal-almanac records treatments --format csv --output treatments.csv
-herbal-almanac attributes HERB_ID --format csv --output attributes.csv
-```
-
-Add manual records and treatment relationships:
-
-```bash
-herbal-almanac herb "Tulsi" --botanical-name "Ocimum tenuiflorum"
-herbal-almanac illness "Cough"
-herbal-almanac treatment HERB_ID ILLNESS_ID
-```
-
-Use `herbal-almanac --help` and `herbal-almanac COMMAND --help` for the
-complete command and option reference. See [`documentations/cli.md`](documentations/cli.md).
-
-## Translation and multilingual values
-
-Translation is disabled by default. With the optional dependency installed,
-pass `--translate` to add machine-generated `Translated Names.<Language>`
-attributes. Source regional scripts and source wording are retained separately.
-Translated content is marked unverified; see
-[`documentations/translation.md`](documentations/translation.md).
-
-### Multilingual Illness Glossary and Language Selector
-
-To bridge classical Ayurvedic nomenclature and modern vernacular understanding, Herbal Almanac bundles an in-memory multilingual illness glossary (`src/herbal_almanac/data/illness_glossary.csv`, 227 conditions, 16 language columns) supported by a resolution engine (`src/herbal_almanac/illness_glossary.py`).
-
-1. **15 Supported Indian Languages:**
-   - Quick selector buttons: **English**, **हिन्दी** (Hindi), **संस्कृतम्** (Sanskrit).
-   - Additional regional scripts: **অসমীয়া** (Assamese), **বাংলা** (Bengali), **ગુજરાતી** (Gujarati), **ಕನ್ನಡ** (Kannada), **മലയാളം** (Malayalam), **मराठी** (Marathi), **नेपाली** (Nepali), **ଓଡ଼ିଆ** (Odia), **ਪੰਜਾਬੀ** (Punjabi), **தமிழ்** (Tamil), **తెలుగు** (Telugu), and **اردو** (Urdu).
-   - Selection persists via URL query parameter (`?language=hi`) across condition and herb links.
-
-2. **Fault-Tolerant Resolution:**
-   - Classical scraped transliterations often include case variations, diacritics, Sanskrit visargas (`-H`, `-h`), phonetic alternatives (`w`/`v`, `sh`/`s`, `ch`/`cch`), and slash compounds (e.g. `ArtavadoSaH/ArtavaduSTiH/rajodoSaH`).
-   - The resolver (`resolve_illness()`) handles all of these variations transparently and maps compound terms to both full and individual concepts without modifying stored database records.
-
-3. **Multilingual and Alias Search:**
-   - Searches across all 15 language columns as well as English clinical synonyms (e.g. searching "bawasir" or "piles" matches "Arsha / Piles").
-   - **Cross-Explorer Redirection:** When a user searches for an illness term (e.g. "cough" or "बुखार") in the Herb Explorer and no herb matches, the GUI automatically redirects (HTTP 303) to `/illnesses?q=...`.
-
-4. **Extending the Glossary:**
-   - To add new conditions or regional synonyms, edit `src/herbal_almanac/data/illness_glossary.csv` following the 16-column UTF-8 format (`Original_Term, English, Assamese, Bengali, Gujarati, Hindi, Kannada, Malayalam, Marathi, Nepali, Odia, Punjabi, Sanskrit, Tamil, Telugu, Urdu`). The in-memory resolver reloads on application startup.
-
-5. **AI Attribution & Scholarly Precedence:**
-   - Translations in the CSV were generated with AI assistance via **Gemini Deep Research**. They are machine-generated and **not clinically verified**.
-   - **Scholarly Precedence:** Curated Stage C canonical concepts (the 24 `IND_*` indications in `concept_catalog.py`) take strict precedence over CSV translations for English, Hindi, and Sanskrit on conflict. All discrepancies are audited transparently via `scripts/illness_coverage.py --conflicts`.
-   - Non-English pages display an explicit disclaimer banner: *"Translations are machine-generated (Gemini) and not clinically verified."* alongside standard CCRAS research disclaimers.
-
-6. **Database Coverage Audit:**
-   - Check database illness resolution coverage at any time:
-     ```bash
-     python scripts/illness_coverage.py --database data/demo.db
-     ```
-   - See [`documentations/illness_glossary.md`](documentations/illness_glossary.md) for full architecture and resolution specifications.
-
-## Local web interface
-
-Herbal Almanac includes an optional read-only browser interface built with
-FastAPI, Uvicorn, and Jinja2. It reuses the existing SQLite database operator
-and provides an overview dashboard, searchable herb explorer, and herb detail
-pages.
-
-Install and launch it:
-
-```bash
-python -m pip install -e ".[web]"
-uvicorn herbal_almanac.web_app:app --reload
-```
-
-Open `http://127.0.0.1:8000`. The web interface uses the same per-user
-database path as the CLI. Set `HERBAL_ALMANAC_DATABASE` to use another SQLite
-file. See [`documentations/web_gui.md`](documentations/web_gui.md) for setup,
-routes, architecture, and tests.
-
-The first GUI milestone is read-only: scraping, translation, and manual
-curation remain CLI workflows.
-
-To verify the stylesheet separately, open
-`http://127.0.0.1:8000/static/styles.css`. It should return CSS text with
-HTTP 200. See the troubleshooting section in
-[`documentations/web_gui.md`](documentations/web_gui.md) if the page renders
-without styling.
-
-## Architecture
-
-```text
-CCRAS DRAVYA
-    |
-    v
-discover -> fetch -> parse -> clean/validate -> optional translation
-                                         |
-                                         v
-                                  SQLite transaction
-                                  |- herbs + attributes
-                                  |- illness/treatment links
-                                  |- normalized Dosha effects
-                                  |- additive Migrations 1 & 2
-                                         |
-                                         +-----------------------+
-                                         |                       |
-                                         v                       v
-                              Typer CLI / JSON / CSV     FastAPI Web Interface
-```
-
-See [`documentations/scrapper.md`](documentations/scrapper.md) for scraping
-and recovery behavior, [`documentations/cleaning.md`](documentations/cleaning.md)
-for record cleanup, and [`documentations/database_schema.md`](documentations/database_schema.md)
-for the current/proposed normalized model.
-
-## Tests and CI
-
-Tests are offline: use `sample.html`, `data.txt`, mocked HTTP responses,
-fake translators, and temporary SQLite files. Do not call the live source or
-translation service from tests.
-
-Run the required scraper regression and then the full suite:
-
-```bash
-python -m pytest tests/test_scrapper.py -q
-python -m pytest -q
-```
-
-The GitHub Actions workflow runs both commands across Python 3.10–3.14.
-
-## Repository and data notes
-
-- `sample.html` is a saved source-page fixture for parser development.
-- `data.txt` is a small Sanskrit terminology/reference sample.
-- SQLite databases and translation caches are runtime artifacts and are not
-  committed; the default database is stored in the platform's user data
-  directory.
-- The project code is MIT-licensed. CCRAS source material, terminology
-  references, and scraped data may have separate copyright, attribution, or
-  terms-of-use requirements. Verify redistribution rights independently.
-
-
-## Roadmap and AI coding-agent handoff
-
-Before implementing planned features, read:
-
-- [SDLC plan](documentations/plan.md)
-- [Antigravity handoff — next actions and working protocol](documentations/antigravity_handoff.md)
-- [Roadmap addendum — evidence, safety, multilingual access, and staged gates](documentations/roadmap_addendum.md)
-- [Clinical, safety, evidence, and multilingual data requirements](documentations/clinical_data_requirements.md)
-
-These documents distinguish current implementation from future requirements. Do not implement later-stage medical-history or symptom-matching features before their prerequisite gates pass.
+### Scripts (`scripts/`)
+- **[illness_coverage.md](documentations/illness_coverage.md):** Audit script reporting database glossary resolution and catalog conflicts.
+- **[make_demo_db.md](documentations/make_demo_db.md):** Offline demo database generator from local test fixtures.

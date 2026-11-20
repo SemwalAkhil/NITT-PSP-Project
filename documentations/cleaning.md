@@ -1,166 +1,24 @@
-# Cleaning and Plant Records
+# Data Cleaning & Plant Records (`cleaning.py`)
 
-## Purpose
+## 1. Purpose
+The `cleaning.py` module cleans and normalizes raw text extracted from HTML and establishes the primary in-memory record model. It handles Unicode NFC normalization, ASCII transliteration, and rule-based Dosha expression parsing before database ingestion.
 
-`cleaning.py` is the boundary between unstructured HTML extraction and the
-database layer. The scraper finds and parses source values; this module
-prepares those values for storage without handling SQL.
+## 2. Where it fits
+- **Upstream callers:** Called directly by `scrapper.py` during web parsing and by `database_operator.py` during validation and search key generation.
+- **Downstream dependencies:** Pure standard-library module relying on Python's `unicodedata`, `re`, and `dataclasses`.
 
-This separation keeps Unicode handling, whitespace cleanup, and validation out
-of `database_operator.py`. It also makes cleanup behavior testable with
-in-memory records.
+## 3. Key functions and classes
+- `PlantRecord`: Dataclass holding normalized plant identity, flexible attribute dictionaries, provenance URLs, and timestamps; serves as the shared data contract between scraper and database.
+- `clean_text(value)`: Accepts a raw string, returns cleaned Unicode NFC text with normalized whitespace and preserved Devanagari joiners.
+- `ascii_text(value)`: Accepts a Unicode string, returns ASCII romanization with Harvard-Kyoto phonetic transliterations.
+- `normalize_dosha_expression(expression)`: Accepts a raw Dravyaguna string (e.g. "Kaphavatahara"), returns a dictionary of normalized directional effects (`decrease`, `increase`, or `unspecified`) for Vata, Pitta, and Kapha.
 
-## Components
+## 4. Worked example
+```python
+from herbal_almanac.cleaning import clean_text, normalize_dosha_expression
 
-### `clean_text()`
-
-`clean_text(value)` applies Unicode NFC normalization, collapses runs of
-whitespace, removes leading and trailing whitespace, and removes emoji and
-Unicode symbol/format characters. It preserves the Devanagari
-zero-width joiner (`U+200D`) and zero-width non-joiner (`U+200C`), which are
-required for correct half-consonant and conjunct rendering. NFC preserves
-Devanagari and Sanskrit text while making equivalent Unicode sequences
-consistent.
-
-### `ascii_text()`
-
-`ascii_text(value)` is used for English-facing fields. It first applies NFC
-normalization so decomposed Sanskrit diacritics are handled consistently. It applies
-Harvard-Kyoto-style romanization before removing unsupported symbols and
-returns ASCII text. This keeps Sanskrit distinctions such as `ś` (`z`) and
-`ṣ` (`S`) instead of collapsing every sibilant to `s`; uppercase `Ś` maps to
-`Z` while lowercase `ś` maps to `z`. It also uses the Harvard-Kyoto nasal
-mappings `ṅ` (`G`), `ñ` (`J`), and `ṇ` (`N`). For example, `Kāsa` becomes
-`KAsa` and `📚 Etymology` becomes `Etymology`.
-
-### `clean_values()`
-
-`clean_values(values)` cleans every value, removes empty values, and removes
-duplicates while preserving the original order.
-
-### `split_values()`
-
-`split_values(value)` splits one source value on newlines, semicolons, and
-pipe characters, then applies the normal value cleanup.
-
-### `normalize_dosha_expression()`
-
-`normalize_dosha_expression(expression)` recognizes documented Vata, Pitta,
-and Kapha effects from classical Doshakarma expressions. It supports
-decrease terms such as `-hara`, `-ghna`, and `-shamana`, increase terms such
-as `-vardhaka` and `-vrddhi`, and multi-Dosha expressions such as
-`KaphaVātahara` and `Tridoṣaśamana`.
-
-The parser reads complete Dosha/effect groups from left to right, so a mixed
-expression such as `VātavardhakaPittahara` returns Vata `increase` and Pitta
-`decrease` independently. It preserves the source expression and returns one
-effect for each of the three Doshas. A Dosha that is not explicitly present is
-returned as `unspecified`; the normalizer never infers an undocumented effect.
-
-Expressions that contain an unknown trailing term, an incomplete group, or
-conflicting effects for one Dosha are treated as ambiguous and return
-`unspecified` for every Dosha. Matching must consume the complete normalized
-expression, which prevents substrings inside unrelated words such as
-`notkaphahara` from being interpreted as evidence. Unicode diacritics,
-transliterated spellings, and separators are normalized before matching.
-
-The rules cover only the documented terminology families. The normalizer does
-not infer meanings for unlisted Sanskrit suffixes or English descriptions.
-Database persistence stores the resulting effects in `herb_doshas` together
-with the original expression.
-
-### `PlantRecord`
-
-`PlantRecord` is the typed in-memory contract shared by the scraper, cleaner,
-validator, and database operator.
-
-| Field | Purpose |
-|---|---|
-| `source` | Source system, currently `CCRAS DRAVYA`. |
-| `source_record_id` | Stable plant ID from the source URL. |
-| `source_url` | URL used to retrieve the source record. |
-| `retrieved_at` | UTC retrieval timestamp. |
-| `ayurvedic_name` | Unicode-normalized plant name from the source. |
-| `botanical_name` | Unicode-normalized scientific/botanical name, when available. |
-| `family` | Unicode-normalized botanical family, when available. |
-| `attributes` | Parsed fields mapped to Unicode-normalized value lists. |
-| `source_values` | Cleaned source field text for provenance. |
-| `attribute_metadata` | Metadata mapping field names to source language, machine generation, and verification flags. |
-| `dosha_expressions` | Cleaned source Doshakarma expressions for normalization. |
-| `translation_failures` | Structured failure messages when machine translation fails for specific names. |
-| `transliterated_name` | ASCII transliteration for compatibility/search indexing. |
-| `transliterated_botanical_name` | ASCII botanical-name transliteration, when available. |
-| `transliterated_family` | ASCII family-name transliteration, when available. |
-
-### `PlantRecord.clean()`
-
-`clean()` normalizes identity fields, attribute names, attribute values, and
-source text. It returns the same record after updating it, allowing the parser
-to construct and clean a record in one expression.
-
-It also normalizes `source` and `retrieved_at`. Optional text fields use the
-same cleanup path and become `None` when empty after normalization.
-
-Attribute fields that normalize to the same name are merged in source order,
-with cleaned duplicate values retained only once.
-
-Optional botanical and family fields that clean to empty text are stored as
-`None`, keeping them consistent with their optional transliteration fields.
-
-Identity fields, attributes, and source values retain Unicode after NFC
-normalization. `ascii_text()` is used only to populate the explicit
-`transliterated_*` fields; it never replaces source data. The database keeps
-the normalized name in `original_name` and uses the transliteration in the
-legacy `english_name` search column.
-
-### Typed attribute classification
-
-`CONDITION_FIELDS` identifies the source's `Therapeutic Usage.Name` column.
-Every value from that column is labeled `disease` by
-`PlantRecord.typed_attributes()` and ingested as an unverified condition.
-Controlled-vocabulary mapping is intentionally deferred. Values from other
-fields remain `ambiguous` and do not create treatment relationships.
-
-### `PlantRecord.validate()`
-
-Validation rejects empty `source` and `retrieved_at` values, non-positive
-source IDs, HTTP(S) URLs without a hostname, non-HTTP(S) URLs, and empty
-Ayurvedic names. Errors are raised instead of producing a successful-looking
-record.
-
-## Data flow
-
-```text
-HTML tables and vernacular-name cards
-      ↓
-scrapper table/card parsers
-      ↓
-PlantRecord
-      ↓
-PlantRecord.clean()
-      ↓
-PlantRecord.validate()
-      ↓
-database_operator.insert_record()
+cleaned = clean_text("  तुलसी   (Holy Basil)  ")
+doshas = normalize_dosha_expression("Kapha-Vata shamana")
+print(cleaned)  # "तुलसी (Holy Basil)"
+print(doshas)   # {'vata': 'decrease', 'pitta': 'unspecified', 'kapha': 'decrease'}
 ```
-
-The cleaner does not distinguish between ordinary attributes and vernacular
-attributes. Fields such as `Vernacular Names.English` pass through the same
-normalization path as `Parts Used.Name` or `Therapeutic Usage.Name`, preserving
-their section and language in the field name.
-
-The module provides deterministic text cleanup and Dosha-expression
-normalization. Google translation is kept in `translation.py` so cleaning
-remains independent of network access. Condition mapping and Dosha persistence
-should remain separate concerns until their storage contracts are defined.
-
-### Provenance consumption
-
-In Stage B operational provenance integration, the cleaned `PlantRecord` feeds
-directly into the provenance ledger:
-- `source`, `source_record_id`, `source_url`, and `retrieved_at` populate `sources` and `source_records`.
-- `ayurvedic_name` generates primary `source_alias` claims and preferred Devanagari names in `herb_names`.
-- `botanical_name` and `family` generate `taxonomy_name` claims in `taxa` and `herb_taxa`.
-- `attributes` with prefix `Vernacular Names.` generate `vernacular_name` claims and multilingual `herb_names` rows with detected ISO 15924 scripts.
-- General section attributes generate `source_attribute` claims preserving raw `source_values` verbatim alongside normalized values.
-- `dosha_expressions` generate `dosha_expression` claims alongside normalized effects in `herb_doshas`.

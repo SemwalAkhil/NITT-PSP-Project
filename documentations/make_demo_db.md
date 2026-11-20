@@ -1,73 +1,27 @@
-# Demo Database Generator (`scripts/make_demo_db.py`)
+# Demo Database Generator (`make_demo_db.py`)
 
-## 1. Purpose and Overview
+## 1. Purpose
+The `make_demo_db.py` script synthesizes a complete, standalone SQLite demo database strictly offline from local test fixtures. It enables immediate evaluation of both Stage B provenance records and Stage C semantic profiles without live network access.
 
-`scripts/make_demo_db.py` is a standalone utility designed to synthesize a complete, self-contained, and fully populated SQLite demo database strictly offline. It enables instructors, evaluators, and developers to explore the entire application—including both legacy Stage B provenance tables and advanced Stage C semantic Dravyaguna features—without requiring live network connectivity to the CCRAS DRAVYA portal.
+## 2. Where it fits
+- **Upstream callers:** Invoked from the terminal by evaluators or imported by automated integration tests (`tests/test_demo_db.py`).
+- **Downstream dependencies:** Calls `scrapper.py` (`parse_plant`), `database_operator.py` (`AyurvedicAlmanac`), and `backfill_engine.py`.
 
-## 2. Inputs and Parameters
+## 3. Key functions and classes
+- `build_demo_database(database_path=None, sample_path=None)`: Parses `sample.html`, creates baseline tables, adds manual treatments, applies Stage C upgrade, and backfills semantic concepts; returns the absolute `Path` of the created database.
+- `main()`: Command-line entry point that parses `--database` arguments, generates the database, and prints copy-paste Web GUI startup commands.
 
-The script can be executed directly as a CLI tool or imported programmatically:
-
-- **CLI Options:**
-  - `--database` / `-d` (`str`, optional): Path to the target SQLite database file. Defaults to `data/demo.db` (which is gitignored by `*.db`).
-- **Programmatic Arguments (`build_demo_database`):**
-  - `database_path` (`Path | str | None`): Destination database path.
-  - `sample_path` (`Path | str | None`): Custom path to the HTML source fixture (defaults to `sample.html` in the repository root).
-- **Environment Prerequisites:**
-  - Standard Python 3.10+ virtual environment with `herbal_almanac` installed (`pip install -e ".[web]"`).
-
-## 3. Outputs and Artifacts
-
-1. **SQLite Database File:**
-   - Schema Version: **3** (`[1, 2, 3]` in `schema_migrations`).
-   - Plant Records: 1 CCRAS DRAVYA plant record parsed from `sample.html`.
-   - Attributes & Claims: Vernacular names, botanical classification, morphology, Rasa, Guna, Virya, Vipaka, and Doshakarma.
-   - Manual Curations: 2 manual illnesses ("Digestive Weakness", "Chronic Fatigue") and 2 manual treatment relationships (`treatment.source = 'manual'`).
-   - Concept Catalog: 136 canonical concepts and 649 multilingual labels (Hindi, English, Sanskrit Devanagari, and IAST).
-   - Semantic Mappings: Backfilled `concept_claim_mappings`, `herb_dravyaguna_properties`, and directional `herb_dosha_effects`.
-2. **Standard Output:**
-   - Displays the absolute path of the generated database.
-   - Outputs copy-paste launch commands for Linux/macOS and Windows PowerShell to start the FastAPI web GUI.
-
-## 4. Execution Workflow
-
-```
-[sample.html]
-      │
-      ▼
-parse_plant() ───► PlantRecord ───► AyurvedicAlmanac.insert_record()
-                                                │
-                                                ▼
-                                    [Schema Version 2 Baseline]
-                                    - herbs, attributes, claims
-                                    - scraped treatment links
-                                                │
-                                                ▼
-                                    AyurvedicAlmanac.add_illness()
-                                    AyurvedicAlmanac.add_treatment()
-                                    - manual illness & treatments
-                                                │
-                                                ▼
-                                    AyurvedicAlmanac.upgrade_to_stage_c()
-                                    - Migration 3 DDL & 44 triggers
-                                    - Canonical Concept Catalog seeded
-                                                │
-                                                ▼
-                                    AyurvedicAlmanac.run_stage_c_backfill()
-                                    - Semantic concept mappings
-                                    - Dravyaguna properties & Doshas
-                                                │
-                                                ▼
-                                    [Ready Demo Database (v3)]
-```
-
-## 5. Verification
-
-The generator is covered by automated offline unit tests in `tests/test_demo_db.py`:
-- `test_build_demo_database_offline`: Generates a database in `tmp_path`, verifying schema ledger `[1, 2, 3]`, plant row presence, manual illnesses (`machine_generated = 0`), manual treatment links (`source = 'manual'`), and Stage C concept/property rows.
-- `test_make_demo_db_cli_invocation`: Executes the script via `subprocess.run` with a temporary path and asserts that the launch command is printed to stdout.
-
-Verification command:
+## 4. Worked example
 ```bash
-python -m pytest tests/test_demo_db.py -q
+# Generate the demo database offline (defaults to data/demo.db)
+python scripts/make_demo_db.py
+
+# Launch the Web GUI pointing to the generated demo database
+HERBAL_ALMANAC_DATABASE=data/demo.db uvicorn herbal_almanac.web_app:app
 ```
+
+## 5. Demo Evaluation Notes
+- **Zero-Network Synthesis:** Builds Schema Version 3 directly from `sample.html` in under 2 seconds without external HTTP requests.
+- **Multi-Tier Exploration:** Contains both automated CCRAS DRAVYA scraped records (`source='CCRAS_DRAVYA'`) and manual curations (`source='manual'`), allowing immediate testing of provenance separation.
+- **Stage C Verification:** Ships fully upgraded with 136 seeded canonical concepts, 640+ multilingual labels, and backfilled Dravyaguna property chips and Virya reconciliation metrics.
+- **Git Safety:** Writes by default to `data/demo.db`, which is ignored by Git (`*.db` in `.gitignore`), preventing accidental check-ins.

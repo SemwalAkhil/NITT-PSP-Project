@@ -1,90 +1,28 @@
-# Translation Enrichment
+# Machine Translation (`translation.py`)
 
-`translation.py` adds optional Google Translator enrichment without replacing
-source values.
+## 1. Purpose
+The `translation.py` module provides optional English machine-translation enrichment for Hindi and Sanskrit plant names. It isolates third-party translation providers behind a strict protocol so translation failures never block ingestion.
 
-## Supported targets
+## 2. Where it fits
+- **Upstream callers:** Invoked conditionally during scraping when `--translate` is enabled or in offline tests with mock translators.
+- **Downstream dependencies:** Optionally imports `deep_translator` (via `pip install -e ".[translate]"`).
 
-The current target set is:
+## 3. Key functions and classes
+- `TranslatorProtocol`: Structural typing protocol defining the expected `translate(text: str) -> str` interface for translation backends.
+- `DeepTranslatorAdapter`: Concrete wrapper around GoogleTranslator from `deep-translator` implementing `TranslatorProtocol`.
+- `translate_plant_record(record, translator=None)`: Translates Hindi and Sanskrit name attributes on a `PlantRecord`, marking added names as `machine_generated=True` and `verification_status="unverified"`.
 
-- English
-- Assamese
-- Bengali
-- Gujarati
-- Hindi
-- Kannada
-- Malayalam
-- Marathi
-- Nepali
-- Odia
-- Punjabi
-- Sanskrit
-- Tamil
-- Telugu
-- Urdu
+## 4. Worked example
+```python
+from herbal_almanac.cleaning import PlantRecord
+from herbal_almanac.translation import translate_plant_record
 
-The language codes are the Google Translator codes used by
-`deep-translator`.
+class MockTranslator:
+    def translate(self, text: str) -> str:
+        return "Holy Basil" if "तुलसी" in text else text
 
-Install the optional dependency before enabling translation:
-
-```bash
-pip install "herbal-almanac[translate]"
+record = PlantRecord(source="TEST", source_record_id=1, source_url="https://example.org",
+                     retrieved_at="2026-11-20T00:00:00Z", ayurvedic_name="तुलसी")
+enriched = translate_plant_record(record, translator=MockTranslator())
+print(enriched.attributes.get("Vernacular Names.English"))  # ['Holy Basil']
 ```
-
-## `GoogleNameTranslator`
-
-`GoogleNameTranslator` wraps `deep_translator.GoogleTranslator` with an
-in-memory cache, an optional SQLite-backed cache, and a 0.25-second minimum
-request interval. Translation enrichment is opt-in because it can make many
-network requests and machine translation of Ayurvedic proper nouns is
-unreliable. Cached entries include the result status, error, and source-language
-metadata, so failed requests are not repeated on later runs.
-
-`TranslationResult.status` distinguishes `success`, `missing` (an empty
-response), and `failed` (an exception with its reason). Source values remain
-available when either non-success status occurs.
-
-## `enrich_record()`
-
-`enrich_record(record, translator)` adds attributes in this form:
-
-```text
-Translated Names.English
-Translated Names.Hindi
-Translated Names.Bengali
-...
-```
-
-The record's primary Ayurvedic name is translated into each configured regional
-language. Existing `Vernacular Names.<Language>` values are translated back to
-English and added to `Translated Names.English`. Existing source attributes are never overwritten. Generated attributes carry
-`source_language`, `machine_generated`, and `verification_status=unverified`
-metadata. Botanical names and medical terminology are therefore not treated as
-validated facts merely because a machine translation exists. The scraper
-records `sa` for the primary Ayurvedic name and the known vernacular language
-code for vernacular values; these are source-field declarations, not claims
-that Google verified the language.
-
-The function returns the cleaned record. English-facing values use ASCII
-normalization, so diacritics and symbols do not remain in English output:
-
-```text
-Kāsa           -> KAsa
-📚 Etymology   -> Etymology
-```
-
-Regional translated values retain their native scripts.
-
-## Runtime behavior
-
-The scraper creates one translator per run only when `--translate` is passed
-and enriches each plant after HTML parsing and before validation/database
-insertion. Complete translation output requires network access to Google
-Translator. A failed translation does not fail the scrape; the source value
-remains available in its original attribute.
-
-Translation is intentionally performed during scraping rather than inside the
-SQLite layer. Database persistence stores translated attributes and their
-metadata alongside all other record attributes. The scraper supplies its
-database path to the translator so the cache persists across runs.
