@@ -1,43 +1,572 @@
-# Dravyaguna Data Mapping Project — SDLC Plan (`plan.md`)
+# Herbal Almanac – Project Plan and SDLC
 
-## 1. Project Overview & Core Principles
+## 1. Project Overview
 
-Herbal Almanac maps classical Ayurvedic pharmacology (**Dravyaguna**) to botanical taxonomy, officinal plant parts, pharmacological properties (Rasa, Guna, Virya, Vipaka, Prabhava), therapeutic actions (Karma), and clinical indications.
+Herbal Almanac is a Python-based research system designed to collect, structure, and explore Ayurvedic medicinal plant information.
 
-The architecture enforces a strict epistemic boundary:
+The project focuses on the relationship between:
+
+- Ayurvedic plant identity.
+- Botanical taxonomy.
+- Vernacular plant names.
+- Dravyaguna properties.
+- Dosha effects.
+- Plant parts and preparations.
+- Therapeutic indications.
+- Source evidence and provenance.
+
+The primary source adapter currently targets the CCRAS DRAVYA portal.
+
+The long-term objective is to develop a structured, provenance-aware knowledge base in which traditional terminology, botanical information, and modern research evidence can be connected without losing their original source context.
+
+### 1.1 Core principle
+
+The system must distinguish three different things:
+
+1. **Source evidence:** What the original source actually states.
+2. **Normalization:** A standardized representation of the source statement.
+3. **Interpretation:** A mapping or inference that connects the source statement to a broader knowledge model.
+
+These must never be treated as interchangeable.
+
+For example:
+
 ```text
-SOURCE DATA (CCRAS DRAVYA / Manual)
-    ↓
-RAW & PARSED DATA (PlantRecord, Section Attributes)
-    ↓
-STAGE B PROVENANCE (source_records, source_claims, legacy_herb_map, herb_names, taxa)
-    ↓
-STAGE C SEMANTIC KNOWLEDGE GRAPH (dravyaguna_concepts, concept_claim_mappings, properties)
-    ↓
-CONSUMPTION INTERFACES (Typer CLI, Read-Only FastAPI Web GUI, REST API)
+Original source expression:
+    KaphaVātahara
+
+Normalized interpretation:
+    Kapha -> decrease
+    Vata  -> decrease
+    Pitta -> unspecified
+
+Semantic representation:
+    Mapping to canonical Dosha and effect concepts
 ```
-Original source terminology is never overwritten. Interpretations and normalized concepts exist alongside source claims, linked through calibrated mappings and immutable audit lineage.
+
+The original expression must remain traceable even after semantic mapping.
 
 ---
 
-## 2. Milestone Snapshot
+## 2. Overall System Architecture
 
-- **Legacy Core (Milestone A):** Scraper discovery and parsing, text cleanup, Unicode NFC normalization, conservative Dosha normalization, SQLite transactions, and Typer CLI.
-- **Stage B (Milestone B):** Operational provenance integration (Migration 1 and Migration 2). Idempotent ingestion, immutable `source_claims`, claim supersession lineage, duplicate identity preflight, and conservative botanical taxonomy.
-- **Stage C.1 & C.2 (Milestone C):** Normalized Dravyaguna semantic architecture.
-  - Migration 3 DDL with partial unique indexes and 44 database integrity triggers.
-  - Curated Canonical Concept Catalog (`concept_catalog.py`, 136 concepts, 640+ labels across Sanskrit Devanagari/IAST, Hindi, and English).
-  - Schema Capability Gate (`schema_capability_gate.py`) ensuring backward compatibility with Schema Version 2.
-  - Claim Lifecycle & Review Engine (`claim_lifecycle.py`).
-  - Semantic Backfill Engine (`backfill_engine.py`) migrating legacy claims without dropping Stage B rows.
-  - Repository API (`repository_api.py`) with localized profiles and Virya reconciliation query.
-  - Presentation View-Model Layer (`herb_view.py`) and Web GUI (`web_app.py`) with single 6-column property table, 3-row Dosha matrix, and grouped attribute cards.
-  - Multilingual Illness Glossary (`illness_glossary.py`, 227 conditions across 15 Indian languages).
-  - CLI commands (`upgrade-stage-c`, `stage-c-status`) and offline demo database generator (`make_demo_db.py`).
+```text
+                  EXTERNAL DATA SOURCES
+                           |
+                           v
+                 SOURCE-SPECIFIC ADAPTERS
+                           |
+                           v
+                  RAW SOURCE EXTRACTION
+                           |
+                           v
+                   CLEANING & VALIDATION
+                           |
+                           v
+                     PlantRecord
+                           |
+                           v
+                    SQLITE DATABASE
+                           |
+                           v
+                 STAGE B: PROVENANCE
+                           |
+                           v
+                STAGE C: SEMANTIC MODEL
+                           |
+                           v
+                  REPOSITORY / VIEW MODEL
+                           |
+                 +---------+---------+
+                 |                   |
+                 v                   v
+              TYPER CLI          FASTAPI WEB APP
+                 |                   |
+                 +---------+---------+
+                           |
+                           v
+                         USERS
+```
+
+The architecture separates source acquisition, normalization, persistence, semantic interpretation, and presentation.
+
+This makes it possible to introduce additional sources without rewriting the existing database and presentation layers.
 
 ---
 
-## 3. Future Roadmap
+## 3. Development History and Milestones
+
+### Milestone A – Initial Core Implementation
+
+**Objective:** Establish a reliable pipeline for collecting CCRAS DRAVYA plant records.
+
+The initial implementation concentrated on getting source data into a usable relational database.
+
+#### Implemented functionality
+
+- Plant directory discovery.
+- Pagination through the DRAVYA directory.
+- Plant detail-page retrieval.
+- HTTP retries and request timeouts.
+- HTML parsing using BeautifulSoup.
+- Section-qualified attribute extraction.
+- Vernacular-name extraction.
+- Botanical name and family extraction.
+- Unicode normalization.
+- ASCII transliteration.
+- PlantRecord creation and validation.
+- Optional translation enrichment.
+- Dosha expression normalization.
+- SQLite persistence.
+- CLI-based database inspection.
+
+#### Main modules
+
+| Module | Responsibility |
+|---|---|
+| `scrapper.py` | Source discovery and extraction |
+| `cleaning.py` | Text normalization and record validation |
+| `translation.py` | Optional machine translation |
+| `database_operator.py` | SQLite persistence |
+| `cli.py` | Command-line interface |
+
+The initial architecture established the principle that scraping, cleaning, and database operations should be separate responsibilities.
+
+### Milestone B – Operational Provenance
+
+**Objective:** Preserve the origin and history of every important source assertion.
+
+The initial database stored plant information, but a research-oriented application also needs to answer:
+
+- Which source supplied this information?
+- Which source record did it come from?
+- What exactly did the source say?
+- Has the source changed its assertion?
+- Is the assertion verified or still unverified?
+- Which botanical taxon is associated with the plant?
+
+Stage B introduces a provenance layer to answer these questions.
+
+#### Migration 1 – Core identity and provenance
+
+Introduces the source identity and claim-tracking infrastructure.
+
+Important entities:
+
+- `sources`
+- `source_records`
+- `source_claims`
+- `legacy_herb_map`
+
+The legacy herb table is retained, while new source identity and provenance records are added.
+
+The migration includes duplicate-identity preflight and integrity checks.
+
+#### Migration 2 – Botanical taxonomy
+
+Introduces normalized botanical taxonomy relationships.
+
+Important entities:
+
+- `taxa`
+- `taxon_relationships`
+- `herb_taxa`
+
+The taxonomy layer allows botanical names and their relationships to be represented independently of the legacy herb table.
+
+Taxonomic relationships should not be inferred without supporting evidence.
+
+#### Operational provenance integration
+
+The database insertion process synchronizes the legacy data model with the provenance model.
+
+Important capabilities:
+
+- Idempotent source ingestion.
+- Source-record identification.
+- Source-claim creation.
+- Claim deduplication.
+- Claim supersession lineage.
+- Vernacular name tracking.
+- Botanical taxonomy claim tracking.
+- Source expression preservation.
+
+The same source record can be scraped again without creating unnecessary duplicate identities.
+
+When the source changes, the system can preserve the earlier claim and link the new assertion through supersession lineage.
+
+### Milestone C – Semantic Dravyaguna Architecture
+
+**Objective:** Transform source-specific attributes into a controlled, queryable semantic model.
+
+A source may express the same traditional concept using different spellings, languages, or terminology.
+
+Simply storing those strings as attributes is insufficient for advanced research queries.
+
+Stage C introduces a canonical concept system.
+
+#### 3.3.1 Canonical concept catalog
+
+Implemented in:
+
+`concept_catalog.py`
+
+Provides canonical Dravyaguna concepts and their multilingual labels.
+
+The catalog includes concepts across domains such as:
+
+- Rasa.
+- Guna.
+- Virya.
+- Vipaka.
+- Prabhava.
+- Karma.
+- Dosha.
+- Plant parts.
+- Preparations.
+- Indications.
+- Related semantic categories.
+
+The project documentation describes a curated catalog containing 136 concepts and more than 640 multilingual labels.
+
+The catalog provides standardized identifiers while retaining source-language expressions.
+
+#### 3.3.2 Semantic database migration
+
+Implemented through:
+
+- `migration_0003_semantic_dravyaguna.py`
+- `stage_c_ddl_and_triggers.sql`
+- `virya_reconciliation.sql`
+
+The semantic model introduces:
+
+| Entity | Responsibility |
+|---|---|
+| `dravyaguna_concepts` | Canonical concept definitions |
+| `concept_labels` | Multilingual concept labels |
+| `concept_label_sources` | Classical textual citations for labels |
+| `concept_claim_mappings` | Mapping between source claims and canonical concepts |
+| `herb_dravyaguna_properties` | Herb-to-property semantic relationships |
+| `dosha_claim_assertions` | Dosha assertions grounded in source claims |
+| `herb_dosha_effects` | Structured herb Dosha effects |
+| `herb_plant_parts` | Structured plant-part relationships |
+| `herb_preparations` | Structured preparation relationships |
+| `herb_indications` | Structured therapeutic indication relationships |
+
+The migration uses database integrity constraints and triggers to protect important semantic relationships.
+
+#### 3.3.3 Schema capability gate
+
+Implemented in:
+
+`schema_capability_gate.py`
+
+The capability gate checks the actual database schema and migration state before Stage C functionality is used.
+
+Its purpose is to avoid assuming that every database has already been upgraded.
+
+This is particularly important because the project must retain compatibility with databases created under earlier schema versions.
+
+#### 3.3.4 Claim lifecycle
+
+Implemented in:
+
+`claim_lifecycle.py`
+
+Manages the review and lifecycle of source claims.
+
+The implementation exposes 5 verified public functions for claim and interpretation lifecycle management:
+
+- `transition_claim_status(connection, source_claim_id, new_status, ...)`: Enforces routine review status transitions (`unreviewed` -> `reviewed` -> `verified`, `rejected`, `superseded`).
+- `adjudicate_claim_status_override(connection, source_claim_id, new_status, ...)`: Administrative override and reopening with mandatory audit justification logging.
+- `transition_interpretation_status(connection, domain, record_id, new_status, ...)`: Independent review status transitions for semantic mappings and assertions.
+- `validate_calibrated_mapping_confidence(confidence, review_status, ...)`: Validates confidence thresholds against review status requirements.
+- `reconcile_section_omissions(connection, source_id, ...)`: Audits unextracted fields and flags omissions without destructive updates.
+
+The lifecycle system ensures that changes to an assertion are auditable rather than destructive.
+
+#### 3.3.5 Semantic backfill
+
+Implemented in:
+
+`backfill_engine.py`
+
+The backfill engine migrates eligible Stage B claims into Stage C semantic representations.
+
+Its conceptual workflow is:
+
+```text
+EXISTING SOURCE CLAIMS
+          |
+          v
+    CLAIM RETRIEVAL
+          |
+          v
+  SOURCE FIELD CLASSIFICATION
+          |
+          v
+   TERMINOLOGY RESOLUTION
+          |
+          v
+   CANONICAL CONCEPT MAPPING
+          |
+          v
+   SEMANTIC RELATIONSHIP CREATION
+          |
+          v
+   STAGE C DATABASE TABLES
+```
+
+The original Stage B claim remains available.
+
+The semantic representation is linked back to the claim that supports it.
+
+#### 3.3.6 Repository and presentation layers
+
+Implemented through:
+
+- `repository_api.py`
+- `herb_view.py`
+- `illness_glossary.py`
+- `web_app.py`
+
+These modules separate database operations from presentation.
+
+The repository API supplies structured information.
+
+The view-model layer organizes that information for display.
+
+The web application provides pages and REST endpoints.
+
+The illness glossary supplies multilingual condition labels and search support.
+
+#### 3.3.7 Stage C web interface
+
+The web application includes:
+
+- Dashboard.
+- Herb catalog.
+- Herb detail pages.
+- Illness explorer.
+- Illness detail pages.
+- Semantic herb profiles.
+- Virya reconciliation dashboard.
+- REST JSON endpoints.
+
+The semantic herb profile presents the six principal Dravyaguna property domains in a unified structure, along with Dosha effects and other structured information.
+
+### Milestone D – Multi-source Evidence Integration
+
+**Status: Design proposal, not completed implementation.**
+
+The current ingestion system primarily uses CCRAS DRAVYA.
+
+A future research-oriented system should be capable of incorporating information from independent authoritative sources.
+
+Potential sources include:
+
+- Ayurvedic Pharmacopoeia of India.
+- NAMASTE terminology resources.
+- Botanical taxonomy repositories.
+- Scientific research databases.
+- Pharmacological literature.
+- Other licensed medicinal plant datasets.
+
+The purpose is not merely to combine data, but to distinguish independent evidence.
+
+For example:
+
+```text
+Source A:
+    Herb X has a particular property.
+
+Source B:
+    Herb X has the same property.
+
+Question:
+    Are these independent observations?
+
+Possibilities:
+    1. Both sources cite the same classical text.
+    2. One source copied the other.
+    3. They represent independent research.
+```
+
+This distinction is important when assessing evidence strength.
+
+Potential future components:
+
+- Additional source adapters.
+- Evidence identity and citation resolution.
+- Cross-source claim deduplication.
+- Evidence independence classification.
+- Authority-specific metadata.
+- Confidence and concordance models.
+
+These components require their own feasibility study and should not be treated as existing features.
+
+---
+
+## 4. Data Model Principles
+
+### 4.1 Preserve original source expressions
+
+The source expression must remain available even when a normalized value exists.
+
+### 4.2 Separate identity from terminology
+
+A botanical taxon, an Ayurvedic name, and a vernacular name are not interchangeable.
+
+The database must be capable of representing them independently.
+
+### 4.3 Separate source claims from semantic concepts
+
+A source claim records what a source says.
+
+A canonical concept records the standardized meaning assigned by the system.
+
+A mapping connects the two.
+
+### 4.4 Do not infer missing information
+
+If the source does not specify a Dosha effect, it must remain unspecified.
+
+If a semantic mapping is ambiguous, the system must not silently choose an interpretation.
+
+### 4.5 Maintain historical information
+
+Superseded claims should remain auditable.
+
+Database migrations should be additive wherever possible.
+
+### 4.6 Make ingestion repeatable
+
+Reprocessing the same source record should not create duplicate source identities or unnecessary duplicate claims.
+
+---
+
+## 5. Development Workflow
+
+The project follows a modular development process.
+
+### Step 1 – Source feasibility
+
+Before integrating a source:
+
+- Inspect its HTML, PDF, or spreadsheet structure.
+- Identify stable record identifiers.
+- Determine the extraction method.
+- Identify data licensing and attribution requirements.
+- Define which fields can be extracted reliably.
+
+### Step 2 – Data contract
+
+Define a structured representation for extracted records.
+
+For the current DRAVYA adapter, this is `PlantRecord`.
+
+### Step 3 – Extraction
+
+Implement source-specific parsing separately from database operations.
+
+### Step 4 – Cleaning and validation
+
+Normalize text, preserve original expressions, classify attributes conservatively, and validate required fields.
+
+### Step 5 – Persistence
+
+Insert or update the record through the database operator.
+
+Maintain source identity and provenance.
+
+### Step 6 – Semantic mapping
+
+Map eligible claims to the canonical concept catalog.
+
+Keep the original claim available.
+
+### Step 7 – Presentation
+
+Expose the resulting information through the CLI, repository API, and web interface.
+
+### Step 8 – Testing
+
+Test individual functions, database operations, migrations, and end-to-end workflows.
+
+---
+
+## 6. Testing Strategy
+
+### Scraper regression
+
+```bash
+python -m pytest tests/test_scrapper.py -q
+```
+
+Test cases should cover:
+
+- Plant directory discovery.
+- Pagination termination.
+- Duplicate plant IDs.
+- HTTP failures.
+- Request timeouts.
+- Section-qualified HTML tables.
+- Vernacular-name extraction.
+- Scientific profile extraction.
+- PlantRecord construction.
+- Dosha expression extraction.
+- Record persistence.
+- Failed-record recovery.
+
+### Database tests
+
+```bash
+python -m pytest tests/test_database_connections.py -q
+python -m pytest tests/test_database_initialization.py -q
+```
+
+Test:
+
+- Connection lifecycle.
+- Transaction handling.
+- Schema initialization.
+- Migration behavior.
+- Database concurrency.
+
+### Stage C tests
+
+```bash
+python -m pytest tests/test_stage_c_lifecycle.py -q
+python -m pytest tests/test_stage_c_migration.py -q
+python -m pytest tests/test_stage_c_web.py -q
+```
+
+Test:
+
+- Claim lifecycle operations.
+- Semantic migration.
+- Database constraints.
+- Semantic repository output.
+- Web presentation.
+
+### Full test suite
+
+```bash
+python -m pytest -q
+```
+
+### Packaging verification
+
+```bash
+python -m build --wheel --no-isolation
+```
+
+The installed distribution should also be smoke-tested both with and without optional web dependencies.
+
+---
+
+## 7. Future Roadmap
 
 The following future milestones represent architectural designs and proposals:
 
@@ -57,7 +586,7 @@ The following future milestones represent architectural designs and proposals:
 
 ---
 
-## 4. Verification Checklist (Pre-Push & Release Protocol)
+## 8. Verification Checklist (Pre-Push & Release Protocol)
 
 Before committing fixes, declaring check failures resolved, or pushing to `main`:
 
@@ -86,3 +615,50 @@ Before committing fixes, declaring check failures resolved, or pushing to `main`
    Verify `git status` shows no `*.db`, `dist/`, `build/`, or `*.egg-info/` files.
 6. **Strict Verification Truthfulness:**
    Never declare tests passed or checks resolved without having executed them locally.
+
+## 9. Architectural Summary
+
+The project evolves through three major architectural transformations:
+
+```text
+STAGE A
+Raw web information
+        |
+        v
+Structured plant records
+        |
+        v
+SQLite database
+
+STAGE B
+Structured plant records
+        |
+        v
+Source identity and claims
+        |
+        v
+Auditable provenance
+
+STAGE C
+Source claims
+        |
+        v
+Canonical Dravyaguna concepts
+        |
+        v
+Semantic knowledge graph
+        |
+        v
+Research-oriented presentation
+
+STAGE D (PROPOSED)
+Independent evidence sources
+        |
+        v
+Evidence reconciliation
+        |
+        v
+Multi-source research platform
+```
+
+The long-term objective is to build a system where Ayurvedic knowledge can be explored through standardized concepts while retaining the original evidence, terminology, and source history behind every assertion.
