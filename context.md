@@ -13,6 +13,7 @@ This project is for research and software evaluation only; it is not medical adv
   - `database_operator.py` — `AyurvedicAlmanac`, SQLite schema, legacy compatibility migrations, versioned migrations, transactional CRUD, and search.
   - `cli.py` — Typer commands and JSON/CSV export.
   - `illness_glossary.py` — multilingual machine-generated glossary loader (15 languages), fault-tolerant resolution, and catalog-precedence engine.
+  - `herb_view.py` — herb detail presentation view-model layer: property deduplication, 3-dosha synthesis, attribute classification, family cleaning, and date formatting.
   - `data/illness_glossary.csv` — packaged UTF-8 multilingual illness glossary (227 rows, 16 columns).
   - `web_app.py` — optional FastAPI/Jinja2 read-only browser interface.
   - `templates/` and `static/` — server-rendered pages and local stylesheet.

@@ -31,6 +31,15 @@ from .illness_glossary import (
     resolve_illness,
     search_glossary,
 )
+from .herb_view import (
+    clean_family,
+    format_retrieved,
+    dedupe_properties,
+    group_properties_by_domain,
+    virya_consensus,
+    dedupe_dosha_effects,
+    group_attributes,
+)
 
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -116,6 +125,8 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
     application.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
     templates = Jinja2Templates(directory=TEMPLATE_DIR)
     templates.env.filters["readable_illness"] = format_readable_illness
+    templates.env.filters["clean_family"] = clean_family
+    templates.env.filters["format_retrieved"] = format_retrieved
     templates.env.globals["resolve_illness"] = resolve_illness
     templates.env.filters["resolve_illness"] = resolve_illness
     templates.env.globals["supported_languages"] = SUPPORTED_LANGUAGES
@@ -242,17 +253,39 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 )
                 virya_recon = reconcile_herb_virya(conn, herb_id)
 
+            attributes = database.herb_attributes(herb_id)
+            doshas = database.herb_doshas(herb_id)
+
+            if semantic_profile:
+                raw_props = semantic_profile.get("properties", [])
+                deduped_props = dedupe_properties(raw_props)
+                grouped_props = group_properties_by_domain(raw_props)
+                virya_summary = virya_consensus(raw_props)
+                dosha_view = dedupe_dosha_effects(semantic_profile.get("dosha_effects", []))
+            else:
+                deduped_props = []
+                grouped_props = group_properties_by_domain([])
+                virya_summary = None
+                dosha_view = dedupe_dosha_effects([])
+
+            grouped_attrs = group_attributes(attributes)
+
             return templates.TemplateResponse(
                 request=request,
                 name="herb_detail_semantic.html",
                 context={
                     "herb": herb,
-                    "attributes": database.herb_attributes(herb_id),
-                    "doshas": database.herb_doshas(herb_id),
+                    "attributes": attributes,
+                    "doshas": doshas,
                     "treatments": database.treatment_details(herb_id),
                     "is_version_3": is_v3,
                     "semantic_profile": semantic_profile,
                     "virya_reconciliation": virya_recon,
+                    "deduped_properties": deduped_props,
+                    "grouped_properties": grouped_props,
+                    "virya_summary": virya_summary,
+                    "dosha_view": dosha_view,
+                    "grouped_attributes": grouped_attrs,
                     "active_page": "herbs",
                     "current_language": clean_lang,
                     "is_non_english": (clean_lang != "en"),
