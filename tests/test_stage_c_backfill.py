@@ -204,6 +204,7 @@ def test_stage_b_row_invariance_before_and_after_backfill(v2_db):
     migration_0003_semantic_dravyaguna.apply_migration(conn)
 
     # Run semantic backfill
+    conn.commit()
     now = '2025-01-01T12:00:00Z'
     conn.execute("BEGIN IMMEDIATE;")
     run_stage_c_semantic_backfill(conn, now)
@@ -467,3 +468,36 @@ def test_end_to_end_backfill_on_hermetic_db_copy(inspection_db_copy):
     # Stage B tables still 100% invariant
     final_snapshot = capture_stage_b_table_snapshot(conn)
     verify_stage_b_row_invariance(before_snapshot, final_snapshot)
+
+
+def test_laghu_aguru_expression_resolves_only_to_laghu_never_guru(v2_db):
+    """Regression test (P0-1): 'Laghu/ Aguru' (aguru = not heavy) must map only to GUNA_LAGHU, never GUNA_GURU."""
+    conn, _ = v2_db
+    migration_0003_semantic_dravyaguna.apply_migration(conn)
+    seed_canonical_concept_catalog(conn)
+    meta = _seed_stage_b_test_herb_and_claims(conn)
+    herb_id = meta["herb_id"]
+    conn.commit()
+
+    now = '2025-01-01T12:00:00Z'
+    conn.execute("BEGIN IMMEDIATE;")
+    run_stage_c_semantic_backfill(conn, now)
+    conn.commit()
+
+    mapped_concepts = [
+        r[0]
+        for r in conn.execute(
+            """
+            SELECT c.concept_code
+            FROM herb_dravyaguna_properties p
+            JOIN concept_claim_mappings m ON p.mapping_id = m.mapping_id
+            JOIN dravyaguna_concepts c ON m.concept_id = c.concept_id
+            WHERE p.herb_id = ? AND c.concept_domain = 'guna';
+            """,
+            (herb_id,),
+        ).fetchall()
+    ]
+
+    assert "GUNA_LAGHU" in mapped_concepts, f"Expected GUNA_LAGHU in mapped concepts, got {mapped_concepts}"
+    assert "GUNA_GURU" not in mapped_concepts, f"GUNA_GURU should not be mapped from 'Laghu/ Aguru', got {mapped_concepts}"
+

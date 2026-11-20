@@ -160,8 +160,6 @@ EXPLICIT_LEXICAL_SYNONYMS: dict[tuple[str, str], str] = {
     ("rasa", "tuvara"): "RASA_KASHAYA",
     ("rasa", "तुवर"): "RASA_KASHAYA",
     # Guna
-    ("guna", "aguru"): "GUNA_GURU",
-    ("guna", "अगुरु"): "GUNA_GURU",
     ("guna", "ruksha"): "GUNA_RUKSHA",
     ("guna", "rukṣa"): "GUNA_RUKSHA",
     ("guna", "rūkṣa"): "GUNA_RUKSHA",
