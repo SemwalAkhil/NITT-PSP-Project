@@ -588,3 +588,195 @@ def test_guide_internal_links_resolve_with_seeded_db(tmp_path):
 
 
 
+
+
+def test_herb_detail_presentation_restructure_and_deduplication(tmp_path):
+    """Verifies P0-3/P1 herb detail presentation layer requirements on Stage C:
+    - Unique property chips in single 6-column matrix (Tikta appears once in table with xN count)
+    - Exactly 6 column headers in fixed classical order
+    - 3-row Dosha table with Vata, Pitta, Kapha always present
+    - No repeated 'Source:' echo
+    - 'Laghu/ Aguru' resolves solely to Light
+    - Botanical family deduped and retrieval date formatted
+    - Attribute groups render cleanly including unknown fallback groups
+    """
+    import re
+    from herbal_almanac.cleaning import PlantRecord
+
+    client, database = make_client(tmp_path)
+    database.upgrade_to_stage_c()
+
+    record = PlantRecord(
+        source="CCRAS_DRAVYA",
+        source_record_id=101,
+        source_url="https://example.org/vasa",
+        retrieved_at="2026-11-19T14:30:00Z",
+        ayurvedic_name="Vāsā",
+        botanical_name="Adhatoda vasica Nees",
+        family="Acanthaceae, Acanthaceae",
+        dosha_expressions=["Kapha-pitta shamana"],
+        attributes={
+            # Rasa triple variant
+            "Rasa.Name": ["Tikta, Kashaya"],
+            "Rasa.Rasa (Diacritical)": ["Tikta, Kaṣāya"],
+            "Rasa.रस (हिन्दी)": ["तिक्त, कषाय"],
+            # Guna with privative aguru
+            "Guna.Name": ["Laghu/ Aguru, Ruksha"],
+            "Guna.Guna (Diacritical)": ["Laghu/ Aguru, Rūkṣa"],
+            "Guna.गुण (हिन्दी)": ["लघु/ अगुरु, रूक्ष"],
+            # Virya
+            "Virya.Name": ["Sheeta"],
+            "Virya.Virya (Diacritical)": ["Śīta"],
+            "Virya.वीर्य (हिन्दी)": ["शीत"],
+            # Vernacular names
+            "Vernacular Names.Hindi": ["अड़ूसा"],
+            "Vernacular Names.English": ["Malabar Nut"],
+            # Parts used
+            "Parts Used.Name": ["Leaf"],
+            "Parts Used.Parts Used (Diacritical)": ["Patra"],
+            "Parts Used.प्रयोज्याङ्ग (हिन्दी)": ["पत्र"],
+            # Dosage formulation
+            "Dosage Formulation.Name": ["Vasa Avaleha"],
+            "Dosage Formulation.Dosage(Form)": ["Avaleha"],
+            "Dosage Formulation.Dosage(Reference)": ["AFI Part I"],
+            # Dose
+            "Dose.Dose": ["10-20 ml juice"],
+            # Unknown group fallback
+            "CustomVoucher.SpecimenID": ["HERB-VAS-2026"],
+        },
+    )
+    herb_id = database.insert_record(record)
+    database.run_stage_c_backfill()
+
+    res = client.get(f"/herbs/{herb_id}")
+    assert res.status_code == 200
+    html = res.text
+
+    # 1. Family deduped: "Acanthaceae" present, "Acanthaceae, Acanthaceae" not in identity grid
+    assert "<dd>Acanthaceae</dd>" in html
+    assert "Acanthaceae, Acanthaceae" not in html
+
+    # 2. Retrieved date formatted
+    assert "<dd>19 Nov 2026</dd>" in html
+
+    # 3. Exactly 6 column headers in fixed order
+    headers = re.findall(r'<table class="props-table">.*?<thead>.*?<tr>(.*?)</tr>.*?</thead>', html, re.DOTALL)
+    assert len(headers) == 1
+    th_matches = re.findall(r'<th>(.*?)</th>', headers[0])
+    assert len(th_matches) == 6
+    assert "Rasa" in th_matches[0]
+    assert "Guna" in th_matches[1]
+    assert "Virya" in th_matches[2]
+    assert "Vipaka" in th_matches[3]
+    assert "Prabhava" in th_matches[4]
+    assert "Karma" in th_matches[5]
+
+    # 4. Single body row in props table
+    tbody_rows = re.findall(r'<table class="props-table">.*?<tbody>(.*?)</tbody>', html, re.DOTALL)
+    assert len(tbody_rows) == 1
+    body_tr_matches = re.findall(r'<tr>(.*?)</tr>', tbody_rows[0], re.DOTALL)
+    assert len(body_tr_matches) == 1
+
+    # 5. Tikta appears as unique chip (claim count badge xN)
+    assert "Bitter" in tbody_rows[0]
+    assert "×3" in tbody_rows[0] or "×2" in tbody_rows[0]
+
+    # 6. "Laghu/ Aguru" displays only Light, never Heavy
+    assert "Light" in tbody_rows[0]
+    assert "Heavy" not in tbody_rows[0]
+
+    # 7. 3-row Dosha table with Vata, Pitta, Kapha always present
+    dosha_tbody = re.findall(r'<table class="dosha-table">.*?<tbody>(.*?)</tbody>', html, re.DOTALL)
+    assert len(dosha_tbody) == 1
+    dosha_rows = re.findall(r'<tr>(.*?)</tr>', dosha_tbody[0], re.DOTALL)
+    assert len(dosha_rows) == 3
+    assert "Vata" in dosha_rows[0]
+    assert "Pitta" in dosha_rows[1]
+    assert "Kapha" in dosha_rows[2]
+    # Vata should be Not recorded since Kapha-pitta shamana was specified
+    assert "Not recorded" in dosha_rows[0]
+    assert "Pacifies / Decreases" in dosha_rows[1]
+    assert "Pacifies / Decreases" in dosha_rows[2]
+
+    # 8. No repeated "Source:" echo
+    assert "Source: Leaf" not in html
+
+    # 9. Every attribute group renders cleanly
+    assert "Vernacular & Regional Names" in html
+    assert "अड़ूसा" in html
+    assert "Malabar Nut" in html
+    assert "Parts Used (Prayojyāṅga)" in html
+    assert "Patra" in html
+    assert "पत्र" in html
+    assert "Preparations & Dosage Forms" in html
+    assert "Vasa Avaleha" in html
+    assert "10-20 ml juice" in html
+    assert "CustomVoucher" in html
+    assert "HERB-VAS-2026" in html
+
+
+def test_herb_detail_schema_v2_renders_cleanly(tmp_path):
+    """Verifies that a Schema Version 2 database renders cleanly with 3-row doshas and banner."""
+    client, database = make_client(tmp_path)
+    h_id = database.add_herb(
+        "Tulsi",
+        botanical_name="Ocimum tenuiflorum",
+        family="Lamiaceae, Lamiaceae",
+    )
+    # Add legacy dosha
+    with database._connection() as conn:
+        conn.execute("INSERT INTO herb_doshas (herb_id, dosha, effect, source_expression) VALUES (?, 'Kapha', 'decrease', 'Kaphahara')", (h_id,))
+
+    res = client.get(f"/herbs/{h_id}")
+    assert res.status_code == 200
+    # Capability banner
+    assert "STAGE C CAPABILITY STATUS" in res.text
+    # Family deduped
+    assert "<dd>Lamiaceae</dd>" in res.text
+    # 3-row dosha table present
+    assert "Vata" in res.text
+    assert "Pitta" in res.text
+    assert "Kapha" in res.text
+    assert "Not recorded" in res.text
+
+
+def test_herb_search_vernacular_devanagari(tmp_path):
+    """Verifies search_herbs and GET /herbs query matching vernacular/Devanagari names."""
+    client, database = make_client(tmp_path)
+    h1 = database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    h2 = database.add_herb("Neem", botanical_name="Azadirachta indica")
+
+    # Add vernacular attribute for Tulsi
+    with database._connection() as conn:
+        conn.execute(
+            "INSERT INTO herb_attributes (herb_id, field_name, value, source_text) VALUES (?, 'Vernacular Names.Hindi', 'तुलसी', 'CCRAS')",
+            (h1,),
+        )
+
+    # 1. Search in Python
+    matches = database.search_herbs("तुलसी")
+    assert len(matches) > 0
+    assert matches[0]["id"] == h1
+
+    # 2. Search in Web GUI
+    import urllib.parse
+    resp = client.get(f"/herbs?q={urllib.parse.quote('तुलसी')}")
+    assert resp.status_code == 200
+    assert "Tulsi" in resp.text
+    assert "Neem" not in resp.text
+
+
+def test_guide_renders_dynamic_examples_from_db(tmp_path):
+    """Verifies /guide renders dynamic examples for herbs and conditions."""
+    client, database = make_client(tmp_path)
+    h1 = database.add_herb("Tulsi", botanical_name="Ocimum tenuiflorum")
+    h2 = database.add_herb("Vasa", botanical_name="Adhatoda vasica")
+    i1 = database.add_illness("KAsa")
+    database.add_treatment(h1, i1)
+    database.add_treatment(h2, i1)
+
+    res = client.get("/guide")
+    assert res.status_code == 200
+    assert f"/herbs/{h1}" in res.text
+    assert f"/illnesses/{i1}" in res.text
+    assert "Tulsi" in res.text or "Vasa" in res.text

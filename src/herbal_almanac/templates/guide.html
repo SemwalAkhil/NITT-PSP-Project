@@ -56,7 +56,7 @@
     <div style="background: #f8faf7; border: 1px solid #e1e9de; border-radius: 8px; padding: 18px 20px;">
       <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #214632;">1. Search and Explore Herbs</h3>
       <p style="font-size: 13px; line-height: 1.6; color: #425247; margin: 0 0 10px 0;">
-        Open the <a href="{{ url_for('herb_list') }}" class="text-link">Herb Explorer (/herbs) ↗</a> to browse paginated botanical records. Search by common English name, botanical Latin binomial, or classical transliteration (e.g., "Tulsi", "Ocimum"). Click any herb card to inspect its full profile: botanical taxonomy, officinal plant parts, and classical Dravyaguna property cards.
+        Open the <a href="{{ url_for('herb_list') }}" class="text-link">Herb Explorer (/herbs) ↗</a> to browse paginated botanical records. Search by common English name, botanical Latin binomial, or classical transliteration {% if example_herbs %}(e.g., {% for eh in example_herbs %}<a href="{{ url_for('herb_detail', herb_id=eh.id) }}" class="text-link">{{ eh.name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}){% else %}(e.g., botanical binomials or classical transliterations){% endif %}. Click any herb card to inspect its full profile: botanical taxonomy, officinal plant parts, and classical Dravyaguna property cards.
       </p>
     </div>
 
@@ -64,7 +64,7 @@
     <div style="background: #f8faf7; border: 1px solid #e1e9de; border-radius: 8px; padding: 18px 20px;">
       <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #214632;">2. Search Conditions and Indications Across 15 Languages</h3>
       <p style="font-size: 13px; line-height: 1.6; color: #425247; margin: 0 0 10px 0;">
-        Open the <a href="{{ url_for('illness_list') }}" class="text-link">Illness Explorer (/illnesses) ↗</a> to search traditional clinical indications. Query conditions in English ("fever", "cough", "piles"), classical transliteration ("jvara", "kasa", "arsha"), or vernacular scripts ("बुखार", "खांसी", "बवासीर"). Click any condition to view all associated herbs in the library, with clear badges distinguishing scraped source associations from manually curated links.
+        Open the <a href="{{ url_for('illness_list') }}" class="text-link">Illness Explorer (/illnesses) ↗</a> to search traditional clinical indications. Query conditions in English {% if example_conditions %}(e.g., {% for ec in example_conditions %}<a href="{{ url_for('illness_detail', illness_id=ec.id) }}" class="text-link">{{ ec.name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}){% else %}("fever", "cough", "piles"){% endif %}, classical transliteration ("jvara", "kasa", "arsha"), or vernacular scripts ("बुखार", "खांसी", "बवासीर"). Click any condition to view all associated herbs in the library, with clear badges distinguishing scraped source associations from manually curated links.
       </p>
     </div>
 

@@ -55,15 +55,11 @@ or the package's normal per-user database location.
   and a prominent "New here? Read the guide" callout linking to `/guide`.
 - **User guide & reference (`/guide`):** an introductory primer and domain reference for first-time visitors, completely decoupled from database access (renders identically with, without, or on empty databases). Features:
   - Table of contents with keyboard-focusable in-page anchor links (`#what-is-this`, `#how-to-use`, `#glossary`, `#data-sources`, `#limits`).
-  - Plain-English explanations of the platform and 3 numbered workflow guides with direct links to `/herbs`, `/illnesses`, and `/stage-c/reconciliation/{id}`.
+  - Plain-English explanations of the platform and 3 numbered workflow guides with dynamic database examples (linking to 2–3 actual herbs and top conditions when available, with clean fallback to generic wording).
   - A comprehensive 19-term glossary (`<dl>`) defining classical Dravyaguna concepts (Rasa, Guna, Virya, Vipaka, Prabhava, Doshas, Karma, Part used, Kalpana, Indications), botanical nomenclature, and architectural constructs (Claims, Concepts, Provenance, Virya Reconciliation, Epistemic status labels, Scraped transliteration vs. resolved names).
   - Attribution for CCRAS DRAVYA, the curated concept catalog (136 concepts), Gemini Deep Research translations, and the 15 supported Indian regional languages rendered with native scripts.
   - Ethical research boundaries and medical disclaimers, with cross-links from illness disclaimers and reconciliation views.
-- **Herb explorer (`/herbs`):** search using the existing ranked
-  `search_herbs()` behavior, with 12 results displayed per page and query
-  preservation across pagination controls. If an entered query yields no matching
-  herbs but matches an illness term or synonym in the multilingual glossary, the
-  route automatically redirects (HTTP 303) to `/illnesses?q=...`.
+- **Herb explorer (`/herbs`):** search using the ranked `search_herbs()` behavior, matching English names, original transliterations, botanical names, and vernacular names in native Indic scripts (e.g. searching "तुलसी" matches Tulsi via `Vernacular Names.Hindi`), with 12 results displayed per page and query preservation across pagination controls. If an entered query yields no matching herbs but matches an illness term or synonym in the multilingual glossary, the route automatically redirects (HTTP 303) to `/illnesses?q=...`.
 - **Herb detail (`/herbs/{herb_id}`):** version-aware botanical profile.
   - *On Schema Version 2 databases:* displays an informative capability degradation banner (`"STAGE C CAPABILITY STATUS: Stage C normalized semantic features require schema version 3"`), while rendering the full legacy botanical profile, clean 3-row Dosha table, grouped plant characteristics, and illness links.
   - *On Schema Version 3 databases:* dynamically unlocks normalized Stage C Dravyaguna properties in a unified 6-column matrix (`Rasa | Guna | Virya | Vipaka | Prabhava | Karma`) with unique chips, Devanagari and IAST scripts, `×N` claim count badges, collapsed raw claims, officinal plant parts (Prayojyāṅga), multilingual labels via `?language=<code>`, catalog-mapped preparations and clinical indications, and a Virya consensus indicator pill linking to the reconciliation dashboard.

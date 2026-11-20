@@ -44,6 +44,7 @@ def test_wheel_archive_contains_all_runtime_assets(tmp_path: Path):
 
     expected_assets = [
         "herbal_almanac/data/illness_glossary.csv",
+        "herbal_almanac/herb_view.py",
         "herbal_almanac/migrations/stage_c_ddl_and_triggers.sql",
         "herbal_almanac/migrations/virya_reconciliation.sql",
         "herbal_almanac/static/styles.css",

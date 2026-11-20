@@ -1863,8 +1863,9 @@ class AyurvedicAlmanac:
         return dict(row) if row is not None else None
 
     def search_herbs(self, query: str = "") -> list[dict[str, Any]]:
-        """Return herbs ranked by normalized exact, substring, and fuzzy match."""
+        """Return herbs ranked by normalized exact, substring, and fuzzy match, including vernacular names."""
         self.create_database()
+        clean_q = query.strip()
         with self._connection() as connection:
             rows = connection.execute(
                 """
@@ -1873,7 +1874,36 @@ class AyurvedicAlmanac:
                 ORDER BY english_name
                 """,
             ).fetchall()
-        return self._rank_rows(rows, query, ("english_name", "original_name", "botanical_name"))
+            vernacular_matched_ids: set[int] = set()
+            if clean_q:
+                try:
+                    v_matches = connection.execute(
+                        """
+                        SELECT DISTINCT herb_id
+                        FROM herb_attributes
+                        WHERE field_name LIKE 'Vernacular Names.%'
+                          AND (value LIKE ? OR source_text LIKE ?)
+                        """,
+                        (f"%{clean_q}%", f"%{clean_q}%"),
+                    ).fetchall()
+                    vernacular_matched_ids = {r[0] for r in v_matches}
+                except Exception:
+                    pass
+
+        augmented_rows: list[dict[str, Any]] = []
+        for r in rows:
+            item = dict(r)
+            if item["id"] in vernacular_matched_ids:
+                item["vernacular_name"] = clean_q
+            else:
+                item["vernacular_name"] = ""
+            augmented_rows.append(item)
+
+        return self._rank_rows(
+            augmented_rows,
+            query,
+            ("english_name", "original_name", "botanical_name", "vernacular_name"),
+        )
 
     def search_illnesses(self, query: str = "") -> list[dict[str, Any]]:
         """Return illnesses whose names contain the query."""

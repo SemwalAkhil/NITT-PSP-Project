@@ -154,14 +154,47 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
     @application.get("/guide", response_class=HTMLResponse, name="guide")
     def guide(request: Request) -> Any:
         example_herb_id = None
+        example_herbs: list[dict[str, Any]] = []
+        example_conditions: list[dict[str, Any]] = []
         try:
             if application.state.database_path.is_file():
                 db = get_database()
                 with db._connection() as conn:
-                    row = conn.execute("SELECT id FROM herbs ORDER BY id LIMIT 1").fetchone()
-                    if row:
-                        example_herb_id = row[0]
+                    rows = conn.execute(
+                        "SELECT id, original_name, english_name, botanical_name FROM herbs ORDER BY id LIMIT 3"
+                    ).fetchall()
+                    if rows:
+                        example_herb_id = rows[0]["id"]
+                        example_herbs = [
+                            {
+                                "id": r["id"],
+                                "name": r["original_name"] or r["english_name"] or f"Herb {r['id']}",
+                                "botanical": r["botanical_name"],
+                            }
+                            for r in rows
+                        ]
+                    cond_rows = conn.execute(
+                        """
+                        SELECT i.id, i.english_name, COUNT(t.herb_id) as herb_count
+                        FROM illness i
+                        JOIN treatment t ON i.id = t.illness_id
+                        GROUP BY i.id
+                        ORDER BY herb_count DESC
+                        LIMIT 3
+                        """
+                    ).fetchall()
+                    if cond_rows:
+                        example_conditions = [
+                            {
+                                "id": cr["id"],
+                                "name": cr["english_name"],
+                                "herb_count": cr["herb_count"],
+                            }
+                            for cr in cond_rows
+                        ]
         except Exception:
+            example_herbs = []
+            example_conditions = []
             example_herb_id = None
 
         return templates.TemplateResponse(
@@ -170,6 +203,8 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
             context={
                 "active_page": "guide",
                 "example_herb_id": example_herb_id,
+                "example_herbs": example_herbs,
+                "example_conditions": example_conditions,
                 "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
             },
         )
