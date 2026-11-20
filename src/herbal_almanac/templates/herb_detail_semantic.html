@@ -23,13 +23,14 @@
   <p class="eyebrow" style="color: #b45309; margin: 0 0 6px 0; font-weight: 700;">STAGE C CAPABILITY STATUS</p>
   <h3 style="margin: 0 0 8px 0; color: #92400e;">Schema Version 2 Baseline Active</h3>
   <p class="muted" style="margin: 0; color: #78350f;">
-    Stage C normalized semantic features require schema version 3 (current database version is 2). Apply Migration 3 to enable Dravyaguna semantic profiles.
+    Stage C normalized semantic features require schema version 3 (current database version is 2). Apply the Stage C upgrade to enable Dravyaguna semantic profiles.
   </p>
 </div>
 {% endif %}
 
 <div class="detail-layout">
   <div class="detail-main">
+    <!-- BOTANICAL PROFILE -->
     <section class="content-card">
       <div class="card-heading">
         <div>
@@ -39,10 +40,10 @@
       </div>
       <dl class="identity-grid">
         <div><dt>Botanical name</dt><dd>{{ herb.botanical_name or "Not recorded" }}</dd></div>
-        <div><dt>Family</dt><dd>{{ herb.family or "Not recorded" }}</dd></div>
+        <div><dt>Family</dt><dd>{{ herb.family|clean_family }}</dd></div>
         <div><dt>Source</dt><dd>{{ herb.source or "Not recorded" }}</dd></div>
         <div><dt>Source record ID</dt><dd>{{ herb.source_record_id or "Not recorded" }}</dd></div>
-        <div><dt>Retrieved</dt><dd>{{ herb.retrieved_at or "Not recorded" }}</dd></div>
+        <div><dt>Retrieved</dt><dd>{{ herb.retrieved_at|format_retrieved }}</dd></div>
         {% if herb.source_url %}
         <div><dt>Source page</dt><dd><a href="{{ herb.source_url }}" target="_blank" rel="noopener noreferrer">Open source ↗</a></dd></div>
         {% endif %}
@@ -50,51 +51,82 @@
     </section>
 
     {% if is_version_3 and semantic_profile %}
-    <!-- STAGE C NORMALIZED DRAVYAGUNA PROPERTIES -->
+    <!-- NORMALIZED DRAVYAGUNA PROPERTIES -->
     <section class="content-card" id="stage-c-properties">
       <div class="card-heading">
         <div>
-          <p class="eyebrow">STAGE C SEMANTIC MODEL</p>
-          <h2>Dravyaguna Properties (Rasa, Guna, Virya, Vipaka, Prabhava, Karma)</h2>
+          <p class="eyebrow">DRAVYAGUNA PROPERTIES</p>
+          <h2>Normalized properties</h2>
           <p class="muted" style="margin: 4px 0 0 0; font-size: 0.9em;">
-            Classical pharmacological attributes. <a href="{{ url_for('guide') }}#glossary" class="text-link">What do these mean? Read the Glossary <span>→</span></a>
+            Classical Dravyaguna Properties mapped to canonical concepts. <a href="{{ url_for('guide') }}#glossary" class="text-link">Read the Glossary <span>→</span></a>
           </p>
         </div>
-        <span class="count-pill">{{ semantic_profile.properties|length }}</span>
+        <span class="count-pill">{{ deduped_properties|length }}</span>
       </div>
-      {% if semantic_profile.properties %}
-      <div class="attribute-list">
-        {% for prop in semantic_profile.properties %}
-        <article class="attribute-item" style="border-left: 3px solid #2d6a4f; margin-bottom: 12px; padding: 12px; background: #fafaf8; border-radius: 4px;">
-          <div class="attribute-meta">
-            <strong style="color: #2d6a4f; text-transform: uppercase;">{{ prop.domain }}</strong>
-            <span style="background: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">{{ prop.concept_code }}</span>
-            {% if prop.is_disputed %}
-            <span style="background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;">DISPUTED</span>
-            {% endif %}
-          </div>
-          <p style="font-size: 1.1em; margin: 6px 0;">
-            <strong>{{ prop.display_label }}</strong>
-            {% if prop.canonical_sanskrit_deva or prop.canonical_sanskrit_iast %}
-            <span class="muted" style="margin-left: 8px;">
-              {% if prop.canonical_sanskrit_deva %}{{ prop.canonical_sanskrit_deva }}{% endif %}
-              {% if prop.canonical_sanskrit_iast %}(<em>{{ prop.canonical_sanskrit_iast }}</em>){% endif %}
-            </span>
-            {% endif %}
-          </p>
-          {% if prop.part_concept_code %}
-          <small class="source-text" style="color: #4b5563;">Part: {{ prop.part_display_label or prop.part_concept_code }}</small><br>
-          {% endif %}
-          <small class="source-text" style="color: #6b7280;">Source Claim [{{ prop.source_key }}]: "{{ prop.source_expression }}" · {{ prop.mapping_type }} ({{ prop.mapping_status }})</small>
-        </article>
-        {% endfor %}
+      {% if deduped_properties %}
+      <div class="props-table-wrapper">
+        <table class="props-table">
+          <thead>
+            <tr>
+              <th>Rasa (Taste)</th>
+              <th>Guna (Quality)</th>
+              <th>Virya (Potency)</th>
+              <th>Vipaka (Post-digestive)</th>
+              <th>Prabhava (Special effect)</th>
+              <th>Karma (Action)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {% for domain in ['rasa', 'guna', 'virya', 'vipaka', 'prabhava', 'karma'] %}
+              <td>
+                {% if grouped_properties[domain] %}
+                <div class="chip-container">
+                  {% for prop in grouped_properties[domain] %}
+                  <span class="chip" title="{{ prop.concept_code }}">
+                    <strong>{{ prop.display_label }}</strong>
+                    {% if prop.canonical_sanskrit_deva or prop.canonical_sanskrit_iast %}
+                    <span class="chip-sub">
+                      {% if prop.canonical_sanskrit_deva %}{{ prop.canonical_sanskrit_deva }}{% endif %}
+                      {% if prop.canonical_sanskrit_iast %} (<em>{{ prop.canonical_sanskrit_iast }}</em>){% endif %}
+                    </span>
+                    {% endif %}
+                    {% if prop.claim_count > 1 %}<span class="claim-badge" title="{{ prop.claim_count }} source claims">×{{ prop.claim_count }}</span>{% endif %}
+                    {% if prop.is_disputed %}<span class="badge-disputed">Disputed</span>{% endif %}
+                    {% if prop.is_provisional %}<span class="badge-provisional">Provisional</span>{% endif %}
+                  </span>
+                  {% endfor %}
+                </div>
+                {% else %}
+                <span class="muted">—</span>
+                {% endif %}
+              </td>
+              {% endfor %}
+            </tr>
+          </tbody>
+        </table>
       </div>
+      <details class="raw-details">
+        <summary>Source claims ({{ semantic_profile.properties|length }} claims recorded)</summary>
+        <div class="raw-details-content">
+          <ul style="margin: 0; padding-left: 18px;">
+            {% for prop in semantic_profile.properties %}
+            <li style="margin-bottom: 6px;">
+              <strong>{{ prop.domain|upper }}:</strong> {{ prop.display_label }} (<code>{{ prop.concept_code }}</code>)
+              {% if prop.canonical_sanskrit_iast %} (<em>{{ prop.canonical_sanskrit_iast }}</em>){% endif %}
+              <br><small class="muted">Source Claim: "{{ prop.source_expression }}" · Mapping: {{ prop.mapping_type }} ({{ prop.mapping_status }})</small>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </details>
       {% else %}
       <p class="muted empty-inline">No normalized properties recorded for this herb.</p>
       {% endif %}
     </section>
 
-    <!-- STAGE C NORMALIZED PLANT PARTS -->
+    <!-- OFFICINAL PLANT PARTS -->
+    {% if semantic_profile.plant_parts %}
     <section class="content-card" id="stage-c-parts">
       <div class="card-heading">
         <div>
@@ -103,17 +135,14 @@
         </div>
         <span class="count-pill">{{ semantic_profile.plant_parts|length }}</span>
       </div>
-      {% if semantic_profile.plant_parts %}
       <div class="attribute-list">
         {% for part in semantic_profile.plant_parts %}
-        <article class="attribute-item" style="border-left: 3px solid #15803d; margin-bottom: 12px; padding: 12px; background: #fafaf8; border-radius: 4px;">
+        <article class="attribute-item" style="border-left: 3px solid #15803d; margin-bottom: 8px; padding: 10px; background: #fafaf8; border-radius: 4px;">
           <div class="attribute-meta">
             <span style="background: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">{{ part.concept_code }}</span>
-            {% if part.is_disputed %}
-            <span style="background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold;">DISPUTED</span>
-            {% endif %}
+            {% if part.is_disputed %}<span class="badge-disputed">DISPUTED</span>{% endif %}
           </div>
-          <p style="font-size: 1.1em; margin: 6px 0;">
+          <p style="font-size: 1.1em; margin: 4px 0;">
             <strong>{{ part.display_label }}</strong>
             {% if part.canonical_sanskrit_deva or part.canonical_sanskrit_iast %}
             <span class="muted" style="margin-left: 8px;">
@@ -125,55 +154,11 @@
         </article>
         {% endfor %}
       </div>
-      {% else %}
-      <p class="muted empty-inline">No normalized plant parts recorded for this herb.</p>
-      {% endif %}
-    </section>
-
-    <!-- STAGE C PREPARATIONS & INDICATIONS -->
-    <section class="content-card" id="stage-c-formulations">
-      <div class="card-heading">
-        <div>
-          <p class="eyebrow">DOSAGE FORMS & INDICATIONS</p>
-          <h2>Preparations & Clinical Usages</h2>
-        </div>
-      </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-        <div>
-          <h4 style="margin: 0 0 8px 0; color: #374151;">Preparations ({{ semantic_profile.preparations|length }})</h4>
-          {% if semantic_profile.preparations %}
-          <ul style="margin: 0; padding-left: 20px;">
-            {% for prep in semantic_profile.preparations %}
-            <li style="margin-bottom: 6px;">
-              <strong>{{ prep.prep_display_label }}</strong> (<code>{{ prep.prep_concept_code }}</code>)
-              {% if prep.part_display_label %}<br><small class="muted">Part: {{ prep.part_display_label }}</small>{% endif %}
-            </li>
-            {% endfor %}
-          </ul>
-          {% else %}
-          <p class="muted empty-inline">No preparations recorded.</p>
-          {% endif %}
-        </div>
-        <div>
-          <h4 style="margin: 0 0 8px 0; color: #374151;">Indications ({{ semantic_profile.indications|length }})</h4>
-          {% if semantic_profile.indications %}
-          <ul style="margin: 0; padding-left: 20px;">
-            {% for ind in semantic_profile.indications %}
-            <li style="margin-bottom: 6px;">
-              <strong>{{ ind.display_label }}</strong>
-              {% if ind.canonical_sanskrit_deva %}<small class="muted">({{ ind.canonical_sanskrit_deva }})</small>{% endif %}
-            </li>
-            {% endfor %}
-          </ul>
-          {% else %}
-          <p class="muted empty-inline">No indications recorded.</p>
-          {% endif %}
-        </div>
-      </div>
     </section>
     {% endif %}
+    {% endif %}
 
-    <!-- LEGACY SOURCE ATTRIBUTES -->
+    <!-- GROUPED PLANT CHARACTERISTICS -->
     <section class="content-card">
       <div class="card-heading">
         <div>
@@ -182,73 +167,362 @@
         </div>
         <span class="count-pill">{{ attributes|length }}</span>
       </div>
-      {% if attributes %}
-      <div class="attribute-list">
-        {% for attribute in attributes %}
-        <article class="attribute-item">
-          <div class="attribute-meta">
-            <strong>{{ attribute.field_name }}</strong>
-            {% if attribute.source_language %}<span>{{ attribute.source_language }}</span>{% endif %}
+
+      <!-- 1. Names (Vernacular Names table) -->
+      {% if grouped_attributes.vernacular_names %}
+      <div class="group-card">
+        <h3>Vernacular & Regional Names</h3>
+        <table class="vernacular-table">
+          <thead>
+            <tr>
+              <th style="width: 28%;">Language</th>
+              <th>Names</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in grouped_attributes.vernacular_names %}
+            <tr>
+              <td><strong>{{ item.language }}</strong></td>
+              <td><span lang="{{ item.lang_code }}">{{ item.names }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if grouped_attributes.vernacular_sources %}
+        <details class="raw-details">
+          <summary>Source attribution ({{ grouped_attributes.vernacular_sources|length }})</summary>
+          <div class="raw-details-content">
+            <ul style="margin: 0; padding-left: 18px;">
+              {% for src in grouped_attributes.vernacular_sources %}
+              <li>{{ src }}</li>
+              {% endfor %}
+            </ul>
           </div>
-          <p>{{ attribute.value }}</p>
-          {% if attribute.source_text and attribute.source_text != attribute.value %}
-          <small class="source-text">Source: {{ attribute.source_text }}</small>
-          {% endif %}
-          {% if attribute.machine_generated %}
-          <small class="verification-note">Machine-generated · {{ attribute.verification_status or "Unverified" }}</small>
-          {% endif %}
-        </article>
-        {% endfor %}
+        </details>
+        {% endif %}
       </div>
-      {% else %}
-      <p class="muted empty-inline">No flexible attributes are stored for this herb.</p>
+      {% endif %}
+
+      <!-- 2. Parts used (3-column English | IAST | Devanagari) -->
+      {% if grouped_attributes.parts_used.rows %}
+      <div class="group-card">
+        <h3>Parts Used (Prayojyāṅga)</h3>
+        <table class="triple-table">
+          <thead>
+            <tr>
+              <th>English</th>
+              <th>IAST Transliteration</th>
+              <th>देवनागरी</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in grouped_attributes.parts_used.rows %}
+            <tr>
+              <td>{{ row.english or "—" }}</td>
+              <td><em>{{ row.iast or "—" }}</em></td>
+              <td>{{ row.hindi or "—" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if grouped_attributes.parts_used.sources %}
+        <details class="raw-details">
+          <summary>Source attribution ({{ grouped_attributes.parts_used.sources|length }})</summary>
+          <div class="raw-details-content">
+            <ul style="margin: 0; padding-left: 18px;">
+              {% for src in grouped_attributes.parts_used.sources %}
+              <li>{{ src }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </details>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- 3. Preparations & dosage forms -->
+      {% if grouped_attributes.dosage_formulations or (is_version_3 and semantic_profile and semantic_profile.preparations) %}
+      <div class="group-card">
+        <h3>Preparations & Dosage Forms</h3>
+        {% if grouped_attributes.dosage_formulations %}
+        <table class="triple-table">
+          <thead>
+            <tr>
+              <th>Formulation Name</th>
+              <th>Dosage Form</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for form in grouped_attributes.dosage_formulations %}
+            <tr>
+              <td><strong>{{ form.name or "—" }}</strong></td>
+              <td>{{ form.form or "—" }}</td>
+              <td>{{ form.reference or "—" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% if is_version_3 and semantic_profile and semantic_profile.preparations %}
+        <h4 style="margin: 14px 0 6px 0; font-size: 13px; color: var(--green-dark);">Catalog-mapped preparations</h4>
+        <ul style="margin: 0; padding-left: 18px; line-height: 1.8;">
+          {% for prep in semantic_profile.preparations %}
+          <li><strong>{{ prep.prep_display_label }}</strong> (<code>{{ prep.prep_concept_code }}</code>){% if prep.part_display_label %} · Part: {{ prep.part_display_label }}{% endif %}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% if grouped_attributes.dosage_references %}
+        <details class="raw-details">
+          <summary>Formulation References ({{ grouped_attributes.dosage_references|length }})</summary>
+          <div class="raw-details-content">
+            <ul style="margin: 0; padding-left: 18px;">
+              {% for ref in grouped_attributes.dosage_references %}
+              <li>{{ ref }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </details>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- 4. Dose statements -->
+      {% if grouped_attributes.dose_items %}
+      <div class="group-card">
+        <h3>Classical Dosage Statements</h3>
+        <ul style="margin: 0; padding-left: 18px; line-height: 1.8;">
+          {% for dose in grouped_attributes.dose_items %}
+          <li>{{ dose }}</li>
+          {% endfor %}
+        </ul>
+        {% if grouped_attributes.dose_sources %}
+        <details class="raw-details">
+          <summary>Source attribution ({{ grouped_attributes.dose_sources|length }})</summary>
+          <div class="raw-details-content">
+            <ul style="margin: 0; padding-left: 18px;">
+              {% for src in grouped_attributes.dose_sources %}
+              <li>{{ src }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </details>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- 5. Karma / Doshakarma summary -->
+      {% if grouped_attributes.doshakarma_merged.rows %}
+      <div class="group-card">
+        <h3>Source Doshakarma Statement</h3>
+        <table class="triple-table">
+          <thead>
+            <tr>
+              <th>English</th>
+              <th>IAST Transliteration</th>
+              <th>देवनागरी</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in grouped_attributes.doshakarma_merged.rows %}
+            <tr>
+              <td>{{ row.english or "—" }}</td>
+              <td><em>{{ row.iast or "—" }}</em></td>
+              <td>{{ row.hindi or "—" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <!-- 6. Therapeutic usage -->
+      {% if grouped_attributes.therapeutic_usages %}
+      <div class="group-card">
+        <h3>Therapeutic Usages (Source Stated)</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+          {% for usage in grouped_attributes.therapeutic_usages %}
+          {% set res = resolve_illness(usage) %}
+          <span class="chip" style="flex-direction: row; align-items: center; gap: 6px;">
+            <strong>{{ res.english }}</strong>
+            {% if res.english != usage %}<small class="muted">({{ usage }})</small>{% endif %}
+          </span>
+          {% endfor %}
+        </div>
+        {% if grouped_attributes.therapeutic_sources %}
+        <details class="raw-details">
+          <summary>Source attribution ({{ grouped_attributes.therapeutic_sources|length }})</summary>
+          <div class="raw-details-content">
+            <ul style="margin: 0; padding-left: 18px;">
+              {% for src in grouped_attributes.therapeutic_sources %}
+              <li>{{ src }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </details>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- 7. Etymology & Pharmacopoeial status -->
+      {% set etym_count = grouped_attributes.etymology_merged.rows|length %}
+      {% set pharm_count = grouped_attributes.pharmacopoeial_records|length %}
+      {% if etym_count > 0 or pharm_count > 0 or grouped_attributes.varga_merged.rows %}
+      <details class="raw-details group-card" style="margin-top: 0;">
+        <summary><strong>Etymology & Pharmacopoeial Status</strong> ({{ etym_count + pharm_count }} entries)</summary>
+        <div class="raw-details-content">
+          {% if etym_count > 0 %}
+          <h4 style="margin: 8px 0 6px 0; color: var(--green-dark);">Etymology & Sanskrit Synonyms</h4>
+          <table class="triple-table">
+            <thead>
+              <tr>
+                <th>English</th>
+                <th>IAST Transliteration</th>
+                <th>देवनागरी</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in grouped_attributes.etymology_merged.rows %}
+              <tr>
+                <td>{{ row.english or "—" }}</td>
+                <td><em>{{ row.iast or "—" }}</em></td>
+                <td>{{ row.hindi or "—" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+          {% if grouped_attributes.varga_merged.rows %}
+          <h4 style="margin: 12px 0 6px 0; color: var(--green-dark);">Varga / Classical Classification</h4>
+          <table class="triple-table">
+            <thead>
+              <tr>
+                <th>English</th>
+                <th>IAST Transliteration</th>
+                <th>देवनागरी</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in grouped_attributes.varga_merged.rows %}
+              <tr>
+                <td>{{ row.english or "—" }}</td>
+                <td><em>{{ row.iast or "—" }}</em></td>
+                <td>{{ row.hindi or "—" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+          {% if pharm_count > 0 %}
+          <h4 style="margin: 12px 0 6px 0; color: var(--green-dark);">Pharmacopoeial Verse & References</h4>
+          <table class="vernacular-table">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rec in grouped_attributes.pharmacopoeial_records %}
+              <tr>
+                <td><strong>{{ rec.field }}</strong></td>
+                <td>{{ rec.value }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        </div>
+      </details>
+      {% endif %}
+
+      <!-- 8. Raw source records -->
+      {% if grouped_attributes.raw_dravyaguna_groups or grouped_attributes.other_groups %}
+      <details class="raw-details group-card" style="margin-top: 0;">
+        <summary><strong>Raw Source Records</strong> (archival attribute tables)</summary>
+        <div class="raw-details-content">
+          {% for grp in grouped_attributes.raw_dravyaguna_groups %}
+          <h4 style="margin: 10px 0 4px 0; color: var(--green-dark);">{{ grp.group_name }} (raw triples)</h4>
+          <table class="triple-table">
+            <thead>
+              <tr>
+                <th>English</th>
+                <th>IAST Transliteration</th>
+                <th>देवनागरी</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in grp.rows %}
+              <tr>
+                <td>{{ row.english or "—" }}</td>
+                <td><em>{{ row.iast or "—" }}</em></td>
+                <td>{{ row.hindi or "—" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endfor %}
+          {% for grp in grouped_attributes.other_groups %}
+          <h4 style="margin: 10px 0 4px 0; color: var(--green-dark);">{{ grp.group_name }}</h4>
+          <table class="vernacular-table">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in grp.rows %}
+              <tr>
+                <td>{{ row.field }}</td>
+                <td>{{ row.value }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endfor %}
+        </div>
+      </details>
       {% endif %}
     </section>
   </div>
 
   <aside class="detail-aside">
-    {% if is_version_3 and virya_reconciliation %}
-    <!-- VIRYA RECONCILIATION SUMMARY CARD -->
-    <section class="content-card" style="border-top: 4px solid #1e3a8a; background: #f8fafc;">
+    <!-- VIRYA CONSENSUS SUMMARY CARD -->
+    {% if virya_summary %}
+    <section class="content-card virya-consensus-card">
       <div class="card-heading">
         <div>
-          <p class="eyebrow" style="color: #1e3a8a;">CROSS-SOURCE RECONCILIATION</p>
+          <p class="eyebrow" style="color: #1e3a8a;">CONSENSUS EVALUATION</p>
           <h2>Virya Consensus</h2>
         </div>
       </div>
-      <div style="margin: 12px 0;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span>Tier 1 Unreviewed:</span>
+      <p style="font-size: 13px; font-weight: 600; color: {% if virya_summary.agrees %}#15803d{% else %}#b45309{% endif %}; margin: 8px 0;">
+        {{ virya_summary.text }}
+      </p>
+      {% if is_version_3 and virya_reconciliation %}
+      <div style="margin: 12px 0; font-size: 12px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span>Unreviewed Divergence:</span>
           <strong>{{ virya_reconciliation.summary_counts.tier_1_unreviewed_divergence_count }}</strong>
         </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span>Tier 2 Reviewed:</span>
-          <strong>{{ virya_reconciliation.summary_counts.tier_2_reviewed_divergence_count }}</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span>Tier 3 Verified Disagreements:</span>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span>Verified Disagreements:</span>
           <strong style="color: {% if virya_reconciliation.summary_counts.tier_3_verified_disagreement_count > 0 %}#b91c1c{% else %}#15803d{% endif %};">
             {{ virya_reconciliation.summary_counts.tier_3_verified_disagreement_count }}
           </strong>
         </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span>Same-Claim Ambiguities:</span>
-          <strong>{{ virya_reconciliation.summary_counts.same_claim_mapping_ambiguity_count }}</strong>
-        </div>
-        <div style="border-top: 1px solid #cbd5e1; padding-top: 8px; display: flex; justify-content: space-between; font-weight: bold;">
-          <span>Total Reconciled Pairs:</span>
-          <span>{{ virya_reconciliation.summary_counts.total_reconciled_pairs }}</span>
-        </div>
       </div>
-      <p style="margin-top: 16px;">
-        <a href="/stage-c/reconciliation/{{ herb.id }}" style="display: inline-block; background: #1e3a8a; color: #fff; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.9em;">
+      <p style="margin-top: 12px;">
+        <a href="{{ url_for('virya_reconciliation_gui', herb_id=herb.id) }}" class="button button-primary" style="display: inline-block; padding: 6px 12px; font-size: 11px;">
           Inspect Virya Reconciliation ↗
         </a>
       </p>
+      {% endif %}
     </section>
     {% endif %}
 
-    <!-- DOSHAKARMA CARD -->
+    <!-- DOSHA EFFECTS (3-ROW TABLE) -->
     <section class="content-card dosha-card">
       <div class="card-heading">
         <div>
@@ -256,33 +530,63 @@
           <h2>Dosha effects</h2>
         </div>
       </div>
-      {% if is_version_3 and semantic_profile and semantic_profile.dosha_effects %}
-      <div class="dosha-list">
-        {% for item in semantic_profile.dosha_effects %}
-        <div class="dosha-item">
-          <span class="dosha-name">{{ item.dosha_display_label }}</span>
-          <span class="effect effect-{{ item.effect_concept_code|lower }}">{{ item.effect_display_label }}</span>
-          <small>{{ item.source_expression }}</small>
-        </div>
-        {% endfor %}
-      </div>
-      {% elif doshas %}
-      <div class="dosha-list">
-        {% for item in doshas %}
-        <div class="dosha-item">
-          <span class="dosha-name">{{ item.dosha }}</span>
-          <span class="effect effect-{{ item.effect }}">{{ item.effect|title }}</span>
-          <small>{{ item.source_expression }}</small>
-        </div>
-        {% endfor %}
-      </div>
-      <p class="footnote">Effects are normalized from the source expression. “Unspecified” does not imply no effect.</p>
-      {% else %}
-      <p class="muted empty-inline">No normalized Dosha effects recorded.</p>
-      {% endif %}
+      <table class="dosha-table">
+        <thead>
+          <tr>
+            <th>Dosha</th>
+            <th>Effect</th>
+            <th>Source statement</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in dosha_view.three_doshas %}
+          <tr>
+            <td><strong>{{ d.dosha }}</strong></td>
+            <td>
+              {% if d.recorded %}
+              <span class="effect effect-{{ d.effect_kind }}">{{ d.effect }}</span>
+              {% if d.claim_count > 1 %}<span class="claim-badge" title="{{ d.claim_count }} source claims">×{{ d.claim_count }}</span>{% endif %}
+              {% else %}
+              <span class="muted">Not recorded</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if d.source_expressions %}
+              <small class="muted">{{ d.source_expressions|join(", ") }}</small>
+              {% else %}
+              <span class="muted">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="footnote">Based on the source's Doshakarma statement; see <a href="{{ url_for('guide') }}#glossary" class="text-link">Guide</a>.</p>
     </section>
 
-    <!-- THERAPEUTIC USAGE -->
+    <!-- CATALOG-MAPPED INDICATIONS (STAGE C) -->
+    {% if is_version_3 and semantic_profile and semantic_profile.indications %}
+    <section class="content-card">
+      <div class="card-heading">
+        <div>
+          <p class="eyebrow">CLINICAL USAGE</p>
+          <h2>Catalog-mapped indications</h2>
+        </div>
+        <span class="count-pill">{{ semantic_profile.indications|length }}</span>
+      </div>
+      <ul class="condition-list">
+        {% for ind in semantic_profile.indications %}
+        <li>
+          <strong>{{ ind.display_label }}</strong>
+          {% if ind.canonical_sanskrit_deva %}<small class="muted">({{ ind.canonical_sanskrit_deva }})</small>{% endif %}
+          {% if ind.canonical_sanskrit_iast %}<small class="muted"><em>{{ ind.canonical_sanskrit_iast }}</em></small>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <!-- THERAPEUTIC USAGE / LINKED CONDITIONS -->
     <section class="content-card">
       <div class="card-heading">
         <div>

@@ -101,7 +101,7 @@ included in package data. It provides the dashboard at `/` (counts, recent herbs
 introductory guide and conceptual reference at `/guide` (what the site is, 3 numbered navigation flows, 19-term Dravyaguna glossary, data sources, and safety limits), searchable herbs at
 `/herbs`, detail pages at `/herbs/{herb_id}`, searchable illness directory at
 `/illnesses`, condition detail at `/illnesses/{illness_id}`, and REST endpoints under
-`/api/`. Transliterated illness names are formatted into readable title case via
+`/api/`. The herb detail view (`herb_detail_semantic.html`) restructures botanical presentation: a single 6-column normalized properties table (`Rasa | Guna | Virya | Vipaka | Prabhava | Karma`) with unique chips, claim counts (`×N`), and collapsed source claim details; a clean 3-row Dosha table (`Vata | Pitta | Kapha`) with explicit "Not recorded" fallback; and structured plant characteristic cards (Vernacular Names, Parts Used, Preparations, Dose, Therapeutic Usages, Etymology & Pharmacopoeia) replacing raw 200+ attribute dumps. Transliterated illness names are formatted into readable title case via
 `format_readable_illness` (`readable_illness` filter) without mutating stored database records.
 The interface features an interactive 15-language multilingual selector (English, Hindi, Sanskrit, and 12 regional Indic scripts) with native script buttons, URL parameter persistence (`?language=<code>`), cross-script search (matching English names, synonyms, and Devanagari/regional scripts), automatic query redirection from `/herbs` to `/illnesses` on condition queries, and disclaimer notices for CCRAS research and machine translations.
 Install with `python -m pip install -e ".[web]"` and run

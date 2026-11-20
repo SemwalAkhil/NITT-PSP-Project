@@ -266,7 +266,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 deduped_props = []
                 grouped_props = group_properties_by_domain([])
                 virya_summary = None
-                dosha_view = dedupe_dosha_effects([])
+                dosha_view = dedupe_dosha_effects(doshas)
 
             grouped_attrs = group_attributes(attributes)
 
