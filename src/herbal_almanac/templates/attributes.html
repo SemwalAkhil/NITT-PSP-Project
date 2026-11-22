@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Source Attributes — Herbal Almanac{% endblock %}
+
+{% block content %}
+<div class="content-container">
+  <div class="page-header">
+    <div>
+      <span class="badge badge-accent">RAW SOURCE PROVENANCE</span>
+      <h1 class="page-title">
+        {% if herb %}
+        Source Attributes for {{ herb.original_name or herb.english_name }}
+        {% else %}
+        Source Attributes Directory
+        {% endif %}
+      </h1>
+      <p class="page-subtitle">Preserved original attributes, verbatim source citations, and field values.</p>
+    </div>
+    <div class="header-actions">
+      {% if herb %}
+      <a href="{{ url_for('herb_detail', herb_id=herb.id) }}" class="btn btn-secondary">← Back to Herb</a>
+      <a href="/herbs/{{ herb.id }}/export.csv" class="btn btn-secondary">Export Herb CSV</a>
+      {% else %}
+      <a href="/export/herbs.csv" class="btn btn-secondary">Export Herbs CSV</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <form method="get" action="{{ request.url.path }}" class="search-form">
+      <input type="search" name="q" value="{{ query }}" placeholder="Filter attributes by field or value..." class="search-input">
+      <button type="submit" class="btn btn-primary">Filter</button>
+      {% if query %}
+      <a href="{{ request.url.path }}" class="btn btn-secondary">Clear</a>
+      {% endif %}
+    </form>
+    <div class="filter-count">
+      Showing {{ attributes | length }} of {{ total }} attributes
+    </div>
+  </div>
+
+  {% if attributes %}
+  <div class="table-container card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          {% if not herb %}
+          <th>Herb</th>
+          {% endif %}
+          <th>Field Name</th>
+          <th>Value</th>
+          <th>Source Text / Provenance</th>
+          <th>Language</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in attributes %}
+        <tr>
+          {% if not herb %}
+          <td>
+            <a href="{{ url_for('herb_detail', herb_id=a.herb_id) }}" class="entity-link">
+              <strong>{{ a.herb_name or ('Herb #' ~ a.herb_id) }}</strong>
+            </a>
+          </td>
+          {% endif %}
+          <td><code>{{ a.field_name }}</code></td>
+          <td><strong>{{ a.value }}</strong></td>
+          <td class="text-sm text-muted">{{ a.source_text or 'Unspecified' }}</td>
+          <td><span class="badge">{{ a.source_language or 'und' }}</span></td>
+          <td>
+            <span class="badge {% if a.verification_status == 'verified' %}badge-success{% else %}badge-warning{% endif %}">
+              {{ a.verification_status or 'unverified' }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if page_count > 1 %}
+  <nav class="pagination" aria-label="Attributes pagination">
+    {% if page > 1 %}
+    <a href="{{ request.url.path }}?q={{ query }}&page={{ page - 1 }}" class="btn btn-secondary btn-sm">← Previous</a>
+    {% endif %}
+    <span class="page-indicator">Page {{ page }} of {{ page_count }}</span>
+    {% if page < page_count %}
+    <a href="{{ request.url.path }}?q={{ query }}&page={{ page + 1 }}" class="btn btn-secondary btn-sm">Next →</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state card">
+    <p>No attributes found matching your criteria.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

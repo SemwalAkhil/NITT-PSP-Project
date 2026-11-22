@@ -453,7 +453,27 @@ Starts the Typer application and dispatches the requested command.
 
 The module's `if __name__ == "__main__"` block calls `main()` when the file is executed directly.
 
-## 8. Typical Workflow
+## 8. CLI ↔ Web Feature Parity Matrix
+
+Every database manipulation and inspection operation available via the CLI is mirrored by a corresponding Web GUI view, form, or export endpoint:
+
+| CLI Command | Equivalent Web GUI Route / Method | Notes & Parity Behavior |
+|---|---|---|
+| `herbal-almanac setup` | Automatic on startup or DB connection | Initializes tables and migration ledger. |
+| `herbal-almanac scrape` | Documented in `/stage-c/status` | Scraping is an intensive batch operation reserved for the CLI to avoid web worker starvation and request timeouts. |
+| `herbal-almanac herb` | `GET /herbs/add`, `POST /herbs/add` | Interactive web form with client & server-side validation and CSRF origin verification. |
+| `herbal-almanac illness` | `GET /illnesses/add`, `POST /illnesses/add` | Web form to add conditions with unique-name constraint enforcement. |
+| `herbal-almanac treatment` | `GET /treatments/add`, `POST /treatments/add` | Form with searchable herb and illness dropdowns. |
+| `herbal-almanac herbs [q] [-l]` | `GET /herbs?q=...&language=...` | Multilingual search supporting English, Latin, Sanskrit, Hindi, Tamil, etc., with thumbnail images. |
+| `herbal-almanac illnesses [q]` | `GET /illnesses?q=...&language=...` | Condition explorer with Indic language selector bar and machine-translation indicators. |
+| `herbal-almanac treatments <id>` | `GET /treatments?q=...` or `/herbs/{id}` | Paginated treatments directory with filtering by herb or illness name. |
+| `herbal-almanac attributes <id>` | `GET /attributes` & `GET /herbs/{id}/attributes` | Raw attribute tables with provenance, field filtering, and CSV export. |
+| `herbal-almanac records [type]` | `GET /records?group=...` | Interactive records hub with live counts and group inspection tabs. |
+| `herbal-almanac records --output` | `GET /export/{herbs,illnesses,treatments}.{csv,json}` | One-click downloads with UTF-8 BOM encoding and formula injection protection. |
+| `herbal-almanac upgrade-stage-c` | `POST /stage-c/upgrade` | One-click upgrade with confirmation dialog on `/stage-c/status`. |
+| `herbal-almanac dravyaguna-profile`| `GET /herbs/{id}` & `/api/stage-c/herbs/{id}/profile` | Classical 6-domain semantic view, virya consensus, and 3-dosha matrix. |
+
+## 9. Typical Workflow
 
 A normal local workflow might be:
 

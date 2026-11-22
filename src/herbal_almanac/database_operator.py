@@ -1890,6 +1890,33 @@ class AyurvedicAlmanac:
                 except Exception:
                     pass
 
+                try:
+                    from .herb_glossary import search_herb_glossary
+
+                    glossary_herbs = search_herb_glossary(clean_q)
+                    if glossary_herbs:
+                        g_ids = [gh.id for gh in glossary_herbs if gh.id]
+                        if g_ids:
+                            placeholders = ",".join("?" for _ in g_ids)
+                            id_matches = connection.execute(
+                                f"SELECT id FROM herbs WHERE source_record_id IN ({placeholders})",
+                                g_ids,
+                            ).fetchall()
+                            for r in id_matches:
+                                vernacular_matched_ids.add(r[0])
+
+                        bot_names = [gh.botanical_name for gh in glossary_herbs if gh.botanical_name]
+                        if bot_names:
+                            b_placeholders = ",".join("?" for _ in bot_names)
+                            b_matches = connection.execute(
+                                f"SELECT id FROM herbs WHERE botanical_name IN ({b_placeholders})",
+                                bot_names,
+                            ).fetchall()
+                            for r in b_matches:
+                                vernacular_matched_ids.add(r[0])
+                except Exception:
+                    pass
+
         augmented_rows: list[dict[str, Any]] = []
         for r in rows:
             item = dict(r)

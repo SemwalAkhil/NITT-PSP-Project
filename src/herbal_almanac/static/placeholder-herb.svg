@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Herbal plant placeholder">
+  <rect width="120" height="120" rx="16" fill="#e8eee5"/>
+  <g fill="none" stroke="#46684c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Main stem -->
+    <path d="M60 100 C60 65 60 30 60 20"/>
+    <!-- Central top leaf -->
+    <path d="M60 20 C52 14 52 8 60 4 C68 8 68 14 60 20" fill="#698f6f" fill-opacity="0.3"/>
+    <!-- Left upper leaf -->
+    <path d="M60 38 C45 35 34 44 38 56 C50 56 58 46 60 38" fill="#698f6f" fill-opacity="0.4"/>
+    <!-- Right upper leaf -->
+    <path d="M60 48 C75 45 86 54 82 66 C70 66 62 56 60 48" fill="#698f6f" fill-opacity="0.4"/>
+    <!-- Left lower leaf -->
+    <path d="M60 68 C42 66 30 76 35 88 C48 88 57 78 60 68" fill="#698f6f" fill-opacity="0.5"/>
+    <!-- Right lower leaf -->
+    <path d="M60 78 C78 76 90 86 85 98 C72 98 63 88 60 78" fill="#698f6f" fill-opacity="0.5"/>
+  </g>
+</svg>

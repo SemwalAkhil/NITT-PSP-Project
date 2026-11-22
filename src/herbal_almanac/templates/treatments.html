@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Treatments — Herbal Almanac{% endblock %}
+
+{% block content %}
+<div class="content-container">
+  <div class="page-header">
+    <div>
+      <span class="badge badge-accent">THERAPEUTIC ASSOCIATIONS</span>
+      <h1 class="page-title">Treatments Directory</h1>
+      <p class="page-subtitle">Plant-to-condition treatment records cataloged across classical texts and databases.</p>
+    </div>
+    <div class="header-actions">
+      <a href="{{ url_for('add_treatment_form') }}" class="btn btn-primary">+ Link Treatment</a>
+      <a href="/export/treatments.csv" class="btn btn-secondary">Export CSV</a>
+      <a href="/export/treatments.json" class="btn btn-secondary">Export JSON</a>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <form method="get" action="{{ url_for('treatment_list') }}" class="search-form">
+      <input type="search" name="q" value="{{ query }}" placeholder="Filter treatments by herb or illness..." class="search-input">
+      <button type="submit" class="btn btn-primary">Filter</button>
+      {% if query %}
+      <a href="{{ url_for('treatment_list') }}" class="btn btn-secondary">Clear</a>
+      {% endif %}
+    </form>
+    <div class="filter-count">
+      Showing {{ treatments | length }} of {{ total }} treatments
+    </div>
+  </div>
+
+  {% if treatments %}
+  <div class="table-container card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Herb</th>
+          <th>Condition / Illness</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in treatments %}
+        {% set ill_res = resolve_illness(t.illness_name) %}
+        <tr>
+          <td>
+            <a href="{{ url_for('herb_detail', herb_id=t.herb_id) }}" class="entity-link">
+              <strong>{{ t.herb_name }}</strong>
+            </a>
+            <span class="text-muted text-sm">#{{ t.herb_id }}</span>
+          </td>
+          <td>
+            <a href="{{ url_for('illness_detail', illness_id=t.illness_id) }}" class="entity-link">
+              <strong>{{ t.illness_name | readable_illness }}</strong>
+            </a>
+            {% if ill_res.english and ill_res.english != t.illness_name %}
+            <span class="text-sm text-muted">({{ ill_res.english }})</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('herb_detail', herb_id=t.herb_id) }}" class="btn btn-sm btn-secondary">View Herb</a>
+            <a href="{{ url_for('illness_detail', illness_id=t.illness_id) }}" class="btn btn-sm btn-secondary">View Illness</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if page_count > 1 %}
+  <nav class="pagination" aria-label="Treatments pagination">
+    {% if page > 1 %}
+    <a href="/treatments?q={{ query }}&page={{ page - 1 }}" class="btn btn-secondary btn-sm">← Previous</a>
+    {% endif %}
+    <span class="page-indicator">Page {{ page }} of {{ page_count }}</span>
+    {% if page < page_count %}
+    <a href="/treatments?q={{ query }}&page={{ page + 1 }}" class="btn btn-secondary btn-sm">Next →</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state card">
+    <p>No treatments found matching your criteria.</p>
+    {% if query %}
+    <a href="{{ url_for('treatment_list') }}" class="btn btn-secondary">Reset search</a>
+    {% else %}
+    <a href="{{ url_for('add_treatment_form') }}" class="btn btn-primary">+ Add the first treatment</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

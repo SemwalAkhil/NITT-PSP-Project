@@ -7,7 +7,12 @@
     <h1>Illness <em>explorer.</em></h1>
     <p class="subheading">Search illnesses and conditions to discover traditionally associated herbs.</p>
   </div>
-  <span class="result-count">{{ "{:,}".format(total) }} CONDITIONS</span>
+  <div class="header-actions-inline">
+    <a href="{{ url_for('add_illness_form') }}" class="btn btn-primary btn-sm">+ Add Illness</a>
+    <a href="/export/illnesses.csv{% if query %}?q={{ query }}{% endif %}" class="btn btn-secondary btn-sm">Export CSV</a>
+    <a href="/export/illnesses.json{% if query %}?q={{ query }}{% endif %}" class="btn btn-secondary btn-sm">Export JSON</a>
+    <span class="result-count">{{ "{:,}".format(total) }} CONDITIONS</span>
+  </div>
 </section>
 
 <div class="disclaimer-banner" style="background:#fef7e7;border:1px solid #f2e2be;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#7a5814;font-size:12px;line-height:1.5;">

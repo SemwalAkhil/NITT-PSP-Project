@@ -7,14 +7,35 @@
     <h1>Herb <em>explorer.</em></h1>
     <p class="subheading">Search and browse the plants in your collection. <a class="text-link" href="{{ url_for('illness_list') }}" style="margin-left:8px;">Browse illnesses <span>→</span></a></p>
   </div>
-  <span class="result-count">{{ "{:,}".format(total) }} {% if total == 1 %}HERB{% else %}HERBS{% endif %}</span>
+  <div class="header-actions-inline">
+    <a href="{{ url_for('add_herb_form') }}" class="btn btn-primary btn-sm">+ Add Herb</a>
+    <a href="/export/herbs.csv{% if query %}?q={{ query }}{% endif %}" class="btn btn-secondary btn-sm">Export CSV</a>
+    <a href="/export/herbs.json{% if query %}?q={{ query }}{% endif %}" class="btn btn-secondary btn-sm">Export JSON</a>
+    <span class="result-count">{{ "{:,}".format(total) }} {% if total == 1 %}HERB{% else %}HERBS{% endif %}</span>
+  </div>
 </section>
-<form class="search-form" method="get" action="{{ url_for('herb_list') }}"><label class="search-box"><span>⌕</span><input type="search" name="q" value="{{ query }}" placeholder="Search by herb, Sanskrit or botanical name…" aria-label="Search herbs"><button type="submit">Search</button></label></form>
+<form class="search-form" method="get" action="{{ url_for('herb_list') }}"><label class="search-box"><span>⌕</span><input type="search" name="q" value="{{ query }}" placeholder="Search by English, Sanskrit, Hindi, Tamil, or botanical name…" aria-label="Search herbs"><button type="submit">Search</button></label></form>
 {% if herbs %}
 <div class="results-heading"><span>Showing {{ (page - 1) * page_size + 1 }}–{{ (page - 1) * page_size + herbs|length }} of {{ total }}</span><span>Sorted by relevance</span></div>
 <div class="herb-list">
 {% for herb in herbs %}
-<a class="herb-row" href="{{ url_for('herb_detail', herb_id=herb.id) }}"><span class="herb-symbol">✿</span><span class="herb-main"><strong>{{ herb.original_name or herb.english_name }}</strong><small>{{ herb.english_name }}</small></span><span class="herb-botanical">{{ herb.botanical_name or "Botanical name unavailable" }}{% if herb.family %}<small>{{ herb.family }}</small>{% endif %}</span><span class="row-arrow">↗</span></a>
+{% set img_url = herb_image_url(herb) %}
+<a class="herb-row" href="{{ url_for('herb_detail', herb_id=herb.id) }}">
+  <div class="herb-thumb-wrapper">
+    <img src="{{ img_url or '/static/placeholder-herb.svg' }}"
+         alt=""
+         class="herb-thumb-img"
+         loading="lazy"
+         onerror="this.onerror=null;this.src='/static/placeholder-herb.svg';">
+  </div>
+  <span class="herb-symbol" style="display:none;" aria-hidden="true">✿</span>
+  <span class="herb-main">
+    <strong>{{ herb.original_name or herb.english_name }}</strong>
+    <small>{{ herb.english_name }}</small>
+  </span>
+  <span class="herb-botanical">{{ herb.botanical_name or "Botanical name unavailable" }}{% if herb.family %}<small>{{ herb.family }}</small>{% endif %}</span>
+  <span class="row-arrow">↗</span>
+</a>
 {% endfor %}
 </div>
 {% if page_count > 1 %}
@@ -25,6 +46,6 @@
 </nav>
 {% endif %}
 {% else %}
-<div class="empty-state"><span>⌕</span><h3>No matching herbs</h3><p>{% if query %}Try a different spelling or a broader search term.{% else %}No records are available yet. Populate the database using the CLI scraper.{% endif %}</p>{% if query %}<a class="text-link" href="{{ url_for('herb_list') }}">Clear search <span>→</span></a>{% endif %}</div>
+<div class="empty-state"><span>⌕</span><h3>No matching herbs</h3><p>{% if query %}Try a different spelling or a broader search term.{% else %}No records are available yet. Populate the database using the CLI scraper or web form.{% endif %}</p>{% if query %}<a class="text-link" href="{{ url_for('herb_list') }}">Clear search <span>→</span></a>{% endif %}</div>
 {% endif %}
 {% endblock %}

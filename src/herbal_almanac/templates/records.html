@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Records Hub — Herbal Almanac{% endblock %}
+
+{% block content %}
+<div class="content-container">
+  <div class="page-header">
+    <div>
+      <span class="badge badge-accent">DATABASE AUDIT &amp; EXPORT</span>
+      <h1 class="page-title">Records &amp; Data Hub</h1>
+      <p class="page-subtitle">Inspect comprehensive record groups and export structured datasets in CSV or JSON.</p>
+    </div>
+    <div class="header-actions">
+      <a href="/export/herbs.csv" class="btn btn-secondary">Export Herbs CSV</a>
+      <a href="/export/illnesses.csv" class="btn btn-secondary">Export Illnesses CSV</a>
+      <a href="/export/treatments.csv" class="btn btn-secondary">Export Treatments CSV</a>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">{{ records.herbs | length }}</div>
+      <div class="stat-label">Herbs Cataloged</div>
+      <div class="card-footer-action">
+        <a href="{{ url_for('herb_list') }}" class="btn btn-sm btn-secondary">Browse Herbs</a>
+        <a href="/export/herbs.json" class="btn btn-sm btn-secondary">JSON</a>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ records.illnesses | length }}</div>
+      <div class="stat-label">Illness Indications</div>
+      <div class="card-footer-action">
+        <a href="{{ url_for('illness_list') }}" class="btn btn-sm btn-secondary">Browse Illnesses</a>
+        <a href="/export/illnesses.json" class="btn btn-sm btn-secondary">JSON</a>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ records.treatments | length }}</div>
+      <div class="stat-label">Treatment Links</div>
+      <div class="card-footer-action">
+        <a href="{{ url_for('treatment_list') }}" class="btn btn-sm btn-secondary">Browse Treatments</a>
+        <a href="/export/treatments.json" class="btn btn-sm btn-secondary">JSON</a>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ records.attributes | length }}</div>
+      <div class="stat-label">Source Attributes</div>
+      <div class="card-footer-action">
+        <a href="{{ url_for('attributes_list') }}" class="btn btn-sm btn-secondary">Browse Attributes</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <h2 class="card-title">Select Record Type View</h2>
+    <div class="tab-buttons">
+      <a href="/records?group=herbs" class="btn {% if active_group == 'herbs' %}btn-primary{% else %}btn-secondary{% endif %}">Herbs</a>
+      <a href="/records?group=illnesses" class="btn {% if active_group == 'illnesses' %}btn-primary{% else %}btn-secondary{% endif %}">Illnesses</a>
+      <a href="/records?group=treatments" class="btn {% if active_group == 'treatments' %}btn-primary{% else %}btn-secondary{% endif %}">Treatments</a>
+      <a href="/records?group=attributes" class="btn {% if active_group == 'attributes' %}btn-primary{% else %}btn-secondary{% endif %}">Attributes</a>
+      <a href="/records?group=doshas" class="btn {% if active_group == 'doshas' %}btn-primary{% else %}btn-secondary{% endif %}">Doshas</a>
+    </div>
+  </div>
+
+  <div class="table-container card">
+    <h3 class="card-subtitle mb-2">Showing {{ group_rows | length }} {{ active_group }} records</h3>
+    <table class="data-table">
+      {% if group_rows %}
+      <thead>
+        <tr>
+          {% for col in group_columns %}
+          <th>{{ col.replace('_', ' ').title() }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in group_rows %}
+        <tr>
+          {% for col in group_columns %}
+          <td>{{ row.get(col, '') }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% else %}
+      <tbody>
+        <tr><td>No records present in this group.</td></tr>
+      </tbody>
+      {% endif %}
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -27,12 +27,14 @@ dev = [
     "fastapi>=0.115,<1.0",
     "httpx>=0.27",
     "jinja2>=3.1",
+    "python-multipart>=0.0.9",
 ]
 translate = ["deep-translator==1.11.4"]
 web = [
     "fastapi>=0.115,<1.0",
     "uvicorn[standard]>=0.30",
     "jinja2>=3.1",
+    "python-multipart>=0.0.9",
 ]
 
 [project.scripts]
@@ -48,4 +50,4 @@ include = ["herbal_almanac*"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 [tool.setuptools.package-data]
-herbal_almanac = ["templates/*.html", "static/*.css", "migrations/*.sql", "data/*.csv"]
+herbal_almanac = ["templates/*.html", "static/*.css", "static/*.svg", "migrations/*.sql", "data/*.csv"]

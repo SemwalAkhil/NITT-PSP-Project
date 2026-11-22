@@ -43,19 +43,28 @@ def test_wheel_archive_contains_all_runtime_assets(tmp_path: Path):
     wheel_path = wheel_files[0]
 
     expected_assets = [
+        "herbal_almanac/data/herb_names.csv",
         "herbal_almanac/data/illness_glossary.csv",
         "herbal_almanac/herb_view.py",
         "herbal_almanac/migrations/stage_c_ddl_and_triggers.sql",
         "herbal_almanac/migrations/virya_reconciliation.sql",
+        "herbal_almanac/static/placeholder-herb.svg",
         "herbal_almanac/static/styles.css",
+        "herbal_almanac/templates/attributes.html",
         "herbal_almanac/templates/base.html",
         "herbal_almanac/templates/dashboard.html",
         "herbal_almanac/templates/guide.html",
         "herbal_almanac/templates/herb_detail.html",
         "herbal_almanac/templates/herb_detail_semantic.html",
+        "herbal_almanac/templates/herb_form.html",
         "herbal_almanac/templates/herbs.html",
         "herbal_almanac/templates/illness_detail.html",
+        "herbal_almanac/templates/illness_form.html",
         "herbal_almanac/templates/illnesses.html",
+        "herbal_almanac/templates/records.html",
+        "herbal_almanac/templates/stage_c_status.html",
+        "herbal_almanac/templates/treatment_form.html",
+        "herbal_almanac/templates/treatments.html",
         "herbal_almanac/templates/virya_reconciliation.html",
     ]
 

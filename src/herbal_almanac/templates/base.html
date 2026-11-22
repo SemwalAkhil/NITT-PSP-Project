@@ -1,41 +1,224 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light" data-font-size="md" data-font="default" data-contrast="normal">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f4ed">
   <title>{% block title %}Herbal Almanac{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}?v=1">
+  <script>
+    // Prevent Flash of Unstyled Content (FOUC) by applying saved preferences immediately
+    (function() {
+      try {
+        var theme = localStorage.getItem('ha_theme');
+        if (theme) document.documentElement.setAttribute('data-theme', theme);
+        var size = localStorage.getItem('ha_font_size');
+        if (size) document.documentElement.setAttribute('data-font-size', size);
+        var font = localStorage.getItem('ha_font');
+        if (font) document.documentElement.setAttribute('data-font', font);
+        var contrast = localStorage.getItem('ha_contrast');
+        if (contrast) document.documentElement.setAttribute('data-contrast', contrast);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}?v=2">
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
   <div class="app-shell">
-    <aside class="sidebar">
+    <aside class="sidebar" aria-label="Sidebar Navigation">
       <a class="brand" href="{{ url_for('dashboard') }}">
         <span class="brand-mark">H</span>
         <span><strong>Herbal Almanac</strong><small>DRAVYAGUNA LIBRARY</small></span>
       </a>
-      <div class="nav-label">WORKSPACE</div>
+
+      <div class="nav-label">EXPLORE &amp; RESEARCH</div>
       <nav class="side-nav" aria-label="Main navigation">
-        <a class="{% if active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">⌂</span> Overview</a>
-        <a class="{% if active_page == 'guide' %}active{% endif %}" href="{{ url_for('guide') }}"><span class="nav-icon">📖</span> Guide &amp; About</a>
-        <a class="{% if active_page == 'herbs' %}active{% endif %}" href="{{ url_for('herb_list') }}"><span class="nav-icon">✿</span> Herb explorer</a>
-        <a class="{% if active_page == 'illnesses' %}active{% endif %}" href="{{ url_for('illness_list') }}"><span class="nav-icon">✚</span> Illness explorer</a>
+        <a class="{% if active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+          <span class="nav-icon" aria-hidden="true">⌂</span> Overview
+        </a>
+        <a class="{% if active_page == 'guide' %}active{% endif %}" href="{{ url_for('guide') }}">
+          <span class="nav-icon" aria-hidden="true">📖</span> Guide &amp; About
+        </a>
+        <a class="{% if active_page == 'herbs' %}active{% endif %}" href="{{ url_for('herb_list') }}">
+          <span class="nav-icon" aria-hidden="true">✿</span> Herb explorer
+        </a>
+        <a class="{% if active_page == 'illnesses' %}active{% endif %}" href="{{ url_for('illness_list') }}">
+          <span class="nav-icon" aria-hidden="true">✚</span> Illness explorer
+        </a>
+        <a class="{% if active_page == 'treatments' %}active{% endif %}" href="{{ url_for('treatment_list') }}">
+          <span class="nav-icon" aria-hidden="true">⚕</span> Treatments
+        </a>
+        <a class="{% if active_page == 'attributes' %}active{% endif %}" href="{{ url_for('attributes_list') }}">
+          <span class="nav-icon" aria-hidden="true">📑</span> Source Attributes
+        </a>
+        <a class="{% if active_page == 'records' %}active{% endif %}" href="{{ url_for('records_view') }}">
+          <span class="nav-icon" aria-hidden="true">🗄</span> Records Hub &amp; Exports
+        </a>
+        <a class="{% if active_page == 'stage_c' %}active{% endif %}" href="{{ url_for('stage_c_status_view') }}">
+          <span class="nav-icon" aria-hidden="true">⚙</span> Stage C Status
+        </a>
       </nav>
-      <div class="sidebar-note">
-        <span class="leaf-dot"></span>
-        <p><strong>Research library</strong><br>Explore source-backed plant records and traditional knowledge.</p>
+
+      <div class="nav-label mt-3">DATA MANAGEMENT</div>
+      <nav class="side-nav side-nav-sub" aria-label="Data entry actions">
+        <a href="{{ url_for('add_herb_form') }}"><span class="nav-icon" aria-hidden="true">+</span> Add Herb</a>
+        <a href="{{ url_for('add_illness_form') }}"><span class="nav-icon" aria-hidden="true">+</span> Add Illness</a>
+        <a href="{{ url_for('add_treatment_form') }}"><span class="nav-icon" aria-hidden="true">+</span> Link Treatment</a>
+      </nav>
+
+      <div class="sidebar-accessibility">
+        <button type="button" class="btn btn-sm btn-accessibility" id="a11y-toggle" aria-expanded="false" aria-controls="a11y-panel">
+          <span aria-hidden="true">⚙</span> Accessibility
+        </button>
       </div>
-      <div class="sidebar-footer">LOCAL DATABASE<br><span>Private workspace · Read only</span></div>
+
+      <div class="sidebar-footer">LOCAL DATABASE<br><span>Private workspace · Read/Write</span></div>
     </aside>
-    <main class="main-area">
-      <header class="topbar">
-        <div class="mobile-brand"><span class="brand-mark">H</span><strong>Herbal Almanac</strong></div>
+
+    <main class="main-area" id="main-content" role="main">
+      <header class="topbar" role="banner">
+        <div class="mobile-brand">
+          <span class="brand-mark">H</span><strong>Herbal Almanac</strong>
+        </div>
         <div class="topbar-caption">BOTANICAL KNOWLEDGE, ORGANIZED</div>
-        <a class="topbar-link" href="{{ url_for('herb_list') }}">Explore records <span>↗</span></a>
+        <div class="topbar-actions">
+          <button type="button" class="topbar-pill" id="a11y-toggle-top" aria-label="Open accessibility settings">
+            A11y Options
+          </button>
+          <a class="topbar-link" href="{{ url_for('herb_list') }}">Explore records <span aria-hidden="true">↗</span></a>
+        </div>
       </header>
+
+      <!-- Accessibility Settings Drawer / Modal -->
+      <div id="a11y-panel" class="a11y-drawer hidden" role="region" aria-label="Accessibility Settings">
+        <div class="a11y-header">
+          <h2 class="a11y-title">Display &amp; Accessibility</h2>
+          <button type="button" class="btn-close" id="a11y-close" aria-label="Close accessibility settings">&times;</button>
+        </div>
+        <div class="a11y-body">
+          <div class="a11y-group">
+            <label class="a11y-label" id="theme-label">Theme Mode</label>
+            <div class="button-group" role="group" aria-labelledby="theme-label">
+              <button type="button" class="a11y-btn" data-set-theme="light">Light</button>
+              <button type="button" class="a11y-btn" data-set-theme="dark">Dark</button>
+              <button type="button" class="a11y-btn" data-set-theme="auto">System</button>
+            </div>
+          </div>
+
+          <div class="a11y-group">
+            <label class="a11y-label" id="font-size-label">Text Size</label>
+            <div class="button-group" role="group" aria-labelledby="font-size-label">
+              <button type="button" class="a11y-btn" data-set-font-size="sm">Small</button>
+              <button type="button" class="a11y-btn" data-set-font-size="md">Default</button>
+              <button type="button" class="a11y-btn" data-set-font-size="lg">Large</button>
+              <button type="button" class="a11y-btn" data-set-font-size="xl">Extra Large</button>
+            </div>
+          </div>
+
+          <div class="a11y-group">
+            <label class="a11y-label" id="contrast-label">Contrast Mode</label>
+            <div class="button-group" role="group" aria-labelledby="contrast-label">
+              <button type="button" class="a11y-btn" data-set-contrast="normal">Normal</button>
+              <button type="button" class="a11y-btn" data-set-contrast="high">High Contrast</button>
+            </div>
+          </div>
+
+          <div class="a11y-group">
+            <label class="a11y-label" id="font-family-label">Font Family</label>
+            <div class="button-group" role="group" aria-labelledby="font-family-label">
+              <button type="button" class="a11y-btn" data-set-font="default">Default</button>
+              <button type="button" class="a11y-btn" data-set-font="sans">Clean Sans</button>
+              <button type="button" class="a11y-btn" data-set-font="dyslexic">Dyslexia-Friendly</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <section class="page-content">{% block content %}{% endblock %}</section>
-      <footer class="page-footer">Herbal Almanac <span>·</span> Research and reference only — not medical advice.</footer>
+      <footer class="page-footer" role="contentinfo">
+        Herbal Almanac <span>·</span> Research and reference only — not medical advice.
+      </footer>
     </main>
   </div>
+
+  <script>
+    // Accessibility Drawer Interactions & State Sync
+    (function() {
+      var panel = document.getElementById('a11y-panel');
+      var openBtns = [document.getElementById('a11y-toggle'), document.getElementById('a11y-toggle-top')];
+      var closeBtn = document.getElementById('a11y-close');
+
+      function togglePanel() {
+        if (!panel) return;
+        var isHidden = panel.classList.contains('hidden');
+        if (isHidden) {
+          panel.classList.remove('hidden');
+          panel.focus();
+        } else {
+          panel.classList.add('hidden');
+        }
+      }
+
+      openBtns.forEach(function(btn) {
+        if (btn) btn.addEventListener('click', togglePanel);
+      });
+      if (closeBtn) closeBtn.addEventListener('click', function() {
+        if (panel) panel.classList.add('hidden');
+      });
+
+      // Handle settings button clicks
+      document.addEventListener('click', function(e) {
+        var t = e.target;
+        if (!t || !t.dataset) return;
+
+        if (t.dataset.setTheme) {
+          var theme = t.dataset.setTheme;
+          document.documentElement.setAttribute('data-theme', theme);
+          localStorage.setItem('ha_theme', theme);
+          updateActiveA11y();
+        }
+        if (t.dataset.setFontSize) {
+          var size = t.dataset.setFontSize;
+          document.documentElement.setAttribute('data-font-size', size);
+          localStorage.setItem('ha_font_size', size);
+          updateActiveA11y();
+        }
+        if (t.dataset.setContrast) {
+          var contrast = t.dataset.setContrast;
+          document.documentElement.setAttribute('data-contrast', contrast);
+          localStorage.setItem('ha_contrast', contrast);
+          updateActiveA11y();
+        }
+        if (t.dataset.setFont) {
+          var font = t.dataset.setFont;
+          document.documentElement.setAttribute('data-font', font);
+          localStorage.setItem('ha_font', font);
+          updateActiveA11y();
+        }
+      });
+
+      function updateActiveA11y() {
+        var theme = document.documentElement.getAttribute('data-theme') || 'light';
+        var size = document.documentElement.getAttribute('data-font-size') || 'md';
+        var contrast = document.documentElement.getAttribute('data-contrast') || 'normal';
+        var font = document.documentElement.getAttribute('data-font') || 'default';
+
+        document.querySelectorAll('[data-set-theme]').forEach(function(b) {
+          b.classList.toggle('active', b.dataset.setTheme === theme);
+        });
+        document.querySelectorAll('[data-set-font-size]').forEach(function(b) {
+          b.classList.toggle('active', b.dataset.setFontSize === size);
+        });
+        document.querySelectorAll('[data-set-contrast]').forEach(function(b) {
+          b.classList.toggle('active', b.dataset.setContrast === contrast);
+        });
+        document.querySelectorAll('[data-set-font]').forEach(function(b) {
+          b.classList.toggle('active', b.dataset.setFont === font);
+        });
+      }
+
+      updateActiveA11y();
+    })();
+  </script>
 </body>
 </html>

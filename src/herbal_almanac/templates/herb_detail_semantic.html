@@ -8,6 +8,12 @@
     <h1>{{ herb.original_name or herb.english_name }}</h1>
     <p class="detail-common">{{ herb.english_name }}</p>
     <p class="latin detail-latin">{{ herb.botanical_name or "Botanical identity not recorded" }}</p>
+    <div class="header-actions-inline" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+      <a href="/herbs/{{ herb.id }}/export.csv" class="btn btn-secondary btn-sm">Export Herb CSV</a>
+      <a href="/herbs/{{ herb.id }}/export.json" class="btn btn-secondary btn-sm">Export Herb JSON</a>
+      <a href="{{ url_for('add_treatment_form') }}?herb_id={{ herb.id }}" class="btn btn-primary btn-sm">+ Link Treatment</a>
+      <a href="/herbs/{{ herb.id }}/attributes" class="btn btn-secondary btn-sm">All Attributes</a>
+    </div>
   </div>
   <div class="detail-stamp">✿<small>HERBAL<br>ALMANAC</small></div>
 </section>
@@ -49,6 +55,41 @@
         {% endif %}
       </dl>
     </section>
+
+    <!-- MULTILINGUAL VERNACULAR NAMES -->
+    {% set v_names = herb_vernacular_table(herb) %}
+    {% if v_names %}
+    <section class="content-card" id="multilingual-vernacular-names">
+      <div class="card-heading">
+        <div>
+          <p class="eyebrow">MULTILINGUAL IDENTIFIERS</p>
+          <h2>Vernacular Names across India</h2>
+          <p class="muted" style="margin: 4px 0 0 0; font-size: 0.9em;">
+            Classical and regional Indian language names for this botanical entity.
+          </p>
+        </div>
+        <span class="count-pill">{{ v_names|length }} languages</span>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 35%;">Language</th>
+              <th>Vernacular Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for vn in v_names %}
+            <tr>
+              <td><strong>{{ vn.language }}</strong></td>
+              <td lang="{{ vn.lang_code }}"><strong>{{ vn.name }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    {% endif %}
 
     {% if is_version_3 and semantic_profile %}
     <!-- NORMALIZED DRAVYAGUNA PROPERTIES -->
@@ -488,6 +529,26 @@
   </div>
 
   <aside class="detail-aside">
+    <!-- FEATURED HERB IMAGE -->
+    {% set img_url = herb_image_url(herb) %}
+    <section class="content-card featured-image-card">
+      <div class="featured-image-wrapper">
+        <img src="{{ img_url or '/static/placeholder-herb.svg' }}"
+             alt="{{ herb.original_name or herb.english_name }}"
+             class="featured-herb-img"
+             loading="lazy"
+             onerror="this.onerror=null;this.src='/static/placeholder-herb.svg';">
+      </div>
+      <div class="image-credit" style="margin-top: 8px; font-size: 11px; color: #6b7280; text-align: center;">
+        <span>Image source: </span>
+        {% if herb.source_url %}
+        <a href="{{ herb.source_url }}" target="_blank" rel="noopener noreferrer" style="color: #4b5563; text-decoration: underline;">CCRAS DRAVYA Portal</a>
+        {% else %}
+        <a href="https://dravya.ccras.org.in/" target="_blank" rel="noopener noreferrer" style="color: #4b5563; text-decoration: underline;">CCRAS DRAVYA Portal (Govt. of India)</a>
+        {% endif %}
+      </div>
+    </section>
+
     <!-- VIRYA CONSENSUS SUMMARY CARD -->
     {% if virya_summary %}
     <section class="content-card virya-consensus-card">

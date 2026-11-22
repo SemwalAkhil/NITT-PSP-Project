@@ -232,10 +232,26 @@ def add_treatment(
 def list_herbs(
     query: str = typer.Argument(""),
     database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
+    language: str | None = typer.Option(
+        None,
+        "--language",
+        "-l",
+        help="Optional language code or name (e.g. 'hi', 'Hindi', 'ta', 'Tamil') to display vernacular names.",
+    ),
 ) -> None:
-    """Search herbs by common or botanical name."""
+    """Search herbs by common, botanical, or vernacular name."""
     try:
-        show_rows(database(database_path).search_herbs(query), "Herbs")
+        results = database(database_path).search_herbs(query)
+        if language:
+            from .herb_glossary import get_herb_glossary_store
+
+            store = get_herb_glossary_store()
+            for r in results:
+                p_id = store.get_plant_id(r)
+                resolved = store.resolve_by_id(p_id) if p_id else None
+                vernacular = resolved.get_name(language) if resolved else None
+                r["vernacular_name"] = vernacular or "N/A"
+        show_rows(results, "Herbs")
     except (OSError, ValueError, sqlite3.Error) as error:
         fail(error)
 

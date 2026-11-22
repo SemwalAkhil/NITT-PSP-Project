@@ -482,3 +482,48 @@ def group_attributes(attributes: list[dict[str, Any]] | None) -> dict[str, Any]:
         "raw_dravyaguna_groups": raw_dravyaguna_groups,
         "other_groups": other_groups,
     }
+
+
+# ============================================================================
+# 5. Herb Images & Multilingual Vernacular Helpers
+# ============================================================================
+
+def herb_image_url(herb: dict[str, Any] | None) -> str | None:
+    """Return CCRAS plant image URL or None if plant ID cannot be resolved.
+
+    URL structure:
+        https://dravya.ccras.org.in/resources/views/admin/required/upload/<plant_id>.jpg
+    """
+    if not herb:
+        return None
+    from .herb_glossary import get_herb_glossary_store
+
+    plant_id = get_herb_glossary_store().get_plant_id(herb)
+    if plant_id and plant_id > 0:
+        return f"https://dravya.ccras.org.in/resources/views/admin/required/upload/{plant_id}.jpg"
+    return None
+
+
+def herb_vernacular_table(herb: dict[str, Any] | None) -> list[dict[str, str]]:
+    """Return list of vernacular names for herb across Indian languages."""
+    if not herb:
+        return []
+    from .herb_glossary import get_herb_glossary_store
+
+    store = get_herb_glossary_store()
+    plant_id = store.get_plant_id(herb)
+    if not plant_id:
+        return []
+    resolved = store.resolve_by_id(plant_id)
+    if not resolved:
+        return []
+    rows: list[dict[str, str]] = []
+    for lang, name in resolved.vernacular_names.items():
+        if name and name != "N/A":
+            rows.append({
+                "language": lang,
+                "name": name,
+                "lang_code": VERNACULAR_LANG_CODES.get(lang.lower(), "en"),
+            })
+    return rows
+

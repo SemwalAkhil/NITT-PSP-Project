@@ -1,0 +1,348 @@
+id,original_name,botanical_name,English,Assamese,Bengali,Gujarati,Hindi,Kannada,Malayalam,Marathi,Nepali,Odia,Punjabi,Sanskrit,Tamil,Telugu,Urdu
+1,Talisha,Abies webbiana,Himalayan Silver Fir,Talispatra,Talishpatra,Talispatra,Talispatra,Talespatra,Talisapatram,Talispatra,Thingre Salla,Talisapatra,Talispatra,Talisha,Talisapatri,Talisapatri,Talispatar
+2,Guñja,Abrus precatorius,Rosary Pea,Latumani,Kunch,Chanothi,Ratti,Gulaganji,Kunni,Gunja,Laal Gedi,Kaincha,Ratti,Gunja,Kundumani,Gurivinda,Ghungchi
+3,Atibalā,Abutilon indicum,Indian Mallow,Jayapeti,Petari,Khapat,Kanghi,Mudre Gida,Velluram,Petari,Atibala,Pedipedika,Pilibuti,Atibala,Thuthi,Tutturu Benda,Kanghi
+4,Arimeda,Acacia leucophloea,White Bark Acacia,N/A,Safed Babul,Harmo Baval,Safed Kikar,Bili Jali,Velvelam,Hiwar,N/A,Gohira,Reru,Arimeda,Velvelam,Tella Tumma,Safed Kikar
+5,Ādārī,Acacia pennata,Climbing Wattle,Kuchai,Kuchui,Khervel,Aila,Sigekayi Balli,Kareencha,Shembi,Arare Kanda,Dontari,Aila,Adari,Indu,Korinta,Aila
+6,Kadara,Acacia suma Buch,White Cutch Tree,Boga Khair,Saikanta,Goradio Baval,Safed Khair,Bili Kaggali,Venkarungali,Kamtiya,Seto Khayar,Shweta Khaira,Safed Khair,Kadara,Silaiyunjai,Tella Sandra,Safed Katha
+7,Laghu haritamañjarī,Acalypha fruticosa,Birch-leaved Acalypha,N/A,N/A,N/A,Chinni-ka-Jhar,Chinni Gida,Sinnimaram,N/A,N/A,N/A,N/A,Laghu Haritamanjari,Chinni,Chinni Aku,N/A
+8,Haritamañjarī,Acalypha indica,Indian Copperleaf,Mukutamanjari,Muktajhuri,Vanchhi Kanto,Kuppi,Kuppigida,Kuppameni,Khokali,Muktabarsha,Indramaris,Kuppi,Haritamanjari,Kuppaimeni,Kuppinta,Kuppi
+9,Apāmārga,Achyranthes aspera,Prickly Chaff Flower,Ulti-kanta,Apang,Aghedo,Chirchita,Uttarani,Kadaladi,Aghada,Ultekurro,Apamaranga,Puthkanda,Apamarga,Nayuruvi,Uttareni,Chirchita
+10,Vatsanābha,Aconitum chasmanthum Stapf,Indian Aconite,Bish,Kathbish,Vachhanag,Bachnag,Vatsanabhi,Vatsanabhi,Bachnag,Bikh,Vatsanabha,Mohri,Vatsanabha,Vasnabi,Vatsanabhi,Bachnak
+11,Ativiṣā,Aconitum heterophyllum Wall,Indian Atees,Atish,Ataicha,Ativish,Atis,Ativisha,Atividayam,Ativish,Atis,Atibisha,Patis,Ativisha,Atividayam,Ativasa,Atees
+12,Vacā,Acorus calamus,Sweet Flag,Bach,Bach,Godavaj,Bach,Baje,Vayambu,Vekhand,Bojho,Bacha,Varch,Vacha,Vasambu,Vasa,Waj-e-Turki
+13,Vāsā,Adhatoda vasica,Malabar Nut,Bahak,Basak,Ardusi,Adusa,Adusoge,Adalodakam,Adulsa,Asuro,Basanga,Bhekar,Vasa,Adathodai,Addasaramu,Arusa
+14,Bījapatrā,Adiantum capillus-veneris,Maidenhair Fern,Hansaraj,Hansapadi,Hansapadi,Hansraj,Hansapadi,Hamsapadi,Hansraj,Unyu,Hansapadi,Hansraj,Bijapatra,N/A,Hamsapadi,Parsiyaoshan
+15,Haṁsapadī,Adiantum lunulatum,Walking Maidenhair Fern,Hansapadi,Kalijhant,Hansapadi,Hansapadi,Hamsapadi,Hamsapadi,Rajhans,Kali Unyu,Hamsapadi,Hansapadi,Hamsapadi,N/A,Hamsapadi,Hansapadi
+16,Bilva,Aegle marmelos,Bael,Bel,Bel,Bili,Bel,Bilvapatre,Koovalam,Bel,Bel,Bela,Bil,Bilva,Vilvam,Maredu,Bel
+17,Paṭṭūra,Aerva lanata,Mountain Knotgrass,Chaya,Chaya,Gorakhganjo,Gorakhbuti,Bilihindi Soppu,Cherula,Kapurmadhura,N/A,Paunsia,Bui-kallan,Pattura,Sirupeelai,Pindikura,Bui
+18,Kantala,Agave Americana,Century Plant,N/A,Jangli Anaras,Ketki,Rambans,Bhutale,Anaikkaita,Ghaypat,Ketuki,Murga,Rambans,Kantala,Anaikattalai,Rakashi Mattalu,Rambans
+19,Aralu,Ailanthus excelsa,Tree of Heaven,N/A,Maharukha,Arduso,Maharukh,Doddamara,Mattipongilyam,Maharukh,N/A,Mahanimba,Maharukh,Aralu,Perumaram,Peddamanu,Maharukh
+20,Aṅkola,Alangium salviifolium,Sage-leaved Alangium,N/A,Ankod,Ankol,Ankol,Ankole,Ankolam,Ankol,N/A,Ankula,Ankol,Ankola,Alangi,Uduga,Ankol
+21,Śirīṣa,Albizzia lebbeck,Siris Tree,Kothia Koroi,Sirish,Sirish,Siris,Bage Mara,Vaka,Shirish,Kaalo Sirees,Sirisa,Sirin,Shirisha,Vagai,Dirisena,Siras
+22,Yavāsaka,Alhagi pseudalhagi,Camelthorn,N/A,Javasha,Javaso,Jawasa,Turuche,Yavasam,Dhamasa,N/A,Duralabha,Jawanh,Yavasaka,Punaikkanjori,Tella Giniya,Turanjabin
+23,Laśuna,Allium sativum,Garlic,Naharu,Rasun,Lasan,Lahsun,Bellulli,Veluthulli,Lasun,Lasun,Rasuna,Lassan,Lashuna,Poondu,Vellulli,Lehsun
+24,Kanyāsāra,Aloe barbadensis,Aloe Vera,Chalkuwari,Ghritakumari,Kunwarpathu,Ghritkumari,Lolesara,Kattar Vazha,Korphad,Ghiu Kumari,Gheekuanri,Kwar Gandal,Kanyasara,Katralai,Kalabanda,Ghee-kuwar
+25,Granthimūla,Alpinia calcarata,Snap Ginger,Tora,Kulanjan,Kulinjan,Chhota Kulanjan,Rasmi,Chittaratha,Kulinjan,N/A,Torani,Kulanjan,Granthimula,Chittarathai,Dumparastramu,Khulanjan
+26,Kulañjana,Alpinia galanga,Greater Galangal,Kulinjan,Kulanjan,Kulinjan,Kulanjan,Dumparasmi,Aratha,Kosht Kulinjan,Kulanjan,Kulanjan,Kulanjan,Kulanjana,Perarathai,Pedda Dumparastramu,Khulanjan
+27,Matsyākṣī,Alternanthera sessilis,Sessile Joyweed,Matikaduri,Chanchi Shak,Jaljambvo,Gudrisag,Honagone Soppu,Ponnankanni,Kanchari,Bhiringi Jhar,Madaranga,Gudrisag,Matsyakshi,Ponnanganni,Ponnaganti Kura,N/A
+28,Khatmī,Althaea officinalis,Marsh Mallow,N/A,Khatmi,Khatmi,Khatmi,Khatmi,Khatmi,Khatmi,N/A,N/A,Khatmi,Khatmi,Simaitutti,Khatmi,Khatmi
+29,Rāmaśītalikā,Amaranthus tricolor,Joseph's Coat Amaranth,Moricha,Lal Shak,Tandaljo,Lal Chaulai,Harive Soppu,Cheera,Math,Lunde,Khada Saga,Chaulai,Ramashitalika,Sirukeerai,Thotakura,Chaulai
+30,Sthūlailā,Amomum subulatum,Black Cardamom,Dangor Elachi,Boro Elach,Elcho,Badi Elaichi,Dodda Yelakki,Perelam,Mothi Velchi,Alaichi,Bada Alaicha,Badi Elaichi,Sthulaila,Periya Elakkai,Pedda Yelakulu,Elaichi Kalan
+31,Sūraṇa,Amorphophallus campanulatus,Elephant Foot Yam,Ol Kachu,Ol,Suran,Jimikand,Suvarna Gadde,Chena,Suran,Ol,Olua,Jimikand,Surana,Karunaikizhangu,Kanda Gadda,Zaminqand
+32,Ākārakarabha,Anacyclus pyrethrum,Pellitory,Akarkara,Akarkara,Akalkaro,Akarkara,Akkallakara,Akikkaruka,Akkalkara,Akarkala,Akarkara,Akarkara,Akarakarabha,Akkirakaram,Akkalakara,Aqirqarha
+33,Śatāhvā,Anethum sowa,Indian Dill,Sulpha,Shulfa,Suva,Soya,Sabbasige,Sathakuppa,Shepu,Soup,Panamadhuri,Soya,Shatahva,Sathakuppai,Sadapa,Shibt
+34,Caṇḍā,Angelica archangelica,Garden Angelica,N/A,Chanda,Chanda,Chora,Chanda,Chanda,Chanda,N/A,N/A,Chora,Chanda,Chanda,Chanda,Chora
+35,Coraka,Angelica glauca,Smooth Angelica,N/A,Chorak,Chorak,Chora,Choraka,Chorakam,Choraka,Chora,Choraka,Chora,Choraka,Chorakam,Choraka,Chora
+36,Spṛkkā,Anisomeles malabarica,Malabar Catmint,N/A,Gopali,Chodharo,Chodhara,Karitumbe,Perumthumba,Gojibha,N/A,N/A,N/A,Sprikka,Peymarutti,Magabeera,N/A
+37,Karaphsa,Apium graveolens,Celery,Randhani,Randhuni,Bodi Ajmod,Ajmod,Seleri,Ayamoda,Ajmoda,Ajmod,Banajuani,Ajmod,Karaphsa,Asamtavomam,Ajumoda,Karafs
+38,Ajamodā,Apium leptophyllum,Marsh Parsley,Ajmod,Bon Jowan,Ajmod,Ajmod,Oma,Ayamodakam,Ajmoda,Ajmod,Banajuani,Ajmod,Ajamoda,Omam,Ajumoda,Ajmod
+39,Agaru,Aquilaria agallocha,Agarwood,Sanchi,Agaru,Agar,Agar,Krishna Agaru,Akil,Agar,Agaru,Agaru,Agar,Agaru,Akil,Agaru,Ood Gharqi
+40,Pūga,Areca catechu,Betel Nut Palm,Tamul,Supari,Sopari,Supari,Adike,Adakka,Supari,Supaari,Gua,Supari,Puga,Pakku,Poka,Chhaliya
+41,Īśvarī,Aristolochia indica,Indian Birthwort,Jarlahan,Isharmul,Sapsan,Ishwarmul,Ishwari Beru,Garudakkodi,Sapsund,Ishworee,Iswaramula,Ishwarmul,Ishvari,Perumarundhu,Eswari,Zarawand Hindi
+42,Dvīpāntara Damanaka,Artemisia absinthium,Wormwood,N/A,Mastaru,Mastaru,Vilayati Afsantin,Titaveen,Nilampala,Serpana,N/A,N/A,Mastiyaaraa,Dvipantara Damanaka,Masipattiri,Moshipatri,Afsanteen
+43,Panasa,Artocarpus heterophyllus,Jackfruit,Kothal,Kanthal,Fanas,Kathal,Halasu,Plavu,Phanas,Rukh Katahar,Panasa,Kathal,Panasa,Pala,Panasa,Kathal
+44,Dvīpāntara Śatāvarī,Asparagus officinalis,Garden Asparagus,Shatamul,Hillua,Shatavari,Vilayati Shatavar,Shatavari,Shatavari,Shatavari,Kurilo,Shatavari,Halyun,Dvipantara Shatavari,Thanneer Vittan,Shatavari,Halyun
+45,Śatāvari,Asparagus recemosus,Wild Asparagus,Shatamul,Shatamuli,Shatavari,Shatavar,Majjige Gadde,Shatavari,Shatavari,Kurilo,Shatabari,Satawar,Shatavari,Thanneer Vittan Kizhangu,Pilli Teegalu,Satawar
+46,Kokilākṣā,Asteracantha longifolla,Marsh Barbel,Kulekhara,Kulekhara,Ekharo,Talmakhana,Kolavalike,Vayalchulli,Talimkhana,Talmakhana,Koilikhai,Talmakhana,Kokilaksha,Neermulli,Neerugobbi,Talmakhana
+47,Nimba,Azadirachta indica,Neem,Mahanim,Nim,Limdo,Neem,Bevu,Aryaveppu,Kadulimba,Neem,Nimba,Nim,Nimba,Veppam,Vepa,Neem
+48,Brāhmī,Bacopa monnieri,Water Hyssop,Brahmi,Brahmi Shak,Jalbrahmi,Brahmi,Nirbrahmi,Brahmi,Nirbrahmi,Brahmi,Brahmi,Brahmi,Brahmi,Neer Brahmi,Sambrani Chettu,Brahmi
+49,Dantī,Baliospermum montanum,Wild Castor,Phuljelang,Danti,Dantimul,Danti,Kaduharalu,Nagadanti,Danti,Danti,Danti,Danti,Danti,Naga Danti,Nelajidi,Danti
+50,Āmragandhi-guggulu,Balsamodendron caudata,Hill Mango,N/A,N/A,N/A,Amragandhi Guggul,Konda Mavu,Kiluvai,N/A,N/A,N/A,N/A,Amragandhi-guggulu,Kiluvai,Konda Mamidi,N/A
+51,Sahacara,Barleria prionitis,Porcupine Flower,N/A,Kantajati,Kanta Shelio,Vajradanti,Mullu Gorante,Chemmulli,Koranti,N/A,Daskaranta,Piyabansa,Sahachara,Semmulli,Mulla Gorinta,Piyabansa
+52,Nīlajhiṇṭī,Barleria strigosa,Blue Barleria,N/A,Nila Jhati,N/A,Nila Koranti,Nila Gorante,Nilakurinji,Wahiti,N/A,Banamalli,N/A,Nilajhinti,Nila Sahacharam,Nila Gorinta,N/A
+53,Nicula,Barringtonia acutangula,Freshwater Mangrove,Hijal,Hijal,Samudraphal,Hijjal,Hole Kauva,Attupela,Tiwar,N/A,Hinjala,Samundarphal,Nichula,Kadappai,Kanapa,Samundarphal
+54,Pīta-kāñcanāra,Bauhinia racemosa,Bidi Leaf Tree,N/A,Banraj,Asitro,Jhinjheri,Banni Mara,Mandaram,Apta,N/A,Ambota,Kosundra,Pita-kanchanara,Aathi,Are Chettu,Kachnal
+55,Kāñcanāra,Bauhinia variegata,Mountain Ebony,Kanchan,Rakta Kanchan,Kovidara,Kachnar,Kempu Mandara,Chuvanna Mandaram,Kanchan,Koiralo,Kanchan,Kachnar,Kanchanara,Segappu Mandarai,Devakanchanamu,Kachnal
+56,Kūśmānḍa,Benincasa hispida,Ash Gourd,Komora,Chalkumra,Safed Kolu,Petha,Boodu Kumbalakayi,Kumbalam,Kohala,Kubhindo,Panikakharu,Petha,Kushmanda,Neer Poosani,Boodida Gummadi,Petha
+57,Dāruharidrā,Berberis aristata,Indian Barberry,N/A,Daruharidra,Daruhaldar,Daruhaldi,Maradarishina,Maramanjal,Daruhalad,Chutro,Daruhaladi,Rasaut,Daruharidra,Maramanjal,Kasturi Pasupu,Darhald
+58,Pāṣāṇabheda,Bergenia ciliata,Winter Begonia,Patharkuchi,Patharkuchi,Pashanbhed,Pakhanbhed,Pashanabhedi,Kallurvanchi,Pashanbhed,Paakhanbed,Pashanabheda,Zakhmehayat,Pashanabheda,Pashanabhedi,Kondapindi,Pakhanbed
+59,Bhūrja,Betula utilis,Himalayan Birch,Bhojpatra,Bhurjapatra,Bhojpatra,Bhojpatra,Bhojpatra,Bhurjapatram,Bhojpatra,Bhuj Paat,Bhurjapatra,Bhojpatra,Bhurja,Bhojapatram,Bhurjapatri,Bhojpatar
+60,Utiṅgana,Blepharis persica,Persian Blepharis,N/A,Ucchata,Utingan,Utangan,Utangana,Utigana,Utangan,N/A,Utingana,Uttangan,Utingana,Uttanjana,Uttangan,Utangan
+61,Punarnavā,Boerhaavia diffusa,Spreading Hogweed,Ponounua,Punarnava,Satodi,Punarnava,Komme,Thazhuthama,Punarnava,Punarnavaa,Puruni Saga,Itsit,Punarnava,Mookkirattai,Atikamamidi,Bishkhapra
+62,Śvetapunarnavā,Boerhaavia verticillata,White Hogweed,Boga Ponounua,Shwet Punarnava,Dholi Satodi,Safed Punarnava,Bili Komme,Vella Thazhuthama,Pandhari Punarnava,Seto Punarnava,Shweta Puruni,Safed Itsit,Shvetapunarnava,Vellai Mookkirattai,Tella Atikamamidi,Safed Bishkhapra
+63,Tāla,Borassus flabellifer,Palmyra Palm,Tal,Tal,Tad,Tad,Tale Mara,Karimpana,Tad,Tal,Tala,Tad,Tala,Panai,Tati,Taad
+64,Kunduru,Boswellia serrata,Indian Frankincense,Salai,Luban,Salai Gugal,Salai Guggul,Madi,Kunturukkam,Salai,Salai,Salai,Salai,Kunduru,Parangi Sambrani,Anduga,Kundur
+65,Sarṣapa,Brassica campestris,Field Mustard,Soriyoh,Sorshe,Sarsav,Sarson,Sasive,Kaduku,Mohari,Tori,Sorisha,Saron,Sarshapa,Kadugu,Avalu,Sarson
+66,Priyāla,Buchanania lanzan,Chironji Tree,N/A,Piyal,Charoli,Chironji,Nurkal,Munga Perai,Charoli,Chiraunjee,Chara,Chironji,Priyala,Morala,Sara Pappu,Chironji
+67,Pūtīkarañja,Caesalpinia crista,Fever Nut,Letaguti,Nata Karanja,Kakachia,Karanjwa,Gajjuga,Kazhanchi,Sagargota,Bokshi Kanda,Gila,Karanjwa,Putikaranja,Kalarchikkai,Gachakaya,Karanjwa
+68,Krishnachuda,Caesalpinia pulcherrima,Peacock Flower,Radhachura,Krishnachura,Sandhesharo,Guletura,Kenjige,Rajamalli,Shankasur,N/A,Krushnachuda,Guletura,Krishnachuda,Mayirkonrai,Ratnagandhi,Guletura
+69,Paṭṭaṅga,Caesalpinia sappan,Sappanwood,Bakam,Bakam,Patang,Patang,Sappanga,Chappangam,Patang,Patang,Bakama,Patang,Pattanga,Pathimugam,Bakanu Chakke,Baqqam
+70,Āḍhakī,Cajanus cajan,Pigeon Pea,Rahar,Arhar,Tuver,Arhar,Togari,Thuvara,Toor,Rahar,Harada,Arhar,Adhaki,Tuvarai,Kandi,Arhar
+71,Vetra,Calamus rotang,Rattan Cane,Bet,Bet,Netar,Bet,Betta,Chooral,Vet,Bet,Beta,Bet,Vetra,Pirambu,Pemu,Baint
+72,Priyaṅgu,Callicarpa macrophylla,Beautyberry,Bonmala,Mathara,Ghaunla,Priyangu,Priyangu,Nazhal,Gahula,Daikamala,Priyangu,Sumali,Priyangu,Gnazhal,Praksha,Priyangu
+73,Arka,Calotropis procera,Sodom Apple,Akon,Akanda,Akdo,Aak,Ekka,Erikku,Rui,Aank,Arakha,Ak,Arka,Erukku,Jilledu,Madar
+74,Pullānī,Calycopteris floribunda,Paper Flower Climber,N/A,N/A,N/A,Kokkarai,Kupsa,Pullani,Ukshi,N/A,Dhandhani,N/A,Pullani,Minnar Koti,Bontha Teega,N/A
+75,Vyāghranakha,Capparis sepiaria,Wild Caper Bush,N/A,Kaliakara,Kantharo,Kanthari,Kadu Kathari,Kakkathondi,Kanthar,N/A,Kantikapali,Hins,Vyaghranakha,Karunjurai,Nalla Uppi,Hins
+76,Karṇasphoṭā,Cardiospermum halicacabum,Balloon Vine,Kapalphuta,Shibjhul,Kagdolio,Kanphuti,Agniballi,Uzhinja,Kapalphodi,Jyotishmati,Kanaphuta,Kanphuti,Karnasphota,Mudakathan,Buddakakara,Habb-ul-Qilqil
+77,Kumbhīka,Careya arborea,Wild Guava,Kumbhi,Kumbhi,Kumbh,Kumbhi,Kavalu,Pezhu,Kumbha,Kumbhi,Kumbhi,Kumbhi,Kumbhika,Ayma,Dudippa,Kumbhi
+78,Eraṇḍakarkaṭī,Carica papaya,Papaya,Amita,Pepe,Papaiyu,Papita,Parangi Hannu,Omaikka,Papai,Mewa,Amrutabhanda,Papita,Erandakarkati,Pappali,Boppai,Papita
+79,Karamarda,Carissa carandas,Bengal Currant,Karja Tenga,Karamcha,Karamda,Karonda,Kavalikayi,Karavanda,Karvand,Karaunda,Karanda,Karonda,Karamarda,Kalaakkai,Vakkaya,Karonda
+80,Kusumbha,Carthamus tinctorius,Safflower,N/A,Kusum,Kusumbo,Kusum,Kusube,Chendurakam,Kardai,Kusum,Kusuma,Kusumbha,Kusumbha,Sendurakam,Kusuma,Qurtum
+81,Kr̥ṣṇajīraka,Carum carvi,Caraway,Kola Jira,Shahi Jira,Shahjiru,Shahi Jeera,Kari Jeerige,Karinjeerakam,Shahjire,Jangalee Jiraa,Kala Jeera,Kala Zira,Krishnajiraka,Shimai Shiragam,Sima Jilakara,Zeera Siyah
+82,Svarṇapatrī,Cassia angustifolia,Indian Senna,Sonamukhi,Sonapata,Mindhi Awal,Sanay,Sonamukhi,Nilavaka,Sonamukhi,Sanay,Sunamukhi,Sana,Svarnapatri,Nilavarai,Sunamukhi,Sana Makki
+83,Āragvadha,Cassia fistula,Golden Shower Tree,Sonaru,Sondal,Garmalo,Amaltas,Kakke Mara,Kanikkonna,Bahava,Amaltaash,Sunari,Amaltas,Aragvadha,Sarakkonrai,Rela,Amaltas
+84,Prapunnāḍa,Cassia tora,Sickle Senna,Bilokhoni,Chakunda,Kuvadiyo,Chakwad,Tagache,Thakara,Takla,Chakramandee,Chakunda,Panwar,Prapunnada,Tagarai,Tantemu,Panwar
+85,Casuarina equisetifolia,Casuarina equisetifolia,Whistling Pine,Jhau,Jhau,Saru,Jangli Saru,Gali Mara,Choolamaram,Suru,N/A,Jhaun,Jangli Saru,N/A,Savukku,Sarugudu,Jangli Saru
+86,Tūnī,Cedrela toona,Red Cedar,Poma,Tun,Tooni,Tun,Mandurike,Madagirivembu,Toon,Tooni,Mahalimba,Tun,Tuni,Sandana Vembu,Nandi Chettu,Tun
+87,Devadāru,Cedrus deodara,Himalayan Cedar,Devdaru,Devdaru,Devdar,Deodar,Devdaru,Devataram,Devdar,Devdar,Debadaru,Diar,Devadaru,Devadaru,Devadari,Deodar
+88,Jyotiṣmatī,Celastrus paniculatus,Intellect Tree,Pokitenga,Malkangni,Malkangani,Malkangni,Jyotishmati,Jyothishmathi,Malkangoni,Malkangni,Pengu,Malkangni,Jyotishmati,Valuluvai,Malkanguni,Malkangni
+89,Śitivāraka,Celosia argentea,Plumed Cockscomb,N/A,Swet Murga,Lampdi,Safed Murga,Anne Soppu,Kozhipoovu,Kurdu,N/A,N/A,Sil,Shitivaraka,Pannai Keerai,Gunugu,Sarwali
+90,Guladāudī,Chrysanthemum indicum,Indian Chrysanthemum,N/A,Chandramallika,Guldaudi,Guldaudi,Sevanthige,Jamanthi,Shevanti,Godawari,Sebati,Guldaudi,Guladaudi,Samanthi,Chamanthi,Gul-e-Daudi
+91,Vanyajīraka,Centratherum anthelminticum,Purple Fleabane,Somraj,Somraj,Kalijiri,Kalijiri,Kadu Jeerige,Kattujeerakam,Kadu Jire,Kalijiri,Somaraja,Kalijiri,Vanyajiraka,Kattu Shiragam,Adavi Jilakara,Kamoon Barri
+92,Guladāudī,Chrysanthemum indicum,Indian Chrysanthemum,N/A,Chandramallika,Guldaudi,Guldaudi,Sevanthige,Jamanthi,Shevanti,Godawari,Sebati,Guldaudi,Guladaudi,Samanthi,Chamanthi,Gul-e-Daudi
+93,Karpūra,Cinnamomum camphora,Camphor Tree,Karpur,Karpur,Kapur,Kapur,Karpura,Karpooram,Kapur,Kapur,Karpura,Kapur,Karpura,Karpooram,Karpooramu,Kafoor
+94,Tvak,Cinnamomum zeylanicum,Ceylon Cinnamon,Dalchini,Darchini,Taj,Dalchini,Dalchinni,Karuvapatta,Dalchini,Dalchini,Dalchini,Dalchini,Tvak,Lavangapattai,Dalchina Chekka,Darchini
+95,Asthisamhṛta,Cissus quadrangularis,Veldt Grape,Harjora,Harjora,Hadsankal,Hadjod,Mangaravalli,Changalamparanda,Kandvel,Hadjod,Hadbhanga,Hadjod,Asthisamhrita,Pirandai,Nalleru,Hadjod
+96,Indravāruṇī,Citrullus colocynthis,Bitter Apple,N/A,Makhal,Indravarna,Indrayan,Tumtikayi,Peykkumatti,Indravan,Indrayan,Gothakakudi,Kaur Tumma,Indravaruni,Peykkumatti,Etipuchcha,Hanzal
+97,Nimbū,Citrus limon,Lemon,Nemu,Pati Lebu,Limbu,Nimbu,Nimbe,Cherunaranga,Limbu,Kagati,Lembu,Nimbu,Nimbu,Elumichai,Nimma,Limu
+98,Bījapūra,Citrus medica,Citron,Jora Tenga,Bara Lebu,Bijoru,Bijaura,Madala,Ganapathi Naranga,Mahalunga,Bimiro,Taba,Galgal,Bijapura,Kadarangai,Madiphalamu,Turanj
+99,Ajagandha,Gynandropsis gynandra,Spider Wisp,Bhutmula,Hurhuria,Talvani,Hulhul,Narumbale,Taivela,Tilvan,N/A,Anasorisha,Hulhul,Ajagandha,Nalvelai,Vaminta,Hulhul
+100,Bhāraṅgī,Clerodendrum serratum,Blue Glory,Nangal Bhanga,Bamunhati,Bharangi,Bharangi,Gantubharangi,Cheruthekku,Bharangi,N/A,Bharangi,Bharangi,Bharangi,Siruthekku,Gantubharangi,Bharangi
+101,Nārikela,Cocos nucifera,Coconut Palm,Narikol,Narkel,Nariyel,Nariyal,Tengu,Thengu,Naral,Nariwal,Nadia,Nariyal,Narikela,Thennai,Kobbari,Nariyal
+102,Gavedhuka,Coix lachryma-jobi,Job's Tears,Kauri Moni,Gargar,Kasai,Gurlu,Manjutti,Kattugothambu,Ranmaka,Bhirkaule,Gargara,Sanklu,Gavedhuka,Kattukundumani,Adavi Gurivinda,N/A
+103,Tripakṣī,Coldenia procumbens,Creeping Coldenia,N/A,N/A,Basariyo Okharad,Tripungki,N/A,Cherupadi,Tripankhi,N/A,N/A,N/A,Tripakshi,Seruppadai,Hamsapadu,N/A
+104,Parṇayavānī,Coleus amboinicus,Indian Borage,N/A,Patharchur,Ovapan,Patharchur,Doddapatre,Panikoorka,Panova,N/A,Rukuna Hatapochha,Patharchur,Parnayavani,Karpooravalli,Vamu Aku,Patharchur
+105,Gaṇḍīra,Coleus forskohlii,Indian Coleus,N/A,N/A,Garmar,Patharchur,Makandi Beru,Karkokil,Mainmul,Paasaanved,N/A,N/A,Gandira,Marunthu Koorkan,N/A,N/A
+106,Guggulu,Commiphora wightii,Indian Bdellium,Guggul,Guggul,Gugal,Guggul,Guggulu,Gulgulu,Guggul,Gokuldhup,Guggula,Guggul,Guggulu,Gukkulu,Guggilam,Muqil
+107,Śaṅkhapuṣpī,Convolvulus pluricaulis,Field Bindweed,Shankhapushpi,Shankhapushpi,Shankhavali,Shankhpushpi,Shankhapushpi,Vishnukranthi,Shankhaveli,Shankhapushpi,Shankhapushpi,Shankhpushpi,Shankhapushpi,Sangupushpam,Shankhapushpi,Shankhaholi
+108,Śleṣmātaka,Cordia dichotoma,Indian Cherry,Bual,Bahubara,Gunda,Lasoda,Challe Hannu,Naruvari,Bhokar,Bohori,Gualo,Lasura,Shleshmataka,Naruvili,Iriki,Sapistan
+109,Dhānyaka,Coriandrum sativum,Coriander,Dhaniya,Dhone,Dhana,Dhaniya,Kottambari,Malli,Dhane,Dhaniya,Dhania,Dhaniya,Dhanyaka,Kothamalli,Dhaniyalu,Kishniz
+110,Kālīyaka,Coscinium fenestratum,Tree Turmeric,N/A,Haldi Gachh,Venivel,Jhar-i-Haldi,Marada Arishina,Maramanjal,Venivel,N/A,N/A,N/A,Kaliyaka,Maramanjal,Manupasupu,N/A
+111,Kebuka,Costus speciosus,Crepe Ginger,Jomlakhuti,Kewu,Pakkarmul,Keukand,Changalakostha,Channakkuva,Penva,Betlauri,Gaigobara,Keu,Kebuka,Kostam,Kashmiramu,Keu
+112,Varuṇa,Crataeva nurvala,Three-leaved Caper,Barun,Barun,Vayvarno,Barna,Bilipatremara,Neermathalam,Vayavarna,Sipligan,Baruna,Barna,Varuna,Mavalingam,Ulimidi,Barna
+113,Kunkuma,Crocus sativus,Saffron,Kesar,Jafran,Kesar,Kesar,Kunkuma Kesari,Kunkumappoovu,Keshar,Keshar,Kesar,Kesar,Kunkuma,Kungumapoo,Kunkumapuvvu,Zafran
+114,Śaṇa,Crotolaria juncea,Sunn Hemp,N/A,Shon,Shan,Sanai,Sanabu,Chana,Tag,Chhinchhine,Chhani,Sann,Shana,Sanal,Janumu,Sanai
+115,Jayapāla,Croton tiglium,Purging Croton,Konibih,Jaypal,Nepalo,Jamalgota,Japala,Neervalam,Jamalgota,Lapche Bis,Jaiphala,Jamalgota,Jayapala,Nervalam,Nepalamu,Jamalgota
+116,Krishna Sariva,Cryptolepis buchanani,Wax Leaved Climber,N/A,Shyamalata,Kala Anantmul,Karanta,Karibanta,Palvalli,Kavali,Dudhe Lahara,Gopakanhu,Karanta,Krishna Sariva,Paalkodi,Adavipala Teega,N/A
+117,Ervāru,Cucumis melo,Muskmelon,Bangi,Phuti,Teti,Kharbuja,Karbhuja,Thaikumbalam,Kharbuj,Kharbuja,Kharabhuja,Kharbuja,Ervaru,Mulampazham,Karbuja,Kharbuza
+118,Trapuṣaṁ,Cucumis sativus,Cucumber,Tiyoh,Shosha,Kakdi,Kheera,Savtekayi,Vellarikka,Kakadi,Kankro,Kakudi,Kheera,Trapusha,Vellarikkai,Dosakaya,Kheera
+119,Bākucī,Cullen corylifolia,Babchi,Habucha,Babchi,Bavachi,Babchi,Bavanchi,Karkokil,Bavachi,Bakuchi,Bakuchi,Babchi,Bakuchi,Karbogi,Bavanchalu,Babchi
+120,Śvetajīraka,Cuminum cyminum,Cumin,Jira,Jira,Jiru,Jeera,Jeerige,Jeerakam,Jire,Jira,Jeera,Zira,Shvetajiraka,Seeragam,Jilakara,Zeera Safed
+121,Tālamuli,Curculigo orchioides,Black Musli,N/A,Talmuli,Kali Musli,Kali Musli,Nelatale,Nilappana,Kali Musali,Kaalo Musalee,Talamuli,Kali Musli,Talamuli,Nilappanai,Nelatadi,Musli Siyah
+122,Āmra Haridrā,Curcuma amada,Mango Ginger,Amada,Am Ada,Amba Haldar,Amba Haldi,Ambe Haladi,Manga Inchi,Ambe Halad,Aamp Haldi,Amba Haladi,Amba Haldi,Amra Haridra,Manga Inji,Mamidi Allam,Amba Haldi
+123,Haridrā,Curcuma longa,Turmeric,Halodhi,Holud,Haldar,Haldi,Arishina,Manjal,Halad,Besar,Haladi,Haldi,Haridra,Manjal,Pasupu,Haldi
+124,Karcūra,Curcuma zedoaria,White Turmeric,Katuri,Shati,Kachuro,Kachur,Kachora,Kacholam,Kachora,Kachur,Gandhasunthi,Kachur,Karchura,Kichilikizhangu,Kachuralu,Zarambad
+125,Kattr̥ṇa,Cymbopogon citratus,Lemongrass,Gandh Birina,Gandhabena,Lili Chai,Nimbu Ghas,Majjige Hullu,Inchipullu,Gavati Chaha,Kagati Ghas,Dhanwantari Ghasa,Nimbu Ghas,Kattrina,Elumichai Pul,Nimma Gaddi,Izkhir
+126,Rohīṣa,Cymbopogon martinii,Palmarosa,N/A,Agia Ghas,Rosha Ghas,Rosha Ghas,Kasi Hullu,Sambharapullu,Rohisha,Paamaarosa,Rosha Ghasa,Rosha Ghas,Rohisha,Kavatampullu,Kashi Gaddi,Izkhir
+127,Dūrva,Cynodon dactylon,Bermuda Grass,Dubori Bon,Durba,Dharo,Doob,Garike,Karuka,Durva,Dubo,Duba,Khabbal,Durva,Arugampul,Garika,Doob
+128,Mustā,Cyperus rotundus,Nutgrass,Mutha,Mutha,Nagarmoth,Nagarmotha,Tunge Gadde,Muthanga,Nagarmotha,Mothe,Mutha,Motha,Musta,Korai Kizhangu,Tunga Mustalu,Saad Kufi
+129,Vandā,Dendrophthoe falcata,Honey Suckle Mistletoe,Raghumala,Baramanda,Vando,Banda,Bandanike,Ithil,Bandgul,Ajeru,Malanga,Banda,Vanda,Pulluruvi,Bajinika,Banda
+130,Śālaparṇī,Desmodium gangeticum,Sal Leaved Desmodium,N/A,Shalpani,Salwan,Sarivan,Murele Honne,Orila,Salwan,Salparni,Salaparni,Shalparni,Shalaparni,Orilai,Gitanaramu,Shalparni
+131,Kuśa,Desmostachya bipinnata,Halfa Grass,Kush,Kush,Dabhdo,Kush,Darbhe,Darbha,Darbha,Kush,Kusha,Dab,Kusha,Darbhai,Darbha,Dab
+132,Viralā,Diospyros exsculpta,Coromandel Ebony,Kendu,Kend,Timru,Tendu,Tupra,Kari,Tembhurni,N/A,Kendu,Tendu,Virala,Tumbika,Tunki,Tendu
+133,Tinduka,Diospyros peregrina,Gaub Persimmon,Kendu,Gab,Tembru,Gab,Hole Tupura,Panachi,Tembhurni,Tendu,Mankada Kendu,Gab,Tinduka,Tumbika,Gaba,Gab
+134,Vṛścikakanda,Doronicum hookeri,Leopard's Bane,N/A,N/A,Darunaj,Darunaj,Darunaj,Darunaj,Darunaj,N/A,N/A,Darunaj,Vrishchikakanda,N/A,Darunaj,Daroonaj Aqrabi
+135,Sphītakīṭārī,Dryopteris filix mas,Male Fern,N/A,N/A,N/A,N/A,N/A,N/A,N/A,Unyu,N/A,N/A,Sphitakitari,N/A,N/A,Sarakhs
+136,Rudrākṣa,Elaeocarpus sphaericus,Utrasum Bead Tree,Rudraksha,Rudraksha,Rudraksh,Rudraksh,Rudrakshi,Rudraksham,Rudraksha,Rudrakshya,Rudraksha,Rudraksh,Rudraksha,Rudraksham,Rudraksha,Rudraksh
+137,Sūkṣmailā,Elettaria cardamomum,Green Cardamom,Elachi,Chhoto Elach,Elaychi,Chhoti Elaichi,Yelakki,Elam,Velchi,Sukumel,Alaicha,Chhoti Elaichi,Sukshmaila,Elakkai,Yelakulu,Elaichi Khurd
+138,Madhulika,Eleusine corocana,Finger Millet,Marua,Marua,Nagli,Ragi,Ragi,Panjapullu,Nachni,Kodo,Mandia,Mandal,Madhulika,Kezhvaragu,Ragulu,Mandua
+139,Viḍaṅga,Embelia ribes,False Black Pepper,Bidanga,Biranga,Vavding,Vayvidang,Vayuvilanga,Vizhal,Vavding,Bayubidang,Bidanga,Babrang,Vidanga,Vayuvilangam,Vayuvilangamu,Baobarang
+140,Āmalakī,Emblica officinalis,Indian Gooseberry,Amlokhi,Amloki,Amla,Amla,Nellikayi,Nelli,Awala,Amala,Anla,Amla,Amalaki,Nellikkai,Usiri,Amla
+141,Pāribhadra,Erythrina indica,Indian Coral Tree,Madar,Palita Madar,Pangar,Pangra,Halivana,Murikku,Pangara,Phaledo,Paladhua,Pangra,Paribhadra,Kalyana Murungai,Baditha,Pangra
+142,Tailaparṇa,Eucalyptus globulus,Blue Gum Eucalyptus,Eucalyptus,Eucalyptus,Nilgiri,Nilgiri,Nilagiri,Yukaliptas,Nilgiri,Masala,Nilagiri,Safeda,Tailaparna,Karpooramaram,Jamayil,Safeda
+143,Saptalā,Euphorbia dracunculoides,Dragon Spurge,N/A,Chhagalputputi,Ubhi Dudheli,Titli,N/A,N/A,Pisola,N/A,N/A,Kangi,Saptala,Tillaikkodi,Tilla Kada,N/A
+144,Bṛhat Dugdhikā,Euphorbia hirta,Asthma Weed,Gakhiroti Bon,Barokherui,Moti Dudheli,Badi Dudhi,Achche Gida,Nelapalai,Dudhi,Dude Jhar,Chitakutei,Dodhak,Brihat Dugdhika,Amman Pacharisi,Reddivari Nanubalu,Dudhi Kalan
+145,Snuhī,Euphorbia neriifolia,Indian Spurge Tree,Siju,Mansa Sij,Thor,Sehund,Yele Kalli,Ilakkalli,Nivadung,Siundi,Siju,Thohar,Snuhi,Ilaikkalli,Akujemudu,Thohar
+146,Patrasnuhī,Euphorbia nivulia Buch,Leafy Milk Hedge,Siju,Sij,Thor,Senhar,Dundukalli,Kalli,Nivadung,Siundi,Siju,Thohar,Patrasnuhi,Kalli,Akujemudu,Thohar
+147,Dugdhikā,Euphorbia prostrata,Prostrate Sandmat,N/A,Kherui,Nani Dudheli,Chhoti Dudhi,Kempunene Hakki,Nilappala,Lahan Dudhi,Dude Jhar,Chitakutei,Dodhak,Dugdhika,Chithirapaladai,Pachabottu,Dudhi Khurd
+148,Kapittha,Feronia limonia,Wood Apple,Katbel,Kathbel,Kothu,Kaitha,Bela,Vilamaram,Kavath,Kaitha,Kaitha,Kaith,Kapittha,Vilampazham,Velaga,Kaith
+149,Hiṅgu,Ferula foetida,Asafoetida,Hing,Hing,Hing,Hing,Ingu,Kayam,Hing,Hing,Hengu,Hing,Hingu,Perungayam,Inguva,Hing
+150,Hiṅgupatrī,Ferula jaeschkeana,Jaeschke's Giant Fennel,N/A,Hingupatri,Hingupatri,Hingupatri,Hingupatri,Hingupatri,Hingupatri,N/A,N/A,Hingupatri,Hingupatri,Hingupatri,Hingupatri,Hingupatri
+151,Nyagrodha Jaṭa,Ficus bengalensis,Banyan Tree,Bot,Bot,Vad,Bargad,Aalada Mara,Peral,Vad,Bar,Bara,Bohr,Nyagrodha,Aalamaram,Marri,Bargad
+152,Plakṣa,Ficus lacor,Java Fig,Pakori,Pakur,Pipli,Pakad,Basari Mara,Itti,Pimpri,Kabhro,Plaksha,Pilkhan,Plaksha,Kallal,Juvvi,Pakar
+153,Aśvattha,Ficus religiosa,Sacred Fig,Ahot,Ashwattha,Piplo,Peepal,Arali Mara,Arayal,Pimpal,Pipal,Osta,Pippal,Ashvattha,Arasamaram,Ravi,Peepal
+154,Sruvavr̥kṣa,Flacourtia indica,Governor's Plum,N/A,Bainchi,Kankod,Bilangra,Hunnimullu,Vayyankatha,Tambat,Kandei,Baincha,Kangu,Sruvavriksha,Sottaikala,Kanaregu,Bilangra
+155,Miśreyā,Foeniculum vulgare,Fennel,Guamuri,Mouri,Variyali,Saunf,Badesopu,Perinjeerakam,Badishep,Saunf,Panamadhuri,Saunf,Mishreya,Sombu,Sompu,Badiyan
+156,Kṣīrakākolī,Fritillaria roylei,Himalayan Fritillary,N/A,Kshirakakoli,Kshirakakoli,Kshirakakoli,Kshirakakoli,Kshirakakoli,Kshirakakoli,Kaakolee,Kshirakakoli,Kshirakakoli,Kshirakakoli,Kshirakakoli,Kshirakakoli,Kshirakakoli
+157,Parpaṭa,Fumaria parviflora,Fine-leaved Fumitory,N/A,Ban Sulpha,Pitpapdo,Pitpapra,Kallu Sabbasige,Parpadakapullu,Pitpapda,N/A,N/A,Shahtara,Parpata,Tura,Chatarasi,Shahtara
+158,Vṛntāmlaphala,Garcinia pedunculata,Bor Thekera,Bor Thekera,Tikul,N/A,Amlavetasa,N/A,N/A,N/A,N/A,N/A,N/A,Vrintamlaphala,N/A,N/A,N/A
+159,Nāḍīhiṅgu,Gardenia gummifera,Gummy Cape Jasmine,N/A,Dikamali,Dikamali,Dikamali,Bikke Gida,Kambilipisin,Dikemali,N/A,Gurudu,Dikamali,Nadihingu,Kambilipisin,Bikki,Dikamali
+160,Gandhapūra,Gaultheria fragrantissima,Indian Wintergreen,N/A,Gandhapura,Gandhapura,Gandhapura,Gandhapura,Gandhapura,Gandhapura,Dhasingre,N/A,N/A,Gandhapura,Kolakkai,Gandhapura,Gandhapura
+161,Trāyamāṇā,Gentiana kurroo,Himalayan Gentian,N/A,Karu,Pakhanbhed,Karu,Trayamana,Trayamana,Trayamana,Chunetroghaans,N/A,Karu,Trayamana,Trayamana,Trayamana,Nilkanth
+162,Vālukā-Śāka,Gisekia pharnaceoides,Sand Herb,N/A,N/A,N/A,Baluka-sag,N/A,N/A,Valuchi Bhaji,N/A,N/A,N/A,Valuka-shaka,Manalkirai,Isuka Dasari Kura,N/A
+163,Ūṣandī,Glinus lotoides,Lotus Sweet Juice,Padmakshi Shak,Duserasag,Dholo Okharad,Gandhi Buti,Chandrakaasi Soppu,Kodak,Kadvi Bhaji,N/A,N/A,Gandhi Buti,Ushandi,Ciru-Ceruppadai,Chadrasi Koora,N/A
+164,Lāṅgalī,Gloriosa superba,Flame Lily,Ulat Chandal,Ulat Chandal,Vachhanag,Kalihari,Agnishikhe,Menthonni,Kallavi,Kewaree,Panchangulia,Karihari,Langali,Kanvazhipoo,Adavinabhi,Kalihari
+165,Yaṣṭī,Glycyrrhiza glabra,Liquorice,Jasthimadhu,Jashtimadhu,Jethimadh,Mulethi,Jeshtamadhu,Irattimadhuram,Jeshthamadh,Jethimadhu,Jastimadhu,Mulathi,Yashtimadhu,Athimadhuram,Atimadhuramu,Mulethi
+166,Gambhārī,Gmelina arborea,Beechwood,Gomari,Gamar,Sevan,Gambhari,Shivani,Kumizhu,Shivan,Khamaaree,Gambhari,Gumhar,Gambhari,Kumizh,Gummadi Teku,Gambhari
+167,Gāṅgeru,Grewia tenax,White Crossberry,N/A,N/A,Gangeti,Gangeran,N/A,N/A,Gondani,N/A,N/A,Ganger,Gangeru,Achchu,Gundukadira,Gangeran
+168,Meṣaśr̥ṅgī,Gymnema sylvestre,Sugar Destroyer,N/A,Meshashringi,Gudmar,Gudmar,Madhunashini,Chakkarakkolli,Bedakicha Pala,Gudmar,Gudamari,Gudmar,Meshashringi,Sirukurinjan,Podapatri,Gurmar
+169,Ṛddhi,Habenaria intermedia,Riddhi Orchid,N/A,Riddhi,Riddhi,Riddhi,Riddhi,Riddhi,Riddhi,Riddhi,Riddhi,Riddhi,Riddhi,Riddhi,Riddhi,N/A
+170,Hastiśuṇḍī,Heliotropium indicum,Indian Heliotrope,Hatisuriya,Hatisur,Hathisundho,Hathisunda,Chelubaalada Gida,Thekkada,Bhurundi,Hattisunde,Hatisundha,Hathisunda,Hastishundi,Thelkodukkai,Nagadanti,Hathisunda
+171,Śveta Sārivā,Hemidesmus indicus,Indian Sarsaparilla,Anantamul,Anantamul,Upalsari,Anantmul,Sogade Beru,Nannari,Anantmul,Anantmul,Anantamula,Anantmul,Shveta Sariva,Nannari,Sugandhipala,Ushba Hindi
+172,Kastūrīlatkā,Hibiscus abelmoschus,Musk Mallow,Gorokhia Korai,Kasturidana,Kasturibhinda,Mushkdana,Kasturi Bende,Kasturivenda,Kasturbhendi,Lata Kasturi,Kasturidana,Mushkdana,Latakasturi,Kasturi Vendai,Kasturi Benda,Mushkdana
+173,Ambaṣṭhakī,Hibiscus sabdariffa,Roselle,Tengamora,Mesta,Lal Ambadi,Lal Ambari,Pundi Palle,Pulicheera,Lal Ambadi,Belchan,Khata Palanga,Lal Ambari,Ambashthaki,Pulicha Keerai,Gongura,Lal Ambari
+174,Mādhavī,Hiptage benghalensis,Helicopter Flower,Madhobilota,Madhabilata,Madhavi,Madhavilata,Madhavi,Sitamupu,Madhavilata,Madhabilata,Madhabilata,Madhavi,Madhavi,Kurukkathi,Madhavi Teega,Madhavi
+175,Yava,Hordeum vulgare,Barley,Jao,Jab,Jav,Jau,Jave Godhi,Barli,Jav,Jau,Jaba,Jau,Yava,Barli Arisi,Yavalu,Jau
+176,Yava,Hordeum vulgare,Barley,Jao,Jab,Jav,Jau,Jave Godhi,Barli,Jav,Jau,Jaba,Jau,Yava,Barli Arisi,Yavalu,Jau
+177,Tuvaraka,Hydnocarpus pentandra,Chaulmoogra,Chalmugra,Chaulmugra,Kadu Kavat,Chalmogra,Garudaphala,Marotti,Kadu Kavath,Chalmogra,Chalmugra,Chalmogra,Tuvaraka,Maravattai,Adi Badam,Chalmogra
+178,Pārasīkayavānī,Hyoscyamus niger,Black Henbane,N/A,Khorasani Ajowan,Khurasani Ajmo,Khurasani Ajwain,Khurasani Voma,Khurasani Omam,Khurasani Owa,Khursaanee Ajaon,Khurasani Juani,Khurasani Ajwain,Parasikayavani,Kurasani Omam,Khurasani Vamu,Ajwain Khurasani
+179,Darbha,Imperata cylindrica,Cogon Grass,Ulu Kher,Ulu,Dabh,Dabh,Sanna Darbhe,Dharbha,Dabh,Siru,Chhana,Siru,Darbha,Nanal,Darbha,Dabh
+180,Śiva-nīlī,Indigofera aspalathoides,Wiry Indigo,N/A,N/A,N/A,Shivnimba,Nili,Sivanar Vembu,N/A,N/A,N/A,N/A,Shiva-nili,Sivanar Vembu,N/A,N/A
+181,Nīlī,Indigofera tinctoria,True Indigo,Nilbam,Nil,Gali,Nil,Nili,Nilam,Nili,Nil,Nili,Neel,Nili,Avuri,Nili,Neel
+182,Puṣkara,Inula racemosa,Indian Elecampane,Pushkarmul,Pushkarmul,Pushkarmul,Pushkarmul,Pushkaramula,Pushkaramulam,Pushkarmul,Puskar Mul,Pushkaramula,Poshkar,Pushkaramula,Pushkaramulam,Pushkaramulamu,Rasan
+183,Kṣīravidārī,Ipomoea digitata,Giant Potato,Bhui Kumura,Bhui Kumra,Vidarikand,Vidarikand,Nelagumbala,Palmuthukku,Bhuikohala,Vidarikand,Bhuikakharu,Vidarikand,Kshiravidari,Nilapoosani,Nelagummadi,Bidarikand
+184,Dravantī,Jatropha glandulifera,Glandular Physic Nut,N/A,Lal Bherenda,Ratanjyot,Jangli Erandi,Totla,Atalari,Jangli Erand,N/A,N/A,N/A,Dravanti,Adalai,Nela Amudamu,Jangli Erand
+185,Hapuṣā,Juniperus communis,Common Juniper,N/A,Havusha,Hauber,Hauber,Hapusha,Hapusha,Hosh,Dhupi,Hapusha,Hauber,Hapusha,Hapusha,Hapusha,Abhal
+186,Tumbinī,Lagenaria siceraria,Bottle Gourd,Jati Lau,Lau,Dudhi,Lauki,Sorekai,Churakka,Dudhi Bhopla,Lauka,Lau,Ghia,Tumbini,Suraikkai,Sorakaya,Lauki
+187,Madayantī,Lawsonia inermis,Henna,Jetuka,Mehendi,Mendi,Mehndi,Madarangi,Mailanchi,Mehndi,Mehandi,Manjuati,Mehndi,Madayanti,Marudhani,Gorintaku,Hina
+188,Masūra,Lens culinaris,Red Lentil,Masur Mah,Masur Dal,Masur,Masoor,Masuru Bele,Masur Parippu,Masur,Musuro,Masura Dali,Masar,Masura,Masoor Paruppu,Chirusenaga,Masoor
+189,Granthiparṇī,Leonotis nepetaefolia,Klip Dagga,N/A,Hejurchei,Matisul,Bara Guma,Deepashule,Granthiparni,Dipmal,N/A,Barchha,N/A,Granthiparni,Thenthumbai,Ranaberi,N/A
+190,Candraśūra,Lepidium sativum,Garden Cress,Halim,Halim,Asalio,Halim,Alavi Beeja,Asali,Ahaliv,Chamsur,Chandasura,Halon,Chandrashura,Alivirai,Adityalu,Haloon
+191,Jīvantī,Leptadenia reticulata,Cork Swallow-wort,N/A,Jivanti,Dodi,Dori,Palakudi,Adakodiyan,Hirandodi,Daadeesaak,Jibanti,Dori,Jivanti,Palai Keerai,Palateega,N/A
+192,Droṇapuṣpī,Leucas cephalotes,Spiderwort Leucas,Doron,Bara Halkusa,Kubo,Guma,Tumbe,Thumba,Tumba,Dronapushpi,Gaisa,Gumma,Dronapushpi,Thumbai,Tummi,Guma
+193,Kākolī,Lilium polyphyllum,White Himalayan Lily,N/A,Kakoli,Kakoli,Kakoli,Kakoli,Kakoli,Kakoli,Kaakolee,Kakoli,Kakoli,Kakoli,Kakoli,Kakoli,Kakoli
+194,Atasī,Linum usitatissimum,Flaxseed,Tisi,Tisi,Alsi,Alsi,Agase,Cheruchana,Javas,Tisi,Pesi,Alsi,Atasi,Alivirai,Aviselu,Alsi
+195,Medāsakaḥ,Litsea chinensis,Indian Laurel,Baghnola,Kukur Chita,Maida Lakdi,Maida Lakdi,Narale,Elumpurukki,Maida Lakdi,Kutmero,N/A,Maida Lakdi,Medasaka,Elumpurukki,Naramamidi,Maida Lakdi
+196,Aklāri,Lodoicea maldivica,Double Coconut Palm,N/A,N/A,Daryai Nariyel,Darya-ka-Nariyal,Kadalu Thengu,Katal-tenna,Jahari Naral,N/A,N/A,Daryai Nariyal,Aklari,Kadal Thengai,Samudra Tenkaya,Narjeel Daryaee
+197,Koṣātakī,Luffa acutangula,Ridge Gourd,Jika,Jhinga,Turiya,Torai,Heerekayi,Peechinga,Dodka,Ghiraula,Janhi,Tori,Koshataki,Peerkangai,Beerakaya,Turai
+198,Kaṇṭakīgulma,Lycium barbarum,Wolfberry,N/A,N/A,N/A,Chirchitta,N/A,N/A,N/A,N/A,N/A,Kangu,Kantakigulma,N/A,N/A,Chirchitta
+199,Jīvaka,Malaxis acuminata,Jivaka Orchid,N/A,Jivaka,Jivaka,Jeevak,Jivaka,Jivaka,Jivaka,Jiwak,Jivaka,Jivaka,Jivaka,Jivaka,Jeevakamu,N/A
+200,Kampilla,Mallotus philippinensis Muell,Kamala Tree,Losan,Kamala,Kapilo,Kamila,Kunkumada Mara,Senduram,Shendri,Sindure,Sinduri,Kamela,Kampillaka,Kapli,Sinduri,Kamila
+201,Āmra,Mangifera indica,Mango,Aam,Aam,Keri,Aam,Mavu,Mavu,Amba,Aanp,Amba,Amb,Amra,Maa,Mamidi,Aam
+202,Ārāroṭa,Maranta arundinacea,Arrowroot,Ararot,Ararut,Taukhar,Ararot,Koove Hittu,Koova,Ararut,Ararot,Palua,Ararot,Ararota,Koovaikizhangu,Palagunda,Ararot
+203,Kākanāsikā,Martynia annua,Devil's Claw,N/A,Baghnokh,Vinchhudo,Bichhu Phal,Garuda Mugu,Pulinchuvadi,Vinchu,Gridharnakkee,Baghanakhi,Hathajori,Kakanasika,Thelkodukkai,Garuda Mukku,Hathajori
+204,Mahānimba,Melia azedarachta,Chinaberry,Ghoranim,Ghoranim,Bakan Limdo,Bakain,Huchchu Bevu,Malaveppu,Bakan Nimb,Bakaino,Mahanimba,Drek,Mahanimba,Malaivembu,Turakavepa,Bakayin
+205,Pudīnā,Mentha viridis,Spearmint,Podina,Pudina,Fudino,Pudina,Pudina,Puthina,Pudina,Pudinaa,Podina,Pudina,Pudina,Pudina,Pudina,Podina
+206,Matsyapatrikā,Merremia tridentata,Arrowleaf Morning Glory,N/A,Prasarini,Bhintagariyo,Prasarini,Ilikivi Soppu,Prasaarani,Kali Vel,N/A,N/A,N/A,Matsyapatrika,Mutiyar Kuntal,Seetamma Jada,N/A
+207,Nāgakeśara,Mesua ferrea,Ironwood Tree,Nahor,Nageswar,Nagkesar,Nagkesar,Nagasampige,Nagapoo,Nagchapha,Naageswari,Nageswara,Nagkesar,Nagakeshara,Sirunagappoo,Nagakesaramu,Narmushk
+208,Lajjālu,Mimosa pudica,Touch-Me-Not,Nilajbon,Lajjabati,Risamani,Chhuimui,Muttidare Muni,Thottavadi,Lajalu,Lajjawati,Lajakuli,Lajwanti,Lajjalu,Thottal Sinungi,Attipatti,Lajwanti
+209,Grīṣmachatraka,Mollugo cerviana,Threadstem Carpetweed,N/A,Gima Shak,N/A,Parpat,Parpataka,Parpadakapullu,Pada,N/A,N/A,N/A,Grishmachatraka,Parpadagam,Parpatakamu,N/A
+210,Karkaśa,Momordica dioica,Spiny Gourd,Bhat Kerala,Kakrol,Kantola,Kakoda,Madhagala Kayi,Venpaval,Kartoli,Chattel,Kankada,Kakora,Karkasha,Palupagal,Boda Kakara,Kakoda
+211,Indīvara,Monochoria vaginalis,Oval-leafed Pondweed,Bhat Meteka,Nukha,N/A,Launkia,Niru Kanchavala,Karinkoovalam,Nilkanth,N/A,Mirmiria,N/A,Indivara,Karunkuvalai,Nirkancha,N/A
+212,Śigru,Moringa oleifera,Drumstick Tree,Sajina,Sojne,Sargavo,Sahjan,Nuggekayi,Muringa,Shevga,Sajivan,Sajana,Sohanjna,Shigru,Murungai,Munaga,Sahjan
+213,Ātmagupta,Mucuna prurita,Velvet Bean,Bandar Kekowa,Alkushi,Kaucha,Kaunch,Nasugunni,Naikuruna,Khajkuiri,Kaauso,Baidanka,Kaunch,Kapikachchhu,Poonaikali,Dulagondi,Konch
+214,Saurabhanimba,Murraya koenigii,Curry Leaf Tree,Narasingha,Kari Pata,Mitho Limdo,Kadi Patta,Karibevu,Kariveppila,Kadhipatta,Mitho Neem,Bhrusanga,Kari Patta,Saurabhanimba,Kariveppilai,Karivepaku,Kari Patta
+215,Kadalī,Musa paradisiaca,Banana,Kol,Kola,Kela,Kela,Bale Hannu,Vazha,Kele,Kera,Kadali,Kela,Kadali,Vazhai,Arati,Kela
+216,Kaṭphala,Myrica esculenta Buch,Box Myrtle,Naga Tenga,Kaiphal,Kayphal,Kaiphal,Kirishivani,Maruta,Kayphal,Kaphal,Kaiphala,Kaiphal,Katphala,Marudam Pattai,Kaidaryamu,Kaiphal
+217,Jatāmāṁsī,Nardostachys jatamansi,Spikenard,Jatamansi,Jatamansi,Jatamansi,Jatamansi,Jatamansi,Jatamanchi,Jatamansi,Jatamasi,Jatamansi,Balchar,Jatamamsi,Jatamanchi,Jatamamsi,Sumbul-ut-Teeb
+218,Kamala,Nelumbo nucifera,Sacred Lotus,Podum,Poddo,Kamal,Kamal,Tavare,Thamara,Kamal,Kamal,Padma,Kanwal,Kamala,Thamarai,Tamara,Kanwal
+219,Karavīra,Nerium indicum,Indian Oleander,Korobi,Karabi,Karen,Kaner,Kanagile,Arali,Kanher,Karbir,Karabira,Kaner,Karavira,Arali,Ganneru,Kaner
+220,Upakuñcikā,Nigella sativa,Black Cumin,Kaljira,Kalo Jira,Kalonji,Kalonji,Kari Jeerige,Karinjeerakam,Kalonji,Mungrelo,Kalajeera,Kalwanji,Upakunchika,Karunjeeragam,Nalla Jilakara,Kalonji
+221,Kumudā,Nymphaea alba,White Water Lily,Boga Bhet,Shada Shapla,Poyanu,Kumud,Bili Tavare,Vellambal,Kamal,Seto Kamal,Kain,Nilofar,Kumuda,Vellambal,Tella Kaluva,Nilofar
+222,Utpala,Nymphaea stellata,Blue Water Lily,Nil Bhet,Nil Shapla,Nilkamal,Nilkamal,Neeli Tavare,Neelambal,Krishnakamal,Nil Kamal,Nila Kain,Nilofar,Utpala,Neelothpalam,Nalla Kaluva,Nilofar
+223,Gojihvā,Onosma bracteatum,Sedge Borage,N/A,Gaozaban,Gaozaban,Gaozaban,Gojihva,Gojihva,Gaozaban,Gaozaban,Gojihva,Gaozaban,Gojihva,Kozhikkadu,Gojihva,Gaozaban
+224,Śyonāka,Oroxylum indicum,Indian Trumpet Tree,Bhatghila,Sona,Tetu,Shyonak,Aane Mungu,Palakapayyani,Tetu,Tatelo,Phanaphana,Tantani,Shyonaka,Peruvagai,Dundilamu,Arlu
+225,Śālī,Oryza sativa,Rice,Dhan,Dhan,Dangar,Chawal,Bhatta,Nellu,Tandul,Dhan,Dhana,Chawal,Shali,Nel,Vari,Chawal
+226,Tiniśa,Ougeinia oojeinensis,Sandan Tree,N/A,Tinis,Tanachh,Sandan,Kari Muttala,Malavenna,Tiwas,Sandan,Bandhana,Sandan,Tinisha,Narivengai,Tellamotuku,Sandan
+227,Cāṅgerī,Oxalis corniculata,Creeping Woodsorrel,Tengesi,Amrul,Changeri,Changeri,Pullampurachi,Puliyarila,Ambushi,Chari Amilo,Ambiliti,Khatti Buti,Changeri,Puliyarai,Pulichinta,Changeri
+228,Ketakī,Pandanus tectorius,Screw Pine,Keteki,Keya,Kevdo,Kewda,Kedage,Kaitha,Kevda,Kewda,Kia,Keora,Ketaki,Thazhai,Mogali,Keora
+229,Khakhasa,Papaver somniferum,Opium Poppy,Kani,Posto,Khaskhas,Posta,Gasagase,Kaskas,Khaskhas,Aphim,Posta,Khashkhash,Ahiphena,Kasakasa,Gasagasalu,Khashkhash
+230,Śaileya,Parmelia perlata,Stone Flower,N/A,Shailaja,Chhadilo,Chharila,Kallu Hoovu,Kalppasu,Dagadphool,Jhyaau,N/A,Chharila,Shaileya,Kalpasi,Ratipuvvu,Chharila
+231,Kodrava,Paspalum scrobiculatum,Kodo Millet,N/A,Kodo,Kodra,Kodo,Harka,Varagu,Kodra,Kodo,Kodua,Kodra,Kodrava,Varagu,Arikelu,Kodon
+232,Pāpaṭa,Pavetta indica var. tomentosa,Indian Pavetta,N/A,Kukurchura,Papadi,Kankara,Pavate,Pavatta,Papadi,N/A,Kukurchura,N/A,Papata,Pavattai,Papata,N/A
+233,Gandhaśiphā,Pavonia odorata,Fragrant Swamp Mallow,N/A,Bala,Kalowalo,Sugandhabala,Balarakkasi,Kurunthotti,Kala Vala,N/A,Bala,N/A,Gandhashipha,Peramutti,Chitti Benda,Sugandhbala
+234,Vajrānna,Pennisetum typhoides,Pearl Millet,Bajra,Bajra,Bajri,Bajra,Sajje,Kambu,Bajri,Bajra,Bajra,Bajra,Vajranna,Kambu,Sajjalu,Bajra
+235,Viṣāṇikā,Pergularia daemia,Trellis-vine,N/A,Chhagalkhuri,Chamar Dudheli,Utran,Halukoratige,Veliparuthi,Utarni,N/A,Uturudi,Utran,Vishanika,Veliparuthi,Dustaputeega,Utran
+236,Kākajaṅghā,Peristrophe bicalyculata,Panicled Peristrophe,N/A,Nasabhaga,Kali Aghedi,Atrilal,Cheebira,Kakajangha,Ghatipitpapra,N/A,Kakajangha,N/A,Kakajangha,Chebira,Chebira,N/A
+237,Mudga,Phaseolus radiatus,Mung Bean,Mogu Mah,Mug Dal,Mag,Moong,Hesaru,Cherupayar,Moog,Mung,Muga,Moong,Mudga,Pachai Payaru,Pesalu,Moong
+238,Kharjura,Phoenix dactylifera,Date Palm,Khejur,Khejur,Khajur,Khajoor,Kharjura,Eenthappazham,Khajur,Khajur,Khajuri,Khajoor,Kharjura,Perichampazham,Kharjuramu,Khajoor
+239,Jalapippalī,Phyla nodiflora,Frog Fruit,N/A,Bhui Okra,Ratvelio,Jalpipali,Nela Hippali,Nirthippali,Jalapimpali,N/A,Goudapippali,Bukan,Jalapippali,Poduthalai,Bokena,Bukan
+240,Lavalīphala,Phyllanthus acidus,Otaheite Gooseberry,Pora Amlokhi,Noyari,Khati Amla,Harfarauri,Kirinelli,Arinelli,Rai Awala,N/A,Narakoli,Harfarauri,Lavaliphala,Aranelli,Racha Usiri,Harfarauri
+241,Tāmalakī,Phyllanthus fraternus,Stonebreaker,Bhui Amlokhi,Bhui Amla,Bhui Amali,Bhumi Amla,Nelanelli,Keezharnelli,Bhui Awala,Bhui Amala,Bhui Anla,Bhumi Amla,Tamalaki,Keezhanelli,Nelausiri,Bhumi Amla
+242,Kākanaja,Physalis alkekengi,Winter Cherry,N/A,N/A,N/A,Kaknaj,N/A,N/A,N/A,N/A,N/A,Kaknaj,Kakanaja,N/A,N/A,Kaknaj
+243,Kaṭukā,Picrorhiza kurroa,Picrorhiza,Katki,Katki,Kadu,Kutki,Katukarohini,Kadukurohini,Kutki,Kutki,Katuki,Kaur,Katuka,Kadugurohini,Katukarohini,Kutki
+244,Anisūna,Pimpinella anisum,Anise,N/A,Muhuri,Anisoon,Chhoti Saunf,Sompu,Shombu,Shatapushpa,N/A,N/A,Saunf,Anisuna,Shombu,Kuppi Sompu,Anisoon
+245,Nikocaka,Pinus gerardiana,Chilgoza Pine,N/A,Chilgoza,Chilgoza,Chilgoza,Chilgoza,Chilgoza,Chilgoza,Chilgoza,Chilgoza,Chilgoza,Nikochaka,Chilgoza,Chilgoza,Chilghoza
+246,Sarala,Pinus roxburghii,Chir Pine,Saral,Saralgachh,Saral,Chir,Sarala,Saralam,Saral,Khote Salla,Sarala,Chir,Sarala,Simaidevadar,Sarala,Chir
+247,Nāgavallī,Piper betle,Betel Vine,Paan,Paan,Nagarvel,Paan,Vilyadele,Vettila,Nagvel,Paan,Pana,Paan,Nagavalli,Vetrilai,Tamalapaku,Paan
+248,Kaṅkola,Piper cubeba,Cubeb Pepper,Kabab Chini,Kabab Chini,Chanakabab,Kabab Chini,Bala Menasu,Valmulaku,Kankol,Kabab Chini,Kabab Chini,Kabab Chini,Kankola,Valmilagu,Chalakava,Kabab Chini
+249,Pippali,Piper longum,Long Pepper,Pipoli,Pipul,Lindi Pipar,Pippali,Hippali,Thippali,Pimpali,Piplaa,Pipali,Maghan,Pippali,Thippili,Pippallu,Filfil Daraz
+250,Marica,Piper nigrum,Black Pepper,Jaluk,Golmorich,Mari,Kali Mirch,Kari Menasu,Kurumulaku,Mire,Marich,Golamaricha,Kali Mirch,Maricha,Milagu,Miriyalu,Filfil Siyah
+251,Rūmīmastagī,Pistacia lentiscus,Mastic Tree,N/A,Rumi Mastagi,Rumimastagi,Rumi Mastagi,N/A,N/A,Rumi Mastagi,N/A,N/A,Mastagi,Rumimastagi,Mastaki,N/A,Mastagi Rumi
+252,Jalakumbhī,Pistia stratiotes,Water Lettuce,Bor Puni,Tokapana,Jalkumbhi,Jalkumbhi,Antaragange,Akasathamara,Prashni,Jalkumbhi,Borajhanji,Jalkumbhi,Jalakumbhi,Agasathamarai,Antaratamara,Jalkumbhi
+253,Vanya-aśvagola,Plantago lanceolata,Ribwort Plantain,N/A,N/A,N/A,Baltanga,N/A,N/A,N/A,N/A,N/A,Baltanga,Vanya-ashvagola,N/A,N/A,Bartang
+254,Rāsnā,Pluchea lanceolata,Indian Camphorweed,N/A,Rasna,Rasna,Rasna,Rasna,Aratha,Rasna,Rasna,Rasna,Rasna,Rasna,Sittarathai,Rasna,Rasna
+255,Rakta Citraka,Plumbago indica,Indian Leadwort,Agyachit,Lal Chita,Lal Chitrak,Lal Chitrak,Kempu Chitramula,Chethikoduveli,Lal Chitrak,Rato Chitu,Rakta Chitaparu,Lal Chitra,Rakta Chitraka,Senkodiveli,Erra Chitramulamu,Sheetraj Hindi
+256,Citraka,Plumbago zeylanica,Ceylon Leadwort,Agyachit,Chita,Chitrak,Chitrak,Chitramula,Vellakoduveli,Chitrak,Chitu,Chitaparu,Chitra,Chitraka,Kodiveli,Chitramulamu,Sheetraj
+257,Mahāmedā,Polygonatum cirrhifolium,Tendril-leaf Solomon's Seal,N/A,Mahameda,Mahameda,Mahameda,Mahameda,Mahameda,Mahameda,Khiraule,Mahameda,Mahameda,Mahameda,Mahameda,Mahameda,N/A
+258,Śamī,Prosopis cineraria,Khejri Tree,Shami,Shami,Khijdo,Khejri,Banni,Vanni,Shami,Shami,Shami,Jand,Shami,Vanni,Jammi,Jand
+259,Elavāluka,Prunus avium,Sweet Cherry,N/A,Elabaluka,Elavaluka,Alubalu,Elavaluka,Elavalukam,Elavaluka,Paien,Elabaluka,Gilas,Elavaluka,Elavalukam,Elavalukamu,Alubalu
+260,Padmaka,Prunus cerasoides,Wild Himalayan Cherry,N/A,Padmakashtha,Padmakashtha,Padmak,Padmaka,Padmakam,Padmakashtha,Paiyun,Padmakashtha,Paja,Padmaka,Padmakam,Padmakamu,Padmakh
+261,Asana,Pterocarpus marsupium,Indian Kino Tree,N/A,Piyasal,Biyo,Vijaysar,Honne,Venga,Bibla,Bijayasal,Piasala,Chandan Lal,Asana,Vengai,Yegisa,Bijasar
+262,Vidārī,Pueraria tuberosa,Indian Kudzu,Bhui Kumura,Bhui Kumra,Vidarikand,Vidarikand,Nelagumbala,Muthukku,Bhuikohala,Biralikand,Bhuikakharu,Siali,Vidari,Nilapoosani,Darigummadi,Bidarikand
+263,Māyakku,Quercus infectoria,Gall Oak,Majuphal,Majuphal,Mayphal,Majuphal,Machikai,Mayakku,Maiphal,Majuphal,Majuphal,Majuphal,Mayakku,Masikkai,Machikaya,Mazu
+264,Mūlaka,Raphanus sativus,Radish,Mula,Mulo,Mulo,Mooli,Mulangi,Mullanki,Mula,Mula,Mula,Mooli,Mulaka,Mullangi,Mullangi,Mooli
+265,Sarpagandhā,Rauvolfia serpentina,Indian Snakeroot,Arachoritita,Sarpagandha,Sarpagandha,Sarpagandha,Sarpagandha,Amalpuri,Sarpagandha,Chandmaruwa,Patalagaruda,Chhota Chand,Sarpagandha,Sarpagandha,Patalagaridi,Asrol
+266,Tintiḍīka,Rhus parviflora,Small-flowered Sumac,N/A,N/A,N/A,Tungla,N/A,N/A,N/A,Satibayar,N/A,Tung,Tintidika,N/A,N/A,Sumaq
+267,Eraṇḍa,Ricinus communis,Castor Oil Plant,Era,Reri,Divelo,Arandi,Haralu,Avanakku,Erand,Andee,Jada,Arind,Eranda,Amanakku,Amudamu,Arand
+268,Śatapatrikā,Rosa centifolia,Cabbage Rose,Golap,Golap,Gulab,Gulab,Gulabi,Panneerpoovu,Gulab,Gulaf,Golapa,Gulab,Shatapatrika,Roja,Gulabi,Gul-e-Surkh
+269,Mañjiṣṭhā,Rubia cordifolia,Indian Madder,Majathi,Manjistha,Majith,Manjistha,Manjishta,Manjatti,Manjishtha,Majitho,Manjistha,Majith,Manjishtha,Manjitti,Manjishta,Majeeth
+270,Śāra,Saccharum bengalense,Munj Grass,N/A,Sara,Sarkanda,Munj,Munja Hullu,Munjapullu,Munj,Munj,Sara,Sarkanda,Shara,Munjai,Rellu,Munj
+271,Ikṣu,Saccharum officinarum,Sugarcane,Kuhiyar,Aakh,Sherdi,Ganna,Kabbu,Karimbu,Oos,Ukhu,Akhu,Ganna,Ikshu,Karumbu,Cheruku,Ganna
+272,Kāśa,Saccharum spontaneum,Wild Sugarcane,Kohua,Kash,Kansado,Kans,Kadu Kabbu,Nannana,Kans,Kans,Kasatandi,Kahi,Kasha,Nanal,Rellu Gaddi,Kans
+273,Śveta vetasa,Salix alba,White Willow,N/A,N/A,N/A,Bed-e-Sada,N/A,N/A,N/A,Bains,N/A,Bis,Shveta Vetasa,N/A,N/A,Bed Sada
+274,Aśoka,Saraca asoca,Ashoka Tree,Ashok,Ashok,Asopalav,Ashok,Ashoka,Asokam,Ashok,Ashok,Ashoka,Ashok,Ashoka,Asogam,Ashokamu,Ashoka
+275,Kuṣṭha,Saussurea lappa,Costus,Kuth,Kur,Uplet,Kuth,Koshta,Kottam,Kosht,Kuth,Kustha,Kuth,Kushtha,Koshtam,Changala,Qust
+276,Gajapippalī,Scindapsus officinalis,Large Long Pepper,Gajpipali,Gajpipul,Moti Pipar,Gajpipal,Dodda Hippali,Attithippali,Gajpimpali,Gajpipla,Gajapipali,Gajpipal,Gajapippali,Anaithippili,Enuga Pippallu,Gajpipal
+277,Kaśeru,Scirpus kysoor,Water Chestnut Sedge,N/A,Kesur,Kasero,Kaseru,Kaseru,Kaseru,Kachera,Kaseru,Kaseru,Kaseru,Kasheruka,Kaseru,Gunda Tunga,Kaseru
+278,Bhūtakeśī,Selinum vaginatum,Bhutkeshi,N/A,N/A,N/A,Bhutkeshi,N/A,N/A,N/A,Bhutkesh,N/A,Bhutkeshi,Bhutakeshi,N/A,N/A,N/A
+279,Bhallātaka,Semecarpus anacardium,Marking Nut Tree,Bhela,Bhela,Bhilamo,Bhilawa,Geru,Cheru,Bibba,Bhalayo,Bhalia,Bhilawa,Bhallataka,Serankottai,Nalla Jeedi,Baladur
+280,Tila,Sesamum indicum,Sesame,Til,Til,Tal,Til,Ellu,Ellu,Til,Til,Rashi,Til,Tila,Ellu,Nuvvulu,Til
+281,Itkaṭa,Sesbania bispinosa,Prickly Sesban,Dhaincha,Dhaincha,Ikad,Dhaincha,Mullu Jeenangi,Kittachedi,Ranshevari,Dhaincha,Dhaincha,Jantar,Itkata,Mudchembai,Etteeginta,Dhaincha
+282,Jayanṭī,Sesbania sesban,Egyptian Riverhemp,Jayanti,Jayanti,Jayanti,Jait,Jeenangi,Karimchembai,Shevari,Jayanti,Jayanti,Jait,Jayanti,Chithagathi,Sominta,Jait
+283,Śāla,Shorea robusta,Sal Tree,Sal,Sal,Sal,Sal,Guggala Mara,Maramaram,Sal,Sal,Sala,Sal,Shala,Kungiliyam,Guggilamu,Sal
+284,Khūbkalān,Sisymbrium irio,London Rocket,N/A,N/A,Khubkalan,Khubkalan,N/A,N/A,Rantikhi,N/A,N/A,Khubkalan,Khubkalan,N/A,N/A,Khaksi
+285,Madhusnuhī,Smilax china,China Root,Chobchini,Chobchini,Chopchini,Chobchini,Chobchini,Pavu,Chopchini,Chobchini,Chopachini,Chobchini,Madhusnuhi,Parangipattai,Pirangi Chekka,Chobchini
+286,Brihati,Solanum violaceum,Poison Berry,Titabhekuri,Byakur,Ubhi Ringni,Badi Kateri,Gulla,Puthirichunda,Dorli,Bihi,Bhejibaigana,Kandiari,Brihati,Papparamulli,Vankudu,Badi Kateli
+287,Kākamācī,Solanum nigrum,Black Nightshade,Latkochu,Kakamachi,Piludi,Makoy,Kaki Hannu,Manathakkali,Kangoni,Kaligedi,Nunununia,Mako,Kakamachi,Manathakkali,Kamanchi,Mako
+288,Kaṇṭakārī,Solanum virginianum,Yellow-berried Nightshade,N/A,Kantakari,Bhoringni,Kateli,Nelagulla,Kandankathiri,Kateringani,Kantakari,Ankaranti,Kandiari,Kantakari,Kandankathiri,Nelamulaka,Kateli
+289,Muṇdītakā,Sphaeranthus indicus,East Indian Globe Thistle,N/A,Murmuria,Gorakhmundi,Gorakhmundi,Mundi,Adakkamaniyan,Gorakhmundi,Gorakhmundi,Bhuikadamba,Mundi,Munditaka,Kottakaranthai,Bodasaramu,Mundi
+290,Āmrāta,Spondias pinnata,Hog Plum,Amora,Amra,Ambado,Amra,Amate Kayi,Ambazham,Ambada,Amaro,Ambada,Ambara,Amrataka,Mampulichi,Adavi Mamidi,Amra
+291,Pāṭala,Stereospermum chelonoides,Trumpet Flower Tree,Paroli,Parul,Padal,Padhal,Padri,Pathiri,Padal,Padari,Patali,Padal,Patala,Padiri,Kaligottu,Padhal
+292,Pāṭalā,Stereospermum suaveolens,Fragrant Padri Tree,Paroli,Parul,Padal,Padhal,Padri,Pathiri,Padal,Padari,Patali,Padal,Patala,Padiri,Kaligottu,Padhal
+293,Śākhoṭaka,Streblus asper,Siamese Rough Bush,Saura,Sheora,Sahora,Sihora,Mitli,Paruva,Kharoti,Kakshi,Sahada,Jhingan,Shakhotaka,Pirai,Barinki,Sihora
+294,Kataka,Strychnos potatorum,Clearing Nut Tree,N/A,Nirmali,Nirmali,Nirmali,Chilla Beeja,Thettambaral,Nirmali,Nirmali,Kataka,Nirmali,Kataka,Thethankottai,Chilla Ginja,Nirmali
+295,Kirātatikta,Swertia chirata,Chiretta,Chirata,Chirata,Kariyatu,Chirayata,Nelabevu,Kiriyath,Kirayat,Chiraito,Chireita,Chiraita,Kiratatikta,Nilavembu,Nelavemu,Chiraita
+296,Lodhra,Symplocos racemosa,Lodh Tree,Bhomlati,Lodh,Lodhar,Lodh,Bili Lodhra,Pachotti,Lodhra,Lodh,Lodha,Lodh,Lodhra,Vellilothram,Lodduga,Lodh Pathani
+297,Araṇya-sūraṇa,Synantherias sylvatica,Wild Elephant Foot Yam,N/A,Ola-kochu,Godasurana,Vanasurana,N/A,Jangali-Ola,N/A,N/A,N/A,N/A,Aranya-surana,Kattu-Karunaikizhangu,Mancha Kanda,N/A
+298,Jambū,Syzygium cuminii,Java Plum,Kola Jamu,Kalo Jam,Jambu,Jamun,Nerale,Njaval,Jambhul,Jamun,Jamu,Jamun,Jambu,Naval,Neredu,Jamun
+299,Ciñcā,Tamarindus indica,Tamarind,Teteli,Tentul,Amli,Imli,Hunase,Puli,Chinch,Titri,Tentuli,Imli,Chincha,Puli,Chinta,Imli
+300,Sthauṇeya,Taxus baccata,Himalayan Yew,N/A,Birmi,N/A,Thuner,N/A,N/A,N/A,Lauth Salla,N/A,Birmi,Sthauneyaka,N/A,N/A,Zarnab
+301,Śāka,Tectona grandis,Teak,Segun,Segun,Sag,Sagwan,Tega,Thekku,Sagwan,Sagwan,Saguan,Sagwan,Shaka,Thekku,Teku,Sagwan
+302,Māṣaparṇī,Teramnus labialis,Blue Wiss,N/A,Mashani,Ban Udad,Mashparni,Kadu Uddu,Kattuzhunn,Ran Udid,Mashparni,Banamuga,Mashparni,Mashaparni,Kattulundu,Karumunuga,Mashparni
+303,Arjuna,Terminalia arjuna,Arjuna Tree,Arjun,Arjun,Sadad,Arjun,Matti,Neermaruthu,Arjun,Arjun,Arjuna,Arjon,Arjuna,Marudam,Maddi,Arjun
+304,Bibhītaka,Terminalia belerica,Belleric Myrobalan,Bhomora,Bahera,Baheda,Baheda,Tare Kayi,Thanni,Behada,Barro,Bahada,Bahera,Bibhitaka,Thandrikkai,Tani,Bahera
+305,Harītakī,Terminalia chebula,Chebulic Myrobalan,Xilikha,Haritaki,Harde,Harad,Alale Kayi,Kadukka,Hirda,Harro,Harida,Harar,Haritaki,Kadukkai,Karakkaya,Halela
+306,Kapītana,Thespesia populnea,Portia Tree,N/A,Parash Pipal,Paras Piplo,Paras Pipal,Huvarasi,Poovarasu,Bhendi,N/A,Habali,Paras Pipal,Kapitana,Poovarasu,Gangaravi,Paras Pipal
+307,Guḍūcī,Tinospora cordifolia,Heart-leaved Moonseed,Amar Lota,Gulancha,Galo,Giloy,Amrutaballi,Chittamruthu,Gulvel,Gurjo,Guluchi,Gilo,Guduchi,Seendhil Kodi,Tippa Teega,Gilo
+308,Kaṭugulma,Toddalia asiatica,Orange Climber,N/A,Kadatodali,N/A,Jangli Kalimirch,Kadu Menasu,Kakkathudali,Jangli Mirchi,N/A,Tundapoda,N/A,Katugulma,Milakaranai,Kondamirapa,N/A
+309,Vr̥ścikāli,Tragia involucrata,Indian Stinging Nettle,N/A,Bichuti,N/A,Barhanta,Kiri Kanchali,Kodithoova,Kajkuyari,Ut Kateri,Bichhuati,N/A,Vrishchikali,Kanchori,Teega Dulagondi,N/A
+310,Śrṅgātaka,Trapa natans Linn. var. bispinosa,Water Chestnut,Singori,Paniphal,Singoda,Singhara,Singada,Karimpolam,Shingada,Singada,Panisingada,Singhara,Shringataka,Pannimonthan,Kubyakamu,Singhara
+311,Laghupatra varṣābhū,Trianthema decandra,Trailing Horse Purslane,N/A,N/A,N/A,Gadabani,Gaija Soppu,Vellasharunni,Pundharighentuli,N/A,N/A,N/A,Laghupatra Varshabhu,Vellai Sarandai,Tella Galijeru,N/A
+312,Varṣābhu,Trianthema portulacastrum,Desert Horse Purslane,Punarnava,Sabuni,Satodo,Patharchatta,Muchchugoni,Thazhuthama,Pundharighentuli,Punarnava,Puruni,Itsit,Varshabhu,Saaranai,Galijeru,Bishkhapra
+313,Gokṣura,Tribulus terrestris,Puncture Vine,Gokshura,Gokhru,Bethu Gokhru,Gokhru,Neggilu,Njerinjil,Sarata,Gokhur,Gokshura,Bhakhra,Gokshura,Nerunji,Palleru,Khar-e-Khasak
+314,Viśalā,Trichosanthes bracteata,Redball Snakegourd,N/A,Makal,Ratan Indrayan,Lal Indrayan,Kage Mari,Kakkathondali,Kaundal,Indreni,Mahakala,Lal Indrayan,Vishala,Korattai,Avaguda,Hanzal Surkh
+315,Methī,Trigonella foenum-graecum,Fenugreek,Methi,Methi,Methi,Methi,Menthe,Uluva,Methi,Methi,Methi,Methi,Methika,Vendhayam,Mentulu,Methi
+316,Gundrā,Typha australis,Southern Cattail,N/A,Hogla,Gha Bajariu,Pater,Apu,N/A,Ramban,N/A,N/A,Patera,Gundra,Sambu,Jambu Gaddi,N/A
+317,Poṭagala,Typha elephantina,Elephant Grass,N/A,Hogla,Gha Bajariu,Pater,Jambu Hullu,N/A,Ramban,N/A,N/A,Patera,Potagala,Sambu,Enuga Jambu,N/A
+318,Ślīpadārikanda,Typhonium trilobatum,Bengal Arum,Cham Kachu,Ghet Kachu,N/A,Ghet Kachu,N/A,Chena,N/A,N/A,Ghet Kachu,N/A,Shlipadarikanda,Karunaikizhangu,Kanda,N/A
+319,Pr̥śniparṇi,Uraria picta,Sweet-smelling Uraria,N/A,Shankarjata,Pithavan,Pithvan,Murele Honne,Orila,Prishniparni,Prishniparni,Prishniparni,Dabra,Prishniparni,Oripai,Kolakuponna,Pithvan
+320,Tagara,Valeriana wallichii,Indian Valerian,Tagar,Tagar,Tagar,Tagar,Tagara,Thakaram,Tagar,Sugandhwal,Tagara,Mushkbala,Tagara,Tagarai,Tagara,Asaroon
+321,Āsphoṭā,Vallaris solanacea,Bread Flower,N/A,Haparmali,N/A,Ramsar,Bughadi,N/A,N/A,Dudhe Lahara,Bonokonyari,Ramsar,Asphota,N/A,N/A,N/A
+322,Sarja,Vateria indica,White Dammar,N/A,Chundrus,Ral,Safed Damar,Dhupa,Payin,Ral,N/A,N/A,Safed Damar,Sarja,Vellai Kungiliyam,Dupada,Kahruba
+323,Sahadevi,Vernonia cinerea,Little Ironweed,N/A,Kuksim,Sadodi,Sahadevi,Sahadevi,Poovamkurunnila,Sahadevi,Sahadevi,Poksunga,Sahadevi,Sahadevi,Neichitti,Gariti Kammi,Sahadevi
+324,Kulattha,Vigna unquiculata,Horse Gram,Kulatha,Kulattha,Kulthi,Kulthi,Huruli,Muthira,Kulith,Gahat,Kolatha,Kulthi,Kulattha,Kollu,Ulavalu,Kulthi
+325,Drākṣā,Vitis vinifera,Grapevine,Angur,Angur,Draksh,Angoor,Drakshi,Munthiri,Draksha,Angur,Angura,Angoor,Draksha,Dratchai,Draksha,Angoor
+326,Aśvagandhā,Withania somnifera,Winter Cherry,Ashwagandha,Ashwagandha,Ashwagandha,Ashwagandha,Ashwagandha,Amukkuram,Ashwagandha,Ashwagandha,Ashwagandha,Asgandh,Ashvagandha,Amukkara,Ashwagandha,Asgandh Nagori
+327,Dhātakī,Woodfordia fruticosa,Fire Flame Bush,N/A,Dhai Phul,Dhavdi,Dhai,Tamrapushpi,Thathiri,Dhayati,Dhayaanro,Dhatuki,Dhai,Dhataki,Velakkai,Jaji,Dhai Phool
+328,Madana,Xeromphis spinosa,Emetic Nut,Mon,Mainaphal,Mindhol,Mainphal,Kare,Malankara,Gelphal,Mainphal,Patova,Mainphal,Madana,Marukkarai,Manga,Mainphal
+329,Tumburu,Zanthoxylum armatum,Winged Prickly Ash,N/A,Tambul,Tejbal,Timur,Tejbal,Tumburu,Tejbal,Timur,N/A,Timbar,Tumburu,Tumburu,Tejobal,Kabab Khandan
+330,Ārdraka,Zingiber officinale,Ginger,Ada,Ada,Adu,Adrak,Shunti,Inchi,Ale,Aduwa,Ada,Adrak,Ardraka,Inji,Allam,Adrak
+331,Kola,Zizyphus mauritiana,Indian Jujube,Bogori,Kul,Bor,Ber,Bore Hannu,Elantha,Bor,Bayar,Barakoli,Ber,Kola,Ilandhai,Regu,Ber
+332,Kokilaksha,Hygrophila auriculata(Schum.),Marsh Barbel,Kulekhara,Kulekhara,Ekharo,Talmakhana,Kolavalike,Vayalchulli,Talimkhana,Talmakhana,Koilikhai,Talmakhana,Kokilaksha,Neermulli,Neerugobbi,Talmakhana
+333,Agnimanth,Premna mucronata,Headache Tree,Gineri,Ganiari,Arani,Arni,Takki,Munja,Arani,Gineri,Agnimantha,Arni,Agnimantha,Munnai,Nelli,Arni
+334,Kalamegha,Andrographis paniculata,King of Bitters,Chirota,Kalmegh,Kariyatu,Kalmegh,Nelabevu,Kiriyath,Oli Kirayat,Titkaa,Bhuinimba,Kalmegh,Kalamegha,Nilavembu,Nelavemu,Kalmegh
+335,Patola,Trichosanthes dioica,Pointed Gourd,Potol,Potol,Parval,Parwal,Kaadu Padavala,Kattupadavalam,Parval,Parwar,Potala,Parwal,Patola,Kombupudalai,Kommupotla,Parwal
+336,Bala,Sida cordifolia,Country Mallow,Bor Sonborial,Barela,Bala,Khareti,Hettuti,Kurunthotti,Bala,Balu,Bajramuli,Khareti,Bala,Chittamutti,Chiru Benda,Kanghi
+337,Kadam,Anthocephalus Chinensis,Burflower Tree,Kodom,Kodom,Kadamb,Kadamba,Kadamba,Kadambu,Kadamb,Kadam,Kadamba,Kadamb,Kadamba,Vellai Kadambu,Kadambamu,Kadam
+338,Bullet wood tree,Mimusops Elengi,Bullet Wood Tree,Bakul,Bakul,Borsalli,Maulsari,Ranjala,Elengi,Bakul,Bakul,Baula,Maulsari,Bakula,Magizham,Pogada,Maulsari
+339,Indian Pennywort,Centella Asiatica,Indian Pennywort,Manimuni,Thankuni,Brahmi,Mandukaparni,Ondelaga,Kudangal,Brahmi,Ghodtaapre,Thalkudi,Brahmi,Mandukaparni,Vallarai,Saraswati Aku,Brahmi
+340,"Salt bush, Toothbrush tree",Salvadora Persica,Toothbrush Tree,N/A,Pilu,Khari Jal,Pilu,Goni Mara,Ukamaram,Khakan,N/A,Pilu,Pilu,Pilu,Uga,Varagogu,Miswak
+341,Onion,Allium Cepa,Onion,Piyaj,Peyaj,Dungli,Pyaz,Eerulli,Ulli,Kanda,Pyaj,Piaja,Piaz,Palandu,Vengayam,Ullipaya,Piyaz
+342,"Terpeth Root, Indian jalap",Operculina Trupethum,Indian Jalap,N/A,Teori,Nasottar,Nishoth,Bilitigade,Thrikolpakonna,Nishottar,Nisodh,Dudhikalmi,Nisot,Trivrit,Sivadai,Tegada,Turbud
+343,Boerhavia diffusa,Boerhavia diffusa,Spreading Hogweed,Ponounua,Punarnava,Satodi,Punarnava,Komme,Thazhuthama,Punarnava,Punarnavaa,Puruni Saga,Itsit,Punarnava,Mookkirattai,Atikamamidi,Bishkhapra
+344,Albizia lebbeck,Albizia lebbeck,Siris Tree,Kothia Koroi,Sirish,Sirish,Siris,Bage Mara,Vaka,Shirish,Kaalo Sirees,Sirisa,Sirin,Shirisha,Vagai,Dirisena,Siras
+345,Operculina turpethum,Operculina turpethum,Indian Jalap,N/A,Teori,Nasottar,Nishoth,Bilitigade,Thrikolpakonna,Nishottar,Nisodh,Dudhikalmi,Nisot,Trivrit,Sivadai,Tegada,Turbud
+346,Fumaria indica,Fumaria indica,Indian Fumitory,N/A,Ban Sulpha,Pitpapdo,Pitpapra,Kallu Sabbasige,Parpadakapullu,Pitpapda,Pitpapda,N/A,Shahtara,Parpata,Tura,Chatarasi,Shahtara
+347,Common emetic nut,Randia Spinosa,Emetic Nut,Mon,Mainaphal,Mindhol,Mainphal,Kare,Malankara,Gelphal,Mainphal,Patova,Mainphal,Madana,Marukkarai,Manga,Mainphal

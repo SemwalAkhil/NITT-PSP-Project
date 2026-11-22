@@ -381,6 +381,39 @@ The handler:
 4. Retrieves associated herbs using `database.herbs_for_illness()`.
 5. Renders `illness_detail.html`.
 
+### 7.6 `GET /herbs/add` and `POST /herbs/add` — Add Herb Record
+Form interface to insert new plant records (`english_name`, `botanical_name`, `family`, `source`, `source_record_id`, `source_url`). Enforces required fields, HTTP(S) protocol for URLs, and CSRF origin verification (`verify_same_origin`).
+
+### 7.7 `GET /illnesses/add` and `POST /illnesses/add` — Add Illness / Indication
+Form interface to insert illness terms. Traps unique constraint violations and renders user-friendly inline error alerts.
+
+### 7.8 `GET /treatments/add` and `POST /treatments/add` — Link Herb to Illness
+Form interface providing searchable dropdown menus to link an existing plant record to an illness indication.
+
+### 7.9 `GET /treatments` — Treatments Directory
+Paginated directory displaying plant-condition treatment associations with query filtering (`?q=...`).
+
+### 7.10 `GET /attributes` and `GET /herbs/{herb_id}/attributes` — Source Attributes
+Comprehensive source attribute explorer displaying field names, values, source citations, language tags, and verification statuses across all herbs or for a single plant.
+
+### 7.11 `GET /records` — Records & Data Hub
+Tabbed data hub summarizing records by group (`herbs`, `illnesses`, `treatments`, `attributes`, `doshas`) with live database metrics and export actions.
+
+### 7.12 `GET /stage-c/status` and `POST /stage-c/upgrade` — Stage C Architecture & Status
+Visual status dashboard showing schema migration ledger and one-click transaction upgrade to Stage C. Explains why web scraping is executed via the CLI.
+
+### 7.13 CSV and JSON Exports
+- `GET /export/herbs.csv` and `GET /export/herbs.json`: Filtered or complete herb records.
+- `GET /export/illnesses.csv` and `GET /export/illnesses.json`: Complete condition records.
+- `GET /export/treatments.csv` and `GET /export/treatments.json`: Plant-illness treatment links.
+- `GET /herbs/{herb_id}/export.csv` and `GET /herbs/{herb_id}/export.json`: Per-herb records including attributes, treatments, and dosha effects.
+
+Exports include formula injection protection (cells starting with `=`, `+`, `-`, or `@` prepended with `'`) and UTF-8 with BOM (`\ufeff`) encoding.
+
+### 7.14 Plant Imagery & Accessibility Architecture
+- **Plant Imagery:** Dynamic CCRAS DRAVYA URL generation (`https://dravya.ccras.org.in/resources/views/admin/required/upload/<plant_id>.jpg`) with lazy loading and local SVG fallback (`static/placeholder-herb.svg`).
+- **Accessibility (WCAG 2.1 AA):** Landmarks (`role="banner"`, `role="main"`, `role="contentinfo"`), skip link (`.skip-link`), accessibility drawer with text scaling (`sm`, `md`, `lg`, `xl`), contrast mode (normal/high), font switcher (default, clean sans, OpenDyslexic), and dark theme with `localStorage` persistence.
+
 ## 8. JSON API Routes
 
 ### 8.1 `GET /api/illnesses`

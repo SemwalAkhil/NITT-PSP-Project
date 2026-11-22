@@ -356,6 +356,55 @@ The web application includes:
 
 The semantic herb profile presents the six principal Dravyaguna property domains in a unified structure, along with Dosha effects and other structured information.
 
+### Milestone E – Full Web Parity, Multilingual Discovery, and Accessibility Overhaul
+
+**Objective:** Bring complete feature parity between the CLI and the Web GUI, enable multilingual Indic herb discovery, integrate botanical imagery with offline fallbacks, provide audit data exports (CSV/JSON), and implement full WCAG 2.1 AA accessibility.
+
+#### Implemented Functionality & Completed Checklist
+
+- [x] **Web Data Entry Forms (CLI Parity):**
+  - `GET /herbs/add` and `POST /herbs/add`: Form to insert new herbs with field validation (`english_name`, `botanical_name`, `family`, `source`, `source_record_id`, `source_url`).
+  - `GET /illnesses/add` and `POST /illnesses/add`: Form to insert new illnesses/indications with unique constraint enforcement and friendly error messages.
+  - `GET /treatments/add` and `POST /treatments/add`: Form with searchable select menus to link herbs to illnesses.
+  - Same-origin CSRF validation (`verify_same_origin`) for all state-mutating POST endpoints.
+- [x] **Explorer Views (CLI Parity):**
+  - `GET /treatments`: Web interface for searching, browsing, and paginating treatment associations.
+  - `GET /attributes` & `GET /herbs/{id}/attributes`: Web view for source attributes across herbs and per-herb with provenance and verification status.
+  - `GET /records`: Web hub for inspecting record groups (`herbs`, `illnesses`, `treatments`, `attributes`, `doshas`) with live database counts and export actions.
+  - `GET /stage-c/status` & `POST /stage-c/upgrade`: Web GUI dashboard for Stage C migration status and safe one-click transaction migration.
+  - Explanatory UI documenting that live web scraping (`herbal-almanac scrape`) is a long-running batch operation reserved for the CLI to avoid web worker exhaustion.
+- [x] **Botanical Plant Imagery (CCRAS Integration):**
+  - Dynamic image URL resolution (`herb_image_url`) based on CCRAS plant ID (`https://dravya.ccras.org.in/resources/views/admin/required/upload/<plant_id>.jpg`).
+  - Client-side hotlinking only; no live downloads in tests or committed image assets.
+  - Responsive thumbnail display on herb explorer cards with `loading="lazy"`.
+  - Graceful `onerror` fallback to local packaged SVG (`static/placeholder-herb.svg`).
+  - Featured plant image card with CCRAS DRAVYA attribution on herb detail pages.
+- [x] **Multilingual Indic Herb Search & Glossary:**
+  - Packaged `src/herbal_almanac/data/herb_names.csv` (347 herbs across English + 14 Indian languages).
+  - Implementation of `src/herbal_almanac/herb_glossary.py` with `tolerant_herb_key`, `ResolvedHerb`, `HerbGlossaryStore`, `resolve_herb`, and `search_herb_glossary`.
+  - Integration into `search_herbs` in `database_operator.py` allowing searches in Devanagari, Tamil, Bengali, etc., to resolve database herbs.
+  - CLI `herbal-almanac herbs --language <lang>` option to display vernacular names.
+  - Vernacular Names table on herb detail page displaying regional plant names.
+  - Coverage auditor script: `scripts/herb_name_coverage.py`.
+- [x] **Data Export Endpoints (JSON & CSV):**
+  - Endpoints: `/export/herbs.{csv,json}`, `/export/illnesses.{csv,json}`, `/export/treatments.{csv,json}`, and `/herbs/{id}/export.{csv,json}`.
+  - Formula injection sanitization (`sanitize_csv_cell`): cells starting with `=`, `+`, `-`, or `@` prepended with `'`.
+  - UTF-8 with BOM (`\ufeff`) encoding for instant Indic script rendering in Microsoft Excel.
+  - Standards-compliant `Content-Disposition: attachment; filename=...` headers.
+- [x] **UI & Accessibility (WCAG 2.1 AA Compliance):**
+  - Semantic HTML5 landmarks: `<header role="banner">`, `<nav aria-label="Main navigation">`, `<main id="main-content" role="main">`, `<footer role="contentinfo">`.
+  - Visible keyboard skip-to-content link: `<a href="#main-content" class="skip-link">`.
+  - Interactive Accessibility Panel with persistent `localStorage` synchronization:
+    - Text size scaling (`sm`, `md`, `lg`, `xl`).
+    - Font family selection: Default, Clean Sans-Serif, OpenDyslexic / Dyslexia-friendly.
+    - Contrast modes: Normal, High Contrast.
+    - Theme switching: Light, Dark, System/Auto.
+    - `prefers-reduced-motion` compliance.
+  - Flash-of-unstyled-content (FOUC) prevention script in `<head>`.
+- [x] **Hermetic Testing:**
+  - 18 new automated offline tests in `tests/test_web_parity_and_features.py`.
+  - Complete packaging verification in `tests/test_packaging_and_guards.py`.
+
 ### Milestone D – Multi-source Evidence Integration
 
 **Status: Design proposal, not completed implementation.**

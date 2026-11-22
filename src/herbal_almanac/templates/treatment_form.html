@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Add Treatment Link — Herbal Almanac{% endblock %}
+
+{% block content %}
+<div class="content-container">
+  <div class="page-header">
+    <div>
+      <span class="badge badge-accent">DATA ENTRY</span>
+      <h1 class="page-title">Link Herb to Illness</h1>
+      <p class="page-subtitle">Record a therapeutic treatment association between an existing herb and illness.</p>
+    </div>
+    <div class="header-actions">
+      <a href="{{ url_for('treatment_list') }}" class="btn btn-secondary">← Back to Treatments</a>
+    </div>
+  </div>
+
+  {% if error %}
+  <div class="alert alert-error" role="alert">
+    <strong>Error:</strong> {{ error }}
+  </div>
+  {% endif %}
+
+  <div class="form-card">
+    <form method="post" action="{{ url_for('add_treatment_post') }}" class="standard-form">
+      <div class="form-group">
+        <label for="herb_id" class="form-label">
+          Select Herb <span class="required">*</span>
+        </label>
+        <select id="herb_id" name="herb_id" class="form-select" required>
+          <option value="">-- Choose a Herb --</option>
+          {% for h in herbs %}
+          <option value="{{ h.id }}" {% if selected_herb_id == h.id %}selected{% endif %}>
+            #{{ h.id }} — {{ h.original_name or h.english_name }} {% if h.botanical_name %}({{ h.botanical_name }}){% endif %}
+          </option>
+          {% endfor %}
+        </select>
+        <small class="form-hint">Choose an existing herb from the database.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="illness_id" class="form-label">
+          Select Illness / Indication <span class="required">*</span>
+        </label>
+        <select id="illness_id" name="illness_id" class="form-select" required>
+          <option value="">-- Choose an Illness / Indication --</option>
+          {% for ill in illnesses %}
+          {% set res = resolve_illness(ill.english_name) %}
+          <option value="{{ ill.id }}" {% if selected_illness_id == ill.id %}selected{% endif %}>
+            #{{ ill.id }} — {{ ill.english_name | readable_illness }}{% if res.english and res.english != ill.english_name %} ({{ res.english }}){% endif %}
+          </option>
+          {% endfor %}
+        </select>
+        <small class="form-hint">Choose the condition treated by this plant.</small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Create Treatment Link</button>
+        <a href="{{ url_for('treatment_list') }}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

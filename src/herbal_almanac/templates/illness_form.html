@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Add Illness — Herbal Almanac{% endblock %}
+
+{% block content %}
+<div class="content-container">
+  <div class="page-header">
+    <div>
+      <span class="badge badge-accent">DATA ENTRY</span>
+      <h1 class="page-title">Add Illness / Indication</h1>
+      <p class="page-subtitle">Insert an illness or therapeutic indication into the database.</p>
+    </div>
+    <div class="header-actions">
+      <a href="{{ url_for('illness_list') }}" class="btn btn-secondary">← Back to Explorer</a>
+    </div>
+  </div>
+
+  {% if error %}
+  <div class="alert alert-error" role="alert">
+    <strong>Error:</strong> {{ error }}
+  </div>
+  {% endif %}
+
+  <div class="form-card">
+    <form method="post" action="{{ url_for('add_illness_post') }}" class="standard-form">
+      <div class="form-group">
+        <label for="english_name" class="form-label">
+          Illness / Indication Name <span class="required">*</span>
+        </label>
+        <input type="text" id="english_name" name="english_name" class="form-input" required
+               value="{{ form_data.english_name if form_data else '' }}"
+               placeholder="e.g. KAsa, Cough, Jvara, Fever" autofocus>
+        <small class="form-hint">Transliterated Sanskrit or English name (duplicate names are rejected).</small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Illness Record</button>
+        <a href="{{ url_for('illness_list') }}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

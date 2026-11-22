@@ -44,6 +44,7 @@ However, the raw source expression `KaphaVātahara`, the retrieval timestamp, th
 | **Initial Core** | Scraping, cleaning, validation, SQLite storage | `scrapper.py`, `cleaning.py`, `database_operator.py` | Complete |
 | **Stage B** | Operational provenance and botanical taxonomy | Migrations 1 & 2 (`sources`, `source_claims`, `taxa`) | Complete |
 | **Stage C** | Normalized Dravyaguna knowledge model | Migration 3, `concept_catalog.py`, `backfill_engine.py`, `herb_view.py` | Complete |
+| **Stage E** | Web parity, multilingual herb search, exports & accessibility | Web forms, `herb_glossary.py`, CSV/JSON exports, WCAG 2.1 AA | Complete |
 | **Stage D** | Multi-source evidence integration | Statutory pharmacopoeias, independent replication scoring | Design Proposal |
 
 ### Initial Core
@@ -295,6 +296,7 @@ NITT-PSP-Project/
 │   ├── cli.md                            # Typer CLI subcommands & python -m entry points
 │   ├── concept_catalog.md                # 136 concepts & 649 multilingual seed labels
 │   ├── database_operator.md              # SQLite DAL, migrations & schema reference
+│   ├── herb_glossary.md                  # 15-language botanical glossary, resolver & search
 │   ├── herb_view.md                      # View-model layer, deduplication & grouping
 │   ├── illness_coverage.md               # Script measuring glossary coverage across illnesses
 │   ├── illness_glossary.md               # 15-language condition glossary & lookup hierarchy
@@ -306,6 +308,7 @@ NITT-PSP-Project/
 │   ├── translation.md                    # Machine translation adapter with local fallbacks
 │   └── web_app.md                        # FastAPI web GUI, Jinja2 templates & REST API
 ├── scripts/
+│   ├── herb_name_coverage.py             # Measures herb name glossary resolution coverage
 │   ├── illness_coverage.py               # Evaluates glossary resolution coverage
 │   └── make_demo_db.py                   # Generates offline demo database from sample.html
 ├── src/
@@ -318,6 +321,7 @@ NITT-PSP-Project/
 │       ├── cli.py                        # Typer CLI application
 │       ├── concept_catalog.py            # Canonical Dravyaguna seeds
 │       ├── database_operator.py          # SQLite database operator & DDL
+│       ├── herb_glossary.py              # Multilingual herb glossary & CCRAS ID resolver
 │       ├── herb_view.py                  # Presentation view models
 │       ├── illness_glossary.py           # Vernacular condition lookup
 │       ├── repository_api.py             # Semantic repository API
@@ -327,6 +331,7 @@ NITT-PSP-Project/
 │       ├── web_app.py                    # FastAPI application
 │       ├── data/
 │       │   ├── __init__.py
+│       │   ├── herb_names.csv            # 347-row 15-language botanical name glossary
 │       │   └── illness_glossary.csv      # 227-row 15-language condition glossary
 │       ├── migrations/
 │       │   ├── __init__.py
@@ -334,16 +339,24 @@ NITT-PSP-Project/
 │       │   ├── stage_c_ddl_and_triggers.sql
 │       │   └── virya_reconciliation.sql
 │       ├── static/
-│       │   └── styles.css                # Offline application stylesheet
+│       │   ├── placeholder-herb.svg      # Packaged offline plant placeholder image
+│       │   └── styles.css                # Offline application stylesheet (WCAG 2.1 AA)
 │       └── templates/
-│           ├── base.html                 # Jinja2 layout shell & navigation
+│           ├── attributes.html           # Source attributes explorer
+│           ├── base.html                 # Jinja2 layout shell, skip link & a11y panel
 │           ├── dashboard.html            # Dashboard metric summary
 │           ├── guide.html                # User guide & concept explanation
 │           ├── herb_detail.html          # Fallback Schema v2 herb view
 │           ├── herb_detail_semantic.html # Stage C Dravyaguna profile view
+│           ├── herb_form.html            # Web form to add herb
 │           ├── herbs.html                # Herb catalog & vernacular search
 │           ├── illness_detail.html       # Multilingual condition view
+│           ├── illness_form.html         # Web form to add illness
 │           ├── illnesses.html            # Illness explorer directory
+│           ├── records.html              # Records hub & exports
+│           ├── stage_c_status.html       # Stage C status & migration GUI
+│           ├── treatment_form.html       # Web form to link treatment
+│           ├── treatments.html           # Treatments explorer
 │           └── virya_reconciliation.html# Cross-source Virya reconciliation view
 ├── tests/
 │   ├── conftest.py                       # Hermetic fixtures & temporary databases
@@ -365,7 +378,8 @@ NITT-PSP-Project/
 │   ├── test_stage_c_lifecycle.py         # Claim transition & override tests
 │   ├── test_stage_c_migration.py         # Schema v3 DDL & trigger tests
 │   ├── test_stage_c_web.py               # Semantic web route tests
-│   └── test_web_app.py                   # Core web route & template tests
+│   ├── test_web_app.py                   # Core web route & template tests
+│   └── test_web_parity_and_features.py   # Web parity, exports, multilingual & a11y tests
 ├── LICENSE                               # MIT License
 ├── pyproject.toml                        # PEP 517/621 build configuration
 ├── requirements.txt                      # Pinned production dependencies
@@ -400,6 +414,27 @@ Organizes Dravyaguna properties into canonical categories:
 
 ### Interactive User Guide
 - Navigable `/guide` page introducing Ayurvedic fundamentals, Dravyaguna concepts, and platform usage for evaluators with no prior Ayurveda background.
+
+### Full Web Parity & Data Entry
+- Interactive web forms (`/herbs/add`, `/illnesses/add`, `/treatments/add`) offering full feature parity with CLI insert commands.
+- Server-side validation and CSRF origin verification (`verify_same_origin`).
+- Explorers for treatments (`/treatments`), source attributes (`/attributes`), and records hub (`/records`).
+- Visual Stage C migration and capability dashboard (`/stage-c/status`).
+
+### Botanical Plant Imagery & SVG Fallback
+- Dynamic CCRAS DRAVYA plant image hotlinking on herb cards and detail pages.
+- Client-side lazy loading, responsive aspect-ratio wrappers, and automatic `onerror` fallback to packaged SVG placeholder (`static/placeholder-herb.svg`).
+- Monograph attribution on detail view.
+
+### Structured Data Exports (CSV & JSON)
+- One-click downloads for herbs (`/export/herbs.csv`, `.json`), illnesses (`/export/illnesses.csv`, `.json`), treatments (`/export/treatments.csv`, `.json`), and single herbs (`/herbs/{id}/export.csv`, `.json`).
+- Formula injection protection: prepending `'` to cell values beginning with `=`, `+`, `-`, or `@`.
+- UTF-8 with BOM (`\ufeff`) encoding for instant rendering of Indic scripts in Microsoft Excel.
+
+### Accessibility & Display Controls (WCAG 2.1 AA)
+- Semantic landmarks (`role="banner"`, `role="main"`, `role="contentinfo"`, `<nav aria-label="...">`).
+- Visible keyboard skip-to-content link (`.skip-link`).
+- Persistent accessibility panel for text scaling (`sm`, `md`, `lg`, `xl`), contrast adjustment (Normal / High Contrast), font family selection (Default, Clean Sans-Serif, OpenDyslexic), and theme mode (Light, Dark, System) with zero flash-of-unstyled-content (FOUC).
 
 ---
 
@@ -443,7 +478,7 @@ The Typer CLI provides 12 subcommands:
 | `herb` | Insert a single herb with field validation | `herbal-almanac herb "Tulsi" --botanical-name "Ocimum sanctum"` |
 | `illness` | Insert an illness entity | `herbal-almanac illness "Kasa"` |
 | `treatment` | Link a herb to an illness | `herbal-almanac treatment 1 1` |
-| `herbs` | Search herbs by common or botanical name | `herbal-almanac herbs "Ocimum"` |
+| `herbs` | Search herbs by common, botanical or vernacular name (`-l`) | `herbal-almanac herbs "Vasa" --language hi` |
 | `illnesses` | Search illnesses by name | `herbal-almanac illnesses "fever"` |
 | `treatments` | Show illnesses treated by a herb ID | `herbal-almanac treatments 1` |
 | `attributes` | Show or export all source attributes | `herbal-almanac attributes 1 --format table` |
@@ -473,8 +508,13 @@ $env:HERBAL_ALMANAC_DATABASE="data/demo.db"; uvicorn herbal_almanac.web_app:app 
 Open your browser to:
 - Dashboard: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 - User Guide: [http://127.0.0.1:8000/guide](http://127.0.0.1:8000/guide)
-- Herb Catalog: [http://127.0.0.1:8000/herbs](http://127.0.0.1:8000/herbs)
-- Semantic Detail: [http://127.0.0.1:8000/herbs/1](http://127.0.0.1:8000/herbs/1)
+- Herb Catalog & Multilingual Search: [http://127.0.0.1:8000/herbs](http://127.0.0.1:8000/herbs)
+- Semantic Detail & CCRAS Imagery: [http://127.0.0.1:8000/herbs/1](http://127.0.0.1:8000/herbs/1)
+- Treatments Directory: [http://127.0.0.1:8000/treatments](http://127.0.0.1:8000/treatments)
+- Source Attributes Explorer: [http://127.0.0.1:8000/attributes](http://127.0.0.1:8000/attributes)
+- Records Hub & Exports: [http://127.0.0.1:8000/records](http://127.0.0.1:8000/records)
+- Stage C Architecture & Status: [http://127.0.0.1:8000/stage-c/status](http://127.0.0.1:8000/stage-c/status)
+- Add Herb Data Form: [http://127.0.0.1:8000/herbs/add](http://127.0.0.1:8000/herbs/add)
 - Virya Reconciliation: [http://127.0.0.1:8000/stage-c/reconciliation/1](http://127.0.0.1:8000/stage-c/reconciliation/1)
 - Illness Explorer: [http://127.0.0.1:8000/illnesses](http://127.0.0.1:8000/illnesses)
 

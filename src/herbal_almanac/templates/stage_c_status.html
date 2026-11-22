@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Stage C Architecture &amp; Status — Herbal Almanac{% endblock %}
+
+{% block content %}
+<div class="content-container">
+  <div class="page-header">
+    <div>
+      <span class="badge badge-accent">SEMANTIC ARCHITECTURE</span>
+      <h1 class="page-title">Stage C Dravyaguna Status</h1>
+      <p class="page-subtitle">Normalized semantic ontology status, migration ledger, and concept catalog health.</p>
+    </div>
+    <div class="header-actions">
+      <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Overview</a>
+    </div>
+  </div>
+
+  {% if message %}
+  <div class="alert alert-success" role="alert">
+    {{ message }}
+  </div>
+  {% endif %}
+  {% if error %}
+  <div class="alert alert-error" role="alert">
+    <strong>Error:</strong> {{ error }}
+  </div>
+  {% endif %}
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h2 class="card-title">Schema Capability &amp; Ledger</h2>
+      <div class="status-indicator-box mb-3">
+        <span class="status-dot {% if capability.stage_c_available %}status-green{% else %}status-amber{% endif %}"></span>
+        <div>
+          <strong>Status: </strong>
+          {% if capability.stage_c_available %}
+          <span class="badge badge-success">Stage C Active (Schema Version {{ capability.version }})</span>
+          {% else %}
+          <span class="badge badge-warning">Stage B / Version {{ capability.version or 'Unknown' }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <p class="text-sm text-muted mb-3">
+        Applied migrations recorded in <code>schema_migrations</code>:
+      </p>
+      <ul class="ledger-list mb-4">
+        {% for ver in ledger %}
+        <li>
+          <span class="ledger-badge">v{{ ver }}</span>
+          {% if ver == 1 %}Initial Schema (Herbs, Illnesses, Treatments)
+          {% elif ver == 2 %}Source Records &amp; Verbatim Provenance Ledger
+          {% elif ver == 3 %}Stage C Normalized Dravyaguna Ontologies &amp; Semantic Triggers
+          {% else %}Migration {{ ver }}{% endif %}
+        </li>
+        {% else %}
+        <li class="text-muted">No migrations recorded in ledger.</li>
+        {% endfor %}
+      </ul>
+
+      {% if not capability.stage_c_available %}
+      <div class="callout callout-warning">
+        <p><strong>Stage C is not yet enabled on this database.</strong></p>
+        <p class="text-sm">Upgrading enables normalized Dravyaguna concept catalogs, virya consensus reconciliation, and semantic profile views.</p>
+        <form method="post" action="{{ url_for('stage_c_upgrade_post') }}" onsubmit="return confirm('Upgrade this database to Stage C? This runs hermetic migrations safely with transactions.');">
+          <button type="submit" class="btn btn-primary mt-2">Upgrade to Stage C Now</button>
+        </form>
+      </div>
+      {% else %}
+      <div class="callout callout-success">
+        <p><strong>Database is fully upgraded to Stage C.</strong></p>
+        <p class="text-sm">Semantic queries, concept mapping, and virya reconciliation dashboards are fully operational.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Maintenance &amp; Admin Operations</h2>
+      <p class="text-sm text-muted mb-3">
+        To preserve web server responsiveness and ensure auditability, long-running batch operations are executed via the Typer CLI:
+      </p>
+
+      <div class="terminal-card mb-3">
+        <div class="terminal-header">Live CCRAS Web Scraping</div>
+        <div class="terminal-body">
+          <code>herbal-almanac scrape dravya --max-plants 25</code>
+          <p class="terminal-desc">Web scraping involves external network latency, retries, and rate limits; running via CLI prevents HTTP worker starvation.</p>
+        </div>
+      </div>
+
+      <div class="terminal-card mb-3">
+        <div class="terminal-header">Offline Stage C Backfill &amp; Migration</div>
+        <div class="terminal-body">
+          <code>herbal-almanac upgrade-stage-c --database &lt;path&gt; --yes</code>
+          <p class="terminal-desc">Transforms uncurated raw attributes into classical 6-domain concept claims with deduplication triggers.</p>
+        </div>
+      </div>
+
+      <div class="terminal-card">
+        <div class="terminal-header">Database Diagnostics &amp; Smoke Test</div>
+        <div class="terminal-body">
+          <code>python scripts/make_demo_db.py --output demo.db</code>
+          <p class="terminal-desc">Constructs a fully seeded offline demonstration database with Stage C features enabled in seconds.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
