@@ -739,3 +739,19 @@ Multi-source research platform
 ```
 
 The long-term objective is to build a system where Ayurvedic knowledge can be explored through standardized concepts while retaining the original evidence, terminology, and source history behind every assertion.
+
+---
+
+## 11. Milestone G – UI/CSS Polish & Accessibility Correctness
+
+Completed ahead of final evaluation to deliver a polished, accessible, and responsive user experience across desktop and mobile devices:
+
+- [x] **Task 1: Navigation & Route Cleanup:** Removed legacy `/stage-c/status` HTML template/route to prevent user confusion, redirected `POST /stage-c/upgrade` to `/` with 303, pointed topbar link to `records_view`, and ensured Stage C status reporting remains strictly via JSON API (`/api/stage-c/status`) and Typer CLI (`herbal-almanac stage-c-status`).
+- [x] **Task 2: Brand Favicon & Dynamic Cache-Busting:** Created standalone brand SVG favicon (`static/favicon.svg`), registered `/favicon.ico` route with HTTP 200/204 response, and added dynamic `css_version()` cache-busting timestamp query parameter (`styles.css?v=...`).
+- [x] **Task 3: Automated CSS Class Audit:** Created `scripts/audit_css_classes.py` to audit all template HTML class tokens against stylesheet selectors; added comprehensive base styling and component rules for all 24 previously unstyled template classes (0 unstyled classes).
+- [x] **Task 4: Herb List Thumbnail Grid:** Refactored `.herb-row` into a canonical 4-column CSS grid (`64px minmax(0, 1fr) minmax(0, 1fr) 20px`) with a fixed 56x56 thumbnail container, responsive wrapping, and `.herb-row--symbol` modifier for illness list views.
+- [x] **Task 5: Multilingual Herb Names & Script Support:** Added `herb_name(herb, lang)` helper in `herb_view.py` backed by `HerbGlossaryStore` with Indic script support (Devanagari, Tamil, Urdu `dir="rtl"`, etc.) and graceful non-availability indicators. Integrated `_language_bar.html` on `/herbs` preserving search filters and pagination params.
+- [x] **Task 6: Accessible Text Scaling (`rem` conversion):** Developed `scripts/px_to_rem.py` to convert all font-size declarations from `px` to `rem` (base 14px = 1rem), updated root `html` font size to percentage scale (`sm`: 81.25%, `md`: 87.5%, `lg`: 100%, `xl`: 112.5%), and expanded sidebar width to `18rem` for proportional scaling.
+- [x] **Task 7: Offline Inline SVG Icon Set:** Created `templates/_icons.html` defining a pure SVG `icon(name, size=18)` macro with 14 core Lucide/Feather stroke geometry icons, replacing all emojis and inconsistent Unicode symbols.
+- [x] **Task 8: Verification & Documentation:** Validated 0 unstyled CSS classes, achieved 261 passing hermetic offline tests, performed visual inspection across 1440px/1024px/390px viewports, and synchronized all project documentation.
+

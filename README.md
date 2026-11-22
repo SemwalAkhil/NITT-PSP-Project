@@ -419,7 +419,7 @@ Organizes Dravyaguna properties into canonical categories:
 - Interactive web forms (`/herbs/add`, `/illnesses/add`, `/treatments/add`) offering full feature parity with CLI insert commands.
 - Server-side validation and CSRF origin verification (`verify_same_origin`).
 - Explorers for treatments (`/treatments`), source attributes (`/attributes`), and records hub (`/records`).
-- Visual Stage C migration and capability dashboard (`/stage-c/status`).
+- Stage C JSON API (`/api/stage-c/status`) and CLI capability reports (`herbal-almanac stage-c-status`).
 
 ### Botanical Plant Imagery & SVG Fallback
 - Dynamic CCRAS DRAVYA plant image hotlinking on herb cards and detail pages.
@@ -513,7 +513,7 @@ Open your browser to:
 - Treatments Directory: [http://127.0.0.1:8000/treatments](http://127.0.0.1:8000/treatments)
 - Source Attributes Explorer: [http://127.0.0.1:8000/attributes](http://127.0.0.1:8000/attributes)
 - Records Hub & Exports: [http://127.0.0.1:8000/records](http://127.0.0.1:8000/records)
-- Stage C Architecture & Status: [http://127.0.0.1:8000/stage-c/status](http://127.0.0.1:8000/stage-c/status)
+- Stage C Capability API: [http://127.0.0.1:8000/api/stage-c/status](http://127.0.0.1:8000/api/stage-c/status)
 - Add Herb Data Form: [http://127.0.0.1:8000/herbs/add](http://127.0.0.1:8000/herbs/add)
 - Virya Reconciliation: [http://127.0.0.1:8000/stage-c/reconciliation/1](http://127.0.0.1:8000/stage-c/reconciliation/1)
 - Illness Explorer: [http://127.0.0.1:8000/illnesses](http://127.0.0.1:8000/illnesses)

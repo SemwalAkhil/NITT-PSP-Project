@@ -428,8 +428,8 @@ Comprehensive source attribute explorer displaying field names, values, source c
 ### 7.11 `GET /records` — Records & Data Hub
 Tabbed data hub summarizing records by group (`herbs`, `illnesses`, `treatments`, `attributes`, `doshas`) with live database metrics and export actions.
 
-### 7.12 `GET /stage-c/status` and `POST /stage-c/upgrade` — Stage C Architecture & Status
-Visual status dashboard showing schema migration ledger and one-click transaction upgrade to Stage C. Explains why web scraping is executed via the CLI.
+### 7.12 `POST /stage-c/upgrade` and Stage C Status Architecture
+The standalone HTML route `/stage-c/status` was deprecated and removed (returns 404) to streamline navigation. Stage C capabilities and migration statuses are exposed programmatically via the JSON API (`GET /api/stage-c/status`) and the CLI (`herbal-almanac stage-c-status`). One-click web upgrades remain supported via `POST /stage-c/upgrade`, which upgrades schema transactionally and redirects to `/` with HTTP 303.
 
 ### 7.13 CSV and JSON Exports
 - `GET /export/herbs.csv` and `GET /export/herbs.json`: Filtered or complete herb records.
@@ -439,9 +439,15 @@ Visual status dashboard showing schema migration ledger and one-click transactio
 
 Exports include formula injection protection (cells starting with `=`, `+`, `-`, or `@` prepended with `'`) and UTF-8 with BOM (`\ufeff`) encoding.
 
-### 7.14 Plant Imagery & Accessibility Architecture
+### 7.14 Brand Assets, Icons & Offline Presentation Architecture
+- **Favicon & Asset Versioning:** Packaged SVG brand mark (`static/favicon.svg`) served at `/favicon.ico` with HTTP 200/204 fallback. Dynamic `css_version()` injects stylesheet mtime timestamps (`styles.css?v=...`) to ensure cache-busting on style updates.
+- **Multilingual Herb Name Helper:** `herb_name(herb, lang)` in `herb_view.py` resolves localized Indic vernacular names (`hi`, `ta`, `ur`, etc.) via `HerbGlossaryStore` with graceful fallback to English and explicit non-availability indicators. Registered as both a Jinja global and filter.
+- **Offline Inline SVG Icon Set:** `templates/_icons.html` provides the `icon(name, size=18, class="")` macro containing pure SVG geometry for 14 core actions (e.g. `home`, `leaf`, `heart-pulse`, `search`, `download`, `accessibility`). Avoids external CDNs or brittle emoji wireframes on Windows.
+- **Developer Maintenance Scripts:**
+  - `scripts/audit_css_classes.py`: Scans all Jinja templates against `styles.css` selectors to enforce zero unstyled template classes.
+  - `scripts/px_to_rem.py`: Converts font-size `px` declarations to `rem` relative to a 14px base, configuring percentage-based root font sizes for accessible zooming.
 - **Plant Imagery:** Dynamic CCRAS DRAVYA URL generation (`https://dravya.ccras.org.in/resources/views/admin/required/upload/<plant_id>.jpg`) with lazy loading and local SVG fallback (`static/placeholder-herb.svg`).
-- **Accessibility (WCAG 2.1 AA):** Landmarks (`role="banner"`, `role="main"`, `role="contentinfo"`), skip link (`.skip-link`), accessibility drawer with text scaling (`sm`, `md`, `lg`, `xl`), contrast mode (normal/high), font switcher (default, clean sans, OpenDyslexic), and dark theme with `localStorage` persistence.
+- **Accessibility (WCAG 2.1 AA):** Landmarks (`role="banner"`, `role="main"`, `role="contentinfo"`), skip link (`.skip-link`), accessibility drawer with text scaling (`sm`, `md`, `lg`, `xl`), contrast mode (normal/high), font switcher (default, clean sans, OpenDyslexic), and dark theme with `localStorage` persistence. Full `rem`-based typography and proportional 18rem sidebar scaling.
 
 ## 8. JSON API Routes
 
