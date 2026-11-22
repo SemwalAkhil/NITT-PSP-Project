@@ -66,7 +66,7 @@
 <div class="herb-list">
 {% for illness in illnesses %}
   {% set res = resolve_illness(illness.english_name) %}
-  <a class="herb-row" href="{{ url_for('illness_detail', illness_id=illness.id) }}{% if current_language != 'en' %}?language={{ current_language }}{% endif %}">
+  <a class="herb-row herb-row--symbol" href="{{ url_for('illness_detail', illness_id=illness.id) }}{% if current_language != 'en' %}?language={{ current_language }}{% endif %}">
     <span class="herb-symbol">✚</span>
     <span class="herb-main">
       <strong>{{ res.english }}</strong>

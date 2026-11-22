@@ -59,7 +59,7 @@
   {% if herbs %}
   <div class="herb-list">
     {% for herb in herbs %}
-    <a class="herb-row" href="{{ url_for('herb_detail', herb_id=herb.id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">
+    <a class="herb-row herb-row--symbol" href="{{ url_for('herb_detail', herb_id=herb.id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">
       <span class="herb-symbol">✿</span>
       <span class="herb-main">
         <strong>{{ herb.original_name or herb.english_name }}</strong>

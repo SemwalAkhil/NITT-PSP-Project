@@ -622,22 +622,6 @@ html[data-theme="dark"] .a11y-btn.active {
 .text-sm { font-size: 11px; }
 
 /* Herb Images & Thumbnails */
-.herb-thumb-wrapper {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #e8eee5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.herb-thumb-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 .featured-image-card {
   padding: 12px;
 }
@@ -771,24 +755,78 @@ html[data-theme="dark"] .sidebar {
   display: block;
   min-height: 200px;
 }
+/* --- Task 4: Herb rows & thumbnails (consolidated) --- */
+.herb-row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1fr) 20px;
+  gap: 16px;
+  align-items: center;
+  min-width: 0;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+.herb-row:hover {
+  transform: translateY(-1px);
+  border-color: #ced6ca;
+  background: #fdfefc;
+}
 .herb-thumb-wrapper {
-  flex-shrink: 0;
   width: 56px;
   height: 56px;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
-  background: #e8eee5;
+  background: var(--sage);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 .herb-thumb-img {
-  width: 56px;
-  height: 56px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
 }
+.herb-main, .herb-botanical {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.herb-row--symbol {
+  grid-template-columns: 35px 1.1fr 1fr 20px;
+}
+@media (max-width: 760px) {
+  .herb-row {
+    grid-template-columns: 56px minmax(0, 1fr) 18px;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .herb-row .herb-botanical {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .herb-row .row-arrow {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .herb-row--symbol {
+    grid-template-columns: 32px 1fr 18px;
+  }
+}
 .image-credit-upload { font-style: italic; color: #15803d; }
+html[data-theme="dark"] .herb-row {
+  background: #18221b;
+  border-color: #263328;
+}
+html[data-theme="dark"] .herb-row:hover {
+  background: #1e2b22;
+  border-color: #35473b;
+}
 html[data-theme="dark"] .featured-image-wrapper { background: #1a211d; }
 html[data-theme="dark"] .herb-thumb-wrapper { background: #243029; }
 
