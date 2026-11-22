@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
 {% block title %}Source Attributes — Herbal Almanac{% endblock %}
 
 {% block content %}
@@ -18,9 +19,9 @@
     <div class="header-actions">
       {% if herb %}
       <a href="{{ url_for('herb_detail', herb_id=herb.id) }}" class="btn btn-secondary">← Back to Herb</a>
-      <a href="/herbs/{{ herb.id }}/export.csv" class="btn btn-secondary">Export Herb CSV</a>
+      <a href="/herbs/{{ herb.id }}/export.csv" class="btn btn-secondary">{{ icon('download', size=14) }} Export Herb CSV</a>
       {% else %}
-      <a href="/export/herbs.csv" class="btn btn-secondary">Export Herbs CSV</a>
+      <a href="/export/herbs.csv" class="btn btn-secondary">{{ icon('download', size=14) }} Export Herbs CSV</a>
       {% endif %}
     </div>
   </div>

@@ -1177,3 +1177,20 @@ html[data-contrast="high"] .localized-herb-name {
 html[data-contrast="high"][data-theme="dark"] .localized-herb-name {
   color: #ffffff;
 }
+
+/* Inline SVG Icon system */
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+.nav-icon .icon {
+  display: block;
+}

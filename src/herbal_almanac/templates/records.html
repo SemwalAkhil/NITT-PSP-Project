@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
 {% block title %}Records Hub — Herbal Almanac{% endblock %}
 
 {% block content %}
@@ -10,9 +11,9 @@
       <p class="page-subtitle">Inspect comprehensive record groups and export structured datasets in CSV or JSON.</p>
     </div>
     <div class="header-actions">
-      <a href="/export/herbs.csv" class="btn btn-secondary">Export Herbs CSV</a>
-      <a href="/export/illnesses.csv" class="btn btn-secondary">Export Illnesses CSV</a>
-      <a href="/export/treatments.csv" class="btn btn-secondary">Export Treatments CSV</a>
+      <a href="/export/herbs.csv" class="btn btn-secondary">{{ icon('download', size=14) }} Export Herbs CSV</a>
+      <a href="/export/illnesses.csv" class="btn btn-secondary">{{ icon('download', size=14) }} Export Illnesses CSV</a>
+      <a href="/export/treatments.csv" class="btn btn-secondary">{{ icon('download', size=14) }} Export Treatments CSV</a>
     </div>
   </div>
 

@@ -1,4 +1,5 @@
 <!doctype html>
+{% from "_icons.html" import icon %}
 <html lang="en" data-theme="light" data-font-size="md" data-font="default" data-contrast="normal">
 <head>
   <meta charset="utf-8">
@@ -35,38 +36,38 @@
       <div class="nav-label">EXPLORE &amp; RESEARCH</div>
       <nav class="side-nav" aria-label="Main navigation">
         <a class="{% if active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
-          <span class="nav-icon" aria-hidden="true">⌂</span> Overview
+          <span class="nav-icon" aria-hidden="true">{{ icon('home') }}</span> Overview
         </a>
         <a class="{% if active_page == 'guide' %}active{% endif %}" href="{{ url_for('guide') }}">
-          <span class="nav-icon" aria-hidden="true">📖</span> Guide &amp; About
+          <span class="nav-icon" aria-hidden="true">{{ icon('book-open') }}</span> Guide &amp; About
         </a>
         <a class="{% if active_page == 'herbs' %}active{% endif %}" href="{{ url_for('herb_list') }}">
-          <span class="nav-icon" aria-hidden="true">✿</span> Herb explorer
+          <span class="nav-icon" aria-hidden="true">{{ icon('leaf') }}</span> Herb explorer
         </a>
         <a class="{% if active_page == 'illnesses' %}active{% endif %}" href="{{ url_for('illness_list') }}">
-          <span class="nav-icon" aria-hidden="true">✚</span> Illness explorer
+          <span class="nav-icon" aria-hidden="true">{{ icon('heart-pulse') }}</span> Illness explorer
         </a>
         <a class="{% if active_page == 'treatments' %}active{% endif %}" href="{{ url_for('treatment_list') }}">
-          <span class="nav-icon" aria-hidden="true">⚕</span> Treatments
+          <span class="nav-icon" aria-hidden="true">{{ icon('link') }}</span> Treatments
         </a>
         <a class="{% if active_page == 'attributes' %}active{% endif %}" href="{{ url_for('attributes_list') }}">
-          <span class="nav-icon" aria-hidden="true">📑</span> Source Attributes
+          <span class="nav-icon" aria-hidden="true">{{ icon('file-text') }}</span> Source Attributes
         </a>
         <a class="{% if active_page == 'records' %}active{% endif %}" href="{{ url_for('records_view') }}">
-          <span class="nav-icon" aria-hidden="true">🗄</span> Records Hub &amp; Exports
+          <span class="nav-icon" aria-hidden="true">{{ icon('database') }}</span> Records Hub &amp; Exports
         </a>
       </nav>
 
       <div class="nav-label mt-3">DATA MANAGEMENT</div>
       <nav class="side-nav side-nav-sub" aria-label="Data entry actions">
-        <a href="{{ url_for('add_herb_form') }}"><span class="nav-icon" aria-hidden="true">+</span> Add Herb</a>
-        <a href="{{ url_for('add_illness_form') }}"><span class="nav-icon" aria-hidden="true">+</span> Add Illness</a>
-        <a href="{{ url_for('add_treatment_form') }}"><span class="nav-icon" aria-hidden="true">+</span> Link Treatment</a>
+        <a href="{{ url_for('add_herb_form') }}"><span class="nav-icon" aria-hidden="true">{{ icon('plus', size=14) }}</span> Add Herb</a>
+        <a href="{{ url_for('add_illness_form') }}"><span class="nav-icon" aria-hidden="true">{{ icon('plus', size=14) }}</span> Add Illness</a>
+        <a href="{{ url_for('add_treatment_form') }}"><span class="nav-icon" aria-hidden="true">{{ icon('plus', size=14) }}</span> Link Treatment</a>
       </nav>
 
       <div class="sidebar-accessibility">
         <button type="button" class="btn btn-sm btn-accessibility" id="a11y-toggle" aria-expanded="false" aria-controls="a11y-panel">
-          <span aria-hidden="true">⚙</span> Accessibility
+          {{ icon('accessibility', size=16) }} Accessibility
         </button>
       </div>
 
@@ -84,7 +85,7 @@
             <span class="a11y-label-full">Accessibility Options</span>
             <span class="a11y-label-short" aria-hidden="true">A11y</span>
           </button>
-          <a class="topbar-link" href="{{ url_for('records_view') }}">Explore records <span aria-hidden="true">↗</span></a>
+          <a class="topbar-link" href="{{ url_for('records_view') }}">Explore records {{ icon('arrow-up-right', size=14) }}</a>
         </div>
       </header>
 

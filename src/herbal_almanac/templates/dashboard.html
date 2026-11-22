@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
 {% block title %}Overview · Herbal Almanac{% endblock %}
 {% block content %}
 <section class="page-heading">
@@ -7,7 +8,7 @@
 </section>
 <form class="search-form" method="get" action="{{ url_for('herb_list') }}" style="margin-bottom:28px;">
   <label class="search-box">
-    <span>⌕</span>
+    <span>{{ icon('search', size=18) }}</span>
     <input type="search" name="q" placeholder="Search across herbs or illnesses…" aria-label="Search">
     <button type="submit" formaction="{{ url_for('herb_list') }}">Search Herbs</button>
     <button type="submit" formaction="{{ url_for('illness_list') }}" class="button" style="background:#e8eee3;color:#214632;border:1px solid #c8d6c4;">Search Illnesses</button>
@@ -28,10 +29,10 @@
 <section class="section-block">
   <div class="section-title"><div><p class="eyebrow">LIBRARY AT A GLANCE</p><h2>Your collection</h2></div><span class="muted">Live counts from your SQLite database</span></div>
   <div class="stat-grid">
-    <article class="stat-card"><span class="stat-icon">✿</span><p>HERB RECORDS</p><strong>{{ "{:,}".format(summary.herbs) }}</strong><small>Plant identities</small></article>
-    <article class="stat-card"><span class="stat-icon">◈</span><p>ILLNESS TERMS</p><strong>{{ "{:,}".format(summary.illnesses) }}</strong><small>Condition references</small></article>
-    <article class="stat-card"><span class="stat-icon">⌁</span><p>TREATMENT LINKS</p><strong>{{ "{:,}".format(summary.treatments) }}</strong><small>Herb associations</small></article>
-    <article class="stat-card"><span class="stat-icon">▤</span><p>ATTRIBUTES</p><strong>{{ "{:,}".format(summary.attributes) }}</strong><small>Source data points</small></article>
+    <article class="stat-card"><span class="stat-icon">{{ icon('leaf', size=16) }}</span><p>HERB RECORDS</p><strong>{{ "{:,}".format(summary.herbs) }}</strong><small>Plant identities</small></article>
+    <article class="stat-card"><span class="stat-icon">{{ icon('heart-pulse', size=16) }}</span><p>ILLNESS TERMS</p><strong>{{ "{:,}".format(summary.illnesses) }}</strong><small>Condition references</small></article>
+    <article class="stat-card"><span class="stat-icon">{{ icon('link', size=16) }}</span><p>TREATMENT LINKS</p><strong>{{ "{:,}".format(summary.treatments) }}</strong><small>Herb associations</small></article>
+    <article class="stat-card"><span class="stat-icon">{{ icon('file-text', size=16) }}</span><p>ATTRIBUTES</p><strong>{{ "{:,}".format(summary.attributes) }}</strong><small>Source data points</small></article>
   </div>
 </section>
 <section class="section-block recent-section">
@@ -49,12 +50,12 @@
         {% endif %}
       {% endif %}
       <p class="latin">{{ herb.botanical_name or "Botanical identity not recorded" }}</p>
-      <span class="card-arrow">↗</span>
+      <span class="card-arrow">{{ icon('arrow-up-right', size=14) }}</span>
     </a>
     {% endfor %}
   </div>
   {% else %}
-  <div class="empty-state"><span>✿</span><h3>Your library is ready to grow</h3><p>No herb records are stored yet. Use the existing CLI scraper to populate your database, then return here to explore them.</p></div>
+  <div class="empty-state"><span>{{ icon('leaf', size=28) }}</span><h3>Your library is ready to grow</h3><p>No herb records are stored yet. Use the existing CLI scraper to populate your database, then return here to explore them.</p></div>
   {% endif %}
 </section>
 <section class="section-block">
@@ -71,12 +72,12 @@
       {% endif %}
       <p class="latin" style="margin-top:2px;">Original: {{ illness.english_name }}</p>
       <p class="latin">{{ illness.herb_count }} linked {% if illness.herb_count == 1 %}herb{% else %}herbs{% endif %}</p>
-      <span class="card-arrow">↗</span>
+      <span class="card-arrow">{{ icon('arrow-up-right', size=14) }}</span>
     </a>
     {% endfor %}
   </div>
   {% else %}
-  <div class="empty-state"><span>✚</span><h3>No therapeutic links recorded yet</h3><p>As you add herbs and therapeutic usages to your database, the most frequently addressed conditions will appear here.</p></div>
+  <div class="empty-state"><span>{{ icon('heart-pulse', size=28) }}</span><h3>No therapeutic links recorded yet</h3><p>As you add herbs and therapeutic usages to your database, the most frequently addressed conditions will appear here.</p></div>
   {% endif %}
 </section>
 {% endblock %}

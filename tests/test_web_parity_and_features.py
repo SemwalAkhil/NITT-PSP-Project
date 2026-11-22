@@ -677,3 +677,48 @@ def test_text_scaling_rem_and_accessibility_font_size(tmp_path: Path):
     assert ".main-area{margin-left:18rem;" in css
 
 
+def test_inline_svg_icons_and_no_emojis_in_base_nav():
+    from jinja2 import Environment, FileSystemLoader
+
+    templates_dir = Path(__file__).resolve().parent.parent / "src" / "herbal_almanac" / "templates"
+    env = Environment(loader=FileSystemLoader(templates_dir))
+
+    # 1. Test _icons.html renders valid SVG for all defined icon names
+    icon_template = env.from_string("{% from '_icons.html' import icon %}{{ icon(name, size=size) }}")
+    icon_names = [
+        "home",
+        "book-open",
+        "leaf",
+        "heart-pulse",
+        "link",
+        "file-text",
+        "database",
+        "plus",
+        "search",
+        "arrow-up-right",
+        "accessibility",
+        "download",
+        "upload",
+        "trash",
+    ]
+    for name in icon_names:
+        rendered = icon_template.render(name=name, size=18)
+        assert "<svg" in rendered
+        assert "</svg>" in rendered
+        assert f'class="icon icon-{name}' in rendered
+        assert 'viewBox="0 0 24 24"' in rendered
+        assert 'aria-hidden="true"' in rendered
+
+    # 2. Test base.html sidebar nav does not contain emojis
+    base_html = (templates_dir / "base.html").read_text(encoding="utf-8")
+    sidebar_match = re.search(r'<aside class="sidebar".*?</aside>', base_html, re.DOTALL)
+    assert sidebar_match is not None
+    sidebar_text = sidebar_match.group(0)
+
+    # Emoji unicode ranges: Miscellaneous Symbols and Pictographs, Emoticons, Transport/Map, Supplemental Symbols
+    emoji_pattern = re.compile(r"[\U0001F300-\U0001FAFF\U00002600-\U000027BF]")
+    emojis_found = emoji_pattern.findall(sidebar_text)
+    assert emojis_found == [], f"Found emoji characters in sidebar nav: {emojis_found}"
+
+
+
