@@ -9,6 +9,12 @@
   <div>
     <p class="eyebrow">HERB RECORD · {{ "%04d"|format(herb.id) }}</p>
     <h1>{{ herb.original_name or herb.english_name }}</h1>
+    {% if current_language != 'en' %}
+      {% set h_name = herb_name(herb, current_language) %}
+      {% if h_name and h_name != herb.english_name %}
+        <span class="localized-herb-name" lang="{{ current_language }}" {% if current_language == 'ur' %}dir="rtl" style="display:inline-block;text-align:right;"{% endif %} style="display:block;color:var(--green);font-size:1.3em;margin:4px 0 8px 0;font-weight:600;">{{ h_name }}</span>
+      {% endif %}
+    {% endif %}
     <p class="detail-common">{{ herb.english_name }}</p>
     <p class="latin detail-latin">{{ herb.botanical_name or "Botanical identity not recorded" }}</p>
     <div class="header-actions-inline" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -85,7 +91,7 @@
             {% for vn in v_names %}
             <tr>
               <td><strong>{{ vn.language }}</strong></td>
-              <td lang="{{ vn.lang_code }}"><strong>{{ vn.name }}</strong></td>
+              <td lang="{{ vn.lang_code }}" {% if vn.lang_code == 'ur' %}dir="rtl"{% endif %}><strong>{{ vn.name }}</strong></td>
             </tr>
             {% endfor %}
           </tbody>

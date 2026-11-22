@@ -616,3 +616,42 @@ def test_favicon_route_and_link(tmp_path: Path):
     assert res_dash.status_code == 200
     assert '<link rel="icon" type="image/svg+xml"' in res_dash.text
     assert 'styles.css?v=' in res_dash.text
+
+
+def test_multilingual_herb_names_and_language_bar_on_herbs_page(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    # Add herb 1 (Talisha / Abies webbiana)
+    h_tal = db.add_herb("Talisha", botanical_name="Abies webbiana")
+    # Add herb with botanical name Aegle marmelos (Bael / Bilva, ID 16 in glossary)
+    h_bael = db.add_herb("Bael", botanical_name="Aegle marmelos")
+    # Add a fictional herb that has no glossary translation
+    h_none = db.add_herb("Fictional Herb XYZ", botanical_name="Nonexistent species")
+
+    # 1. /herbs?language=hi renders Devanagari 'बेल' with lang="hi"
+    res_hi = client.get("/herbs?language=hi")
+    assert res_hi.status_code == 200
+    assert 'lang="hi"' in res_hi.text
+    assert "बेल" in res_hi.text
+    assert '<input type="hidden" name="language" value="hi">' in res_hi.text
+
+    # 2. /herbs?language=ta renders Tamil script 'வில்வம்' with lang="ta"
+    res_ta = client.get("/herbs?language=ta")
+    assert res_ta.status_code == 200
+    assert 'lang="ta"' in res_ta.text
+    assert "வில்வம்" in res_ta.text
+    assert "(name not available in Tamil)" in res_ta.text
+
+    # 3. /herbs/1?language=ur contains dir="rtl" on the Urdu name span
+    res_ur = client.get("/herbs/1?language=ur")
+    assert res_ur.status_code == 200
+    assert 'dir="rtl"' in res_ur.text
+    assert "تالیس پتر" in res_ur.text
+
+    # 4. Pagination links keep language param
+    for i in range(15):
+        db.add_herb(f"Fever Herb {i}", botanical_name=f"Fever species {i}")
+
+    res_page = client.get("/herbs?language=hi&q=fever")
+    assert res_page.status_code == 200
+    assert "language=hi" in res_page.text
+

@@ -47,6 +47,7 @@ from .herb_view import (
     group_attributes,
     herb_image_url,
     herb_vernacular_table,
+    herb_name,
 )
 from .herb_glossary import (
     resolve_herb,
@@ -271,6 +272,8 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
     templates.env.filters["resolve_herb"] = resolve_herb
     templates.env.globals["search_herb_glossary"] = search_herb_glossary
     templates.env.filters["search_herb_glossary"] = search_herb_glossary
+    templates.env.globals["herb_name"] = herb_name
+    templates.env.filters["herb_name"] = herb_name
 
     def _css_version() -> str:
         try:

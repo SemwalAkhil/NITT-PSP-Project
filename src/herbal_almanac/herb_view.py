@@ -527,3 +527,35 @@ def herb_vernacular_table(herb: dict[str, Any] | None) -> list[dict[str, str]]:
             })
     return rows
 
+
+def herb_name(herb: dict[str, Any] | None, lang: str | None = "en") -> str | None:
+    """Return herb name in the requested language code ('hi', 'ta', 'ur', 'en', etc.).
+
+    Resolves the herb via HerbGlossaryStore (by plant ID or fallback match).
+    If lang is 'en' and no glossary entry is found, returns herb['english_name'].
+    If lang != 'en' and no translation exists in that language, returns None.
+    """
+    if not herb:
+        return None
+    from .herb_glossary import get_herb_glossary_store
+
+    store = get_herb_glossary_store()
+    plant_id = store.get_plant_id(herb)
+    resolved = store.resolve_by_id(plant_id) if plant_id else None
+    if not resolved:
+        resolved = store.resolve_herb(
+            herb.get("botanical_name") or herb.get("original_name") or herb.get("english_name")
+        )
+
+    target_lang = (lang or "en").lower()
+    if resolved:
+        name = resolved.get_name(target_lang)
+        if name:
+            return name
+
+    if target_lang == "en":
+        return herb.get("english_name") or herb.get("original_name")
+
+    return None
+
+

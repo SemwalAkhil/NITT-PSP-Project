@@ -35,11 +35,22 @@
   </div>
 </section>
 <section class="section-block recent-section">
-  <div class="section-title"><div><p class="eyebrow">RECENTLY ADDED</p><h2>Herbs in your library</h2></div><a class="text-link" href="{{ url_for('herb_list') }}">View all <span>→</span></a></div>
+  <div class="section-title"><div><p class="eyebrow">RECENTLY ADDED</p><h2>Herbs in your library</h2></div><a class="text-link" href="{{ url_for('herb_list') }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">View all <span>→</span></a></div>
   {% if summary.recent_herbs %}
   <div class="herb-grid">
     {% for herb in summary.recent_herbs %}
-    <a class="herb-card" href="{{ url_for('herb_detail', herb_id=herb.id) }}"><span class="card-index">HERB · {{ "%04d"|format(herb.id) }}</span><h3>{{ herb.original_name or herb.english_name }}</h3><p class="latin">{{ herb.botanical_name or "Botanical identity not recorded" }}</p><span class="card-arrow">↗</span></a>
+    <a class="herb-card" href="{{ url_for('herb_detail', herb_id=herb.id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">
+      <span class="card-index">HERB · {{ "%04d"|format(herb.id) }}</span>
+      <h3>{{ herb.original_name or herb.english_name }}</h3>
+      {% if current_language and current_language != 'en' %}
+        {% set h_name = herb_name(herb, current_language) %}
+        {% if h_name and h_name != herb.english_name %}
+        <p style="color:#214632;font-weight:600;margin:2px 0;" lang="{{ current_language }}" {% if current_language == 'ur' %}dir="rtl"{% endif %}>{{ h_name }}</p>
+        {% endif %}
+      {% endif %}
+      <p class="latin">{{ herb.botanical_name or "Botanical identity not recorded" }}</p>
+      <span class="card-arrow">↗</span>
+    </a>
     {% endfor %}
   </div>
   {% else %}
