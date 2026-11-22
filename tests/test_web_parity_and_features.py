@@ -16,6 +16,7 @@ import io
 from pathlib import Path
 import re
 import sqlite3
+import urllib.parse
 import pytest
 from fastapi.testclient import TestClient
 
@@ -748,6 +749,86 @@ def test_no_emojis_in_any_templates():
                 violations.append(f"{template_file.name}:{i} contains {real_matches}")
 
     assert violations == [], f"Found emojis in templates: {violations}"
+
+
+def test_multilingual_herb_search_regression(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    db.add_herb("Bael", botanical_name="Aegle marmelos", source_record_id=16)
+    db.add_herb("Neem", botanical_name="Azadirachta indica", source_record_id=47)
+
+    # 1. Search Hindi "बेल" -> returns Bael, not Neem
+    res_hi = client.get("/herbs?q=" + urllib.parse.quote("बेल") + "&language=hi")
+    assert res_hi.status_code == 200
+    assert "बेल" in res_hi.text or "Bael" in res_hi.text
+    assert "Neem" not in res_hi.text
+
+    # 2. Search Tamil "வில்வம்" -> returns Bael, not Neem
+    res_ta = client.get("/herbs?q=" + urllib.parse.quote("வில்வம்") + "&language=ta")
+    assert res_ta.status_code == 200
+    assert "வில்வம்" in res_ta.text or "Bael" in res_ta.text
+    assert "Neem" not in res_ta.text
+
+    # 3. Search Telugu "మారేడు" -> returns Bael, not Neem
+    res_te = client.get("/herbs?q=" + urllib.parse.quote("మారేడు") + "&language=te")
+    assert res_te.status_code == 200
+    assert "మారేడు" in res_te.text or "Bael" in res_te.text
+    assert "Neem" not in res_te.text
+
+    # 4. Search Hindi "नीम" -> returns Neem, not Bael
+    res_neem = client.get("/herbs?q=" + urllib.parse.quote("नीम") + "&language=hi")
+    assert res_neem.status_code == 200
+    assert "नीम" in res_neem.text or "Neem" in res_neem.text
+    assert "Bael" not in res_neem.text
+
+
+def test_treatments_multilingual_herb_names_in_glossary(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    herb_id = db.add_herb("Bael", botanical_name="Aegle marmelos", source_record_id=16)
+    illness_id = db.add_illness("KAsa")
+    db.add_treatment(herb_id, illness_id)
+
+    res = client.get("/treatments?language=hi")
+    assert res.status_code == 200
+    assert "बेल" in res.text
+
+
+def test_url_query_encoding_and_clear_search_preserves_language(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    db.add_herb("Bael", botanical_name="Aegle marmelos", source_record_id=16)
+    db.add_illness("KAsa")
+
+    raw_query = "a & b#c ü"
+    enc_q = urllib.parse.quote(raw_query)
+
+    # Export links and pagination encode characters safely
+    res_herbs = client.get(f"/herbs?q={enc_q}&language=hi")
+    assert res_herbs.status_code == 200
+    csv_match = re.search(r'href="(/export/herbs\.csv\?[^"]+)"', res_herbs.text)
+    assert csv_match is not None, "CSV export link not found"
+    parsed_csv = urllib.parse.urlsplit(csv_match.group(1))
+    qs_csv = urllib.parse.parse_qs(parsed_csv.query)
+    assert qs_csv["q"][0] == raw_query
+
+    # /illnesses "Clear search" preserves current_language
+    res_ill = client.get(f"/illnesses?q={enc_q}&language=ta")
+    assert res_ill.status_code == 200
+    clear_match = re.search(r'href="([^"]*illnesses\?[^"]+)">Clear search', res_ill.text)
+    assert clear_match is not None, "Clear search link not found on illnesses"
+    parsed_clear = urllib.parse.urlsplit(clear_match.group(1))
+    qs_clear = urllib.parse.parse_qs(parsed_clear.query)
+    assert qs_clear["language"][0] == "ta"
+
+
+def test_user_visible_a11y_string_absent(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    db.add_herb("Bael", botanical_name="Aegle marmelos", source_record_id=16)
+
+    for path in ["/", "/herbs", "/illnesses", "/treatments", "/attributes", "/records", "/guide"]:
+        res = client.get(path)
+        assert res.status_code == 200
+        # Assert user-visible string 'A11y' does not appear anywhere in rendered HTML
+        assert "A11y" not in res.text, f"'A11y' found in rendered HTML of {path}"
+
 
 
 

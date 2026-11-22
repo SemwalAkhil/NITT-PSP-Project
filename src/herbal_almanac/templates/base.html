@@ -217,29 +217,29 @@
           var theme = t.dataset.setTheme;
           document.documentElement.setAttribute('data-theme', theme);
           localStorage.setItem('ha_theme', theme);
-          updateActiveA11y();
+          updateActiveAccessibility();
         }
         if (t.dataset.setFontSize) {
           var size = t.dataset.setFontSize;
           document.documentElement.setAttribute('data-font-size', size);
           localStorage.setItem('ha_font_size', size);
-          updateActiveA11y();
+          updateActiveAccessibility();
         }
         if (t.dataset.setContrast) {
           var contrast = t.dataset.setContrast;
           document.documentElement.setAttribute('data-contrast', contrast);
           localStorage.setItem('ha_contrast', contrast);
-          updateActiveA11y();
+          updateActiveAccessibility();
         }
         if (t.dataset.setFont) {
           var font = t.dataset.setFont;
           document.documentElement.setAttribute('data-font', font);
           localStorage.setItem('ha_font', font);
-          updateActiveA11y();
+          updateActiveAccessibility();
         }
       });
 
-      function updateActiveA11y() {
+      function updateActiveAccessibility() {
         var theme = document.documentElement.getAttribute('data-theme') || 'light';
         var size = document.documentElement.getAttribute('data-font-size') || 'md';
         var contrast = document.documentElement.getAttribute('data-contrast') || 'normal';
@@ -259,7 +259,7 @@
         });
       }
 
-      updateActiveA11y();
+      updateActiveAccessibility();
     })();
   </script>
 </body>
