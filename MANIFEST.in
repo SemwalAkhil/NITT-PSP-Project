@@ -1,0 +1,5 @@
+include README.md
+recursive-include src/herbal_almanac/templates *.html
+recursive-include src/herbal_almanac/static *.css *.svg
+recursive-include src/herbal_almanac/data *.csv
+recursive-include src/herbal_almanac/migrations *.sql
