@@ -41,7 +41,7 @@
       <small>{{ herb.original_name or herb.english_name }}</small>
     {% else %}
       {% if h_name %}
-        <strong lang="{{ current_language }}" {% if current_language == 'ur' %}dir="rtl" style="display:inline-block;text-align:right;"{% endif %}>{{ h_name }}</strong>
+        <strong lang="{{ current_language }}" {% if current_language == 'ur' %}dir="rtl" style="display:block;text-align:right;"{% endif %}>{{ h_name }}</strong>
         <small>{{ herb.english_name or herb.original_name }} · <span class="muted">Original term · {{ herb.original_name or herb.english_name }}</span></small>
       {% else %}
         <strong>{{ herb.english_name or herb.original_name }}</strong>

@@ -1172,8 +1172,29 @@ html[data-contrast="high"][data-theme="dark"] .entity-link { color: #ffffff; tex
   font-weight: 600;
 }
 .localized-herb-name[dir="rtl"] {
-  display: inline-block;
+  display: block;
   text-align: right;
+  direction: rtl;
+  width: 100%;
+  padding-right: 2px;
+}
+.herb-main strong[dir="rtl"] {
+  display: block;
+  text-align: right;
+  direction: rtl;
+  width: 100%;
+  padding-right: 2px;
+}
+html[data-theme="dark"] .text-link {
+  color: #81c784;
+}
+html[data-contrast="high"] .text-link {
+  color: #000000;
+  text-decoration: underline;
+}
+html[data-contrast="high"][data-theme="dark"] .text-link {
+  color: #ffffff;
+  text-decoration: underline;
 }
 html[data-theme="dark"] .localized-herb-name {
   color: #81c784;
