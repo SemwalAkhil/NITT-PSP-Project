@@ -755,3 +755,19 @@ Completed ahead of final evaluation to deliver a polished, accessible, and respo
 - [x] **Task 7: Offline Inline SVG Icon Set:** Created `templates/_icons.html` defining a pure SVG `icon(name, size=18)` macro with 14 core Lucide/Feather stroke geometry icons, replacing all emojis and inconsistent Unicode symbols.
 - [x] **Task 8: Verification & Documentation:** Validated 0 unstyled CSS classes, achieved 261 passing hermetic offline tests, performed visual inspection across 1440px/1024px/390px viewports, and synchronized all project documentation.
 
+---
+
+## 12. Milestone H – Final Polish & Clean-Install Integrity
+
+Executed as the final pre-submission verification and stabilization pass to guarantee rock-solid usability, safe URL encoding, accessibility, and zero-defect installation across modern Python environments:
+
+- [x] **Task 1: Safe URL Building with `qs` Helper:** Implemented `qs(**params)` template global in `herb_view.py` and `web_app.py` using `urllib.parse.urlencode`, automatically omitting empty string and `None` parameters while safely encoding query parameters and non-ASCII Unicode strings across `/herbs`, `/illnesses`, `/treatments`, `/attributes`, and `/records`. Clear search links properly retain active language choices.
+- [x] **Task 2: Duplicate HTML Attribute Elimination:** Fixed duplicate inline style attribute on Urdu localized herb names in `herb_detail_semantic.html`, moving styling into canonical CSS rules `.localized-herb-name[dir="rtl"]`. Implemented automated HTML parser linter `scripts/lint_templates.py` and hermetic test `test_template_duplicate_attributes_linter` to permanently prevent attribute duplication.
+- [x] **Task 3: Mobile Accessibility Indicator & 360px Topbar Fit:** Replaced all colloquial and internal "A11y" user-facing labels with standard "Accessibility" or SVG iconography. Adjusted mobile responsive rules so that the brand mark and accessibility pill fit comfortably on a single line at 360px viewport width without horizontal wrapping or clipping.
+- [x] **Task 4: Full Lucide SVG Icon Migration:** Replaced all remaining raw emojis and pictographs (`📷`, `📂`, `✿`, `⚖`) across all templates with inline SVG geometry (`camera`, `upload`, `scale`, `leaf`) from `_icons.html`. Added `test_no_emojis_in_any_templates` enforcing 100% pure SVG presentation.
+- [x] **Task 5: Visual Verification & RTL Alignment:** Verified responsive layouts across 1440px desktop and 390px/360px mobile viewports. Aligned Urdu herb names (`dir="rtl"`) with full-width right alignment (`.localized-herb-name[dir="rtl"]` and `.herb-main strong[dir="rtl"]`) with protective padding. Styled "Clear search" text links with dark-mode and high-contrast theme overrides.
+- [x] **Task 6: Regression & Integrity Test Suite:** Added comprehensive regression tests in `tests/test_stage_c_web.py` covering multilingual search (Bael / Bilva in Hindi, Tamil, Telugu), URL encoding round-tripping for special characters, localized herb display in treatment explorer, absence of raw emojis, and absence of user-visible "A11y" strings.
+- [x] **Task 7: Clean-Install Smoke Test:** Promoted web runtime requirements (`fastapi`, `jinja2`, `python-multipart`, `uvicorn[standard]`) to core `project.dependencies` in `pyproject.toml` and created `MANIFEST.in` ensuring all HTML templates, static assets, migrations, and glossary CSVs package into wheels and sdists. Executed complete non-editable `pip install .` and automated HTTP endpoint smoke test in an isolated virtual environment.
+- [x] **Task 8: Documentation & Release Tagging:** Synchronized SDLC plan and web application reference manuals, confirmed zero unstyled CSS classes and clean test suite passing, tagged release as `demo-ready`, and pushed to `origin/main`.
+
+

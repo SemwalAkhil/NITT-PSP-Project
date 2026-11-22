@@ -231,8 +231,9 @@ Registered globals:
 - `resolve_herb`
 - `search_herb_glossary`
 - `herb_name`
+- `qs`
 
-The resolver is registered as both a filter and a global so templates can use it in different expression contexts.
+The resolver is registered as both a filter and a global so templates can use it in different expression contexts. The `qs(**params)` global builds a safe URL query string (e.g. `?q=vasa&language=ta`, or `""` if all parameters are empty/omitted) via `urllib.parse.urlencode`, automatically omitting empty string and `None` parameters while percent-encoding spaces, special characters, and non-ASCII Unicode strings.
 
 #### Internal database helper
 
