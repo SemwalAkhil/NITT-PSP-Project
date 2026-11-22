@@ -11,12 +11,12 @@
   </div>
   <div class="header-actions-inline">
     <a href="{{ url_for('add_herb_form') }}" class="btn btn-primary btn-sm">+ Add Herb</a>
-    <a href="/export/herbs.csv{% if query %}?q={{ query }}{% endif %}" class="btn btn-secondary btn-sm">{{ icon('download', size=14) }} Export CSV</a>
-    <a href="/export/herbs.json{% if query %}?q={{ query }}{% endif %}" class="btn btn-secondary btn-sm">{{ icon('download', size=14) }} Export JSON</a>
+    <a href="/export/herbs.csv?{% if query %}q={{ query }}&{% endif %}language={{ current_language }}" class="btn btn-secondary btn-sm">{{ icon('download', size=14) }} Export CSV</a>
+    <a href="/export/herbs.json?{% if query %}q={{ query }}&{% endif %}language={{ current_language }}" class="btn btn-secondary btn-sm">{{ icon('download', size=14) }} Export JSON</a>
     <span class="result-count">{{ "{:,}".format(total) }} {% if total == 1 %}HERB{% else %}HERBS{% endif %}</span>
   </div>
 </section>
-{{ language_bar('herb_list', {}, current_language, {'q': query} if query else {}) }}
+{{ language_bar('herb_list', {}, current_language, {'q': query}) }}
 <form class="search-form" method="get" action="{{ url_for('herb_list') }}"><label class="search-box"><span>{{ icon('search', size=18) }}</span><input type="search" name="q" value="{{ query }}" placeholder="Search by English, Sanskrit, Hindi, Tamil, or botanical name…" aria-label="Search herbs"><input type="hidden" name="language" value="{{ current_language }}"><button type="submit">Search</button></label></form>
 {% if herbs %}
 <div class="results-heading"><span>Showing {{ (page - 1) * page_size + 1 }}–{{ (page - 1) * page_size + herbs|length }} of {{ total }}</span><span>Sorted by relevance</span></div>
@@ -33,15 +33,15 @@
   <span class="herb-main">
     {% set h_name = herb_name(herb, current_language) %}
     {% if current_language == 'en' %}
-      <strong>{{ herb.original_name or herb.english_name }}</strong>
-      <small>{{ herb.english_name }}</small>
+      <strong>{{ h_name or herb.english_name or herb.original_name }}</strong>
+      <small>{{ herb.original_name or herb.english_name }}</small>
     {% else %}
       {% if h_name %}
         <strong lang="{{ current_language }}" {% if current_language == 'ur' %}dir="rtl" style="display:inline-block;text-align:right;"{% endif %}>{{ h_name }}</strong>
-        <small>{{ herb.english_name }} · <span class="muted">Original: {{ herb.original_name or herb.english_name }}</span></small>
+        <small>{{ herb.english_name or herb.original_name }} · <span class="muted">Original term · {{ herb.original_name or herb.english_name }}</span></small>
       {% else %}
-        <strong>{{ herb.english_name }}</strong>
-        <small class="muted"><em>(name not available in {{ supported_languages[current_language].name }})</em> · Original: {{ herb.original_name or herb.english_name }}</small>
+        <strong>{{ herb.english_name or herb.original_name }}</strong>
+        <small class="muted"><em>(name not available in {{ supported_languages[current_language].name }})</em> · <span class="muted">Original term · {{ herb.original_name or herb.english_name }}</span></small>
       {% endif %}
     {% endif %}
   </span>

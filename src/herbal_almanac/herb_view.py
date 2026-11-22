@@ -532,8 +532,8 @@ def herb_name(herb: dict[str, Any] | None, lang: str | None = "en") -> str | Non
     """Return herb name in the requested language code ('hi', 'ta', 'ur', 'en', etc.).
 
     Resolves the herb via HerbGlossaryStore (by plant ID or fallback match).
-    If lang is 'en' and no glossary entry is found, returns herb['english_name'].
-    If lang != 'en' and no translation exists in that language, returns None.
+    If lang is 'en': returns glossary English name if available, else herb['english_name'].
+    If lang != 'en': returns native script name if available and not 'N/A', else None.
     """
     if not herb:
         return None
@@ -549,12 +549,17 @@ def herb_name(herb: dict[str, Any] | None, lang: str | None = "en") -> str | Non
 
     target_lang = (lang or "en").lower()
     if resolved:
-        name = resolved.get_name(target_lang)
-        if name:
-            return name
+        val = resolved.get_name(target_lang)
+        if val and val.strip() and val.strip() != "N/A":
+            return val.strip()
 
     if target_lang == "en":
-        return herb.get("english_name") or herb.get("original_name")
+        val = herb.get("english_name")
+        if val and val.strip() and val.strip() != "N/A":
+            return val.strip()
+        orig = herb.get("original_name")
+        if orig and orig.strip() and orig.strip() != "N/A":
+            return orig.strip()
 
     return None
 

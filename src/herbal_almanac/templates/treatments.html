@@ -20,9 +20,10 @@
   <div class="filter-bar">
     <form method="get" action="{{ url_for('treatment_list') }}" class="search-form">
       <input type="search" name="q" value="{{ query }}" placeholder="Filter treatments by herb or illness..." class="search-input">
+      {% if current_language and current_language != 'en' %}<input type="hidden" name="language" value="{{ current_language }}">{% endif %}
       <button type="submit" class="btn btn-primary">Filter</button>
       {% if query %}
-      <a href="{{ url_for('treatment_list') }}" class="btn btn-secondary">Clear</a>
+      <a href="{{ url_for('treatment_list') }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}" class="btn btn-secondary">Clear</a>
       {% endif %}
     </form>
     <div class="filter-count">
@@ -43,15 +44,22 @@
       <tbody>
         {% for t in treatments %}
         {% set ill_res = resolve_illness(t.illness_name) %}
+        {% set h_dict = {'id': t.herb_id, 'english_name': t.herb_name, 'original_name': t.herb_name} %}
+        {% set h_name = herb_name(h_dict, current_language) %}
         <tr>
           <td>
-            <a href="{{ url_for('herb_detail', herb_id=t.herb_id) }}" class="entity-link">
-              <strong>{{ t.herb_name }}</strong>
+            <a href="{{ url_for('herb_detail', herb_id=t.herb_id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}" class="entity-link">
+              {% if current_language != 'en' and h_name %}
+                <strong lang="{{ current_language }}" {% if current_language == 'ur' %}dir="rtl"{% endif %}>{{ h_name }}</strong>
+                <span class="text-sm text-muted">({{ t.herb_name }})</span>
+              {% else %}
+                <strong>{{ h_name or t.herb_name }}</strong>
+              {% endif %}
             </a>
             <span class="text-muted text-sm">#{{ t.herb_id }}</span>
           </td>
           <td>
-            <a href="{{ url_for('illness_detail', illness_id=t.illness_id) }}" class="entity-link">
+            <a href="{{ url_for('illness_detail', illness_id=t.illness_id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}" class="entity-link">
               <strong>{{ t.illness_name | readable_illness }}</strong>
             </a>
             {% if ill_res.english and ill_res.english != t.illness_name %}
@@ -59,8 +67,8 @@
             {% endif %}
           </td>
           <td>
-            <a href="{{ url_for('herb_detail', herb_id=t.herb_id) }}" class="btn btn-sm btn-secondary">View Herb</a>
-            <a href="{{ url_for('illness_detail', illness_id=t.illness_id) }}" class="btn btn-sm btn-secondary">View Illness</a>
+            <a href="{{ url_for('herb_detail', herb_id=t.herb_id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}" class="btn btn-sm btn-secondary">View Herb</a>
+            <a href="{{ url_for('illness_detail', illness_id=t.illness_id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}" class="btn btn-sm btn-secondary">View Illness</a>
           </td>
         </tr>
         {% endfor %}
@@ -71,11 +79,11 @@
   {% if page_count > 1 %}
   <nav class="pagination" aria-label="Treatments pagination">
     {% if page > 1 %}
-    <a href="/treatments?q={{ query }}&page={{ page - 1 }}" class="btn btn-secondary btn-sm">← Previous</a>
+    <a href="/treatments?q={{ query }}&page={{ page - 1 }}{% if current_language and current_language != 'en' %}&language={{ current_language }}{% endif %}" class="btn btn-secondary btn-sm">← Previous</a>
     {% endif %}
     <span class="page-indicator">Page {{ page }} of {{ page_count }}</span>
     {% if page < page_count %}
-    <a href="/treatments?q={{ query }}&page={{ page + 1 }}" class="btn btn-secondary btn-sm">Next →</a>
+    <a href="/treatments?q={{ query }}&page={{ page + 1 }}{% if current_language and current_language != 'en' %}&language={{ current_language }}{% endif %}" class="btn btn-secondary btn-sm">Next →</a>
     {% endif %}
   </nav>
   {% endif %}

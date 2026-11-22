@@ -222,6 +222,21 @@ The internal `_merge_triple_group()` helper aligns English, IAST, and Hindi valu
 
 Unknown attribute groups are preserved in `other_groups` rather than discarded.
 
+### `herb_image_url(herb)`
+
+Resolves the CCRAS DRAVYA CDN image URL for a herb dictionary based on its resolved plant ID:
+`https://dravya.ccras.org.in/resources/views/admin/required/upload/{plant_id}.jpg`. Returns `None` if no plant ID is resolved.
+
+### `herb_vernacular_table(herb)`
+
+Extracts vernacular names across Indian languages from the curated `herb_names.csv` glossary via `HerbGlossaryStore`. Returns a list of dictionaries with `language`, `name`, and ISO `lang_code`.
+
+### `herb_name(herb, lang="en")`
+
+Jinja presentation helper and filter resolving the localized herb name for a herb dictionary in the requested ISO language code (`'hi'`, `'ta'`, `'ur'`, etc.) using `HerbGlossaryStore`:
+- When `lang == 'en'`: returns the curated English column name if available, falling back to `herb['english_name']` or `herb['original_name']`.
+- When `lang != 'en'`: returns the native script name from the glossary if available and not `"N/A"`, or `None` if no translation exists in that language (allowing templates to render the graceful fallback notice).
+
 ## 6. How `web_app.py` Uses This Module
 
 The herb detail route uses the module in two paths.

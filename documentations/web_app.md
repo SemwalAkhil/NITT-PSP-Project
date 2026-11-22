@@ -215,12 +215,22 @@ Registered filters:
 | `clean_family` | `clean_family` |
 | `format_retrieved` | `format_retrieved` |
 | `resolve_illness` | `resolve_illness` |
+| `herb_image_url` | `herb_image_url` |
+| `herb_vernacular_table` | `herb_vernacular_table` |
+| `resolve_herb` | `resolve_herb` |
+| `search_herb_glossary` | `search_herb_glossary` |
+| `herb_name` | `herb_name` |
 
 Registered globals:
 
 - `resolve_illness`
 - `supported_languages`
 - `ordered_language_codes`
+- `herb_image_url`
+- `herb_vernacular_table`
+- `resolve_herb`
+- `search_herb_glossary`
+- `herb_name`
 
 The resolver is registered as both a filter and a global so templates can use it in different expression contexts.
 

@@ -59,11 +59,22 @@
   {% if herbs %}
   <div class="herb-list">
     {% for herb in herbs %}
+    {% set h_name = herb_name(herb, current_language) %}
     <a class="herb-row herb-row--symbol" href="{{ url_for('herb_detail', herb_id=herb.id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">
       <span class="herb-symbol">✿</span>
       <span class="herb-main">
-        <strong>{{ herb.original_name or herb.english_name }}</strong>
-        <small>{{ herb.english_name }}</small>
+        {% if current_language == 'en' %}
+          <strong>{{ h_name or herb.english_name or herb.original_name }}</strong>
+          <small>{{ herb.original_name or herb.english_name }}</small>
+        {% else %}
+          {% if h_name %}
+            <strong lang="{{ current_language }}" {% if current_language == 'ur' %}dir="rtl" style="display:inline-block;text-align:right;"{% endif %}>{{ h_name }}</strong>
+            <small>{{ herb.english_name or herb.original_name }} · <span class="muted">Original term · {{ herb.original_name or herb.english_name }}</span></small>
+          {% else %}
+            <strong>{{ herb.english_name or herb.original_name }}</strong>
+            <small class="muted"><em>(name not available in {{ supported_languages[current_language].name }})</em> · <span class="muted">Original term · {{ herb.original_name or herb.english_name }}</span></small>
+          {% endif %}
+        {% endif %}
       </span>
       <span class="herb-botanical">
         {{ herb.botanical_name or "Botanical identity not recorded" }}

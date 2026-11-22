@@ -1051,7 +1051,9 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         request: Request,
         q: str = Query(default="", max_length=100),
         page: int = Query(default=1, ge=1),
+        language: str = Query(default="en"),
     ) -> Any:
+        clean_lang = clean_language_param(language)
         database = get_database()
         all_treatments = database.all_records().get("treatments", [])
         clean_q = q.strip().lower()
@@ -1083,6 +1085,9 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 "page": current_page,
                 "page_count": page_count,
                 "active_page": "treatments",
+                "current_language": clean_lang,
+                "is_non_english": (clean_lang != "en"),
+                "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
             },
         )
 
@@ -1221,14 +1226,14 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
     # JSON and CSV Exports
     # -------------------------------------------------------------------------
     @application.get("/export/herbs.csv", name="export_herbs_csv")
-    def export_herbs_csv(q: str = Query(default="")) -> Response:
+    def export_herbs_csv(q: str = Query(default=""), language: str = Query(default="en")) -> Response:
         database = get_database()
         herbs = database.search_herbs(q.strip())
         fieldnames = list(CSV_FIELDS["herbs"])
         return generate_csv_response(herbs, fieldnames, "herbs.csv")
 
     @application.get("/export/herbs.json", name="export_herbs_json")
-    def export_herbs_json(q: str = Query(default="")) -> Response:
+    def export_herbs_json(q: str = Query(default=""), language: str = Query(default="en")) -> Response:
         database = get_database()
         herbs = database.search_herbs(q.strip())
         return generate_json_response(herbs, "herbs.json")
