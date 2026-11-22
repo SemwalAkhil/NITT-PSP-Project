@@ -603,3 +603,16 @@ def test_warm_image_cache_script(tmp_path: Path):
     assert stats["total"] == 1
     assert stats["skipped"] == 1
     assert stats["cached"] == 0
+
+
+def test_favicon_route_and_link(tmp_path: Path):
+    client, _ = make_test_client(tmp_path)
+    res_ico = client.get("/favicon.ico")
+    assert res_ico.status_code == 200
+    assert "image/svg+xml" in res_ico.headers["content-type"]
+    assert b"<svg" in res_ico.content
+
+    res_dash = client.get("/")
+    assert res_dash.status_code == 200
+    assert '<link rel="icon" type="image/svg+xml"' in res_dash.text
+    assert 'styles.css?v=' in res_dash.text

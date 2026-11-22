@@ -272,8 +272,27 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
     templates.env.globals["search_herb_glossary"] = search_herb_glossary
     templates.env.filters["search_herb_glossary"] = search_herb_glossary
 
+    def _css_version() -> str:
+        try:
+            return str(int(STYLESHEET_PATH.stat().st_mtime))
+        except Exception:
+            return "1"
+
+    templates.env.globals["css_version"] = _css_version
+
     def get_database() -> AyurvedicAlmanac:
         return AyurvedicAlmanac(application.state.database_path)
+
+    @application.get("/favicon.ico", include_in_schema=False)
+    def favicon() -> Response:
+        favicon_path = STATIC_DIR / "favicon.svg"
+        if favicon_path.is_file():
+            return Response(
+                content=favicon_path.read_bytes(),
+                media_type="image/svg+xml",
+                headers={"Cache-Control": "public, max-age=86400"},
+            )
+        return Response(status_code=204)
 
     @application.get("/", response_class=HTMLResponse, name="dashboard")
     def dashboard(request: Request, language: str = Query(default="en")) -> Any:
