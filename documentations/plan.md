@@ -665,7 +665,35 @@ Before committing fixes, declaring check failures resolved, or pushing to `main`
 6. **Strict Verification Truthfulness:**
    Never declare tests passed or checks resolved without having executed them locally.
 
-## 9. Architectural Summary
+## 9. Milestone F – Pre-submission Stabilization
+
+Prior to final demonstration, a stabilization pass resolves operational and UI constraints identified during user evaluations:
+
+1. **Sidebar Navigation Scroll (`styles.css`):**
+   - Converted `.sidebar` to a scrollable container (`height: 100vh; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: thin`).
+   - Adjusted top margin of `.nav-label` from 58px to 28px to eliminate viewport cutoffs on screens <= 650px high.
+   - Added dark theme scrollbar styling.
+
+2. **Server-Side Image Proxy and Local Cache (`web_app.py`, `warm_image_cache.py`):**
+   - Added `GET /herbs/{herb_id}/image` endpoint serving images with priority: user-uploaded photo -> disk-cached CCRAS image -> live CCRAS fetch with magic-byte validation -> fallback SVG placeholder.
+   - Guarded against network failures, timeouts, and non-image payload responses (never raises 500).
+   - Created `scripts/warm_image_cache.py` for rate-limited, sequential pre-fetching into `HERBAL_ALMANAC_CACHE_DIR`.
+
+3. **Reusable Language Bar Partial (`_language_bar.html`):**
+   - Extracted shared multilingual selector into Jinja2 macro `language_bar(endpoint, path_params, current_language, extra_params)`.
+   - Propagated language parameter across herb detail, illness detail, herb list, and associated record navigation.
+
+4. **Herb Photo Contributions (`web_app.py`, `herb_detail_semantic.html`, `herb_form.html`):**
+   - Enabled local photo upload (`POST /herbs/{herb_id}/photo`) and removal (`POST /herbs/{herb_id}/photo/delete`) stored strictly on the filesystem (zero database schema migrations).
+   - Enforced 5 MB size limit and magic-byte inspection (JPEG `FF D8 FF`, PNG `89 50 4E 47`, WebP `RIFF...WEBP`).
+
+5. **Accessibility Drawer & Table Overflow Polish (`base.html`, `styles.css`):**
+   - Added `max-height: calc(100vh - 105px)` with `overflow-y: auto` to prevent drawer clipping on short screens.
+   - Updated vanilla JavaScript to synchronize `aria-expanded` across sidebar and topbar toggles.
+   - Added Escape key and outside-click dismissal with focus return to the triggering control.
+   - Wrapped wide data tables with horizontal scroll containers for mobile viewports (< 480px).
+
+## 10. Architectural Summary
 
 The project evolves through three major architectural transformations:
 

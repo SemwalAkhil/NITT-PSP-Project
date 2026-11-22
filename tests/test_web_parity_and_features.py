@@ -441,3 +441,158 @@ def test_cli_herbs_language_option(tmp_path: Path):
     assert result.exit_code == 0
     assert "Adusa" in result.stdout
 
+
+
+# ============================================================================
+# 8. Milestone F Tests: Image Proxy, Photo Upload, Language Bar, Cache Warmer
+# ============================================================================
+
+def test_herb_image_route_serves_cached_file(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    herb_id = db.add_herb("Tulsi", botanical_name="Ocimum sanctum", source_record_id=99)
+    cache_dir = tmp_path / "herbal_almanac_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    fake_jpeg = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00"
+    (cache_dir / f"{herb_id}.jpg").write_bytes(fake_jpeg)
+
+    res = client.get(f"/herbs/{herb_id}/image")
+    assert res.status_code == 200
+    assert res.headers["content-type"] == "image/jpeg"
+    assert res.content == fake_jpeg
+
+
+def test_herb_image_route_fallback_placeholder(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    herb_id = db.add_herb("NoImageHerb")
+
+    res = client.get(f"/herbs/{herb_id}/image")
+    assert res.status_code == 200
+    assert "image/svg+xml" in res.headers["content-type"]
+    assert b"<svg" in res.content
+
+
+def test_user_photo_upload_valid_jpeg_and_serving(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    herb_id = db.add_herb("Vasa", botanical_name="Adhatoda vasica")
+
+    valid_jpeg = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00" + (b"\x00" * 100)
+    files = {"photo": ("vasa.jpg", valid_jpeg, "image/jpeg")}
+    res = client.post(
+        f"/herbs/{herb_id}/photo",
+        files=files,
+        headers={"origin": "http://testserver", "host": "testserver"},
+        follow_redirects=False,
+    )
+    assert res.status_code == 303
+    assert res.headers["location"] == f"/herbs/{herb_id}"
+
+    # Photo is now served by the image proxy route with priority over CCRAS
+    img_res = client.get(f"/herbs/{herb_id}/image")
+    assert img_res.status_code == 200
+    assert img_res.headers["content-type"] == "image/jpeg"
+    assert img_res.content == valid_jpeg
+
+    # Detail page reflects user photo credit
+    detail_res = client.get(f"/herbs/{herb_id}")
+    assert detail_res.status_code == 200
+    assert "User-contributed photo" in detail_res.text
+
+
+def test_user_photo_upload_rejects_spoofed_magic_bytes(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    herb_id = db.add_herb("FakeHerb")
+
+    # Text content disguised as .jpg
+    spoofed_file = b"<html><script>alert(1)</script></html>"
+    files = {"photo": ("spoof.jpg", spoofed_file, "image/jpeg")}
+    res = client.post(
+        f"/herbs/{herb_id}/photo",
+        files=files,
+        headers={"origin": "http://testserver", "host": "testserver"},
+    )
+    assert res.status_code == 415
+    assert "Unsupported image format" in res.text
+
+
+def test_user_photo_delete(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    herb_id = db.add_herb("Ashoka", botanical_name="Saraca asoca")
+
+    valid_png = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR" + (b"\x00" * 50)
+    client.post(
+        f"/herbs/{herb_id}/photo",
+        files={"photo": ("ashoka.png", valid_png, "image/png")},
+        headers={"origin": "http://testserver", "host": "testserver"},
+    )
+
+    # Delete photo
+    del_res = client.post(
+        f"/herbs/{herb_id}/photo/delete",
+        headers={"origin": "http://testserver", "host": "testserver"},
+        follow_redirects=False,
+    )
+    assert del_res.status_code == 303
+
+    # Subsequent image request falls back to placeholder
+    img_res = client.get(f"/herbs/{herb_id}/image")
+    assert img_res.status_code == 200
+    assert "image/svg+xml" in img_res.headers["content-type"]
+
+
+def test_add_herb_with_photo_creation(tmp_path: Path):
+    client, _ = make_test_client(tmp_path)
+
+    valid_jpeg = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00" + (b"\x00" * 60)
+    res = client.post(
+        "/herbs/add",
+        data={"english_name": "Neem", "botanical_name": "Azadirachta indica"},
+        files={"photo": ("neem.jpg", valid_jpeg, "image/jpeg")},
+        headers={"origin": "http://testserver", "host": "testserver"},
+        follow_redirects=False,
+    )
+    assert res.status_code == 303
+    herb_url = res.headers["location"]
+    herb_id = int(herb_url.split("/")[-1])
+
+    # Photo was uploaded and is now available
+    img_res = client.get(f"/herbs/{herb_id}/image")
+    assert img_res.status_code == 200
+    assert img_res.content == valid_jpeg
+
+
+def test_language_bar_rendered_and_propagated(tmp_path: Path):
+    client, db = make_test_client(tmp_path)
+    herb_id = db.add_herb("Vasa", botanical_name="Adhatoda vasica")
+    illness_id = db.add_illness("KAsa")
+    db.add_treatment(herb_id, illness_id)
+
+    # Herb detail language bar
+    herb_res = client.get(f"/herbs/{herb_id}?language=hi")
+    assert herb_res.status_code == 200
+    assert 'class="language-bar"' in herb_res.text
+    assert 'class="lang-pill active"' in herb_res.text or 'lang-pill active' in herb_res.text
+    assert "हिन्दी" in herb_res.text
+
+    # Illness detail language bar
+    illness_res = client.get(f"/illnesses/{illness_id}?language=sa")
+    assert illness_res.status_code == 200
+    assert 'class="language-bar"' in illness_res.text
+    assert "संस्कृतम्" in illness_res.text
+
+
+def test_warm_image_cache_script(tmp_path: Path):
+    from scripts.warm_image_cache import warm_cache
+    db_file = tmp_path / "warm_test.db"
+    db = AyurvedicAlmanac(db_file)
+    db.create_database()
+    herb_id = db.add_herb("TestHerb", source_record_id=123)
+
+    # Simulate already cached file
+    cache_dir = tmp_path / "herbal_almanac_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    (cache_dir / f"{herb_id}.jpg").write_bytes(b"\xff\xd8\xff\xe0fake")
+
+    stats = warm_cache(database_path=db_file, delay=0.0)
+    assert stats["total"] == 1
+    assert stats["skipped"] == 1
+    assert stats["cached"] == 0

@@ -13,7 +13,10 @@ from pathlib import Path
 import sqlite3
 from typing import Any
 
-from fastapi import FastAPI, Form, HTTPException, Query, Request, Response, status
+import shutil
+import urllib.request
+
+from fastapi import FastAPI, File, Form, HTTPException, Query, Request, Response, UploadFile, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -56,6 +59,57 @@ TEMPLATE_DIR = PACKAGE_DIR / "templates"
 STATIC_DIR = PACKAGE_DIR / "static"
 STYLESHEET_PATH = STATIC_DIR / "styles.css"
 PAGE_SIZE = 12
+
+# Max upload size: 5 MB
+_MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+# Allowed image MIME types (detected via magic bytes)
+_ALLOWED_IMAGE_TYPES: dict[str, str] = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+}
+
+
+def _detect_image_type(data: bytes) -> str | None:
+    """Return MIME type string for recognised image magic bytes, or None."""
+    if data[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "image/webp"
+    return None
+
+
+def _upload_dir(database_path: Path) -> Path:
+    """Return (and create) the upload directory next to the database file."""
+    env_dir = os.environ.get("HERBAL_ALMANAC_UPLOAD_DIR")
+    if env_dir:
+        p = Path(env_dir)
+    else:
+        p = database_path.parent / "uploads" / "herbs"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def _cache_dir(database_path: Path) -> Path:
+    """Return (and create) the image cache directory."""
+    env_dir = os.environ.get("HERBAL_ALMANAC_CACHE_DIR")
+    if env_dir:
+        p = Path(env_dir)
+    else:
+        p = database_path.parent / "herbal_almanac_cache"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def _find_upload(upload_dir: Path, herb_id: int) -> Path | None:
+    """Return the uploaded photo for herb_id if present, else None."""
+    for ext in (".jpg", ".png", ".webp"):
+        candidate = upload_dir / f"{herb_id}{ext}"
+        if candidate.is_file():
+            return candidate
+    return None
 
 CSV_FIELDS = {
     "herbs": (
@@ -353,7 +407,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         )
 
     @application.post("/herbs/add", response_class=HTMLResponse, name="add_herb_post")
-    def add_herb_post(
+    async def add_herb_post(
         request: Request,
         english_name: str = Form(...),
         botanical_name: str | None = Form(None),
@@ -361,6 +415,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         source: str | None = Form(None),
         source_record_id: int | None = Form(None),
         source_url: str | None = Form(None),
+        photo: UploadFile | None = File(None),
     ) -> Any:
         if not verify_same_origin(request):
             raise HTTPException(status_code=403, detail="Cross-site origin verification failed")
@@ -373,6 +428,38 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
             "source_record_id": source_record_id,
             "source_url": source_url,
         }
+
+        photo_bytes: bytes | None = None
+        photo_ext: str | None = None
+        if photo is not None and getattr(photo, "filename", None):
+            raw = await photo.read(_MAX_UPLOAD_BYTES + 1)
+            if len(raw) > 0:
+                if len(raw) > _MAX_UPLOAD_BYTES:
+                    return templates.TemplateResponse(
+                        request=request,
+                        name="herb_form.html",
+                        context={
+                            "active_page": "herbs",
+                            "error": "Image file exceeds 5 MB limit",
+                            "form_data": form_data,
+                        },
+                        status_code=400,
+                    )
+                mime = _detect_image_type(raw[:12])
+                if mime is None:
+                    return templates.TemplateResponse(
+                        request=request,
+                        name="herb_form.html",
+                        context={
+                            "active_page": "herbs",
+                            "error": "Unsupported image format; please upload JPEG, PNG, or WebP",
+                            "form_data": form_data,
+                        },
+                        status_code=400,
+                    )
+                photo_bytes = raw
+                photo_ext = _ALLOWED_IMAGE_TYPES[mime]
+
         database = get_database()
         try:
             herb_id = database.add_herb(
@@ -383,6 +470,9 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 botanical_name=botanical_name or None,
                 family=family or None,
             )
+            if photo_bytes and photo_ext:
+                up_dir = _upload_dir(application.state.database_path)
+                (up_dir / f"{herb_id}{photo_ext}").write_bytes(photo_bytes)
             return RedirectResponse(url=f"/herbs/{herb_id}", status_code=303)
         except (ValueError, sqlite3.Error) as err:
             return templates.TemplateResponse(
@@ -395,6 +485,129 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 },
                 status_code=400,
             )
+
+    # -------------------------------------------------------------------------
+    # Herb Image Proxy / Cache  (Task 2)
+    # -------------------------------------------------------------------------
+    @application.get("/herbs/{herb_id}/image", name="herb_image")
+    def herb_image_proxy(herb_id: int) -> Response:
+        """Serve herb photo: uploaded > cached CCRAS > placeholder SVG. Never raises 500."""
+        up_dir = _upload_dir(application.state.database_path)
+        # 1. User-uploaded photo takes priority
+        upload_path = _find_upload(up_dir, herb_id)
+        if upload_path is not None:
+            mime = _detect_image_type(upload_path.read_bytes()[:12]) or "image/jpeg"
+            return Response(
+                content=upload_path.read_bytes(),
+                media_type=mime,
+                headers={"Cache-Control": "public, max-age=86400"},
+            )
+
+        # 2. Disk-cached CCRAS image
+        c_dir = _cache_dir(application.state.database_path)
+        cached = c_dir / f"{herb_id}.jpg"
+        if cached.is_file():
+            return Response(
+                content=cached.read_bytes(),
+                media_type="image/jpeg",
+                headers={"Cache-Control": "public, max-age=3600"},
+            )
+
+        # 3. Fetch from CCRAS
+        try:
+            database = get_database()
+            herb = database.get_herb(herb_id)
+            source_rid = herb["source_record_id"] if herb else None
+            if source_rid is not None:
+                url = f"https://dravya.ccras.org.in/resources/views/admin/required/upload/{source_rid}.jpg"
+                req = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": "Mozilla/5.0 (Herbal Almanac; research use)"},
+                )
+                with urllib.request.urlopen(req, timeout=5) as resp:
+                    chunks: list[bytes] = []
+                    total = 0
+                    while True:
+                        chunk = resp.read(65536)
+                        if not chunk:
+                            break
+                        total += len(chunk)
+                        if total > _MAX_UPLOAD_BYTES:
+                            break
+                        chunks.append(chunk)
+                    raw = b"".join(chunks)
+                mime = _detect_image_type(raw[:12])
+                if mime and total <= _MAX_UPLOAD_BYTES:
+                    cached.write_bytes(raw)
+                    return Response(
+                        content=raw,
+                        media_type=mime,
+                        headers={"Cache-Control": "public, max-age=3600"},
+                    )
+        except Exception:
+            pass
+
+        # 4. Fallback placeholder
+        placeholder = STATIC_DIR / "placeholder-herb.svg"
+        if placeholder.is_file():
+            return Response(
+                content=placeholder.read_bytes(),
+                media_type="image/svg+xml",
+                headers={"Cache-Control": "public, max-age=60"},
+            )
+        raise HTTPException(status_code=404, detail="Image not available")
+
+    # -------------------------------------------------------------------------
+    # Photo Upload / Delete  (Task 4)
+    # -------------------------------------------------------------------------
+    @application.post("/herbs/{herb_id}/photo", name="herb_photo_upload")
+    async def herb_photo_upload(
+        request: Request,
+        herb_id: int,
+        photo: UploadFile = File(...),
+    ) -> Response:
+        if not verify_same_origin(request):
+            raise HTTPException(status_code=403, detail="Cross-site origin verification failed")
+        database = get_database()
+        if database.get_herb(herb_id) is None:
+            raise HTTPException(status_code=404, detail="Herb not found")
+
+        raw = await photo.read(_MAX_UPLOAD_BYTES + 1)
+        if len(raw) > _MAX_UPLOAD_BYTES:
+            raise HTTPException(status_code=413, detail="Image file exceeds 5 MB limit")
+        mime = _detect_image_type(raw[:12])
+        if mime is None:
+            raise HTTPException(status_code=415, detail="Unsupported image format; upload JPEG, PNG, or WebP")
+
+        ext = _ALLOWED_IMAGE_TYPES[mime]
+        up_dir = _upload_dir(application.state.database_path)
+        # Remove any existing uploads for this herb
+        for old_ext in (".jpg", ".png", ".webp"):
+            old = up_dir / f"{herb_id}{old_ext}"
+            if old.is_file():
+                old.unlink()
+        dest = up_dir / f"{herb_id}{ext}"
+        dest.write_bytes(raw)
+        return RedirectResponse(url=f"/herbs/{herb_id}", status_code=303)
+
+    @application.post("/herbs/{herb_id}/photo/delete", name="herb_photo_delete")
+    def herb_photo_delete(request: Request, herb_id: int) -> Response:
+        if not verify_same_origin(request):
+            raise HTTPException(status_code=403, detail="Cross-site origin verification failed")
+        database = get_database()
+        if database.get_herb(herb_id) is None:
+            raise HTTPException(status_code=404, detail="Herb not found")
+
+        up_dir = _upload_dir(application.state.database_path)
+        deleted = False
+        for ext in (".jpg", ".png", ".webp"):
+            p = up_dir / f"{herb_id}{ext}"
+            if p.is_file():
+                p.unlink()
+                deleted = True
+        if not deleted:
+            raise HTTPException(status_code=404, detail="No uploaded photo found")
+        return RedirectResponse(url=f"/herbs/{herb_id}", status_code=303)
 
     @application.get("/herbs/{herb_id}", response_class=HTMLResponse, name="herb_detail")
     def herb_detail(
@@ -467,6 +680,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                     "current_language": clean_lang,
                     "is_non_english": (clean_lang != "en"),
                     "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
+                    "has_user_photo": _find_upload(_upload_dir(application.state.database_path), herb_id) is not None,
                 },
             )
         finally:

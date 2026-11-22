@@ -526,13 +526,24 @@ python -m herbal_almanac scrape --database data/live.db --max-plants 25
 # Upgrade to Stage C and run backfill
 python -m herbal_almanac upgrade-stage-c --database data/live.db
 
+# Optional: Pre-warm image cache for offline botanical viewing
+python scripts/warm_image_cache.py --database data/live.db --delay 0.3
+
 # Launch GUI
 $env:HERBAL_ALMANAC_DATABASE="data/live.db"; uvicorn herbal_almanac.web_app:app
 ```
 
 ---
 
-## 10. Testing
+## 10. Known Limitations
+
+- **Dravyaguna Semantic Localization:** The controlled concept vocabulary currently supports English, Hindi, and Sanskrit. For other supported Indic languages, vernacular names and condition labels are translated, while pharmacological property terms default to English.
+- **Botanical Photography Provenance:** Default plant photographs are retrieved from the CCRAS DRAVYA portal. Users can pre-warm the cache using `scripts/warm_image_cache.py` for offline access or contribute local plant photos via the web interface.
+- **Single-User Workspace:** User photo contributions and data entries are stored locally on the filesystem and SQLite database without authentication or multi-tenant role isolation.
+
+---
+
+## 11. Testing
 
 Run mandatory scraper regression tests:
 ```bash
@@ -552,7 +563,7 @@ python tests/smoke_installed_package.py
 
 ---
 
-## 11. Documentation Index
+## 12. Documentation Index
 
 The complete system documentation is organized into modular, verified documents:
 
@@ -575,6 +586,6 @@ The complete system documentation is organized into modular, verified documents:
 
 ---
 
-## 12. License
+## 13. License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

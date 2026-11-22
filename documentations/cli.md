@@ -472,6 +472,7 @@ Every database manipulation and inspection operation available via the CLI is mi
 | `herbal-almanac records --output` | `GET /export/{herbs,illnesses,treatments}.{csv,json}` | One-click downloads with UTF-8 BOM encoding and formula injection protection. |
 | `herbal-almanac upgrade-stage-c` | `POST /stage-c/upgrade` | One-click upgrade with confirmation dialog on `/stage-c/status`. |
 | `herbal-almanac dravyaguna-profile`| `GET /herbs/{id}` & `/api/stage-c/herbs/{id}/profile` | Classical 6-domain semantic view, virya consensus, and 3-dosha matrix. |
+| *(Web Only)* | `POST /herbs/{id}/photo`, `POST /herbs/{id}/photo/delete` | Local photo contributions with filesystem storage and magic-byte format validation. |
 
 ## 9. Typical Workflow
 

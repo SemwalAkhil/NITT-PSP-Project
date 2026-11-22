@@ -19,10 +19,9 @@
 <div class="results-heading"><span>Showing {{ (page - 1) * page_size + 1 }}–{{ (page - 1) * page_size + herbs|length }} of {{ total }}</span><span>Sorted by relevance</span></div>
 <div class="herb-list">
 {% for herb in herbs %}
-{% set img_url = herb_image_url(herb) %}
-<a class="herb-row" href="{{ url_for('herb_detail', herb_id=herb.id) }}">
+<a class="herb-row" href="{{ url_for('herb_detail', herb_id=herb.id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">
   <div class="herb-thumb-wrapper">
-    <img src="{{ img_url or '/static/placeholder-herb.svg' }}"
+    <img src="/herbs/{{ herb.id }}/image"
          alt=""
          class="herb-thumb-img"
          loading="lazy"
@@ -40,9 +39,9 @@
 </div>
 {% if page_count > 1 %}
 <nav class="pagination" aria-label="Pagination">
-{% if page > 1 %}<a href="{{ url_for('herb_list') }}?{% if query %}{{ {'q': query, 'page': page - 1}|urlencode }}{% else %}page={{ page - 1 }}{% endif %}">← Previous</a>{% else %}<span class="disabled">← Previous</span>{% endif %}
+{% if page > 1 %}<a href="{{ url_for('herb_list') }}?{% if query %}{{ {'q': query, 'page': page - 1}|urlencode }}{% else %}page={{ page - 1 }}{% endif %}{% if current_language and current_language != 'en' %}&language={{ current_language }}{% endif %}">← Previous</a>{% else %}<span class="disabled">← Previous</span>{% endif %}
 <span>Page {{ page }} of {{ page_count }}</span>
-{% if page < page_count %}<a href="{{ url_for('herb_list') }}?{% if query %}{{ {'q': query, 'page': page + 1}|urlencode }}{% else %}page={{ page + 1 }}{% endif %}">Next →</a>{% else %}<span class="disabled">Next →</span>{% endif %}
+{% if page < page_count %}<a href="{{ url_for('herb_list') }}?{% if query %}{{ {'q': query, 'page': page + 1}|urlencode }}{% else %}page={{ page + 1 }}{% endif %}{% if current_language and current_language != 'en' %}&language={{ current_language }}{% endif %}">Next →</a>{% else %}<span class="disabled">Next →</span>{% endif %}
 </nav>
 {% endif %}
 {% else %}

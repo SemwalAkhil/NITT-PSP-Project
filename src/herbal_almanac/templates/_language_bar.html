@@ -1,0 +1,23 @@
+{% macro language_bar(endpoint, path_params, current_language, extra_params={}) %}
+<nav class="language-bar" aria-label="Language selection">
+  <span class="lang-label">Language:</span>
+  {% for code in ['en', 'hi', 'sa'] %}
+    {% set lmeta = supported_languages[code] %}
+    <a href="{{ url_for(endpoint, **path_params) }}?language={{ code }}{% for k, v in extra_params.items() %}&{{ k }}={{ v }}{% endfor %}"
+       class="lang-pill{% if current_language == code %} active{% endif %}"
+       {% if current_language == code %}aria-current="true"{% endif %}>{{ lmeta.native_name }}</a>
+  {% endfor %}
+  <span class="lang-divider" aria-hidden="true">|</span>
+  {% for code in ordered_language_codes %}
+    {% if code not in ['en', 'hi', 'sa'] %}
+      {% set lmeta = supported_languages[code] %}
+      <a href="{{ url_for(endpoint, **path_params) }}?language={{ code }}{% for k, v in extra_params.items() %}&{{ k }}={{ v }}{% endfor %}"
+         class="lang-pill lang-pill-sm{% if current_language == code %} active{% endif %}"
+         {% if current_language == code %}aria-current="true"{% endif %}>{{ lmeta.native_name }}</a>
+    {% endif %}
+  {% endfor %}
+</nav>
+{% if current_language not in ['en', 'hi', 'sa'] %}
+<p class="lang-note muted">Names and condition labels are shown in {{ supported_languages[current_language].name }}; Dravyaguna property terms are available in English, Hindi and Sanskrit.</p>
+{% endif %}
+{% endmacro %}

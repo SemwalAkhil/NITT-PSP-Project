@@ -1,7 +1,10 @@
 {% extends "base.html" %}
+{% from "_language_bar.html" import language_bar with context %}
 {% block title %}{{ herb.original_name or herb.english_name }} · Herbal Almanac{% endblock %}
 {% block content %}
-<a class="back-link" href="{{ url_for('herb_list') }}">← Back to herb explorer</a>
+<a class="back-link" href="{{ url_for('herb_list') }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">← Back to herb explorer</a>
+
+{{ language_bar('herb_detail', {'herb_id': herb.id}, current_language, {'include_disputed': include_disputed|default(false)|string|lower, 'include_provisional': include_provisional|default(false)|string|lower}) }}
 <section class="detail-heading">
   <div>
     <p class="eyebrow">HERB RECORD · {{ "%04d"|format(herb.id) }}</p>
@@ -530,21 +533,38 @@
 
   <aside class="detail-aside">
     <!-- FEATURED HERB IMAGE -->
-    {% set img_url = herb_image_url(herb) %}
     <section class="content-card featured-image-card">
       <div class="featured-image-wrapper">
-        <img src="{{ img_url or '/static/placeholder-herb.svg' }}"
+        <img src="/herbs/{{ herb.id }}/image"
              alt="{{ herb.original_name or herb.english_name }}"
              class="featured-herb-img"
-             loading="lazy"
              onerror="this.onerror=null;this.src='/static/placeholder-herb.svg';">
       </div>
       <div class="image-credit" style="margin-top: 8px; font-size: 11px; color: #6b7280; text-align: center;">
+        {% if has_user_photo %}
+        <span class="image-credit-upload">📷 User-contributed photo</span>
+        {% else %}
         <span>Image source: </span>
         {% if herb.source_url %}
         <a href="{{ herb.source_url }}" target="_blank" rel="noopener noreferrer" style="color: #4b5563; text-decoration: underline;">CCRAS DRAVYA Portal</a>
         {% else %}
         <a href="https://dravya.ccras.org.in/" target="_blank" rel="noopener noreferrer" style="color: #4b5563; text-decoration: underline;">CCRAS DRAVYA Portal (Govt. of India)</a>
+        {% endif %}
+        {% endif %}
+      </div>
+      <!-- Photo upload form -->
+      <div class="photo-upload-section">
+        <span class="photo-upload-label">📂 Contribute a photo</span>
+        <form action="/herbs/{{ herb.id }}/photo" method="post" enctype="multipart/form-data">
+          <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" style="font-size:12px;width:100%;">
+          <div class="photo-upload-actions">
+            <button type="submit" class="btn btn-primary btn-sm">Upload Photo</button>
+          </div>
+        </form>
+        {% if has_user_photo %}
+        <form action="/herbs/{{ herb.id }}/photo/delete" method="post" style="margin-top:4px;">
+          <button type="submit" class="btn btn-danger">Remove Photo</button>
+        </form>
         {% endif %}
       </div>
     </section>

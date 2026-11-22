@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_language_bar.html" import language_bar with context %}
 {% set res = resolve_illness(illness.english_name) %}
 {% block title %}{{ res.english }} · Illness Explorer · Herbal Almanac{% endblock %}
 {% block content %}
@@ -15,28 +16,7 @@
 </div>
 {% endif %}
 
-<nav class="language-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:20px;padding:8px 12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;" aria-label="Language selection">
-  <span style="font-weight:600;color:#374151;margin-right:4px;">Language:</span>
-  {% for code in ['en', 'hi', 'sa'] %}
-    {% set lmeta = supported_languages[code] %}
-    <a href="{{ url_for('illness_detail', illness_id=illness.id) }}?language={{ code }}"
-       class="lang-pill"
-       style="padding:3px 10px;border-radius:14px;text-decoration:none;font-weight:{% if current_language == code %}bold{% else %}normal{% endif %};background:{% if current_language == code %}#214632{% else %}#ffffff{% endif %};color:{% if current_language == code %}#ffffff{% else %}#374151{% endif %};border:1px solid {% if current_language == code %}#214632{% else %}#d1d5db{% endif %};">
-      {{ lmeta.native_name }}
-    </a>
-  {% endfor %}
-  <span style="color:#d1d5db;margin:0 4px;">|</span>
-  {% for code in ordered_language_codes %}
-    {% if code not in ['en', 'hi', 'sa'] %}
-      {% set lmeta = supported_languages[code] %}
-      <a href="{{ url_for('illness_detail', illness_id=illness.id) }}?language={{ code }}"
-         class="lang-pill"
-         style="padding:3px 8px;border-radius:14px;text-decoration:none;font-size:12px;font-weight:{% if current_language == code %}bold{% else %}normal{% endif %};background:{% if current_language == code %}#214632{% else %}#ffffff{% endif %};color:{% if current_language == code %}#ffffff{% else %}#4b5563{% endif %};border:1px solid {% if current_language == code %}#214632{% else %}#e5e7eb{% endif %};">
-        {{ lmeta.native_name }}
-      </a>
-    {% endif %}
-  {% endfor %}
-</nav>
+{{ language_bar('illness_detail', {'illness_id': illness.id}, current_language) }}
 
 <header class="detail-heading">
   <div>
@@ -79,7 +59,7 @@
   {% if herbs %}
   <div class="herb-list">
     {% for herb in herbs %}
-    <a class="herb-row" href="{{ url_for('herb_detail', herb_id=herb.id) }}">
+    <a class="herb-row" href="{{ url_for('herb_detail', herb_id=herb.id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">
       <span class="herb-symbol">✿</span>
       <span class="herb-main">
         <strong>{{ herb.original_name or herb.english_name }}</strong>

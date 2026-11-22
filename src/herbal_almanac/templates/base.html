@@ -145,25 +145,66 @@
     // Accessibility Drawer Interactions & State Sync
     (function() {
       var panel = document.getElementById('a11y-panel');
-      var openBtns = [document.getElementById('a11y-toggle'), document.getElementById('a11y-toggle-top')];
+      var toggleSide = document.getElementById('a11y-toggle');
+      var toggleTop = document.getElementById('a11y-toggle-top');
+      var openBtns = [toggleSide, toggleTop].filter(Boolean);
       var closeBtn = document.getElementById('a11y-close');
+      var lastTrigger = null;
 
-      function togglePanel() {
+      function setExpanded(isOpen) {
+        openBtns.forEach(function(b) {
+          b.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+      }
+
+      function openDrawer(trigger) {
+        if (!panel) return;
+        lastTrigger = trigger || null;
+        panel.classList.remove('hidden');
+        setExpanded(true);
+        panel.setAttribute('tabindex', '-1');
+        panel.focus();
+      }
+
+      function closeDrawer() {
+        if (!panel || panel.classList.contains('hidden')) return;
+        panel.classList.add('hidden');
+        setExpanded(false);
+        if (lastTrigger && typeof lastTrigger.focus === 'function') {
+          lastTrigger.focus();
+        }
+      }
+
+      function togglePanel(e) {
         if (!panel) return;
         var isHidden = panel.classList.contains('hidden');
         if (isHidden) {
-          panel.classList.remove('hidden');
-          panel.focus();
+          openDrawer(e ? e.currentTarget : null);
         } else {
-          panel.classList.add('hidden');
+          closeDrawer();
         }
       }
 
       openBtns.forEach(function(btn) {
-        if (btn) btn.addEventListener('click', togglePanel);
+        btn.addEventListener('click', togglePanel);
       });
-      if (closeBtn) closeBtn.addEventListener('click', function() {
-        if (panel) panel.classList.add('hidden');
+      if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+
+      // Close on Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && panel && !panel.classList.contains('hidden')) {
+          closeDrawer();
+        }
+      });
+
+      // Close on outside click
+      document.addEventListener('click', function(e) {
+        if (!panel || panel.classList.contains('hidden')) return;
+        var clickedInside = panel.contains(e.target);
+        var clickedTrigger = openBtns.some(function(b) { return b.contains(e.target); });
+        if (!clickedInside && !clickedTrigger) {
+          closeDrawer();
+        }
       });
 
       // Handle settings button clicks

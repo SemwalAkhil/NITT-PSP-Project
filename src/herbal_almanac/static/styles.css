@@ -735,3 +735,122 @@ html[data-theme="dark"] .a11y-btn.active {
   flex-wrap: wrap;
 }
 
+
+/* ============================================================
+   MILESTONE F – PRE-SUBMISSION STABILIZATION
+   ============================================================ */
+
+/* --- Task 1: Sidebar scroll fix --- */
+.sidebar {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.sidebar-note { flex-shrink: 0; }
+.nav-label { margin-top: 28px; }
+html[data-theme="dark"] .sidebar {
+  scrollbar-color: #35473b #161c18;
+}
+
+/* --- Task 2: Herb image proxy / featured image --- */
+.featured-image-wrapper {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f4ed;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.featured-herb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  min-height: 200px;
+}
+.herb-thumb-wrapper {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #e8eee5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.herb-thumb-img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  display: block;
+}
+.image-credit-upload { font-style: italic; color: #15803d; }
+html[data-theme="dark"] .featured-image-wrapper { background: #1a211d; }
+html[data-theme="dark"] .herb-thumb-wrapper { background: #243029; }
+
+/* --- Task 3: Language bar --- */
+.language-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.lang-label { font-weight: 600; color: #374151; margin-right: 4px; }
+.lang-pill {
+  padding: 3px 10px;
+  border-radius: 14px;
+  text-decoration: none;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  transition: background 0.15s, color 0.15s;
+}
+.lang-pill:hover { background: #e8eee5; }
+.lang-pill.active {
+  background: var(--green-dark, #214632);
+  color: #ffffff;
+  border-color: var(--green-dark, #214632);
+  font-weight: bold;
+}
+.lang-pill-sm { padding: 3px 8px; font-size: 12px; }
+.lang-divider { color: #d1d5db; margin: 0 4px; }
+.lang-note { font-size: 11px; color: var(--muted, #6b7280); margin-top: -12px; margin-bottom: 12px; }
+html[data-theme="dark"] .language-bar { background: #1a211d; border-color: var(--line, #2d3d33); }
+html[data-theme="dark"] .lang-pill { background: #243029; border-color: #35473b; color: #e8eee5; }
+html[data-theme="dark"] .lang-pill.active { background: #35473b; }
+html[data-contrast="high"] .lang-pill.active { background: #000000; color: #ffffff; }
+
+/* --- Task 4: Photo upload form --- */
+.photo-upload-section {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.photo-upload-label { font-weight: 600; color: #374151; display: block; margin-bottom: 6px; }
+.photo-upload-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
+.btn-danger { background: #dc2626; color: #ffffff; border: none; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 12px; }
+.btn-danger:hover { background: #b91c1c; }
+
+/* --- Task 5: A11y drawer overflow, table scroll --- */
+.a11y-drawer { max-height: calc(100vh - 105px); overflow-y: auto; }
+.table-container, .vernacular-names-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+@media (max-width: 480px) {
+  .data-table, .props-table, .triple-table, .vernacular-table, .dosha-table { min-width: 480px; }
+}

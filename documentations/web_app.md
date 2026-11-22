@@ -281,7 +281,36 @@ The handler:
 
 The redirect allows the global/herb search interface to route illness queries to the illness listing page.
 
-### 7.4 `GET /herbs/{herb_id}` — Herb Detail
+### 7.4 `GET /herbs/{herb_id}/image` — Image Proxy and Cache
+
+Handler: `herb_image_proxy()`
+
+Provides reliable plant photography with server-side validation and fallback:
+1. **User Upload:** Checks the configured upload directory (`_upload_dir()`) for `<herb_id>.jpg`, `.png`, or `.webp`. If present, serves the uploaded photo with `Cache-Control: public, max-age=86400`.
+2. **Local Cache:** Checks the local cache directory (`_cache_dir()`) for `<herb_id>.jpg`. If cached, serves with `max-age=3600`.
+3. **Upstream CCRAS Fetch:** If not cached and the herb has a valid `source_record_id`, fetches `https://dravya.ccras.org.in/resources/views/admin/required/upload/<source_record_id>.jpg`. Inspects initial magic bytes (`\xff\xd8\xff`, `\x89PNG`, `RIFF...WEBP`) and enforces a 5 MB maximum size. On success, persists to disk cache and returns the image.
+4. **Fallback Placeholder:** If the herb has no image, network fails, or upstream returns invalid bytes, serves `/static/placeholder-herb.svg` with HTTP 200 (never raises HTTP 500).
+
+### 7.5 `POST /herbs/{herb_id}/photo` — User Photo Contribution
+
+Handler: `herb_photo_upload()`
+
+- Requires same-origin verification (`verify_same_origin()`).
+- Accepts a multipart file upload (`photo: UploadFile`).
+- Validates file size (limit: 5 MB; returns HTTP 413 if exceeded).
+- Validates file format via magic byte detection (accepts JPEG, PNG, WebP; returns HTTP 415 if invalid or spoofed).
+- Saves photo directly to `<database_dir>/uploads/herbs/<herb_id>.<ext>`.
+- Redirects to `/herbs/{herb_id}` with HTTP 303.
+
+### 7.6 `POST /herbs/{herb_id}/photo/delete` — Remove Photo Contribution
+
+Handler: `herb_photo_delete()`
+
+- Requires same-origin verification.
+- Removes any uploaded photo for the herb from the upload directory.
+- Redirects to `/herbs/{herb_id}` with HTTP 303.
+
+### 7.7 `GET /herbs/{herb_id}` — Herb Detail
 
 Handler: `herb_detail()`
 
@@ -549,7 +578,28 @@ When the module is executed directly, the `if __name__ == "__main__"` block call
 
 The server binds to loopback (`127.0.0.1`) and port `8000` in this development configuration.
 
-## 11. Running the Application
+## 11. Environment Variables and Storage Locations
+
+| Environment Variable | Default Location | Purpose |
+|---|---|---|
+| `HERBAL_ALMANAC_DATABASE` | `default_database_path()` | Target SQLite database file path. |
+| `HERBAL_ALMANAC_UPLOAD_DIR` | `<database_dir>/uploads/herbs/` | Local directory for user-contributed plant photos (`.jpg`, `.png`, `.webp`). |
+| `HERBAL_ALMANAC_CACHE_DIR` | `<database_dir>/herbal_almanac_cache/` | Local directory for pre-fetched CCRAS monograph photography. |
+
+### Upload Constraints and Security
+- **Max file size:** 5 MB.
+- **Magic byte enforcement:** JPEG (`\xff\xd8\xff`), PNG (`\x89PNG\r\n\x1a\n`), WebP (`RIFF...WEBP`). Client-provided Content-Type or file extensions are untrusted.
+- **CSRF / Origin Check:** All mutating POST routes verify origin and referer headers match the request host.
+
+### Shared Template Partials (`_language_bar.html`)
+The multilingual selector is implemented in `src/herbal_almanac/templates/_language_bar.html` as a Jinja2 macro:
+```jinja
+{% from "_language_bar.html" import language_bar with context %}
+{{ language_bar(endpoint, path_params, current_language, extra_params={}) }}
+```
+It supports primary Indic languages (English, Hindi, Sanskrit) and secondary regional languages while propagating active filters.
+
+## 12. Running the Application
 
 From an environment where the package and its dependencies are installed:
 
