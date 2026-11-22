@@ -1168,6 +1168,10 @@ html[data-contrast="high"][data-theme="dark"] .entity-link { color: #ffffff; tex
   margin: 4px 0 8px 0;
   font-weight: 600;
 }
+.localized-herb-name[dir="rtl"] {
+  display: inline-block;
+  text-align: right;
+}
 html[data-theme="dark"] .localized-herb-name {
   color: #81c784;
 }

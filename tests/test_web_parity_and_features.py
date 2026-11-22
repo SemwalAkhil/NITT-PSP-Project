@@ -721,4 +721,17 @@ def test_inline_svg_icons_and_no_emojis_in_base_nav():
     assert emojis_found == [], f"Found emoji characters in sidebar nav: {emojis_found}"
 
 
+def test_template_duplicate_attributes_linter(tmp_path: Path):
+    from scripts.lint_templates import lint_all_pages
+
+    client, db = make_test_client(tmp_path)
+    herb_id = db.add_herb("Bilva", botanical_name="Aegle marmelos", source_record_id=16)
+    illness_id = db.add_illness("KAsa")
+    db.add_treatment(herb_id, illness_id)
+
+    errors = lint_all_pages(client, herb_id, illness_id)
+    assert errors == [], f"Found duplicate HTML attributes: {errors}"
+
+
+
 
