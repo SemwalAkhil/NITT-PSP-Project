@@ -82,11 +82,11 @@
   {% if page_count > 1 %}
   <nav class="pagination" aria-label="Attributes pagination">
     {% if page > 1 %}
-    <a href="{{ request.url.path }}?q={{ query }}&page={{ page - 1 }}" class="btn btn-secondary btn-sm">← Previous</a>
+    <a href="{{ request.url.path }}{{ qs(q=query, page=page - 1) }}" class="btn btn-secondary btn-sm">← Previous</a>
     {% endif %}
     <span class="page-indicator">Page {{ page }} of {{ page_count }}</span>
     {% if page < page_count %}
-    <a href="{{ request.url.path }}?q={{ query }}&page={{ page + 1 }}" class="btn btn-secondary btn-sm">Next →</a>
+    <a href="{{ request.url.path }}{{ qs(q=query, page=page + 1) }}" class="btn btn-secondary btn-sm">Next →</a>
     {% endif %}
   </nav>
   {% endif %}

@@ -3,7 +3,7 @@
   <span class="lang-label">Language:</span>
   {% for code in ['en', 'hi', 'sa'] %}
     {% set lmeta = supported_languages[code] %}
-    <a href="{{ url_for(endpoint, **path_params) }}?language={{ code }}{% for k, v in extra_params.items() %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}"
+    <a href="{{ url_for(endpoint, **path_params) }}{{ qs(extra_params, language=code) }}"
        class="lang-pill{% if current_language == code %} active{% endif %}"
        {% if current_language == code %}aria-current="true"{% endif %}>{{ lmeta.native_name }}</a>
   {% endfor %}
@@ -11,7 +11,7 @@
   {% for code in ordered_language_codes %}
     {% if code not in ['en', 'hi', 'sa'] %}
       {% set lmeta = supported_languages[code] %}
-      <a href="{{ url_for(endpoint, **path_params) }}?language={{ code }}{% for k, v in extra_params.items() %}{% if v %}&{{ k }}={{ v }}{% endif %}{% endfor %}"
+      <a href="{{ url_for(endpoint, **path_params) }}{{ qs(extra_params, language=code) }}"
          class="lang-pill lang-pill-sm{% if current_language == code %} active{% endif %}"
          {% if current_language == code %}aria-current="true"{% endif %}>{{ lmeta.native_name }}</a>
     {% endif %}

@@ -9,6 +9,7 @@ repository_api return shapes.
 from __future__ import annotations
 
 import re
+import urllib.parse
 from datetime import datetime
 from typing import Any
 
@@ -562,5 +563,35 @@ def herb_name(herb: dict[str, Any] | None, lang: str | None = "en") -> str | Non
             return orig.strip()
 
     return None
+
+
+def qs(*args: dict[str, Any], **params: Any) -> str:
+    """Build a safe URL query string ('?a=1&b=2', or '' if nothing).
+
+    Drops parameters whose value is None or empty string (""), and drops falsy
+    flags like include_disputed=False / "false".
+    Preserves meaningful 0 values.
+    Encodes all keys and values safely with urllib.parse.urlencode.
+    """
+    merged: dict[str, Any] = {}
+    for arg in args:
+        if isinstance(arg, dict):
+            merged.update(arg)
+    merged.update(params)
+
+    cleaned: list[tuple[str, Any]] = []
+    for k, v in merged.items():
+        if v is None or v == "":
+            continue
+        if isinstance(v, bool) and not v:
+            continue
+        if k in ("include_disputed", "include_provisional") and str(v).lower() in ("false", "0", ""):
+            continue
+        cleaned.append((k, str(v)))
+
+    if not cleaned:
+        return ""
+    return "?" + urllib.parse.urlencode(cleaned, doseq=True)
+
 
 

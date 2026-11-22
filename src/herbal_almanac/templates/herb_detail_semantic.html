@@ -2,7 +2,7 @@
 {% from "_language_bar.html" import language_bar with context %}
 {% block title %}{{ herb.original_name or herb.english_name }} · Herbal Almanac{% endblock %}
 {% block content %}
-<a class="back-link" href="{{ url_for('herb_list') }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">← Back to herb explorer</a>
+<a class="back-link" href="{{ url_for('herb_list') }}{{ qs(language=current_language if current_language != 'en' else None) }}">← Back to herb explorer</a>
 
 {{ language_bar('herb_detail', {'herb_id': herb.id}, current_language, {'include_disputed': include_disputed|default(false)|string|lower, 'include_provisional': include_provisional|default(false)|string|lower}) }}
 <section class="detail-heading">
@@ -22,7 +22,7 @@
     <div class="header-actions-inline" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
       <a href="/herbs/{{ herb.id }}/export.csv" class="btn btn-secondary btn-sm">Export Herb CSV</a>
       <a href="/herbs/{{ herb.id }}/export.json" class="btn btn-secondary btn-sm">Export Herb JSON</a>
-      <a href="{{ url_for('add_treatment_form') }}?herb_id={{ herb.id }}" class="btn btn-primary btn-sm">+ Link Treatment</a>
+      <a href="{{ url_for('add_treatment_form') }}{{ qs(herb_id=herb.id) }}" class="btn btn-primary btn-sm">+ Link Treatment</a>
       <a href="/herbs/{{ herb.id }}/attributes" class="btn btn-secondary btn-sm">All Attributes</a>
     </div>
   </div>
@@ -689,7 +689,7 @@
         {% for treatment in treatments %}
         {% set res = resolve_illness(treatment.english_name) %}
         <li>
-          <a href="{{ url_for('illness_detail', illness_id=treatment.id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">
+          <a href="{{ url_for('illness_detail', illness_id=treatment.id) }}{{ qs(language=current_language if current_language != 'en' else None) }}">
             <strong>{{ res.english }}</strong>
             {% if current_language and current_language != 'en' and res.get_label(current_language) and res.get_label(current_language) != res.english %}
               <span lang="{{ current_language }}" style="color:#214632;font-weight:600;margin-left:4px;">({{ res.get_label(current_language) }})</span>

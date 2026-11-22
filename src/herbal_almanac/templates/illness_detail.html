@@ -3,7 +3,7 @@
 {% set res = resolve_illness(illness.english_name) %}
 {% block title %}{{ res.english }} · Illness Explorer · Herbal Almanac{% endblock %}
 {% block content %}
-<a class="back-link" href="{{ url_for('illness_list') }}{% if current_language != 'en' %}?language={{ current_language }}{% endif %}">← Back to Illness explorer</a>
+<a class="back-link" href="{{ url_for('illness_list') }}{{ qs(language=current_language if current_language != 'en' else None) }}">← Back to Illness explorer</a>
 
 <div class="disclaimer-banner" style="background:#fef7e7;border:1px solid #f2e2be;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#7a5814;font-size:12px;line-height:1.5;">
   <strong>Disclaimer:</strong> Associations are scraped from the CCRAS DRAVYA source, are unverified, and are not medical advice.
@@ -60,7 +60,7 @@
   <div class="herb-list">
     {% for herb in herbs %}
     {% set h_name = herb_name(herb, current_language) %}
-    <a class="herb-row herb-row--symbol" href="{{ url_for('herb_detail', herb_id=herb.id) }}{% if current_language and current_language != 'en' %}?language={{ current_language }}{% endif %}">
+    <a class="herb-row herb-row--symbol" href="{{ url_for('herb_detail', herb_id=herb.id) }}{{ qs(language=current_language if current_language != 'en' else None) }}">
       <span class="herb-symbol">✿</span>
       <span class="herb-main">
         {% if current_language == 'en' %}
