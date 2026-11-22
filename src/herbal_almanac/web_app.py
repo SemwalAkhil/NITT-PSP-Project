@@ -1181,42 +1181,8 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         )
 
     # -------------------------------------------------------------------------
-    # Stage C Status & GUI Migration Trigger
+    # Stage C GUI Migration Trigger
     # -------------------------------------------------------------------------
-    @application.get("/stage-c/status", response_class=HTMLResponse, name="stage_c_status_view")
-    def stage_c_status_view(
-        request: Request,
-        message: str | None = Query(default=None),
-        error: str | None = Query(default=None),
-    ) -> Any:
-        conn = sqlite3.connect(application.state.database_path)
-        conn.execute("PRAGMA foreign_keys = ON;")
-        try:
-            capability = get_database_capability(conn)
-            try:
-                ledger = [
-                    r[0]
-                    for r in conn.execute(
-                        "SELECT version FROM schema_migrations ORDER BY rowid ASC"
-                    ).fetchall()
-                ]
-            except Exception:
-                ledger = []
-        finally:
-            conn.close()
-
-        return templates.TemplateResponse(
-            request=request,
-            name="stage_c_status.html",
-            context={
-                "capability": capability,
-                "ledger": ledger,
-                "message": message,
-                "error": error,
-                "active_page": "stage_c",
-            },
-        )
-
     @application.post("/stage-c/upgrade", response_class=RedirectResponse, name="stage_c_upgrade_post")
     def stage_c_upgrade_post(request: Request) -> Any:
         if not verify_same_origin(request):
@@ -1224,19 +1190,10 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
 
         database = get_database()
         try:
-            res = database.upgrade_to_stage_c()
-            import urllib.parse
-            msg = f"Database successfully upgraded to Stage C (Schema Version {res.get('version', 3)})."
-            return RedirectResponse(
-                url=f"/stage-c/status?message={urllib.parse.quote(msg)}",
-                status_code=303,
-            )
+            database.upgrade_to_stage_c()
+            return RedirectResponse(url="/", status_code=303)
         except Exception as err:
-            import urllib.parse
-            return RedirectResponse(
-                url=f"/stage-c/status?error={urllib.parse.quote(str(err))}",
-                status_code=303,
-            )
+            raise HTTPException(status_code=500, detail=str(err))
 
     # -------------------------------------------------------------------------
     # JSON and CSV Exports

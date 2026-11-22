@@ -216,20 +216,27 @@ def test_records_hub_and_stage_c_status_view(tmp_path: Path):
     assert "Records &amp; Data Hub" in res_rec.text
     assert "Haritaki" in res_rec.text
 
-    # Stage C status view
+    # HTML Stage C status view was removed (meaningless to outside users) -> 404
     res_stc = client.get("/stage-c/status")
-    assert res_stc.status_code == 200
-    assert "Stage C Dravyaguna Status" in res_stc.text
-    assert "Schema Capability" in res_stc.text
+    assert res_stc.status_code == 404
 
-    # Trigger Stage C upgrade from GUI
+    # JSON API is kept
+    res_api = client.get("/api/stage-c/status")
+    assert res_api.status_code == 200
+    assert res_api.json()["schema_version"] == 2
+
+    # Trigger Stage C upgrade from GUI (redirects to dashboard /)
     res_upg = client.post(
         "/stage-c/upgrade",
         headers={"origin": "http://testserver", "host": "testserver"},
         follow_redirects=True,
     )
     assert res_upg.status_code == 200
-    assert "Stage C Active" in res_upg.text
+
+    # JSON API now reports Version 3
+    res_api3 = client.get("/api/stage-c/status")
+    assert res_api3.status_code == 200
+    assert res_api3.json()["schema_version"] == 3
 
 
 # ============================================================================

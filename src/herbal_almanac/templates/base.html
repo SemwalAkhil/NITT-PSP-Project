@@ -54,9 +54,6 @@
         <a class="{% if active_page == 'records' %}active{% endif %}" href="{{ url_for('records_view') }}">
           <span class="nav-icon" aria-hidden="true">🗄</span> Records Hub &amp; Exports
         </a>
-        <a class="{% if active_page == 'stage_c' %}active{% endif %}" href="{{ url_for('stage_c_status_view') }}">
-          <span class="nav-icon" aria-hidden="true">⚙</span> Stage C Status
-        </a>
       </nav>
 
       <div class="nav-label mt-3">DATA MANAGEMENT</div>
@@ -82,10 +79,11 @@
         </div>
         <div class="topbar-caption">BOTANICAL KNOWLEDGE, ORGANIZED</div>
         <div class="topbar-actions">
-          <button type="button" class="topbar-pill" id="a11y-toggle-top" aria-label="Open accessibility settings">
-            A11y Options
+          <button type="button" class="topbar-pill" id="a11y-toggle-top" aria-label="Accessibility Options">
+            <span class="a11y-label-full">Accessibility Options</span>
+            <span class="a11y-label-short" aria-hidden="true">A11y</span>
           </button>
-          <a class="topbar-link" href="{{ url_for('herb_list') }}">Explore records <span aria-hidden="true">↗</span></a>
+          <a class="topbar-link" href="{{ url_for('records_view') }}">Explore records <span aria-hidden="true">↗</span></a>
         </div>
       </header>
 
