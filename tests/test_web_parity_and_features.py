@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import io
 from pathlib import Path
+import re
 import sqlite3
 import pytest
 from fastapi.testclient import TestClient
@@ -654,4 +655,25 @@ def test_multilingual_herb_names_and_language_bar_on_herbs_page(tmp_path: Path):
     res_page = client.get("/herbs?language=hi&q=fever")
     assert res_page.status_code == 200
     assert "language=hi" in res_page.text
+
+
+def test_text_scaling_rem_and_accessibility_font_size(tmp_path: Path):
+    from herbal_almanac.web_app import STYLESHEET_PATH
+
+    css = STYLESHEET_PATH.read_text(encoding="utf-8")
+
+    # 1. Assert NO font-size: \d+px in styles.css
+    px_matches = re.findall(r"font-size:\s*\d+(?:\.\d+)?px", css)
+    assert px_matches == [], f"Found hardcoded font-size px values in styles.css: {px_matches}"
+
+    # 2. Assert root html rules for data-font-size exist and change font size
+    assert 'html[data-font-size="xl"]' in css
+    assert 'html[data-font-size="sm"]' in css
+    assert 'html[data-font-size="md"]' in css
+    assert 'html[data-font-size="lg"]' in css
+
+    # 3. Assert base sidebar width uses rem (responsive scaling)
+    assert ".sidebar{width:18rem;" in css
+    assert ".main-area{margin-left:18rem;" in css
+
 

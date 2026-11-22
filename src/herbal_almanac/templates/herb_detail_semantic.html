@@ -28,7 +28,7 @@
 </section>
 
 {% if is_non_english %}
-<div class="translation-notice" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;margin-bottom:16px;color:#1e40af;font-size:12px;line-height:1.5;">
+<div class="translation-notice" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;margin-bottom:16px;color:#1e40af;font-size:0.857rem;line-height:1.5;">
   <strong>Notice:</strong> Translations are machine-generated (Gemini) and not clinically verified.
 </div>
 {% endif %}
@@ -315,7 +315,7 @@
         </table>
         {% endif %}
         {% if is_version_3 and semantic_profile and semantic_profile.preparations %}
-        <h4 style="margin: 14px 0 6px 0; font-size: 13px; color: var(--green-dark);">Catalog-mapped preparations</h4>
+        <h4 style="margin: 14px 0 6px 0; font-size: 0.929rem; color: var(--green-dark);">Catalog-mapped preparations</h4>
         <ul style="margin: 0; padding-left: 18px; line-height: 1.8;">
           {% for prep in semantic_profile.preparations %}
           <li><strong>{{ prep.prep_display_label }}</strong> (<code>{{ prep.prep_concept_code }}</code>){% if prep.part_display_label %} · Part: {{ prep.part_display_label }}{% endif %}</li>
@@ -546,7 +546,7 @@
              class="featured-herb-img"
              onerror="this.onerror=null;this.src='/static/placeholder-herb.svg';">
       </div>
-      <div class="image-credit" style="margin-top: 8px; font-size: 11px; color: #6b7280; text-align: center;">
+      <div class="image-credit" style="margin-top: 8px; font-size: 0.786rem; color: #6b7280; text-align: center;">
         {% if has_user_photo %}
         <span class="image-credit-upload">📷 User-contributed photo</span>
         {% else %}
@@ -562,7 +562,7 @@
       <div class="photo-upload-section">
         <span class="photo-upload-label">📂 Contribute a photo</span>
         <form action="/herbs/{{ herb.id }}/photo" method="post" enctype="multipart/form-data">
-          <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" style="font-size:12px;width:100%;">
+          <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" style="font-size:0.857rem;width:100%;">
           <div class="photo-upload-actions">
             <button type="submit" class="btn btn-primary btn-sm">Upload Photo</button>
           </div>
@@ -584,11 +584,11 @@
           <h2>Virya Consensus</h2>
         </div>
       </div>
-      <p style="font-size: 13px; font-weight: 600; color: {% if virya_summary.agrees %}#15803d{% else %}#b45309{% endif %}; margin: 8px 0;">
+      <p style="font-size: 0.929rem; font-weight: 600; color: {% if virya_summary.agrees %}#15803d{% else %}#b45309{% endif %}; margin: 8px 0;">
         {{ virya_summary.text }}
       </p>
       {% if is_version_3 and virya_reconciliation %}
-      <div style="margin: 12px 0; font-size: 12px;">
+      <div style="margin: 12px 0; font-size: 0.857rem;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
           <span>Unreviewed Divergence:</span>
           <strong>{{ virya_reconciliation.summary_counts.tier_1_unreviewed_divergence_count }}</strong>
@@ -601,7 +601,7 @@
         </div>
       </div>
       <p style="margin-top: 12px;">
-        <a href="{{ url_for('virya_reconciliation_gui', herb_id=herb.id) }}" class="button button-primary" style="display: inline-block; padding: 6px 12px; font-size: 11px;">
+        <a href="{{ url_for('virya_reconciliation_gui', herb_id=herb.id) }}" class="button button-primary" style="display: inline-block; padding: 6px 12px; font-size: 0.786rem;">
           Inspect Virya Reconciliation ↗
         </a>
       </p>
