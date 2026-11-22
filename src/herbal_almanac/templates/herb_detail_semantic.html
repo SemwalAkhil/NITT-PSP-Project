@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
 {% from "_language_bar.html" import language_bar with context %}
 {% block title %}{{ herb.original_name or herb.english_name }} · Herbal Almanac{% endblock %}
 {% block content %}
@@ -26,7 +27,7 @@
       <a href="/herbs/{{ herb.id }}/attributes" class="btn btn-secondary btn-sm">All Attributes</a>
     </div>
   </div>
-  <div class="detail-stamp">✿<small>HERBAL<br>ALMANAC</small></div>
+  <div class="detail-stamp">{{ icon('leaf', size=24) }}<small>HERBAL<br>ALMANAC</small></div>
 </section>
 
 {% if is_non_english %}
@@ -550,7 +551,7 @@
       </div>
       <div class="image-credit" style="margin-top: 8px; font-size: 0.786rem; color: #6b7280; text-align: center;">
         {% if has_user_photo %}
-        <span class="image-credit-upload">📷 User-contributed photo</span>
+        <span class="image-credit-upload">{{ icon('camera', size=14) }} User-contributed photo</span>
         {% else %}
         <span>Image source: </span>
         {% if herb.source_url %}
@@ -562,7 +563,7 @@
       </div>
       <!-- Photo upload form -->
       <div class="photo-upload-section">
-        <span class="photo-upload-label">📂 Contribute a photo</span>
+        <span class="photo-upload-label">{{ icon('upload', size=14) }} Contribute a photo</span>
         <form action="/herbs/{{ herb.id }}/photo" method="post" enctype="multipart/form-data">
           <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" style="font-size:0.857rem;width:100%;">
           <div class="photo-upload-actions">

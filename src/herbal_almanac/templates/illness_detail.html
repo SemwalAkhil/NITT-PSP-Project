@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
 {% from "_language_bar.html" import language_bar with context %}
 {% set res = resolve_illness(illness.english_name) %}
 {% block title %}{{ res.english }} · Illness Explorer · Herbal Almanac{% endblock %}
@@ -61,7 +62,7 @@
     {% for herb in herbs %}
     {% set h_name = herb_name(herb, current_language) %}
     <a class="herb-row herb-row--symbol" href="{{ url_for('herb_detail', herb_id=herb.id) }}{{ qs(language=current_language if current_language != 'en' else None) }}">
-      <span class="herb-symbol">✿</span>
+      <span class="herb-symbol">{{ icon('leaf', size=16) }}</span>
       <span class="herb-main">
         {% if current_language == 'en' %}
           <strong>{{ h_name or herb.english_name or herb.original_name }}</strong>

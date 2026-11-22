@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
 {% block title %}Virya Reconciliation · {{ herb.english_name }} · Herbal Almanac{% endblock %}
 {% block content %}
 <a class="back-link" href="/herbs/{{ herb.id }}">← Back to {{ herb.english_name }}</a>
@@ -13,7 +14,7 @@
       <a href="{{ url_for('guide') }}#glossary" class="text-link">Learn more about Virya &amp; Reconciliation in the Guide <span>→</span></a>
     </p>
   </div>
-  <div class="detail-stamp">⚖<small>VIRYA<br>AUDIT</small></div>
+  <div class="detail-stamp">{{ icon('scale', size=24) }}<small>VIRYA<br>AUDIT</small></div>
 </section>
 
 <!-- RECONCILIATION SUMMARY CARDS -->

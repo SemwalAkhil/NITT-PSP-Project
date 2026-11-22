@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon %}
 {% block title %}{{ herb.original_name or herb.english_name }} · Herbal Almanac{% endblock %}
 {% block content %}
 <a class="back-link" href="{{ url_for('herb_list') }}{{ qs(language=current_language if current_language != 'en' else None) }}">← Back to herb explorer</a>
-<section class="detail-heading"><div><p class="eyebrow">HERB RECORD · {{ "%04d"|format(herb.id) }}</p><h1>{{ herb.original_name or herb.english_name }}</h1><p class="detail-common">{{ herb.english_name }}</p><p class="latin detail-latin">{{ herb.botanical_name or "Botanical identity not recorded" }}</p></div><div class="detail-stamp">✿<small>HERBAL<br>ALMANAC</small></div></section>
+<section class="detail-heading"><div><p class="eyebrow">HERB RECORD · {{ "%04d"|format(herb.id) }}</p><h1>{{ herb.original_name or herb.english_name }}</h1><p class="detail-common">{{ herb.english_name }}</p><p class="latin detail-latin">{{ herb.botanical_name or "Botanical identity not recorded" }}</p></div><div class="detail-stamp">{{ icon('leaf', size=24) }}<small>HERBAL<br>ALMANAC</small></div></section>
 <div class="detail-layout">
   <div class="detail-main">
     <section class="content-card"><div class="card-heading"><div><p class="eyebrow">PLANT IDENTITY</p><h2>Botanical profile</h2></div></div><dl class="identity-grid"><div><dt>Botanical name</dt><dd>{{ herb.botanical_name or "Not recorded" }}</dd></div><div><dt>Family</dt><dd>{{ herb.family or "Not recorded" }}</dd></div><div><dt>Source</dt><dd>{{ herb.source or "Not recorded" }}</dd></div><div><dt>Source record ID</dt><dd>{{ herb.source_record_id or "Not recorded" }}</dd></div><div><dt>Retrieved</dt><dd>{{ herb.retrieved_at or "Not recorded" }}</dd></div>{% if herb.source_url %}<div><dt>Source page</dt><dd><a href="{{ herb.source_url }}" target="_blank" rel="noopener noreferrer">Open source ↗</a></dd></div>{% endif %}</dl></section>

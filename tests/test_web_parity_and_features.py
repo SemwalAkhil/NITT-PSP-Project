@@ -733,5 +733,23 @@ def test_template_duplicate_attributes_linter(tmp_path: Path):
     assert errors == [], f"Found duplicate HTML attributes: {errors}"
 
 
+def test_no_emojis_in_any_templates():
+    templates_dir = Path(__file__).resolve().parent.parent / "src" / "herbal_almanac" / "templates"
+    emoji_pattern = re.compile(r"[\U0001F300-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF]")
+    allowed_plain_arrows = {"\u2192", "\u2197", "\u2190", "\u2191", "\u2193", "→", "↗", "←", "↑", "↓"}
+    violations: list[str] = []
+
+    for template_file in templates_dir.glob("*.html"):
+        content = template_file.read_text(encoding="utf-8")
+        for i, line in enumerate(content.splitlines(), 1):
+            matches = emoji_pattern.findall(line)
+            real_matches = [m for m in matches if m not in allowed_plain_arrows]
+            if real_matches:
+                violations.append(f"{template_file.name}:{i} contains {real_matches}")
+
+    assert violations == [], f"Found emojis in templates: {violations}"
+
+
+
 
 
