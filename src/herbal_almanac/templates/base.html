@@ -82,8 +82,9 @@
         <div class="topbar-caption">BOTANICAL KNOWLEDGE, ORGANIZED</div>
         <div class="topbar-actions">
           <button type="button" class="topbar-pill" id="a11y-toggle-top" aria-label="Accessibility Options">
+            {{ icon('accessibility', size=14) }}
             <span class="a11y-label-full">Accessibility Options</span>
-            <span class="a11y-label-short" aria-hidden="true">A11y</span>
+            <span class="a11y-label-short">Accessibility</span>
           </button>
           <a class="topbar-link" href="{{ url_for('records_view') }}">Explore records {{ icon('arrow-up-right', size=14) }}</a>
         </div>

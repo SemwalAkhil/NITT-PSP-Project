@@ -1143,6 +1143,9 @@ input[type="text"]:focus, input[type="search"]:focus, input[type="url"]:focus, i
 @media (max-width: 480px) {
   .a11y-label-full { display: none; }
   .a11y-label-short { display: inline; }
+  .topbar { padding: 0 12px; }
+  .topbar-link { display: none; }
+  .topbar-pill { padding: 5px 10px; font-size: 0.8125rem; }
 }
 
 /* Dark theme & High contrast overrides */
