@@ -230,6 +230,7 @@ Arguments and options:
 | `--retries` | General retry count; default 2 |
 | `--record-retries` | Per-record retry count; default 1 |
 | `--failure-report` | Optional failure-report destination |
+| `--stage-c` / `--no-stage-c` | Automatically upgrade database to Stage C (schema v3) and run semantic backfill (default: `--stage-c`) |
 
 The command rejects unsupported site names before invoking the scraper.
 
@@ -244,10 +245,27 @@ scrape(
     retries,
     record_retries,
     failure_report,
+    stage_c=stage_c,
 )
 ```
 
-It reports the number of processed records and, when applicable, the number of failures.
+It reports the number of processed records, any failures, and when `--stage-c` is active, displays a compact summary table of backfilled Dravyaguna properties and concepts:
+
+```text
+Processed 25 DRAVYA records.
+              Stage C Semantic Summary               
+┌─────────────────────────┬─────────────────────────┐
+│ Property                │ Value                   │
+├─────────────────────────┼─────────────────────────┤
+│ Schema Version          │ Version 3 (Stage C)     │
+│ Processed Source Claims │ 120                     │
+│ Backfilled Properties   │ 85                      │
+│ Backfilled Dosha Effects│ 32                      │
+│ Backfilled Plant Parts  │ 18                      │
+│ Backfilled Preparations │ 12                      │
+│ Backfilled Indications  │ 14                      │
+└─────────────────────────┴─────────────────────────┘
+```
 
 ### 6.3 `herb`
 

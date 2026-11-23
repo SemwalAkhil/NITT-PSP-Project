@@ -470,7 +470,7 @@ The Typer CLI provides 12 subcommands:
 | Subcommand | Description | Example |
 |---|---|---|
 | `setup` | Initialize database schema and migrations | `herbal-almanac setup --database data/herbs.db` |
-| `scrape` | Scrape CCRAS portal and persist records | `herbal-almanac scrape --database data/herbs.db --max-plants 10` |
+| `scrape` | Scrape CCRAS portal, persist records, and auto-upgrade to Stage C | `herbal-almanac scrape --database data/herbs.db --max-plants 10` |
 | `herb` | Insert a single herb with field validation | `herbal-almanac herb "Tulsi" --botanical-name "Ocimum sanctum"` |
 | `illness` | Insert an illness entity | `herbal-almanac illness "Kasa"` |
 | `treatment` | Link a herb to an illness | `herbal-almanac treatment 1 1` |
@@ -479,7 +479,7 @@ The Typer CLI provides 12 subcommands:
 | `treatments` | Show illnesses treated by a herb ID | `herbal-almanac treatments 1` |
 | `attributes` | Show or export all source attributes | `herbal-almanac attributes 1 --format table` |
 | `records` | Export records to CSV or JSON | `herbal-almanac records --format json --output records.json` |
-| `upgrade-stage-c` | Apply Stage C schema v3 and backfill | `herbal-almanac upgrade-stage-c --database data/herbs.db` |
+| `upgrade-stage-c` | Apply Stage C schema v3 and backfill (for older v2 databases) | `herbal-almanac upgrade-stage-c --database data/herbs.db` |
 | `stage-c-status` | Inspect schema version and concept metrics | `herbal-almanac stage-c-status --database data/herbs.db` |
 
 ---
@@ -516,11 +516,8 @@ Open your browser to:
 
 ### Option B: Live Scrape (Requires network access to CCRAS portal)
 ```bash
-# Scrape first 25 plants directly into a new database
-python -m herbal_almanac scrape --database data/live.db --max-plants 25
-
-# Upgrade to Stage C and run backfill
-python -m herbal_almanac upgrade-stage-c --database data/live.db
+# Scrape first 25 plants directly into a new database (runs Stage C upgrade & backfill automatically)
+herbal-almanac scrape --database data/live.db --max-plants 25
 
 # Optional: Pre-warm image cache for offline botanical viewing
 python scripts/warm_image_cache.py --database data/live.db --delay 0.3
@@ -528,6 +525,8 @@ python scripts/warm_image_cache.py --database data/live.db --delay 0.3
 # Launch GUI
 $env:HERBAL_ALMANAC_DATABASE="data/live.db"; uvicorn herbal_almanac.web_app:app
 ```
+
+> **Note on Stage C automation:** `scrape` runs the Stage C schema v3 upgrade and semantic backfill automatically by default. Use `--no-stage-c` if you wish to retain schema v2. The standalone `upgrade-stage-c` command remains available for upgrading older v2 databases.
 
 ---
 

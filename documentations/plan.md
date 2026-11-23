@@ -771,4 +771,27 @@ Executed as the final pre-submission verification and stabilization pass to guar
 - [x] **Task 7: Clean-Install Smoke Test:** Promoted web runtime requirements (`fastapi`, `jinja2`, `python-multipart`, `uvicorn[standard]`) to core `project.dependencies` in `pyproject.toml` and created `MANIFEST.in` ensuring all HTML templates, static assets, migrations, and glossary CSVs package into wheels and sdists. Executed complete non-editable `pip install .` and automated HTTP endpoint smoke test in an isolated virtual environment.
 - [x] **Task 8: Documentation & Release Tagging:** Synchronized SDLC plan and web application reference manuals, confirmed zero unstyled CSS classes and clean test suite passing, tagged release as `demo-ready`, and pushed to `origin/main`.
 
+---
+
+## 13. Milestone I – Packaging Simplification and One-Step Scrape
+
+Executed to streamline project onboarding, eliminate redundant installation extras, remove unused third-party network translation dependencies, and deliver a unified, one-step ingestion workflow:
+
+1. **Elimination of `[web]` Extra:**
+   - With `fastapi`, `uvicorn[standard]`, `jinja2`, and `python-multipart` promoted directly to core `project.dependencies`, the `[project.optional-dependencies].web` extra was redundant.
+   - Removed `web` extra and deduplicated development dependencies in `pyproject.toml`, keeping `dev` focused on testing and distribution tools (`pytest`, `httpx`, `build`, `setuptools`, `twine`, `wheel`).
+   - Standardized documentation to advocate a single `pip install .` for runtime and `pip install -e ".[dev]"` for developers.
+
+2. **Removal of Machine Translation & `[translate]` Extra:**
+   - Deprecated and removed `src/herbal_almanac/translation.py`, the `--translate` CLI and scraper flags, and the external `deep-translator` dependency.
+   - Preserved backward compatibility for legacy databases containing `Translated Names.*` attributes via database operator import guards, and retained illness glossary `origin="machine_generated"` logic.
+   - Standardized multilingual presentation strictly around verified, offline-capable curated datasets (`herb_names.csv` and `illness_glossary.csv`).
+
+3. **Automatic Stage C Upgrade & Semantic Backfill on Scrape:**
+   - Enhanced `scrapper.py::scrape(stage_c=True)` to automatically invoke `upgrade_to_stage_c()` and `run_stage_c_backfill()` following monograph ingestion whenever records are processed.
+   - Added robust error isolation: if Stage C upgrade encounters an issue, scraped records remain fully committed and safe, storing error details on `ScrapeReport.stage_c_error`.
+   - Added `--stage-c / --no-stage-c` options to Typer CLI `scrape` and scrapper module `main()`, rendering a clean Rich summary table of backfilled concepts and Dravyaguna properties.
+   - Retained standalone `upgrade-stage-c` command for retroactively migrating older Schema v2 databases.
+
+
 

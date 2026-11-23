@@ -154,6 +154,11 @@ def scrape_site(
     retries: int = typer.Option(2, min=0),
     record_retries: int = typer.Option(1, "--record-retries", min=0),
     failure_report: str | None = typer.Option(None, "--failure-report"),
+    stage_c: bool = typer.Option(
+        True,
+        "--stage-c/--no-stage-c",
+        help="Upgrade the database to Stage C (schema v3) and run the semantic backfill after scraping.",
+    ),
 ) -> None:
     """Scrape a supported site and insert records directly into the database."""
     if site.lower() != "dravya":
@@ -167,6 +172,7 @@ def scrape_site(
             retries,
             record_retries,
             failure_report,
+            stage_c=stage_c,
         )
     except (OSError, ValueError, sqlite3.Error, requests.RequestException, ScraperError) as error:
         fail(error)
@@ -175,6 +181,31 @@ def scrape_site(
         typer.echo(f"Failed {len(report.failures)} records.", err=True)
         if failure_report:
             typer.echo(f"Failure report: {failure_report}", err=True)
+
+    if stage_c and report.processed > 0:
+        if report.stage_c_error:
+            typer.echo(
+                f"Warning: Stage C upgrade/backfill failed: {report.stage_c_error}\n"
+                f"Scraped data is safe and committed in the database.\n"
+                f"Run 'herbal-almanac upgrade-stage-c --database \"{database_path}\"' to retry the upgrade.",
+                err=True,
+            )
+            raise typer.Exit(code=1)
+
+        table = Table(title="Stage C Semantic Summary")
+        table.add_column("Property", style="cyan")
+        table.add_column("Value", style="green")
+
+        bs = (report.stage_c_stats or {}).get("backfill", {})
+        version = (report.stage_c_stats or {}).get("version", 3)
+        table.add_row("Schema Version", f"Version {version} (Stage C Semantic Dravyaguna)")
+        table.add_row("Processed Source Claims", str(bs.get("processed_claims", 0)))
+        table.add_row("Backfilled Properties", str(bs.get("inserted_properties", 0)))
+        table.add_row("Backfilled Dosha Effects", str(bs.get("inserted_dosha_effects", 0)))
+        table.add_row("Backfilled Plant Parts", str(bs.get("inserted_plant_parts", 0)))
+        table.add_row("Backfilled Preparations", str(bs.get("inserted_preparations", 0)))
+        table.add_row("Backfilled Indications", str(bs.get("inserted_indications", 0)))
+        console.print(table)
 
 
 @app.command("herb")

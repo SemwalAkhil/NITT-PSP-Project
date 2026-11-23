@@ -58,19 +58,29 @@ class ScrapeReport:
     discovery_pages: int = 0
     discovery_termination: str = ""
     failures: list[ScrapeFailure] = field(default_factory=list)
+    stage_c_status: str | None = None
+    stage_c_stats: dict | None = None
+    stage_c_error: str | None = None
 
     def write_json(self, path: str | Path) -> None:
         destination = Path(path)
+        data: dict[str, Any] = {
+            "processed": self.processed,
+            "discovered": self.discovered,
+            "discovery_pages": self.discovery_pages,
+            "discovery_termination": self.discovery_termination,
+            "failed": len(self.failures),
+            "failures": [asdict(failure) for failure in self.failures],
+        }
+        if self.stage_c_status is not None:
+            data["stage_c_status"] = self.stage_c_status
+        if self.stage_c_stats is not None:
+            data["stage_c_stats"] = self.stage_c_stats
+        if self.stage_c_error is not None:
+            data["stage_c_error"] = self.stage_c_error
         destination.write_text(
             json.dumps(
-                {
-                    "processed": self.processed,
-                    "discovered": self.discovered,
-                    "discovery_pages": self.discovery_pages,
-                    "discovery_termination": self.discovery_termination,
-                    "failed": len(self.failures),
-                    "failures": [asdict(failure) for failure in self.failures],
-                },
+                data,
                 indent=2,
                 ensure_ascii=False,
             ) + "\n",
@@ -348,6 +358,7 @@ def scrape(
     retries: int = 2,
     record_retries: int = 1,
     failure_report_path: str | Path | None = None,
+    stage_c: bool = True,
 ) -> ScrapeReport:
     if record_retries < 0:
         raise ValueError("record_retries must be non-negative")
@@ -412,6 +423,21 @@ def scrape(
                     ]
         if failure_report_path is not None:
             report.write_json(failure_report_path)
+        if stage_c and report.processed > 0:
+            try:
+                upgrade_res = database.upgrade_to_stage_c()
+                backfill_res = database.run_stage_c_backfill()
+                report.stage_c_status = upgrade_res.get("status", "upgraded")
+                report.stage_c_stats = {
+                    "version": upgrade_res.get("version", 3),
+                    "upgrade": upgrade_res,
+                    "backfill": backfill_res.get("backfill_stats", {}),
+                }
+            except Exception as error:
+                report.stage_c_error = str(error)
+                report.stage_c_status = "failed"
+            if failure_report_path is not None and report.failures:
+                report.write_json(failure_report_path)
         return report
     finally:
         session.close()
@@ -445,6 +471,19 @@ def main() -> None:
         type=Path,
         help="Write failed plant details as JSON to this path.",
     )
+    parser.add_argument(
+        "--stage-c",
+        dest="stage_c",
+        action="store_true",
+        default=True,
+        help="Upgrade the database to Stage C and run semantic backfill after scraping (default).",
+    )
+    parser.add_argument(
+        "--no-stage-c",
+        dest="stage_c",
+        action="store_false",
+        help="Disable automatic Stage C upgrade and semantic backfill after scraping.",
+    )
     args = parser.parse_args()
     try:
         print(scrape(
@@ -455,6 +494,7 @@ def main() -> None:
             args.retries,
             args.record_retries,
             args.failure_report,
+            stage_c=args.stage_c,
         ))
     except KeyboardInterrupt:
         parser.exit(130, "Scrape interrupted by user.\n")
