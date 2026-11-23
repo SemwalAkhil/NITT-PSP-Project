@@ -6,9 +6,21 @@ seeded from sample.html without any live network access.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import sys
 import pytest
+
+# Force plain CLI output in tests; prevent Typer and Rich from emitting ANSI
+# color codes or wrapping lines when GITHUB_ACTIONS or color flags are set in CI.
+os.environ.pop("FORCE_COLOR", None)
+os.environ.pop("CLICOLOR_FORCE", None)
+os.environ.pop("PY_COLORS", None)
+os.environ.pop("GITHUB_ACTIONS", None)
+os.environ["NO_COLOR"] = "1"
+os.environ["TERM"] = "dumb"
+os.environ["COLUMNS"] = "200"
+os.environ["TERMINAL_WIDTH"] = "200"
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
