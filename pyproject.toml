@@ -41,7 +41,7 @@ where = ["src"]
 include = ["herbal_almanac*"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 [tool.setuptools.package-data]
 herbal_almanac = ["templates/*.html", "static/*.css", "static/*.svg", "migrations/*.sql", "data/*.csv"]
 "herbal_almanac.data" = ["*.csv"]

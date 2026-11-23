@@ -7,7 +7,12 @@ seeded from sample.html without any live network access.
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 import pytest
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
 
 from herbal_almanac.database_operator import AyurvedicAlmanac
 from herbal_almanac.scrapper import parse_plant
