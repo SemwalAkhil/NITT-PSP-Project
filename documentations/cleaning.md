@@ -1300,13 +1300,13 @@ The absence of a documented effect is not evidence of a neutral effect.
 
 Therefore, the normalizer uses `unspecified` rather than assigning an unsupported increase or decrease.
 
-### 7.7 Why separate cleaning from translation?
+### 7.7 Why separate cleaning from external network services?
 
 Cleaning should be deterministic and independent of network availability.
 
-Translation may fail, take time, or return imperfect results.
+External network services may fail, take time, or return imperfect results.
 
-Keeping translation in `translation.py` prevents an external translation service from becoming a requirement for basic data cleaning.
+Keeping cleaning self-contained prevents external services from becoming a requirement for basic data cleaning and parsing.
 
 ---
 

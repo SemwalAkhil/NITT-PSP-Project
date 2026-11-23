@@ -17,7 +17,6 @@ from urllib3.util.retry import Retry
 
 from .cleaning import PlantRecord, clean_text, split_values
 from .database_operator import AyurvedicAlmanac, default_database_path
-from .translation import GoogleNameTranslator, enrich_record
 
 
 DRAVYA_DIRECTORY = "https://dravya.ccras.org.in/all_plants"
@@ -349,13 +348,11 @@ def scrape(
     retries: int = 2,
     record_retries: int = 1,
     failure_report_path: str | Path | None = None,
-    translate: bool = False,
 ) -> ScrapeReport:
     if record_retries < 0:
         raise ValueError("record_retries must be non-negative")
     database_path = database_path or default_database_path()
     session = create_session(retries)
-    translator = GoogleNameTranslator(cache_path=database_path) if translate else None
     try:
         discovery = discover_plants(session, max_pages=max_pages)
         plants = discovery.plants
@@ -388,8 +385,6 @@ def scrape(
                     )
                     try:
                         record = parse_plant(plant_id, url, fetch(session, url, timeout))
-                        if translator is not None:
-                            record = enrich_record(record, translator)
                         record.validate()
                         database.insert_record(record)
                     except (requests.RequestException, ValueError, sqlite3.Error) as error:
@@ -450,11 +445,6 @@ def main() -> None:
         type=Path,
         help="Write failed plant details as JSON to this path.",
     )
-    parser.add_argument(
-        "--translate",
-        action="store_true",
-        help="Enable machine translation enrichment (disabled by default).",
-    )
     args = parser.parse_args()
     try:
         print(scrape(
@@ -465,7 +455,6 @@ def main() -> None:
             args.retries,
             args.record_retries,
             args.failure_report,
-            args.translate,
         ))
     except KeyboardInterrupt:
         parser.exit(130, "Scrape interrupted by user.\n")

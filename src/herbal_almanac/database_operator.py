@@ -1003,6 +1003,7 @@ class AyurvedicAlmanac:
                     source_claim_id=claim_id,
                 )
 
+        # Retained for backward compatibility with legacy databases containing Translated Names.* attributes
         for field, values in record.attributes.items():
             if not field.startswith("Translated Names."):
                 continue

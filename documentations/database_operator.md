@@ -32,7 +32,6 @@ flowchart TD
     A["scrapper.py"] --> B["PlantRecord"]
     B --> C["cleaning.py"]
     C --> D["AyurvedicAlmanac"]
-    E["translation.py"] --> C
     D --> F["SQLite Database"]
     D --> G["database migrations"]
     D --> H["backfill_engine.py"]
@@ -48,7 +47,6 @@ flowchart TD
 |---|---|
 | `cleaning.py` | Supplies `PlantRecord`, text normalization, transliteration, Dosha normalization, and the `DOSHAS` constant. |
 | `scrapper.py` | Uses `AyurvedicAlmanac` to initialize the database and persist scraped records. |
-| `translation.py` | Enriches records before they are passed to the database operator. |
 | `migrations/` | Supplies the Stage C semantic migration. |
 
 ### Main downstream consumers
@@ -598,7 +596,6 @@ The database operator handles persistence and orchestration. Cleaning, translati
 
 - `cleaning.md`
 - `scrapper.md`
-- `translation.md`
 - `concept_catalog.md`
 - `backfill_engine.md`
 - `schema_capability_gate.py`

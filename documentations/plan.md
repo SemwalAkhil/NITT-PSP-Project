@@ -126,9 +126,10 @@ The initial implementation concentrated on getting source data into a usable rel
 |---|---|
 | `scrapper.py` | Source discovery and extraction |
 | `cleaning.py` | Text normalization and record validation |
-| `translation.py` | Optional machine translation |
 | `database_operator.py` | SQLite persistence |
 | `cli.py` | Command-line interface |
+
+> *Historical Note:* The prototype included an optional `translation.py` machine-translation pipeline. In Milestone I this was removed in favour of the curated, clinically accurate multilingual glossaries (`herb_names.csv` and `illness_glossary.csv`).
 
 The initial architecture established the principle that scraping, cleaning, and database operations should be separate responsibilities.
 

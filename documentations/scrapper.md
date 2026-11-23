@@ -39,9 +39,6 @@ scrapper.py
 cleaning.py
       |
       v
-Optional translation.py
-      |
-      v
 PlantRecord Validation
       |
       v
@@ -159,17 +156,6 @@ These are imported from `database_operator.py`.
 
 - `AyurvedicAlmanac`: Main database operator class.
 - `default_database_path`: Determines the default database location.
-
-```python
-from .translation import GoogleNameTranslator, enrich_record
-```
-
-These are imported from `translation.py`.
-
-- `GoogleNameTranslator`: Provides optional machine translation with caching.
-- `enrich_record`: Adds translated names and attributes to an existing record.
-
-Translation is optional and is not required for ordinary scraping.
 
 ---
 
@@ -1017,19 +1003,7 @@ If no database path is provided, the default database path is used.
 session = create_session(retries)
 ```
 
-**Step 4 – Initialize translation**
-
-```python
-translator = (
-    GoogleNameTranslator(cache_path=database_path)
-    if translate
-    else None
-)
-```
-
-The translator is initialized only when requested.
-
-**Step 5 – Discover plants**
+**Step 4 – Discover plants**
 
 ```python
 discovery = discover_plants(
@@ -1040,7 +1014,7 @@ discovery = discover_plants(
 
 The discovered plant list and pagination metadata are stored.
 
-**Step 6 – Apply the plant limit**
+**Step 5 – Apply the plant limit**
 
 ```python
 if max_plants is not None:
@@ -1049,7 +1023,7 @@ if max_plants is not None:
 
 This limits processing without changing the total discovery count.
 
-**Step 7 – Initialize the database**
+**Step 6 – Initialize the database**
 
 ```python
 database = AyurvedicAlmanac(database_path)
@@ -1067,9 +1041,6 @@ fetch()
    |
    v
 parse_plant()
-   |
-   v
-Optional enrich_record()
    |
    v
 record.validate()
@@ -1201,20 +1172,6 @@ Persists the cleaned plant record.
 
 The database operator also manages the additional provenance synchronization implemented in the later project stages.
 
-### From `translation.py`
-
-#### `GoogleNameTranslator`
-
-Creates an optional translator with a cache associated with the database path.
-
-#### `enrich_record()`
-
-Enriches the record with machine-generated translations.
-
-This happens after parsing and before final validation and persistence.
-
-The source vernacular attributes are not intended to be overwritten by translated versions.
-
 ---
 
 ## 7. Important Logic and Design Decisions
@@ -1337,14 +1294,6 @@ python -m herbal_almanac.scrapper \
     --max-plants 10 \
     --retries 3 \
     --record-retries 2
-```
-
-### Enable translation
-
-```bash
-python -m herbal_almanac.scrapper \
-    --max-plants 10 \
-    --translate
 ```
 
 ### Generate a failure report

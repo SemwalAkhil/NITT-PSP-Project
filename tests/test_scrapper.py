@@ -32,8 +32,6 @@ from herbal_almanac.scrapper import (
     _vernacular_attributes,
     parse_plant,
 )
-from herbal_almanac.translation import enrich_record
-from herbal_almanac.translation import GoogleNameTranslator, TranslationResult
 
 
 def test_table_attributes_use_section_headers() -> None:
@@ -1401,69 +1399,6 @@ def test_non_latin_name_is_preserved_alongside_transliteration(tmp_path) -> None
     assert herb["original_name"] == "कासा"
 
 
-def test_translation_enrichment_adds_english_and_regional_attributes() -> None:
-    class FakeTranslator:
-        def translate(self, text: str, target: str) -> str:
-            if target == "en":
-                return "Cough"
-            return f"{target}:{text}"
-
-    record = PlantRecord(
-        source="CCRAS DRAVYA",
-        source_record_id=1,
-        source_url="https://example.test/plant/1",
-        retrieved_at="2026-01-01T00:00:00+00:00",
-        ayurvedic_name="Kasa",
-        attributes={"Vernacular Names.Hindi": ["कास"]},
-    ).clean()
-
-    enrich_record(record, FakeTranslator())
-
-    assert record.attributes["Translated Names.Hindi"] == ["hi:Kasa"]
-    assert record.attributes["Translated Names.English"] == ["Kasa", "Cough"]
-
-
-def test_translation_cache_persists_status_and_failure(tmp_path, monkeypatch) -> None:
-    calls = 0
-
-    def fail_translate(self, text: str) -> str:
-        nonlocal calls
-        calls += 1
-        raise RuntimeError("translator unavailable")
-
-    monkeypatch.setattr("deep_translator.GoogleTranslator.translate", fail_translate)
-    cache_path = tmp_path / "translations.db"
-    first = GoogleNameTranslator(minimum_interval=0, cache_path=cache_path)
-    result = first.translate("Kasa", "hi")
-    second = GoogleNameTranslator(minimum_interval=0, cache_path=cache_path)
-
-    assert result.status == "failed"
-    assert result.error == "translator unavailable"
-    assert second.translate("Kasa", "hi") == result
-    assert calls == 1
-
-
-def test_machine_translations_are_marked_unverified(tmp_path) -> None:
-    class FakeTranslator:
-        def translate(self, text: str, target: str) -> TranslationResult:
-            return TranslationResult(f"{target}:{text}", "success", None, "auto")
-
-    record = PlantRecord(
-        source="CCRAS DRAVYA",
-        source_record_id=9,
-        source_url="https://example.test/plant/9",
-        retrieved_at="2026-01-01T00:00:00+00:00",
-        ayurvedic_name="Kasa",
-    ).clean()
-    enrich_record(record, FakeTranslator())
-
-    assert record.attribute_metadata["Translated Names.Hindi"] == {
-        "source_language": "sa",
-        "machine_generated": True,
-        "verification_status": "unverified",
-    }
-
-
 def test_scrape_retries_failed_plants_and_writes_failure_report(tmp_path, monkeypatch) -> None:
     html = "<html><h1>Reliable Herb</h1></html>"
     monkeypatch.setattr(
@@ -1488,7 +1423,6 @@ def test_scrape_retries_failed_plants_and_writes_failure_report(tmp_path, monkey
             else html
         ),
     )
-    monkeypatch.setattr(scrapper, "enrich_record", lambda record, translator: record)
 
     report_path = tmp_path / "failures.json"
     report = scrapper.scrape(

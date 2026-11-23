@@ -230,7 +230,6 @@ Arguments and options:
 | `--retries` | General retry count; default 2 |
 | `--record-retries` | Per-record retry count; default 1 |
 | `--failure-report` | Optional failure-report destination |
-| `--translate` | Enables machine translation enrichment |
 
 The command rejects unsupported site names before invoking the scraper.
 
@@ -245,7 +244,6 @@ scrape(
     retries,
     record_retries,
     failure_report,
-    translate,
 )
 ```
 

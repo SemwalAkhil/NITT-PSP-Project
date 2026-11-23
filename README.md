@@ -100,14 +100,12 @@ flowchart TD
 flowchart LR
     SRC["CCRAS DRAVYA Website"] --> SCRAPE["1. Scraper (scrapper.py)"]
     SCRAPE --> CLEAN["2. Cleaning & Validation (cleaning.py)"]
-    CLEAN -->|Optional --translate| TRANS["3. Translation (translation.py)"]
-    CLEAN --> SQLITE["4. SQLite Persistence (database_operator.py)"]
-    TRANS --> SQLITE
-    SQLITE --> STAGE_B["5. Operational Provenance (sources, source_claims, taxa)"]
-    STAGE_B --> STAGE_C["6. Semantic Backfill (backfill_engine.py & concept_catalog.py)"]
-    STAGE_C --> VIEW["7. View-Model Layer (herb_view.py & illness_glossary.py)"]
-    STAGE_C --> CLI["8. Typer CLI (cli.py)"]
-    VIEW --> WEB["9. Web GUI & REST API (web_app.py)"]
+    CLEAN --> SQLITE["3. SQLite Persistence (database_operator.py)"]
+    SQLITE --> STAGE_B["4. Operational Provenance (sources, source_claims, taxa)"]
+    STAGE_B --> STAGE_C["5. Semantic Backfill (backfill_engine.py & concept_catalog.py)"]
+    STAGE_C --> VIEW["6. View-Model Layer (herb_view.py & illness_glossary.py)"]
+    STAGE_C --> CLI["7. Typer CLI (cli.py)"]
+    VIEW --> WEB["8. Web GUI & REST API (web_app.py)"]
     CLI --> USERS["CLI Researchers"]
     WEB --> BROWSERS["Web Users & Evaluators"]
 ```
@@ -305,7 +303,6 @@ NITT-PSP-Project/
 │   ├── repository_api.md                 # Semantic queries, profiles & Virya reconciliation
 │   ├── schema_capability_gate.md         # Schema version verification ([1, 2] vs [1, 2, 3])
 │   ├── scrapper.md                       # BeautifulSoup CCRAS scraper & rate-limited client
-│   ├── translation.md                    # Machine translation adapter with local fallbacks
 │   └── web_app.md                        # FastAPI web GUI, Jinja2 templates & REST API
 ├── scripts/
 │   ├── herb_name_coverage.py             # Measures herb name glossary resolution coverage
@@ -327,7 +324,6 @@ NITT-PSP-Project/
 │       ├── repository_api.py             # Semantic repository API
 │       ├── schema_capability_gate.py     # Schema version capability gate
 │       ├── scrapper.py                   # CCRAS monograph scraper
-│       ├── translation.py                # Translation pipeline
 │       ├── web_app.py                    # FastAPI application
 │       ├── data/
 │       │   ├── __init__.py
@@ -580,7 +576,6 @@ The complete system documentation is organized into modular, verified documents:
 - [Vernacular Illness Glossary](documentations/illness_glossary.md) — 15-language condition glossary and 5-step resolution hierarchy.
 - [Illness Coverage Audit](documentations/illness_coverage.md) — Coverage measurement utility and conflict reporting.
 - [Offline Demo Generator](documentations/make_demo_db.md) — Hermetic sample database builder for evaluator walkthroughs.
-- [Machine Translation Pipeline](documentations/translation.md) — Multilingual translation client and persistent caching.
 - [Typer CLI](documentations/cli.md) — Command-line management, parameters, and execution options.
 - [Web Application](documentations/web_app.md) — FastAPI endpoints, Starlette routes, templates, and REST API.
 
