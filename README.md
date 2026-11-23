@@ -440,22 +440,22 @@ Organizes Dravyaguna properties into canonical categories:
 
 ## 7. Installation
 
-### Core Installation
-Installs the scraper, cleaning engine, and SQLite operator:
+### Standard Installation
+Installs the complete package including CLI, SQLite engine, Stage C semantic backfill, and the FastAPI/Uvicorn web interface:
 ```bash
 pip install .
 ```
 
-### Web GUI Installation
-Includes FastAPI, Uvicorn, and Jinja2 templates:
+### Development Installation
+Includes developer tools, test runners (`pytest`, `httpx`), and packaging tools (`build`, `wheel`, `twine`):
 ```bash
-pip install ".[web]"
+pip install -e ".[dev]"
 ```
 
-### Full Development & Translation Installation
-Includes translation libraries, build tools, and pytest:
+### Distribution Wheel Build
+Build an offline, self-contained wheel distribution:
 ```bash
-pip install ".[web,translate,dev]"
+python -m build --wheel
 ```
 
 > **Windows PowerShell Execution Notice:**  

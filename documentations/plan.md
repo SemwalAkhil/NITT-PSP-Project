@@ -651,12 +651,12 @@ Before committing fixes, declaring check failures resolved, or pushing to `main`
    ```bash
    python -m build --wheel --no-isolation
    ```
-4. **Smoke Test Wheel Installation (With and Without `[web]`):**
-   - Install the built `.whl` into a clean virtual environment without extras and verify CLI entry point:
+4. **Smoke Test Wheel Installation:**
+   - Install the built `.whl` into a clean virtual environment and verify CLI entry point:
      ```bash
      herbal-almanac --help
      ```
-   - Install with `[web]` extra (`pip install "dist/<wheel>[web]"`) and run package smoke tests:
+   - Run package smoke tests verifying CLI, database operator, and web app:
      ```bash
      python tests/smoke_installed_package.py
      ```

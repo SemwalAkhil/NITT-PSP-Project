@@ -63,9 +63,9 @@ jobs:
           "
           /tmp/core_env/bin/herbal-almanac --help
           /tmp/core_env/bin/herbal-almanac stage-c-status --help
-      - name: Install built wheel with [web] extra
-        run: python -m pip install "$(ls dist/*.whl)[web]"
-      - name: Run smoke tests and CLI checks with web
+      - name: Install built wheel
+        run: python -m pip install $(ls dist/*.whl)
+      - name: Run smoke tests and CLI checks
         run: |
           python tests/smoke_installed_package.py
           herbal-almanac --help
