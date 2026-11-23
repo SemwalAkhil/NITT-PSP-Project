@@ -205,16 +205,41 @@ def test_guarded_code_reference():
 def test_pyproject_extras_and_base_dependencies_guard():
     """Guarantees pyproject.toml has no deprecated web or translate extras, no deep-translator,
     and includes essential web packages in base dependencies."""
-    import tomllib
+    import re
+
+    try:
+        import tomllib
+    except ModuleNotFoundError:
+        try:
+            import tomli as tomllib
+        except ModuleNotFoundError:
+            try:
+                from pip._vendor import tomli as tomllib
+            except ModuleNotFoundError:
+                tomllib = None
 
     pyproject_path = REPO_ROOT / "pyproject.toml"
-    with open(pyproject_path, "rb") as f:
-        pyproject = tomllib.load(f)
 
-    project = pyproject.get("project", {})
-    opt_deps = project.get("optional-dependencies", {})
-    deps = project.get("dependencies", [])
-    dev_deps = opt_deps.get("dev", [])
+    if tomllib is not None:
+        with open(pyproject_path, "rb") as f:
+            pyproject = tomllib.load(f)
+        project = pyproject.get("project", {})
+        opt_deps = project.get("optional-dependencies", {})
+        deps = project.get("dependencies", [])
+        dev_deps = opt_deps.get("dev", [])
+    else:
+        text = pyproject_path.read_text(encoding="utf-8")
+        opt_deps = {}
+        if "[project.optional-dependencies]" in text:
+            section = text.split("[project.optional-dependencies]")[1].split("[")[0]
+            for line in section.strip().splitlines():
+                if "=" in line:
+                    opt_deps[line.split("=")[0].strip()] = []
+        deps_match = re.search(r"dependencies\s*=\s*\[(.*?)\]", text, re.DOTALL)
+        deps = [s.strip().strip('"\'') for s in deps_match.group(1).split(",") if s.strip().strip('"\'')] if deps_match else []
+        dev_match = re.search(r"dev\s*=\s*\[(.*?)\]", text, re.DOTALL)
+        dev_deps = [s.strip().strip('"\'') for s in dev_match.group(1).split(",") if s.strip().strip('"\'')] if dev_match else []
+        opt_deps["dev"] = dev_deps
 
     # 1. "web" NOT in [project.optional-dependencies]
     assert "web" not in opt_deps, "'web' extra must not exist in optional-dependencies"
