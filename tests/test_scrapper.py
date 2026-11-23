@@ -1438,3 +1438,254 @@ def test_scrape_retries_failed_plants_and_writes_failure_report(tmp_path, monkey
     saved = json.loads(report_path.read_text(encoding="utf-8"))
     assert saved["processed"] == 1
     assert saved["failed"] == 1
+
+
+def test_scrape_auto_runs_stage_c_by_default(tmp_path, monkeypatch) -> None:
+    html = """
+    <html><body>
+    <h1>Talisha - Abies webbiana</h1>
+    <div class="accordion-button">Rasa</div>
+    <table>
+      <tr><th>Name</th></tr>
+      <tr><td>Tikta</td></tr>
+      <tr><td>Madhura</td></tr>
+    </table>
+    <div class="accordion-button">Virya</div>
+    <table>
+      <tr><th>Name</th></tr>
+      <tr><td>Uṣṇa</td></tr>
+    </table>
+    </body></html>
+    """
+    monkeypatch.setattr(
+        scrapper,
+        "discover_plants",
+        lambda session, max_pages=None: DiscoveryReport(
+            [(1, "https://example.test/plant/1")], 1, 1, "test"
+        ),
+    )
+    monkeypatch.setattr(scrapper, "fetch", lambda session, url, timeout: html)
+
+    db_path = tmp_path / "ayurvedic.db"
+    report = scrapper.scrape(database_path=db_path)
+
+    assert report.stage_c_status in ("upgraded", "already_upgraded")
+    assert report.stage_c_error is None
+    assert report.stage_c_stats is not None
+
+    almanac = AyurvedicAlmanac(db_path)
+    conn = almanac.connect()
+    try:
+        ledger = [r[0] for r in conn.execute("SELECT version FROM schema_migrations ORDER BY version").fetchall()]
+        assert ledger == [1, 2, 3]
+        props_count = conn.execute("SELECT COUNT(*) FROM herb_dravyaguna_properties").fetchone()[0]
+        assert props_count > 0
+    finally:
+        conn.close()
+
+
+def test_scrape_no_stage_c_leaves_schema_version_2(tmp_path, monkeypatch) -> None:
+    html = """
+    <html><body>
+    <h1>Talisha - Abies webbiana</h1>
+    <div class="accordion-button">Rasa</div>
+    <table>
+      <tr><th>Name</th></tr>
+      <tr><td>Tikta</td></tr>
+    </table>
+    </body></html>
+    """
+    monkeypatch.setattr(
+        scrapper,
+        "discover_plants",
+        lambda session, max_pages=None: DiscoveryReport(
+            [(1, "https://example.test/plant/1")], 1, 1, "test"
+        ),
+    )
+    monkeypatch.setattr(scrapper, "fetch", lambda session, url, timeout: html)
+
+    db_path = tmp_path / "ayurvedic.db"
+    report = scrapper.scrape(database_path=db_path, stage_c=False)
+
+    assert report.stage_c_status is None
+    assert report.stage_c_stats is None
+
+    almanac = AyurvedicAlmanac(db_path)
+    conn = almanac.connect()
+    try:
+        ledger = [r[0] for r in conn.execute("SELECT version FROM schema_migrations ORDER BY version").fetchall()]
+        assert ledger == [1, 2]
+        tables = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()]
+        assert "dravyaguna_concepts" not in tables
+        assert "herb_dravyaguna_properties" not in tables
+    finally:
+        conn.close()
+
+
+def test_scrape_into_already_upgraded_database_increments_backfill(tmp_path, monkeypatch) -> None:
+    html_plant_1 = """
+    <html><body>
+    <h1>Talisha - Abies webbiana</h1>
+    <div class="accordion-button">Rasa</div>
+    <table>
+      <tr><th>Name</th></tr>
+      <tr><td>Tikta</td></tr>
+    </table>
+    </body></html>
+    """
+    html_plant_2 = """
+    <html><body>
+    <h1>Maricha - Piper nigrum</h1>
+    <div class="accordion-button">Rasa</div>
+    <table>
+      <tr><th>Name</th></tr>
+      <tr><td>Kaṭu</td></tr>
+    </table>
+    </body></html>
+    """
+    db_path = tmp_path / "ayurvedic.db"
+
+    # First scrape run with stage_c=True
+    monkeypatch.setattr(
+        scrapper,
+        "discover_plants",
+        lambda session, max_pages=None: DiscoveryReport(
+            [(1, "https://example.test/plant/1")], 1, 1, "test"
+        ),
+    )
+    monkeypatch.setattr(scrapper, "fetch", lambda session, url, timeout: html_plant_1)
+    rep1 = scrapper.scrape(database_path=db_path, stage_c=True)
+    assert rep1.stage_c_status == "upgraded"
+
+    almanac = AyurvedicAlmanac(db_path)
+    conn1 = almanac.connect()
+    try:
+        count1 = conn1.execute("SELECT COUNT(*) FROM herb_dravyaguna_properties").fetchone()[0]
+        assert count1 > 0
+    finally:
+        conn1.close()
+
+    # Second scrape run with plant 2 into the already upgraded database
+    monkeypatch.setattr(
+        scrapper,
+        "discover_plants",
+        lambda session, max_pages=None: DiscoveryReport(
+            [(2, "https://example.test/plant/2")], 1, 1, "test"
+        ),
+    )
+    monkeypatch.setattr(scrapper, "fetch", lambda session, url, timeout: html_plant_2)
+    rep2 = scrapper.scrape(database_path=db_path, stage_c=True)
+
+    assert rep2.stage_c_status == "already_upgraded"
+    assert rep2.stage_c_error is None
+    assert rep2.stage_c_stats is not None
+
+    conn2 = almanac.connect()
+    try:
+        count2 = conn2.execute("SELECT COUNT(*) FROM herb_dravyaguna_properties").fetchone()[0]
+    finally:
+        conn2.close()
+
+    assert count2 > count1
+
+
+def test_scrape_stage_c_failure_preserves_scraped_records(tmp_path, monkeypatch) -> None:
+    html = """
+    <html><body>
+    <h1>Talisha - Abies webbiana</h1>
+    <div class="accordion-button">Rasa</div>
+    <table>
+      <tr><th>Name</th></tr>
+      <tr><td>Tikta</td></tr>
+    </table>
+    </body></html>
+    """
+    monkeypatch.setattr(
+        scrapper,
+        "discover_plants",
+        lambda session, max_pages=None: DiscoveryReport(
+            [(1, "https://example.test/plant/1")], 1, 1, "test"
+        ),
+    )
+    monkeypatch.setattr(scrapper, "fetch", lambda session, url, timeout: html)
+
+    def mock_upgrade_fail(*args, **kwargs):
+        raise sqlite3.OperationalError("disk full")
+
+    monkeypatch.setattr(AyurvedicAlmanac, "upgrade_to_stage_c", mock_upgrade_fail)
+
+    db_path = tmp_path / "ayurvedic.db"
+    report = scrapper.scrape(database_path=db_path, stage_c=True)
+
+    assert report.stage_c_status == "failed"
+    assert "disk full" in str(report.stage_c_error)
+
+    almanac = AyurvedicAlmanac(db_path)
+    herbs = almanac.search_herbs("")
+    assert len(herbs) >= 1
+    assert herbs[0]["original_name"] == "Abies webbiana"
+
+
+def test_scrape_with_zero_processed_skips_stage_c(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        scrapper,
+        "discover_plants",
+        lambda session, max_pages=None: DiscoveryReport([], 0, 0, "test"),
+    )
+    db_path = tmp_path / "ayurvedic.db"
+    report = scrapper.scrape(database_path=db_path, stage_c=True)
+
+    assert report.processed == 0
+    assert report.stage_c_status is None
+    assert report.stage_c_stats is None
+
+
+def test_cli_scrape_help_flags() -> None:
+    runner = CliRunner()
+    result = runner.invoke(app, ["scrape", "--help"])
+    assert result.exit_code == 0
+    assert "--stage-c" in result.output
+    assert "--no-stage-c" in result.output
+    assert "--translate" not in result.output
+
+
+def test_cli_scrape_prints_stage_c_table(tmp_path, monkeypatch) -> None:
+    runner = CliRunner()
+    fake_report = scrapper.ScrapeReport(
+        processed=1,
+        failures=[],
+        stage_c_status="upgraded",
+        stage_c_stats={
+            "version": 3,
+            "backfill": {
+                "inserted_properties": 12,
+                "inserted_dosha_effects": 2,
+                "inserted_plant_parts": 3,
+                "inserted_preparations": 1,
+                "inserted_indications": 4,
+                "inserted_mappings": 12,
+            },
+        },
+    )
+    monkeypatch.setattr("herbal_almanac.cli.scrape", lambda *args, **kwargs: fake_report)
+    result = runner.invoke(app, ["scrape", "--database", str(tmp_path / "ayurvedic.db")])
+    assert result.exit_code == 0
+    assert "Stage C Semantic Summary" in result.output
+    assert "Backfilled Properties" in result.output
+    assert "12" in result.output
+
+
+def test_cli_scrape_failure_exits_code_1_with_hint(tmp_path, monkeypatch) -> None:
+    runner = CliRunner()
+    fake_report = scrapper.ScrapeReport(
+        processed=1,
+        failures=[],
+        stage_c_status="failed",
+        stage_c_error="disk full",
+    )
+    monkeypatch.setattr("herbal_almanac.cli.scrape", lambda *args, **kwargs: fake_report)
+    result = runner.invoke(app, ["scrape", "--database", str(tmp_path / "ayurvedic.db")])
+    assert result.exit_code == 1
+    assert "disk full" in result.output
+    assert "upgrade-stage-c" in result.output
+

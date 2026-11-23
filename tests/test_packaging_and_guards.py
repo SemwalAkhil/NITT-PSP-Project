@@ -201,3 +201,40 @@ def test_guarded_code_reference():
     # 3. Guarded code reference -> detected and recognized as guarded
     assert results["test_guarded_code_reference"] == (True, True)
 
+
+def test_pyproject_extras_and_base_dependencies_guard():
+    """Guarantees pyproject.toml has no deprecated web or translate extras, no deep-translator,
+    and includes essential web packages in base dependencies."""
+    import tomllib
+
+    pyproject_path = REPO_ROOT / "pyproject.toml"
+    with open(pyproject_path, "rb") as f:
+        pyproject = tomllib.load(f)
+
+    project = pyproject.get("project", {})
+    opt_deps = project.get("optional-dependencies", {})
+    deps = project.get("dependencies", [])
+    dev_deps = opt_deps.get("dev", [])
+
+    # 1. "web" NOT in [project.optional-dependencies]
+    assert "web" not in opt_deps, "'web' extra must not exist in optional-dependencies"
+
+    # 2. "translate" NOT in [project.optional-dependencies]
+    assert "translate" not in opt_deps, "'translate' extra must not exist in optional-dependencies"
+
+    # 3. "deep-translator" not mentioned anywhere in dependencies or dev
+    all_deps_text = " ".join(deps + dev_deps)
+    assert "deep-translator" not in all_deps_text.lower(), "deep-translator should not be in dependencies"
+    assert "deep_translator" not in all_deps_text.lower(), "deep_translator should not be in dependencies"
+
+    # 4. dependencies contains fastapi, uvicorn, jinja2, python-multipart
+    base_names = [d.split(";")[0].split(">")[0].split("<")[0].split("=")[0].split("[")[0].strip().lower() for d in deps]
+    for required in ["fastapi", "uvicorn", "jinja2", "python-multipart"]:
+        assert required in base_names, f"Base dependencies must contain '{required}'"
+
+    # 5. dev contains pytest, httpx
+    dev_names = [d.split(";")[0].split(">")[0].split("<")[0].split("=")[0].split("[")[0].strip().lower() for d in dev_deps]
+    for required in ["pytest", "httpx"]:
+        assert required in dev_names, f"Dev dependencies must contain '{required}'"
+
+
