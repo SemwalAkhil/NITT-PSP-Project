@@ -827,5 +827,33 @@ Executed as the final stabilization and completeness pass prior to project submi
   - Executed clean installation smoke test in isolated Python virtual environment.
   - Synchronized documentation in `README.md`, `cli.md`, `web_app.md`, and `plan.md`.
 
+---
+
+## 15. Milestone K – Glossary Key Correction and Attribute Alignment
+
+Executed to resolve three verified data-correctness issues on herb detail and search pages without altering the database schema or scraped source records:
+
+- [x] **Task 1: Correct Glossary Mapping (`ccras_id` + Binomial Fallback):**
+  - Updated `src/herbal_almanac/data/herb_names.csv` (UTF-8, LF) with the `ccras_id` column mapping all 347 rows to their true CCRAS DRAVYA `source_record_id` values (e.g., *Abies webbiana* = `1`, *Mangifera indica* = `231`, *Paspalum scrobiculatum* = `266`).
+  - Updated `HerbGlossaryStore` and `ResolvedHerb` in `herb_glossary.py` to index `by_ccras_id` and `by_binomial` (via `normalize_binomial()`), treating `id` strictly as an internal row number (`1..347`) never compared against `source_record_id` or `herbs.id`.
+  - Updated `resolve_herb(herb_dict)` matching order: (1) `by_ccras_id[source_record_id]` for CCRAS sources, (2) normalized botanical binomial with `original_name`/`english_name` tie-breaking for shared binomials, (3) `original_name`, then `english_name`.
+  - Updated `database_operator.py::search_herbs()`, `herb_view.py` (`herb_image_url`, `herb_vernacular_table`, `herb_name`), `cli.py`, and `scripts/herb_name_coverage.py` to eliminate glossary-ID vs. `source_record_id` conflation.
+  - Added CSV data-integrity and regression tests in `tests/test_glossary_mapping_fix.py`.
+
+- [x] **Task 2: Fix Misaligned Triple Tables:**
+  - Changed `ORDER BY a.field_name, a.value` to `ORDER BY a.field_name, a.rowid` in `herb_attributes()` and `all_records()` in `database_operator.py` so SQLite's insertion (`rowid`) order preserves source-aligned English / IAST / Devanagari triples.
+  - Made `_merge_triple_group()` and `Dosage Formulation` grouping in `herb_view.py` alignment-safe: pairs rows by position only when non-empty column lengths match, otherwise renders separate lists with the muted note *"Values could not be aligned row-by-row in the source."*
+  - Added alignment and mismatch regression tests in `tests/test_triple_alignment.py`.
+
+- [x] **Task 3: Unified Vernacular Names & De-duplicated Plant Parts:**
+  - Merged the curated glossary table and scraped source vernacular section on `herb_detail_semantic.html` into a single **"Vernacular names"** card (`Language | Curated name (glossary) | Names in source`) preserving the 15-language order, `"—"` placeholders, Urdu `dir="rtl"`, selected-language row highlighting, and collapsed source attribution.
+  - Fixed Nepali language code (`"nepali": "ne"`) in `VERNACULAR_LANG_CODES` and audited all 15 language codes.
+  - Added `dedupe_plant_parts()` in `herb_view.py` to group Stage C plant parts by canonical `concept_code` with `×N` claim badges, and moved touched inline styles into dark-theme-safe CSS classes.
+  - Added tests in `tests/test_vernacular_merge_and_parts.py`.
+
+- [x] **Task 4: Verification, Documentation & Clean CI:**
+  - Verified end-to-end herb detail rendering, multilingual search, template linting (`scripts/lint_templates.py`), CSS class audit (`scripts/audit_css_classes.py`), full test suite (normal and CI ANSI mode), and clean-venv wheel installation.
+  - Updated `herb_glossary.md`, `database_operator.md`, `web_app.md`, `README.md`, and `plan.md`.
+
 
 

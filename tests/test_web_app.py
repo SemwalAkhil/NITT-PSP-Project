@@ -701,8 +701,9 @@ def test_herb_detail_presentation_restructure_and_deduplication(tmp_path):
     # 8. No repeated "Source:" echo
     assert "Source: Leaf" not in html
 
-    # 9. Every attribute group renders cleanly
-    assert "Vernacular & Regional Names" in html
+    # 9. Every attribute group renders cleanly (merged Vernacular names card)
+    assert "Vernacular names" in html
+    assert "Vernacular & Regional Names" not in html
     assert "अड़ूसा" in html
     assert "Malabar Nut" in html
     assert "Parts Used (Prayojyāṅga)" in html

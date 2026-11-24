@@ -327,7 +327,7 @@ NITT-PSP-Project/
 │       ├── web_app.py                    # FastAPI application
 │       ├── data/
 │       │   ├── __init__.py
-│       │   ├── herb_names.csv            # 347-row 15-language botanical name glossary
+│       │   ├── herb_names.csv            # 347-row 15-language botanical glossary (`id` is internal; `ccras_id` links to CCRAS; binomial fallback)
 │       │   └── illness_glossary.csv      # 227-row 15-language condition glossary
 │       ├── migrations/
 │       │   ├── __init__.py

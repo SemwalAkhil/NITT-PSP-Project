@@ -404,11 +404,15 @@ The newer `add_herb()` operation also creates the corresponding source identity 
 | `get_illness(illness_id)` | Retrieves one illness. |
 | `illness_summaries(query="")` | Returns illness summaries. |
 | `herbs_for_illness(illness_id)` | Retrieves herbs associated with an illness. |
-| `herb_attributes(herb_id)` | Retrieves stored attributes. |
+| `herb_attributes(herb_id)` | Retrieves stored attributes ordered by `a.field_name, a.rowid` to preserve source insertion order. |
 | `herb_doshas(herb_id)` | Retrieves normalized Dosha effects. |
 | `herb_claims(herb_id)` | Retrieves source claims associated with a herb. |
 | `herb_source_record(herb_id)` | Retrieves the associated source-record information. |
-| `all_records()` | Returns collections of records for application use. |
+| `all_records()` | Returns collections of records for application use (attributes ordered by `a.herb_id, a.field_name, a.rowid`). |
+
+#### Attribute Ordering
+
+Both `herb_attributes()` and `all_records()` order `herb_attributes` rows by `a.field_name, a.rowid` rather than `a.value`. Because SQLite's implicit `rowid` preserves insertion (monograph source) order, multi-value triple fields (English / IAST / Devanagari) stay aligned row-by-row when grouped in `herb_view.py`.
 
 #### Herb search
 

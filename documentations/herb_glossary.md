@@ -75,7 +75,8 @@ Normalizes a botanical, classical, or vernacular herb name for tolerant matching
 
 ### `class ResolvedHerb`
 Subclasses `dict` to encapsulate a resolved herb record with properties:
-- `id`: CCRAS plant integer ID.
+- `id`: Internal glossary row number (`1..347`). **Never** compare this with `source_record_id` or `herbs.id`.
+- `ccras_id`: Optional integer CCRAS DRAVYA plant ID (`source_record_id`), used when resolving verified CCRAS records.
 - `original_name`: Scraped or classical Sanskrit title.
 - `botanical_name`: Binomial Latin botanical nomenclature.
 - `english_name`: Common English name.
@@ -85,13 +86,15 @@ Subclasses `dict` to encapsulate a resolved herb record with properties:
 
 ### `class HerbGlossaryStore`
 In-memory indexing engine:
-- `by_id`: Indexed by integer plant ID.
+- `by_id`: Indexed by internal glossary row number (`id`).
+- `by_ccras_id`: Indexed by CCRAS DRAVYA `ccras_id`.
+- `by_binomial`: Indexed by normalized botanical binomial (`normalize_binomial(botanical_name)`), stripping diacritics, punctuation, parentheticals, and authority/variety suffixes.
 - `by_botanical`: Indexed by tolerant botanical name key.
 - `by_original`: Indexed by tolerant classical name key.
 - `by_english`: Indexed by tolerant English name key.
 - `by_name_key`: Inverted index mapping every normalized vernacular name to matching `ResolvedHerb` instances.
-- `get_plant_id(herb: dict[str, Any]) -> int | None`: Resolves CCRAS ID via `source_record_id`, botanical name, or transliterated names.
-- `resolve_herb(query: str | int | None) -> ResolvedHerb | None`: Multi-tier resolver matching ID, exact keys, and substring tokens.
+- `resolve_herb(query: dict[str, Any] | str | int | None) -> ResolvedHerb | None`: When given a herb dictionary, resolves in order: (1) `by_ccras_id[source_record_id]` only if `is_ccras_source(herb["source"])`, (2) `by_binomial[normalize_binomial(botanical_name)]` with `original_name`/`english_name` tie-breaking for shared binomials, (3) `original_name`, then `english_name`. When given a string/int query, matches ID, exact keys, binomials, and substring tokens.
+- `get_plant_id(herb: dict[str, Any]) -> int | None`: Thin wrapper returning `resolve_herb(herb).id` (internal glossary row number).
 - `search_herb_glossary(query: str, language: str | None, limit: int) -> list[ResolvedHerb]`: Filters herbs by text query across all or specified languages.
 
 ### `get_herb_glossary_store() -> HerbGlossaryStore`

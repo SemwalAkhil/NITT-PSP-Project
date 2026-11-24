@@ -355,9 +355,12 @@ This is the main integration point between the legacy database, normalized Stage
 When a semantic profile is available:
 
 - `dedupe_properties()` prepares deduplicated property records.
+- `dedupe_plant_parts()` groups Stage C plant parts by canonical `concept_code` with `×N` claim badges.
 - `group_properties_by_domain()` creates domain-specific collections.
 - `virya_consensus()` creates the Virya summary.
 - `dedupe_dosha_effects()` prepares the normalized Dosha view.
+- `merged_vernacular_table()` merges curated glossary names (`herb_names.csv`, including Nepali `lang="ne"`) and scraped source vernacular names into a single 15-language table (`Language | Curated name (glossary) | Names in source`).
+- `group_attributes()` pairs English / IAST / Devanagari triple fields by source insertion order (`rowid`) only when non-empty column lengths match, otherwise rendering unaligned lists with an explicit note.
 
 When the semantic profile is unavailable:
 
