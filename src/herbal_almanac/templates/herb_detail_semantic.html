@@ -24,6 +24,7 @@
       <a href="/herbs/{{ herb.id }}/export.csv" class="btn btn-secondary btn-sm">Export Herb CSV</a>
       <a href="/herbs/{{ herb.id }}/export.json" class="btn btn-secondary btn-sm">Export Herb JSON</a>
       <a href="{{ url_for('add_treatment_form') }}{{ qs(herb_id=herb.id) }}" class="btn btn-primary btn-sm">+ Link Treatment</a>
+      <a href="#add-attributes-panel" class="btn btn-secondary btn-sm">+ Add Attributes</a>
       <a href="/herbs/{{ herb.id }}/attributes" class="btn btn-secondary btn-sm">All Attributes</a>
     </div>
   </div>
@@ -33,6 +34,12 @@
 {% if success_message %}
 <div class="alert alert-success" role="alert" style="margin-bottom: 20px;">
   {{ icon('check', size=16) }} <strong>Success:</strong> {{ success_message }}
+</div>
+{% endif %}
+
+{% if error %}
+<div class="alert alert-error" role="alert" style="margin-bottom: 20px;">
+  <strong>Error:</strong> {{ error }}
 </div>
 {% endif %}
 
@@ -543,6 +550,50 @@
         </div>
       </details>
       {% endif %}
+
+      <!-- User-Entered Attributes -->
+      {% if user_entered_attributes %}
+      <div class="group-card">
+        <h3>User-Entered Attributes</h3>
+        <table class="vernacular-table">
+          <thead>
+            <tr>
+              <th style="width: 35%;">Field</th>
+              <th>Value</th>
+              <th style="width: 25%;">Origin</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in user_entered_attributes %}
+            <tr>
+              <td><code>{{ a.field_name }}</code></td>
+              <td><strong>{{ a.value }}</strong></td>
+              <td><span class="badge badge-accent">User-entered</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- ADD ATTRIBUTES PANEL -->
+    <section class="content-card" id="add-attributes-panel">
+      <div class="card-heading">
+        <div>
+          <p class="eyebrow">CONTRIBUTE DATA</p>
+          <h2>Add Herb Attributes</h2>
+          <p class="muted" style="margin: 4px 0 0 0; font-size: 0.9em;">
+            Record classical Dravyaguna properties or custom attributes for this herb.
+          </p>
+        </div>
+      </div>
+      <form method="post" action="/herbs/{{ herb.id }}/attributes" class="standard-form">
+        {% include "_herb_attribute_fields.html" %}
+        <div class="form-actions" style="margin-top: 16px;">
+          <button type="submit" class="btn btn-primary">Save Attributes</button>
+        </div>
+      </form>
     </section>
   </div>
 

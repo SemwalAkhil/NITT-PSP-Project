@@ -1,0 +1,181 @@
+<div class="attribute-form-fields">
+  <!-- RASA (Taste) -->
+  <div class="form-group">
+    <label class="form-label">Rasa (Taste)</label>
+    <small class="form-hint">Select one or more classical taste properties.</small>
+    <div class="checkbox-grid">
+      <label class="checkbox-item"><input type="checkbox" name="rasa" value="Madhura"> Madhura (Sweet)</label>
+      <label class="checkbox-item"><input type="checkbox" name="rasa" value="Amla"> Amla (Sour)</label>
+      <label class="checkbox-item"><input type="checkbox" name="rasa" value="Lavana"> Lavana (Salty)</label>
+      <label class="checkbox-item"><input type="checkbox" name="rasa" value="Katu"> Katu (Pungent)</label>
+      <label class="checkbox-item"><input type="checkbox" name="rasa" value="Tikta"> Tikta (Bitter)</label>
+      <label class="checkbox-item"><input type="checkbox" name="rasa" value="Kashaya"> Kashaya (Astringent)</label>
+    </div>
+  </div>
+
+  <!-- VIRYA (Potency) & VIPAKA (Post-digestive) -->
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Virya (Potency)</label>
+      <small class="form-hint">Thermal energy / potency.</small>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="virya" value="Sheeta"> Sheeta (Cold)</label>
+        <label class="radio-item"><input type="radio" name="virya" value="Ushna"> Ushna (Hot)</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Vipaka (Post-digestive Effect)</label>
+      <small class="form-hint">Transformed taste after metabolism.</small>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="vipaka" value="Madhura"> Madhura (Sweet)</label>
+        <label class="radio-item"><input type="radio" name="vipaka" value="Amla"> Amla (Sour)</label>
+        <label class="radio-item"><input type="radio" name="vipaka" value="Katu"> Katu (Pungent)</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUNA (Qualities) -->
+  <div class="form-group">
+    <label class="form-label">Guna (Qualities)</label>
+    <small class="form-hint">Select classical Gurvadi physical/pharmacological qualities.</small>
+    <div class="checkbox-grid">
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Guru"> Guru (Heavy)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Laghu"> Laghu (Light)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Sheeta"> Sheeta (Cold)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Ushna"> Ushna (Hot)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Snigdha"> Snigdha (Unctuous)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Ruksha"> Ruksha (Dry)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Manda"> Manda (Dull/Slow)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Tikshna"> Tikshna (Sharp)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Sthira"> Sthira (Stable)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Sara"> Sara (Mobile)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Mridu"> Mridu (Soft)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Kathina"> Kathina (Hard)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Vishada"> Vishada (Clear)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Picchila"> Picchila (Slimy)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Shlakshna"> Shlakshna (Smooth)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Khara"> Khara (Rough)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Sukshma"> Sukshma (Subtle)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Sthula"> Sthula (Gross)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Sandra"> Sandra (Dense)</label>
+      <label class="checkbox-item"><input type="checkbox" name="guna" value="Drava"> Drava (Fluid)</label>
+    </div>
+  </div>
+
+  <!-- DOSHAKARMA -->
+  <div class="form-group">
+    <label for="attr_doshakarma" class="form-label">Doshakarma (Dosha Action)</label>
+    <input type="text" id="attr_doshakarma" name="doshakarma" class="form-input"
+           placeholder="e.g. Tridoshashamaka, Vata-Pitta shamaka, Kapha hara">
+    <small class="form-hint">Classical bio-humoral action statement.</small>
+  </div>
+
+  <!-- KARMA & PRABHAVA -->
+  <div class="form-row">
+    <div class="form-group">
+      <label for="attr_karma" class="form-label">Karma (Therapeutic Action)</label>
+      <input type="text" id="attr_karma" name="karma" class="form-input"
+             placeholder="e.g. Deepana, Pachana, Rasayana (comma-separated)">
+      <small class="form-hint">General or specific therapeutic pharmacological action.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="attr_prabhava" class="form-label">Prabhava (Special / Unique Effect)</label>
+      <input type="text" id="attr_prabhava" name="prabhava" class="form-input"
+             placeholder="e.g. Medhya, Vishaghna (comma-separated)">
+      <small class="form-hint">Specific action beyond Dravyaguna rule predictions.</small>
+    </div>
+  </div>
+
+  <!-- PARTS USED & DOSAGE FORMULATION -->
+  <div class="form-row">
+    <div class="form-group">
+      <label for="attr_parts_used" class="form-label">Parts Used (Prayojyāṅga)</label>
+      <input type="text" id="attr_parts_used" name="parts_used" class="form-input"
+             placeholder="e.g. Root, Bark, Leaf, Seed, Fruit (comma-separated)">
+      <small class="form-hint">Officinal botanical parts used in preparation.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="attr_dosage_formulation" class="form-label">Dosage Formulation / Preparation</label>
+      <input type="text" id="attr_dosage_formulation" name="dosage_formulation" class="form-input"
+             placeholder="e.g. Churna, Kwatha, Vati, Asava, Taila (comma-separated)">
+      <small class="form-hint">Classical and clinical dosage forms.</small>
+    </div>
+  </div>
+
+  <!-- DOSE, VARGA, MAHAKASHAYA, PHARMACOPOEIAL STATUS -->
+  <div class="form-row">
+    <div class="form-group">
+      <label for="attr_dose" class="form-label">Dose</label>
+      <input type="text" id="attr_dose" name="dose" class="form-input"
+             placeholder="e.g. 3-6 g (powder), 50-100 ml (decoction)">
+      <small class="form-hint">Standard adult posology.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="attr_varga" class="form-label">Varga (Classical Group)</label>
+      <input type="text" id="attr_varga" name="varga" class="form-input"
+             placeholder="e.g. Haritakyadi varga, Guduchyadi varga">
+      <small class="form-hint">Nighantu taxonomic category.</small>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="attr_mahakashaya" class="form-label">Mahakashaya</label>
+      <input type="text" id="attr_mahakashaya" name="mahakashaya" class="form-input"
+             placeholder="e.g. Jvarahara, Kasahara, Shvasahara">
+      <small class="form-hint">Charaka 50 Mahakashaya classification group.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="attr_pharmacopoeial_status" class="form-label">Pharmacopoeial Status</label>
+      <input type="text" id="attr_pharmacopoeial_status" name="pharmacopoeial_status" class="form-input"
+             placeholder="e.g. Ayurvedic Pharmacopoeia of India (API) Part I, Vol I">
+      <small class="form-hint">Official pharmacopoeial citation or reference monograph.</small>
+    </div>
+  </div>
+
+  <!-- THERAPEUTIC USAGE / ILLNESSES -->
+  <div class="form-group">
+    <label for="attr_therapeutic_usage" class="form-label">Therapeutic Usage / Illnesses</label>
+    <input type="text" id="attr_therapeutic_usage" name="therapeutic_usage" class="form-input"
+           placeholder="e.g. Kasa, Shwasa, Jvara, Prameha, Gulma (comma-separated)">
+    <small class="form-hint">Indications and clinical conditions; links to Illness directory automatically.</small>
+  </div>
+
+  <!-- CUSTOM ATTRIBUTES -->
+  <div class="form-group">
+    <label class="form-label">Custom / Other Attributes</label>
+    <small class="form-hint">Add additional custom key-value pairs (e.g. Habitat, Altitude, Collection Season).</small>
+    <div id="custom-attributes-container">
+      <div class="custom-attribute-row">
+        <input type="text" name="custom_name" class="form-input" placeholder="Attribute Name (e.g. Habitat)">
+        <input type="text" name="custom_value" class="form-input" placeholder="Value (e.g. Moist deciduous forests)">
+        <button type="button" class="btn btn-secondary btn-sm remove-row-btn" onclick="this.closest('.custom-attribute-row').remove();">Remove</button>
+      </div>
+    </div>
+    <div style="margin-top: 8px;">
+      <button type="button" id="add-custom-row-btn" class="btn btn-secondary btn-sm">+ Add Custom Attribute</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var addBtn = document.getElementById("add-custom-row-btn");
+  var container = document.getElementById("custom-attributes-container");
+  if (addBtn && container) {
+    addBtn.addEventListener("click", function() {
+      var row = document.createElement("div");
+      row.className = "custom-attribute-row";
+      row.innerHTML = '<input type="text" name="custom_name" class="form-input" placeholder="Attribute Name">' +
+                      '<input type="text" name="custom_value" class="form-input" placeholder="Value">' +
+                      '<button type="button" class="btn btn-secondary btn-sm remove-row-btn" onclick="this.closest(\'.custom-attribute-row\').remove();">Remove</button>';
+      container.appendChild(row);
+    });
+  }
+})();
+</script>

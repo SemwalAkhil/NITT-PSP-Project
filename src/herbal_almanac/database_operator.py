@@ -844,6 +844,8 @@ class AyurvedicAlmanac:
         is_single_value_field: bool = False,
     ) -> int:
         now = now or datetime.now(timezone.utc).isoformat()
+        if created_by_type == "user":
+            created_by_type = "human"
         existing = connection.execute(
             """
             SELECT source_claim_id
@@ -1781,6 +1783,213 @@ class AyurvedicAlmanac:
             )
             return herb_id
 
+    def add_herb_attributes(
+        self,
+        herb_id: int,
+        attributes: dict[str, list[str]],
+    ) -> dict[str, Any]:
+        """Add attributes to an existing herb, saving to legacy tables and source_claims."""
+        if not isinstance(attributes, dict):
+            raise ValueError("attributes must be a dictionary")
+
+        allowed_prefixes = (
+            "Rasa", "Guna", "Guṇa", "Virya", "Vīrya", "Vipaka", "Vipāka",
+            "Prabhava", "Karma", "Doshakarma", "Parts Used", "Part Used",
+            "Dosage Formulation", "Preparation", "Therapeutic Usage", "Vyadhi",
+            "Indication", "Dose", "Varga", "Mahakashaya", "Pharmacopoeial Status",
+            "Custom.", "Custom",
+        )
+
+        cleaned_attributes: dict[str, list[str]] = {}
+        for raw_field, raw_values in attributes.items():
+            field = clean_text(raw_field)
+            if not field:
+                continue
+            if len(field) > 80:
+                raise ValueError(f"Field name '{field}' exceeds maximum length of 80 characters.")
+
+            is_allowed = any(
+                field == prefix
+                or field.startswith(prefix + ".")
+                or field.startswith(prefix + " ")
+                or field.startswith(prefix + "_")
+                or field.startswith(prefix + ":")
+                or (prefix in ("Custom.", "Custom") and field.startswith("Custom"))
+                for prefix in allowed_prefixes
+            )
+            if not is_allowed:
+                raise ValueError(
+                    f"Invalid attribute field: '{field}'. Must match recognized Dravyaguna fields or start with 'Custom.'."
+                )
+
+            if isinstance(raw_values, str):
+                val_list = [raw_values]
+            elif isinstance(raw_values, (list, tuple, set)):
+                val_list = list(raw_values)
+            else:
+                raise ValueError(f"Values for field '{field}' must be a list of strings.")
+
+            if len(val_list) > 30:
+                raise ValueError(f"Field '{field}' has too many values ({len(val_list)} > max 30).")
+
+            cleaned_vals: list[str] = []
+            for v in val_list:
+                c_v = clean_text(str(v))
+                if not c_v:
+                    continue
+                if len(c_v) > 300:
+                    raise ValueError(f"Value in field '{field}' exceeds maximum length of 300 characters.")
+                cleaned_vals.append(c_v)
+
+            if cleaned_vals:
+                cleaned_attributes[field] = cleaned_vals
+
+        self.create_database()
+        attributes_added = 0
+        claims_added = 0
+        now = datetime.now(timezone.utc).isoformat()
+        is_v3 = False
+
+        with self._connection() as connection:
+            herb = connection.execute(
+                "SELECT id, source, source_record_id, source_url FROM herbs WHERE id = ?",
+                (herb_id,),
+            ).fetchone()
+            if not herb:
+                raise ValueError(f"Herb with ID {herb_id} does not exist.")
+
+            source_key = self._legacy_source_key(herb["source"])
+            ext_key = str(herb["source_record_id"]) if herb["source_record_id"] is not None else None
+            raw_ref = f"legacy_herb_id:{herb_id}" if ext_key is None or source_key == "manual" else None
+
+            claim_source_key = "manual" if ext_key is None else source_key
+            source_id = self._ensure_source(connection, claim_source_key)
+            source_record_id = self._ensure_source_record(
+                connection,
+                source_id=source_id,
+                external_record_key=ext_key,
+                source_url=herb["source_url"],
+                retrieved_at=now,
+                raw_artifact_ref=raw_ref,
+            )
+            self._ensure_legacy_herb_map(connection, herb_id, now)
+
+            has_source_claims = connection.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='source_claims'"
+            ).fetchone() is not None
+
+            for field, values in cleaned_attributes.items():
+                for val in values:
+                    cur = connection.execute(
+                        """
+                        INSERT OR IGNORE INTO herb_attributes
+                            (herb_id, field_name, value, source_text, source_language,
+                             machine_generated, verification_status)
+                        VALUES (?, ?, ?, ?, 'und', 0, 'unreviewed')
+                        """,
+                        (herb_id, field, val, val),
+                    )
+                    if cur.rowcount > 0:
+                        attributes_added += 1
+
+                    if has_source_claims:
+                        claim_type = "dosha_expression" if field.startswith("Doshakarma") else "attribute"
+                        existing_claim = connection.execute(
+                            """
+                            SELECT source_claim_id FROM source_claims
+                            WHERE source_record_id = ? AND claim_type = ? AND source_field = ?
+                                  AND source_expression = ? AND verification_status != 'superseded'
+                            """,
+                            (source_record_id, claim_type, field, val),
+                        ).fetchone()
+                        if existing_claim is None:
+                            self._record_claim(
+                                connection,
+                                source_record_id=source_record_id,
+                                claim_type=claim_type,
+                                source_field=field,
+                                source_expression=val,
+                                language_code="und",
+                                retrieved_at=now,
+                                created_by_type="human",
+                                created_by="manual",
+                                verification_status="unreviewed",
+                                now=now,
+                            )
+                            claims_added += 1
+
+                if field.startswith("Doshakarma"):
+                    for val in values:
+                        normalized = normalize_dosha_expression(val)
+                        for dosha in DOSHAS:
+                            connection.execute(
+                                """
+                                INSERT INTO herb_doshas
+                                    (herb_id, dosha, effect, source_expression, source)
+                                VALUES (?, ?, ?, ?, 'manual')
+                                ON CONFLICT(herb_id, dosha, source_expression, source) DO UPDATE SET
+                                    effect = excluded.effect
+                                """,
+                                (herb_id, dosha, normalized.effects[dosha], val),
+                            )
+
+                if field.startswith(("Therapeutic Usage", "Vyadhi", "Indication")):
+                    for val in values:
+                        for ill_name in val.split(","):
+                            ill_name = clean_text(ill_name)
+                            if not ill_name:
+                                continue
+                            canon = canonical_illness_key(ill_name)
+                            if not canon:
+                                continue
+                            connection.execute(
+                                """
+                                INSERT INTO illness (
+                                    english_name, search_key, canonical_key,
+                                    machine_generated, verification_status
+                                )
+                                VALUES (?, ?, ?, 0, 'unverified')
+                                ON CONFLICT(canonical_key) DO NOTHING
+                                """,
+                                (
+                                    ascii_text(ill_name) or ill_name,
+                                    search_key(ascii_text(ill_name) or ill_name),
+                                    canon,
+                                ),
+                            )
+                            ill_row = connection.execute(
+                                "SELECT id FROM illness WHERE canonical_key = ?",
+                                (canon,),
+                            ).fetchone()
+                            if ill_row:
+                                connection.execute(
+                                    """
+                                    INSERT INTO treatment (herb_id, illness_id, source)
+                                    VALUES (?, ?, 'manual')
+                                    ON CONFLICT(herb_id, illness_id) DO NOTHING
+                                    """,
+                                    (herb_id, ill_row["id"]),
+                                )
+
+            try:
+                from .schema_capability_gate import get_schema_version
+                if get_schema_version(connection) >= 3:
+                    is_v3 = True
+            except Exception:
+                is_v3 = False
+
+        stage_c_backfilled = False
+        if is_v3:
+            self.run_stage_c_backfill()
+            stage_c_backfilled = True
+
+        return {
+            "herb_id": herb_id,
+            "attributes_added": attributes_added,
+            "claims_added": claims_added,
+            "stage_c_backfilled": stage_c_backfilled,
+        }
+
     def add_illness(self, english_name: str) -> int:
         """Insert one illness and return its database ID."""
         name = clean_text(english_name)
@@ -2130,7 +2339,7 @@ class AyurvedicAlmanac:
                 sr_clause = "sr.external_record_key = ? AND s.source_key = ?"
                 sr_param = (str(herb["source_record_id"]), source_key)
             else:
-                sr_clause = "sr.raw_artifact_ref = ? AND s.source_key = ?"
+                sr_clause = "sr.raw_artifact_ref = ? AND (s.source_key = ? OR s.source_key = 'manual')"
                 sr_param = (f"legacy_herb_id:{herb_id}", source_key)
 
             rows = connection.execute(
@@ -2165,7 +2374,7 @@ class AyurvedicAlmanac:
                 sr_clause = "sr.external_record_key = ? AND s.source_key = ?"
                 sr_param = (str(herb["source_record_id"]), source_key)
             else:
-                sr_clause = "sr.raw_artifact_ref = ? AND s.source_key = ?"
+                sr_clause = "sr.raw_artifact_ref = ? AND (s.source_key = ? OR s.source_key = 'manual')"
                 sr_param = (f"legacy_herb_id:{herb_id}", source_key)
 
             row = connection.execute(

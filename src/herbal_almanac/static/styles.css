@@ -1222,3 +1222,49 @@ html[data-contrast="high"][data-theme="dark"] .localized-herb-name {
 .nav-icon .icon {
   display: block;
 }
+
+/* Herb Attribute Form & Custom Rows */
+.attribute-form-fields {
+  margin-top: 12px;
+}
+.form-section-collapsible {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  margin-top: 6px;
+}
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-top: 6px;
+}
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.custom-attribute-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.remove-row-btn {
+  white-space: nowrap;
+}
+

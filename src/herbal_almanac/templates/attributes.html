@@ -72,6 +72,9 @@
             <span class="badge {% if a.verification_status == 'verified' %}badge-success{% else %}badge-warning{% endif %}">
               {{ a.verification_status or 'unverified' }}
             </span>
+            {% if a.machine_generated == 0 and a.verification_status == 'unreviewed' %}
+            <span class="badge badge-accent">User-entered</span>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}

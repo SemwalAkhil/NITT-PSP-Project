@@ -191,6 +191,64 @@ def clean_language_param(language: str | None) -> str:
     return clean if clean in SUPPORTED_LANGUAGES else "en"
 
 
+def _extract_attributes_from_form(form_data: Any) -> dict[str, list[str]]:
+    """Extract and categorize Dravyaguna and custom attributes from web form data."""
+    attrs: dict[str, list[str]] = {}
+
+    # Checkbox arrays
+    for rasa in form_data.getlist("rasa"):
+        if rasa and str(rasa).strip():
+            attrs.setdefault("Rasa", []).append(str(rasa).strip())
+
+    for guna in form_data.getlist("guna"):
+        if guna and str(guna).strip():
+            attrs.setdefault("Guna", []).append(str(guna).strip())
+
+    # Single selection radios
+    virya = form_data.get("virya")
+    if virya and str(virya).strip():
+        attrs["Virya"] = [str(virya).strip()]
+
+    vipaka = form_data.get("vipaka")
+    if vipaka and str(vipaka).strip():
+        attrs["Vipaka"] = [str(vipaka).strip()]
+
+    # Text fields (single or comma-separated)
+    mapping = {
+        "doshakarma": "Doshakarma",
+        "karma": "Karma",
+        "prabhava": "Prabhava",
+        "parts_used": "Parts Used",
+        "dosage_formulation": "Dosage Formulation",
+        "dose": "Dose",
+        "varga": "Varga",
+        "mahakashaya": "Mahakashaya",
+        "pharmacopoeial_status": "Pharmacopoeial Status",
+        "therapeutic_usage": "Therapeutic Usage",
+    }
+    for field_key, field_name in mapping.items():
+        val = form_data.get(field_key)
+        if val and str(val).strip():
+            items = [item.strip() for item in str(val).split(",") if item.strip()]
+            if items:
+                attrs[field_name] = items
+
+    # Custom rows
+    custom_names = form_data.getlist("custom_name")
+    custom_values = form_data.getlist("custom_value")
+    for c_name, c_val in zip(custom_names, custom_values):
+        c_name = str(c_name).strip()
+        c_val = str(c_val).strip()
+        if c_name and c_val:
+            if not c_name.startswith("Custom.") and not c_name.startswith("Custom"):
+                c_name = f"Custom.{c_name}"
+            items = [item.strip() for item in c_val.split(",") if item.strip()]
+            if items:
+                attrs.setdefault(c_name, []).extend(items)
+
+    return attrs
+
+
 def format_readable_illness(name: str | None) -> str:
     """Format ITRANS/Harvard-Kyoto transliterated illness names into readable text.
 
@@ -487,6 +545,8 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
 
         database = get_database()
         try:
+            form = await request.form()
+            extracted_attrs = _extract_attributes_from_form(form)
             # Manual herbs always get source_record_id = None (Almanac ID is primary)
             herb_id = database.add_herb(
                 english_name=english_name,
@@ -496,6 +556,9 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 botanical_name=botanical_name or None,
                 family=family or None,
             )
+            if extracted_attrs:
+                database.add_herb_attributes(herb_id, extracted_attrs)
+
             if photo_bytes and photo_ext:
                 up_dir = _upload_dir(application.state.database_path)
                 (up_dir / f"{herb_id}{photo_ext}").write_bytes(photo_bytes)
@@ -650,6 +713,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         include_disputed: bool = Query(default=False),
         include_provisional: bool = Query(default=False),
         msg: str | None = Query(default=None),
+        error: str | None = Query(default=None),
     ) -> Any:
         clean_lang = clean_language_param(language)
         database = get_database()
@@ -716,10 +780,45 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                     "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
                     "has_user_photo": _find_upload(_upload_dir(application.state.database_path), herb_id) is not None,
                     "success_message": msg,
+                    "error": error,
+                    "user_entered_attributes": [
+                        a for a in attributes
+                        if a.get("verification_status") == "unreviewed" and a.get("machine_generated") == 0
+                    ],
                 },
             )
         finally:
             conn.close()
+
+    @application.post("/herbs/{herb_id}/attributes", name="add_herb_attributes_post")
+    async def add_herb_attributes_post(herb_id: int, request: Request) -> Any:
+        if not verify_same_origin(request):
+            raise HTTPException(status_code=403, detail="Cross-site origin verification failed")
+
+        database = get_database()
+        herb = database.get_herb(herb_id)
+        if herb is None:
+            raise HTTPException(status_code=404, detail="Herb not found")
+
+        form = await request.form()
+        extracted_attrs = _extract_attributes_from_form(form)
+        if not extracted_attrs:
+            return RedirectResponse(
+                url=f"/herbs/{herb_id}?msg=No+attributes+provided",
+                status_code=303,
+            )
+
+        try:
+            database.add_herb_attributes(herb_id, extracted_attrs)
+            return RedirectResponse(
+                url=f"/herbs/{herb_id}?msg=Attributes+added+successfully",
+                status_code=303,
+            )
+        except ValueError as err:
+            return RedirectResponse(
+                url=f"/herbs/{herb_id}?error={urllib.parse.quote_plus(str(err))}",
+                status_code=303,
+            )
 
     @application.get("/stage-c/reconciliation/{herb_id}", response_class=HTMLResponse, name="virya_reconciliation_gui")
     def virya_reconciliation_dashboard(request: Request, herb_id: int) -> Any:

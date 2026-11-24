@@ -4,7 +4,7 @@ import csv
 import json
 import sqlite3
 from pathlib import Path
-from typing import Any, NoReturn
+from typing import Any, NoReturn, Optional
 
 import requests
 from rich.console import Console
@@ -219,12 +219,27 @@ def add_herb(
         None, min=1, help="ID on the ORIGINAL source website (provenance only; not the Almanac herb ID)."
     ),
     source_url: str | None = typer.Option(None),
+    attribute: Optional[list[str]] = typer.Option(
+        None,
+        "--attribute",
+        "-a",
+        help="Herb attribute in NAME=VALUE format (repeatable).",
+    ),
 ) -> None:
     """Insert one herb while enforcing herb field validation."""
     try:
-        herb_id = database(database_path).add_herb(
+        db = database(database_path)
+        herb_id = db.add_herb(
             english_name, source, source_record_id, source_url, botanical_name, family
         )
+        if attribute:
+            attr_dict: dict[str, list[str]] = {}
+            for item in attribute:
+                if "=" not in item:
+                    raise ValueError(f"Attribute must be in NAME=VALUE format, got: {item!r}")
+                k, v = item.split("=", 1)
+                attr_dict.setdefault(k.strip(), []).append(v.strip())
+            db.add_herb_attributes(herb_id, attr_dict)
     except (ValueError, OSError, sqlite3.Error) as error:
         fail(error)
     typer.echo(f"Inserted herb {herb_id}: {english_name}")

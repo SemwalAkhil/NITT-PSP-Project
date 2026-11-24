@@ -79,6 +79,15 @@
         <small class="form-hint">JPEG, PNG, or WebP up to 5 MB.</small>
       </div>
 
+      <details class="form-section-collapsible">
+        <summary style="cursor: pointer; font-weight: 600; padding: 10px 0; color: var(--green-dark);">
+          Optional: Classical properties (Rasa, Guna, Virya, Vipaka, etc.)
+        </summary>
+        <div style="padding-top: 12px;">
+          {% include "_herb_attribute_fields.html" %}
+        </div>
+      </details>
+
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Save Herb Record</button>
         <a href="{{ url_for('herb_list') }}" class="btn btn-secondary">Cancel</a>
