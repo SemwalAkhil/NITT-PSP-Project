@@ -14,6 +14,20 @@
     </div>
   </div>
 
+  {% if not is_version_3 %}
+  <div class="alert alert-warning" role="status" style="margin-bottom: 20px;">
+    <p class="eyebrow" style="margin: 0 0 6px 0; font-weight: 700;">STAGE C CAPABILITY STATUS</p>
+    <h3 style="margin: 0 0 8px 0;">Schema Version 2 Baseline Active</h3>
+    <p class="muted" style="margin: 0 0 12px 0;">
+      Your database is on schema v2. Upgrading to Stage C unlocks normalized Dravyaguna properties (Rasa, Guna, Virya, Vipaka) for any herbs you add.
+    </p>
+    <form method="post" action="/stage-c/upgrade">
+      <input type="hidden" name="next" value="{{ request.url.path }}">
+      <button type="submit" class="btn btn-primary btn-sm">Upgrade database to Stage C</button>
+    </form>
+  </div>
+  {% endif %}
+
   {% if error %}
   <div class="alert alert-error" role="alert">
     <strong>Error:</strong> {{ error }}

@@ -249,6 +249,19 @@ def _extract_attributes_from_form(form_data: Any) -> dict[str, list[str]]:
     return attrs
 
 
+def _sanitize_next_url(next_url: Any) -> str:
+    """Validate and sanitize redirect URL to defend against open redirect vulnerabilities."""
+    if not next_url or not isinstance(next_url, str):
+        return "/"
+    s = next_url.strip()
+    if not s.startswith("/") or s.startswith("//"):
+        return "/"
+    path_part = s.split("?")[0]
+    if "\\" in path_part or ":" in path_part:
+        return "/"
+    return s
+
+
 def format_readable_illness(name: str | None) -> str:
     """Format ITRANS/Harvard-Kyoto transliterated illness names into readable text.
 
@@ -479,6 +492,15 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
 
     @application.get("/herbs/add", response_class=HTMLResponse, name="add_herb_form")
     def add_herb_form(request: Request) -> Any:
+        conn = sqlite3.connect(application.state.database_path)
+        try:
+            capability = get_database_capability(conn)
+            is_v3 = capability["stage_c_available"]
+        except Exception:
+            is_v3 = False
+        finally:
+            conn.close()
+
         return templates.TemplateResponse(
             request=request,
             name="herb_form.html",
@@ -486,6 +508,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 "active_page": "herbs",
                 "error": None,
                 "form_data": None,
+                "is_version_3": is_v3,
             },
         )
 
@@ -567,6 +590,15 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 status_code=303,
             )
         except (ValueError, sqlite3.Error) as err:
+            conn = sqlite3.connect(application.state.database_path)
+            try:
+                capability = get_database_capability(conn)
+                is_v3 = capability["stage_c_available"]
+            except Exception:
+                is_v3 = False
+            finally:
+                conn.close()
+
             return templates.TemplateResponse(
                 request=request,
                 name="herb_form.html",
@@ -574,6 +606,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                     "active_page": "herbs",
                     "error": str(err),
                     "form_data": form_data,
+                    "is_version_3": is_v3,
                 },
                 status_code=400,
             )
@@ -1076,6 +1109,35 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail=f"Herb with id {herb_id} not found")
         finally:
             conn.close()
+
+    @application.post("/stage-c/upgrade", name="stage_c_upgrade_post")
+    async def stage_c_upgrade_post(request: Request) -> Response:
+        if not verify_same_origin(request):
+            raise HTTPException(status_code=403, detail="Cross-site origin verification failed")
+
+        form = await request.form()
+        next_url = _sanitize_next_url(form.get("next"))
+
+        database = get_database()
+        try:
+            upg_res = database.upgrade_to_stage_c()
+            database.run_stage_c_backfill()
+            if upg_res.get("status") == "already_upgraded":
+                msg = "Database is already on Stage C (schema v3)"
+            else:
+                msg = "Database upgraded to Stage C (schema v3) successfully"
+        except Exception as err:
+            sep = "&" if "?" in next_url else "?"
+            return RedirectResponse(
+                url=f"{next_url}{sep}error={urllib.parse.quote_plus(str(err))}",
+                status_code=303,
+            )
+
+        sep = "&" if "?" in next_url else "?"
+        return RedirectResponse(
+            url=f"{next_url}{sep}msg={urllib.parse.quote_plus(msg)}",
+            status_code=303,
+        )
 
     # -------------------------------------------------------------------------
     # Treatments Management & Explorer

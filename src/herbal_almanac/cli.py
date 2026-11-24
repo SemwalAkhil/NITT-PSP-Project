@@ -135,13 +135,24 @@ def show_record_groups(records: dict[str, list[dict[str, Any]]]) -> None:
 @app.command()
 def setup(
     database_path: str = typer.Option(DEFAULT_DATABASE_PATH, "--database", "-d"),
+    stage_c: bool = typer.Option(
+        True,
+        "--stage-c/--no-stage-c",
+        help="Apply Stage C (schema v3) upgrade and backfill by default.",
+    ),
 ) -> None:
     """Create the database schema and apply migrations."""
     try:
-        database(database_path).create_database()
+        almanac = database(database_path)
+        almanac.create_database()
+        if stage_c:
+            almanac.upgrade_to_stage_c()
+            almanac.run_stage_c_backfill()
+            typer.echo(f"Database ready (Stage C / schema v3): {database_path}")
+        else:
+            typer.echo(f"Database ready: {database_path}")
     except (OSError, ValueError, sqlite3.Error) as error:
         fail(error)
-    typer.echo(f"Database ready: {database_path}")
 
 
 @app.command("scrape")
