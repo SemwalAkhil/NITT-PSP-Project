@@ -44,7 +44,7 @@
       <tbody>
         {% for t in treatments %}
         {% set ill_res = resolve_illness(t.illness_name) %}
-        {% set h_dict = {'id': t.herb_id, 'english_name': t.herb_name, 'original_name': t.herb_name} %}
+        {% set h_dict = {'id': t.herb_id, 'english_name': t.herb_name, 'original_name': t.herb_original_name|default(t.herb_name), 'botanical_name': t.botanical_name|default(''), 'source': t.source|default(''), 'source_record_id': t.source_record_id|default(none)} %}
         {% set h_name = herb_name(h_dict, current_language) %}
         <tr>
           <td>

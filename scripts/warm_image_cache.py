@@ -19,6 +19,7 @@ import time
 import urllib.request
 
 from herbal_almanac.database_operator import default_database_path
+from herbal_almanac.herb_glossary import is_ccras_source
 
 
 def detect_image_type(data: bytes) -> str | None:
@@ -61,12 +62,12 @@ def warm_cache(
     conn.row_factory = sqlite3.Row
     try:
         query = (
-            "SELECT id, source_record_id, english_name, original_name "
+            "SELECT id, source_record_id, source, english_name, original_name "
             "FROM herbs WHERE source_record_id IS NOT NULL ORDER BY id"
         )
         if max_herbs:
             query += f" LIMIT {int(max_herbs)}"
-        rows = conn.execute(query).fetchall()
+        rows = [r for r in conn.execute(query).fetchall() if is_ccras_source(r["source"])]
     finally:
         conn.close()
 

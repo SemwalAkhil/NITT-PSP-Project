@@ -30,6 +30,12 @@
   <div class="detail-stamp">{{ icon('leaf', size=24) }}<small>HERBAL<br>ALMANAC</small></div>
 </section>
 
+{% if success_message %}
+<div class="alert alert-success" role="alert" style="margin-bottom: 20px;">
+  {{ icon('check', size=16) }} <strong>Success:</strong> {{ success_message }}
+</div>
+{% endif %}
+
 {% if is_non_english %}
 <div class="translation-notice" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;margin-bottom:16px;color:#1e40af;font-size:0.857rem;line-height:1.5;">
   <strong>Notice:</strong> Translations are machine-generated (Gemini) and not clinically verified.

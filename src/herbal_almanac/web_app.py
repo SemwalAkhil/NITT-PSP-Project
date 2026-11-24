@@ -487,10 +487,11 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
 
         database = get_database()
         try:
+            # Manual herbs always get source_record_id = None (Almanac ID is primary)
             herb_id = database.add_herb(
                 english_name=english_name,
-                source=source or None,
-                source_record_id=source_record_id or None,
+                source=source or "manual",
+                source_record_id=None,
                 source_url=source_url or None,
                 botanical_name=botanical_name or None,
                 family=family or None,
@@ -498,7 +499,10 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
             if photo_bytes and photo_ext:
                 up_dir = _upload_dir(application.state.database_path)
                 (up_dir / f"{herb_id}{photo_ext}").write_bytes(photo_bytes)
-            return RedirectResponse(url=f"/herbs/{herb_id}", status_code=303)
+            return RedirectResponse(
+                url=f"/herbs/{herb_id}?msg=Herb+added+with+ID+{herb_id}",
+                status_code=303,
+            )
         except (ValueError, sqlite3.Error) as err:
             return templates.TemplateResponse(
                 request=request,
@@ -528,49 +532,53 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 headers={"Cache-Control": "public, max-age=86400"},
             )
 
-        # 2. Disk-cached CCRAS image
-        c_dir = _cache_dir(application.state.database_path)
-        cached = c_dir / f"{herb_id}.jpg"
-        if cached.is_file():
-            return Response(
-                content=cached.read_bytes(),
-                media_type="image/jpeg",
-                headers={"Cache-Control": "public, max-age=3600"},
-            )
+        # 2 & 3: CCRAS image (disk cache or remote fetch) ONLY for CCRAS source
+        database = get_database()
+        herb = database.get_herb(herb_id)
+        from .herb_glossary import is_ccras_source
 
-        # 3. Fetch from CCRAS
-        try:
-            database = get_database()
-            herb = database.get_herb(herb_id)
-            source_rid = herb["source_record_id"] if herb else None
-            if source_rid is not None:
-                url = f"https://dravya.ccras.org.in/resources/views/admin/required/upload/{source_rid}.jpg"
-                req = urllib.request.Request(
-                    url,
-                    headers={"User-Agent": "Mozilla/5.0 (Herbal Almanac; research use)"},
+        if herb and is_ccras_source(herb.get("source")):
+            c_dir = _cache_dir(application.state.database_path)
+            cached = c_dir / f"{herb_id}.jpg"
+            if cached.is_file():
+                return Response(
+                    content=cached.read_bytes(),
+                    media_type="image/jpeg",
+                    headers={"Cache-Control": "public, max-age=3600"},
                 )
-                with urllib.request.urlopen(req, timeout=5) as resp:
-                    chunks: list[bytes] = []
-                    total = 0
-                    while True:
-                        chunk = resp.read(65536)
-                        if not chunk:
-                            break
-                        total += len(chunk)
-                        if total > _MAX_UPLOAD_BYTES:
-                            break
-                        chunks.append(chunk)
-                    raw = b"".join(chunks)
-                mime = _detect_image_type(raw[:12])
-                if mime and total <= _MAX_UPLOAD_BYTES:
-                    cached.write_bytes(raw)
-                    return Response(
-                        content=raw,
-                        media_type=mime,
-                        headers={"Cache-Control": "public, max-age=3600"},
+
+            # 3. Fetch from CCRAS
+            source_rid = herb.get("source_record_id")
+            if source_rid is not None:
+                try:
+                    url = f"https://dravya.ccras.org.in/resources/views/admin/required/upload/{source_rid}.jpg"
+                    req = urllib.request.Request(
+                        url,
+                        headers={"User-Agent": "Mozilla/5.0 (Herbal Almanac; research use)"},
                     )
-        except Exception:
-            pass
+                    with urllib.request.urlopen(req, timeout=5) as resp:
+                        chunks: list[bytes] = []
+                        total = 0
+                        while True:
+                            chunk = resp.read(65536)
+                            if not chunk:
+                                break
+                            total += len(chunk)
+                            if total > _MAX_UPLOAD_BYTES:
+                                break
+                            chunks.append(chunk)
+                        raw = b"".join(chunks)
+                    mime = _detect_image_type(raw[:12])
+                    if mime and total <= _MAX_UPLOAD_BYTES:
+                        c_dir.mkdir(parents=True, exist_ok=True)
+                        cached.write_bytes(raw)
+                        return Response(
+                            content=raw,
+                            media_type=mime,
+                            headers={"Cache-Control": "public, max-age=3600"},
+                        )
+                except Exception:
+                    pass
 
         # 4. Fallback placeholder
         placeholder = STATIC_DIR / "placeholder-herb.svg"
@@ -641,6 +649,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         language: str = Query(default="en"),
         include_disputed: bool = Query(default=False),
         include_provisional: bool = Query(default=False),
+        msg: str | None = Query(default=None),
     ) -> Any:
         clean_lang = clean_language_param(language)
         database = get_database()
@@ -706,6 +715,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                     "is_non_english": (clean_lang != "en"),
                     "languages": [SUPPORTED_LANGUAGES[c] for c in ORDERED_LANGUAGE_CODES],
                     "has_user_photo": _find_upload(_upload_dir(application.state.database_path), herb_id) is not None,
+                    "success_message": msg,
                 },
             )
         finally:

@@ -313,12 +313,12 @@ def test_export_treatments_and_herb_detail(tmp_path: Path):
 
 def test_herb_image_url_resolution():
     # Direct source_record_id
-    herb_direct = {"id": 1, "source_record_id": 13, "botanical_name": "Adhatoda vasica"}
+    herb_direct = {"id": 1, "source": "CCRAS DRAVYA", "source_record_id": 13, "botanical_name": "Adhatoda vasica"}
     url = herb_image_url(herb_direct)
     assert url == "https://dravya.ccras.org.in/resources/views/admin/required/upload/13.jpg"
 
-    # Inferred via botanical name from herb_names.csv
-    herb_inferred = {"id": 99, "source_record_id": None, "botanical_name": "Adhatoda vasica"}
+    # Inferred via botanical name from herb_names.csv (CCRAS source)
+    herb_inferred = {"id": 99, "source": "CCRAS DRAVYA", "source_record_id": None, "botanical_name": "Adhatoda vasica"}
     url2 = herb_image_url(herb_inferred)
     assert url2 == "https://dravya.ccras.org.in/resources/views/admin/required/upload/13.jpg"
 
@@ -458,7 +458,7 @@ def test_cli_herbs_language_option(tmp_path: Path):
 
 def test_herb_image_route_serves_cached_file(tmp_path: Path):
     client, db = make_test_client(tmp_path)
-    herb_id = db.add_herb("Tulsi", botanical_name="Ocimum sanctum", source_record_id=99)
+    herb_id = db.add_herb("Tulsi", source="CCRAS DRAVYA", botanical_name="Ocimum sanctum", source_record_id=99)
     cache_dir = tmp_path / "herbal_almanac_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
     fake_jpeg = b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00"
@@ -561,7 +561,7 @@ def test_add_herb_with_photo_creation(tmp_path: Path):
     )
     assert res.status_code == 303
     herb_url = res.headers["location"]
-    herb_id = int(herb_url.split("/")[-1])
+    herb_id = int(herb_url.split("/")[-1].split("?")[0])
 
     # Photo was uploaded and is now available
     img_res = client.get(f"/herbs/{herb_id}/image")
@@ -594,7 +594,7 @@ def test_warm_image_cache_script(tmp_path: Path):
     db_file = tmp_path / "warm_test.db"
     db = AyurvedicAlmanac(db_file)
     db.create_database()
-    herb_id = db.add_herb("TestHerb", source_record_id=123)
+    herb_id = db.add_herb("TestHerb", source="CCRAS DRAVYA", source_record_id=123)
 
     # Simulate already cached file
     cache_dir = tmp_path / "herbal_almanac_cache"
@@ -828,6 +828,115 @@ def test_user_visible_a11y_string_absent(tmp_path: Path):
         assert res.status_code == 200
         # Assert user-visible string 'A11y' does not appear anywhere in rendered HTML
         assert "A11y" not in res.text, f"'A11y' found in rendered HTML of {path}"
+
+
+def test_stop_source_id_collision_non_ccras_source(tmp_path: Path):
+    """(1) herb with source 'https://mytestwebsite.com/' and source_record_id=1
+    -> get_plant_id is None, no Hindi/Tamil CCRAS names on /herbs?language=hi,
+    search_herbs('Himalayan Silver Fir') and ('तालीसपत्र') do NOT return it,
+    its image URL is the placeholder."""
+    from herbal_almanac.herb_glossary import get_herb_glossary_store
+    from herbal_almanac.herb_view import herb_image_url
+
+    client, db = make_test_client(tmp_path)
+    # Plant 1 in CCRAS glossary is Talisha / Himalayan Silver Fir / तालीसपत्र
+    herb_id = db.add_herb(
+        english_name="My Custom Herb",
+        source="https://mytestwebsite.com/",
+        source_record_id=1,
+    )
+    herb = db.get_herb(herb_id)
+
+    # 1. get_plant_id is None
+    store = get_herb_glossary_store()
+    assert store.get_plant_id(herb) is None
+
+    # 2. image URL is None / image endpoint returns SVG placeholder
+    assert herb_image_url(herb) is None
+    img_res = client.get(f"/herbs/{herb_id}/image")
+    assert img_res.status_code == 200
+    assert "image/svg+xml" in img_res.headers["content-type"]
+
+    # 3. No Hindi/Tamil CCRAS names on /herbs?language=hi
+    res_hi = client.get("/herbs?language=hi")
+    assert res_hi.status_code == 200
+    assert "तालीसपत्र" not in res_hi.text
+
+    # 4. search_herbs('Himalayan Silver Fir') and ('तालीसपत्र') do NOT return it
+    assert not any(h["id"] == herb_id for h in db.search_herbs("Himalayan Silver Fir"))
+    assert not any(h["id"] == herb_id for h in db.search_herbs("तालीसपत्र"))
+
+
+def test_ccras_source_resolves_to_glossary_row_1(tmp_path: Path):
+    """(2) herb with source 'CCRAS DRAVYA' and source_record_id=1
+    still resolves to glossary row 1 (names, search, image URL)."""
+    from herbal_almanac.herb_glossary import get_herb_glossary_store
+    from herbal_almanac.herb_view import herb_image_url
+
+    client, db = make_test_client(tmp_path)
+    herb_id = db.add_herb(
+        english_name="Talisha",
+        source="CCRAS DRAVYA",
+        source_record_id=1,
+    )
+    herb = db.get_herb(herb_id)
+
+    store = get_herb_glossary_store()
+    assert store.get_plant_id(herb) == 1
+    assert herb_image_url(herb) == "https://dravya.ccras.org.in/resources/views/admin/required/upload/1.jpg"
+
+    matches = db.search_herbs("तालीसपत्र")
+    assert any(h["id"] == herb_id for h in matches)
+
+
+def test_manual_herb_matching_botanical_name_resolves(tmp_path: Path):
+    """(3) manual herb with botanical_name 'Abies webbiana' still matches by botanical name."""
+    from herbal_almanac.herb_glossary import get_herb_glossary_store
+
+    _, db = make_test_client(tmp_path)
+    herb_id = db.add_herb(
+        english_name="My Garden Conifer",
+        botanical_name="Abies webbiana",
+        source="manual",
+    )
+    herb = db.get_herb(herb_id)
+
+    store = get_herb_glossary_store()
+    assert store.get_plant_id(herb) == 1
+
+
+def test_post_add_herb_ignores_posted_source_record_id_and_redirects_with_id(tmp_path: Path):
+    """(4) POST /herbs/add ignores a posted source_record_id.
+    (5) new herb redirect shows the assigned ID."""
+    client, db = make_test_client(tmp_path)
+
+    res_post = client.post(
+        "/herbs/add",
+        data={
+            "english_name": "Test Mint",
+            "botanical_name": "Mentha spicata",
+            "source": "manual",
+            "source_record_id": 9999,  # must be ignored!
+            "source_url": "https://example.com/mint",
+        },
+        headers={"origin": "http://testserver", "host": "testserver"},
+        follow_redirects=False,
+    )
+    assert res_post.status_code == 303
+    loc = res_post.headers["location"]
+    assert loc.startswith("/herbs/")
+
+    # Parse herb_id from redirect URL
+    herb_id = int(loc.split("/herbs/")[1].split("?")[0])
+    herb = db.get_herb(herb_id)
+    assert herb["source_record_id"] is None, "source_record_id must be None for manual herbs"
+    assert herb["source"] == "manual"
+
+    # Follow redirect and verify assigned Almanac ID is shown in success message
+    res_detail = client.get(loc)
+    assert res_detail.status_code == 200
+    assert f"Herb added with ID {herb_id}" in res_detail.text
+
 
 
 

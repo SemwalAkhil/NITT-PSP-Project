@@ -52,19 +52,16 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label for="source" class="form-label">Source Citation</label>
+          <label for="source" class="form-label">Source / reference (optional)</label>
           <input type="text" id="source" name="source" class="form-input"
                  value="{{ form_data.source if form_data else 'manual' }}"
                  placeholder="e.g. manual, CCRAS DRAVYA, Charaka Samhita">
-          <small class="form-hint">Provenance or authoritative literature reference.</small>
+          <small class="form-hint">Provenance or authoritative literature reference (default: manual).</small>
         </div>
 
         <div class="form-group">
-          <label for="source_record_id" class="form-label">Source Record ID</label>
-          <input type="number" id="source_record_id" name="source_record_id" class="form-input" min="1"
-                 value="{{ form_data.source_record_id if form_data and form_data.source_record_id else '' }}"
-                 placeholder="e.g. 13">
-          <small class="form-hint">Optional external plant ID (e.g. CCRAS plant ID).</small>
+          <label class="form-label">Almanac Herb ID</label>
+          <p class="form-hint" style="margin-top: 8px;">Herb ID is assigned automatically by the Almanac and shown after saving.</p>
         </div>
       </div>
 

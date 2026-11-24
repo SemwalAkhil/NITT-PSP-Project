@@ -215,7 +215,9 @@ def add_herb(
     botanical_name: str | None = typer.Option(None),
     family: str | None = typer.Option(None),
     source: str | None = typer.Option(None),
-    source_record_id: int | None = typer.Option(None, min=1),
+    source_record_id: int | None = typer.Option(
+        None, min=1, help="ID on the ORIGINAL source website (provenance only; not the Almanac herb ID)."
+    ),
     source_url: str | None = typer.Option(None),
 ) -> None:
     """Insert one herb while enforcing herb field validation."""

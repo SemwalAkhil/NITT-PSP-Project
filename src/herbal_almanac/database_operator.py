@@ -1900,7 +1900,14 @@ class AyurvedicAlmanac:
                         if g_ids:
                             placeholders = ",".join("?" for _ in g_ids)
                             id_matches = connection.execute(
-                                f"SELECT id FROM herbs WHERE source_record_id IN ({placeholders})",
+                                f"""
+                                SELECT id FROM herbs
+                                WHERE (
+                                    source = 'CCRAS DRAVYA'
+                                    OR source = 'DRAVYA'
+                                    OR lower(trim(source)) IN ('ccras dravya', 'ccras', 'dravya', 'ccras_dravya')
+                                ) AND source_record_id IN ({placeholders})
+                                """,
                                 g_ids,
                             ).fetchall()
                             for r in id_matches:
@@ -2065,7 +2072,7 @@ class AyurvedicAlmanac:
             rows = connection.execute(
                 """
                 SELECT h.id, h.english_name, h.original_name, h.botanical_name, h.family,
-                       t.source AS link_source
+                       h.source, h.source_record_id, t.source AS link_source
                 FROM treatment AS t
                 JOIN herbs AS h ON h.id = t.herb_id
                 WHERE t.illness_id = ?
@@ -2193,6 +2200,8 @@ class AyurvedicAlmanac:
             treatments = connection.execute(
                 """
                 SELECT t.herb_id, h.english_name AS herb_name,
+                       h.original_name AS herb_original_name,
+                       h.botanical_name, h.source, h.source_record_id,
                        t.illness_id, i.english_name AS illness_name
                 FROM treatment AS t
                 JOIN herbs AS h ON h.id = t.herb_id

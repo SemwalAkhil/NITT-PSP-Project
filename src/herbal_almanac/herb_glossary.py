@@ -39,6 +39,17 @@ COLUMN_TO_LANG_CODE: dict[str, str] = {
     col.lower(): code for code, col in HERB_LANGUAGE_COLUMNS.items()
 }
 
+CCRAS_SOURCE: str = "CCRAS DRAVYA"
+
+
+def is_ccras_source(source: str | None) -> bool:
+    """Return True if source matches CCRAS DRAVYA (case-insensitive, tolerating variants)."""
+    if not source:
+        return False
+    s = str(source).strip().lower()
+    return s in {"ccras dravya", "ccras", "dravya", "ccras_dravya", "ccras-dravya"}
+
+
 
 def tolerant_herb_key(term: str | None) -> str:
     """Normalize a herb name for fault-tolerant matching.
@@ -256,15 +267,16 @@ class HerbGlossaryStore:
 
     def get_plant_id(self, herb: dict[str, Any]) -> int | None:
         """Resolve the CCRAS plant ID for a herb dictionary."""
-        # 1. Direct source_record_id
-        src_id = herb.get("source_record_id")
-        if src_id is not None:
-            try:
-                val = int(src_id)
-                if val > 0:
-                    return val
-            except (ValueError, TypeError):
-                pass
+        # 1. Direct source_record_id (ONLY for CCRAS sources)
+        if is_ccras_source(herb.get("source")):
+            src_id = herb.get("source_record_id")
+            if src_id is not None:
+                try:
+                    val = int(src_id)
+                    if val > 0:
+                        return val
+                except (ValueError, TypeError):
+                    pass
 
         # 2. Match by botanical name
         bot = herb.get("botanical_name")

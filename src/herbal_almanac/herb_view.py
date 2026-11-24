@@ -494,10 +494,14 @@ def herb_image_url(herb: dict[str, Any] | None) -> str | None:
 
     URL structure:
         https://dravya.ccras.org.in/resources/views/admin/required/upload/<plant_id>.jpg
+    Only built for CCRAS-source herbs.
     """
     if not herb:
         return None
-    from .herb_glossary import get_herb_glossary_store
+    from .herb_glossary import get_herb_glossary_store, is_ccras_source
+
+    if not is_ccras_source(herb.get("source")):
+        return None
 
     plant_id = get_herb_glossary_store().get_plant_id(herb)
     if plant_id and plant_id > 0:
