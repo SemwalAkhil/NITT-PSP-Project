@@ -28,6 +28,7 @@ VERNACULAR_LANG_CODES: dict[str, str] = {
     "kannada": "kn",
     "malayalam": "ml",
     "marathi": "mr",
+    "nepali": "ne",
     "odia": "or",
     "oriya": "or",
     "punjabi": "pa",
@@ -36,6 +37,24 @@ VERNACULAR_LANG_CODES: dict[str, str] = {
     "telugu": "te",
     "urdu": "ur",
 }
+
+CANONICAL_VERNACULAR_LANGUAGES: tuple[str, ...] = (
+    "English",
+    "Assamese",
+    "Bengali",
+    "Gujarati",
+    "Hindi",
+    "Kannada",
+    "Malayalam",
+    "Marathi",
+    "Nepali",
+    "Odia",
+    "Punjabi",
+    "Sanskrit",
+    "Tamil",
+    "Telugu",
+    "Urdu",
+)
 
 
 # ============================================================================
@@ -556,6 +575,83 @@ def herb_vernacular_table(herb: dict[str, Any] | None) -> list[dict[str, str]]:
                 "lang_code": VERNACULAR_LANG_CODES.get(lang.lower(), "en"),
             })
     return rows
+
+
+def merged_vernacular_table(
+    herb: dict[str, Any] | None,
+    grouped_attributes: dict[str, Any] | None = None,
+) -> list[dict[str, str]]:
+    """Merge curated glossary vernacular names and scraped source vernacular names.
+
+    Returns rows in the canonical 15-language order (plus any extra source-only
+    languages), each with ``language``, ``lang_code``, ``curated``, and ``source``.
+    """
+    curated_by_lang: dict[str, str] = {}
+    for row in herb_vernacular_table(herb):
+        curated_by_lang[row["language"].strip().lower()] = row["name"]
+
+    source_by_lang: dict[str, str] = {}
+    source_display_names: dict[str, str] = {}
+    if grouped_attributes:
+        for item in grouped_attributes.get("vernacular_names", []):
+            lang_raw = item["language"].strip()
+            key = "odia" if lang_raw.lower() == "oriya" else lang_raw.lower()
+            val = item.get("names", "").strip()
+            if val:
+                if key in source_by_lang and val not in source_by_lang[key]:
+                    source_by_lang[key] = f"{source_by_lang[key]}, {val}"
+                else:
+                    source_by_lang[key] = val
+                source_display_names.setdefault(key, "Odia" if key == "odia" else lang_raw)
+
+    rows: list[dict[str, str]] = []
+    seen_keys: set[str] = set()
+    for lang in CANONICAL_VERNACULAR_LANGUAGES:
+        key = lang.lower()
+        seen_keys.add(key)
+        curated = curated_by_lang.get(key, "")
+        source = source_by_lang.get(key, "")
+        if curated or source:
+            rows.append({
+                "language": lang,
+                "lang_code": VERNACULAR_LANG_CODES.get(key, "en"),
+                "curated": curated,
+                "source": source,
+            })
+
+    for key in sorted(set(curated_by_lang.keys()) | set(source_by_lang.keys())):
+        if key in seen_keys:
+            continue
+        curated = curated_by_lang.get(key, "")
+        source = source_by_lang.get(key, "")
+        if curated or source:
+            label = source_display_names.get(key, key.title())
+            rows.append({
+                "language": label,
+                "lang_code": VERNACULAR_LANG_CODES.get(key, "en"),
+                "curated": curated,
+                "source": source,
+            })
+
+    return rows
+
+
+def dedupe_plant_parts(plant_parts: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
+    """Group Stage C plant parts by canonical concept_code with source-claim counts."""
+    if not plant_parts:
+        return []
+    grouped: dict[str, dict[str, Any]] = {}
+    for part in plant_parts:
+        code = part.get("concept_code") or part.get("display_label") or ""
+        if code not in grouped:
+            entry = dict(part)
+            entry["claim_count"] = 1
+            grouped[code] = entry
+        else:
+            grouped[code]["claim_count"] += 1
+            if part.get("is_disputed"):
+                grouped[code]["is_disputed"] = True
+    return list(grouped.values())
 
 
 def herb_name(herb: dict[str, Any] | None, lang: str | None = "en") -> str | None:

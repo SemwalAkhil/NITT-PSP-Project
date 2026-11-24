@@ -137,38 +137,56 @@
       </dl>
     </section>
 
-    <!-- MULTILINGUAL VERNACULAR NAMES -->
-    {% set v_names = herb_vernacular_table(herb) %}
-    {% if v_names %}
+    <!-- MULTILINGUAL VERNACULAR NAMES (MERGED CURATED + SOURCE) -->
+    {% set merged_v = merged_vernacular_table(herb, grouped_attributes) %}
+    {% if merged_v %}
     <section class="content-card" id="multilingual-vernacular-names">
       <div class="card-heading">
         <div>
           <p class="eyebrow">MULTILINGUAL IDENTIFIERS</p>
-          <h2>Vernacular Names across India</h2>
-          <p class="muted" style="margin: 4px 0 0 0; font-size: 0.9em;">
-            Classical and regional Indian language names for this botanical entity.
+          <h2>Vernacular names</h2>
+          <p class="muted card-sub-note">
+            Curated glossary names alongside scraped source vernacular names.
           </p>
         </div>
-        <span class="count-pill">{{ v_names|length }} languages</span>
+        <span class="count-pill">{{ merged_v|length }} languages</span>
       </div>
       <div class="table-container">
         <table class="data-table">
           <thead>
             <tr>
-              <th style="width: 35%;">Language</th>
-              <th>Vernacular Name</th>
+              <th class="col-lang">Language</th>
+              <th>Curated name (glossary)</th>
+              <th>Names in source</th>
             </tr>
           </thead>
           <tbody>
-            {% for vn in v_names %}
-            <tr>
+            {% for vn in merged_v %}
+            <tr{% if current_language != 'en' and vn.lang_code == current_language %} class="vernacular-row-selected"{% endif %}>
               <td><strong>{{ vn.language }}</strong></td>
-              <td lang="{{ vn.lang_code }}" {% if vn.lang_code == 'ur' %}dir="rtl"{% endif %}><strong>{{ vn.name }}</strong></td>
+              <td lang="{{ vn.lang_code }}" {% if vn.lang_code == 'ur' %}dir="rtl"{% endif %}>
+                {% if vn.curated %}<strong>{{ vn.curated }}</strong>{% else %}<span class="muted">—</span>{% endif %}
+              </td>
+              <td lang="{{ vn.lang_code }}" {% if vn.lang_code == 'ur' %}dir="rtl"{% endif %}>
+                {% if vn.source %}{{ vn.source }}{% else %}<span class="muted">—</span>{% endif %}
+              </td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
+      {% if grouped_attributes.vernacular_sources %}
+      <details class="raw-details">
+        <summary>Source attribution ({{ grouped_attributes.vernacular_sources|length }})</summary>
+        <div class="raw-details-content">
+          <ul class="source-attr-list">
+            {% for src in grouped_attributes.vernacular_sources %}
+            <li>{{ src }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </details>
+      {% endif %}
     </section>
     {% endif %}
 
@@ -248,26 +266,28 @@
     </section>
 
     <!-- OFFICINAL PLANT PARTS -->
-    {% if semantic_profile.plant_parts %}
+    {% set deduped_parts = dedupe_plant_parts(semantic_profile.plant_parts) %}
+    {% if deduped_parts %}
     <section class="content-card" id="stage-c-parts">
       <div class="card-heading">
         <div>
           <p class="eyebrow">OFFICINAL PLANT PARTS</p>
           <h2>Used Plant Parts (Prayojyāṅga)</h2>
         </div>
-        <span class="count-pill">{{ semantic_profile.plant_parts|length }}</span>
+        <span class="count-pill">{{ deduped_parts|length }}</span>
       </div>
       <div class="attribute-list">
-        {% for part in semantic_profile.plant_parts %}
-        <article class="attribute-item" style="border-left: 3px solid #15803d; margin-bottom: 8px; padding: 10px; background: #fafaf8; border-radius: 4px;">
+        {% for part in deduped_parts %}
+        <article class="attribute-item part-card-item">
           <div class="attribute-meta">
-            <span style="background: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">{{ part.concept_code }}</span>
+            <span class="part-code-pill">{{ part.concept_code }}</span>
+            {% if part.claim_count > 1 %}<span class="claim-badge" title="{{ part.claim_count }} source claims">×{{ part.claim_count }}</span>{% endif %}
             {% if part.is_disputed %}<span class="badge-disputed">DISPUTED</span>{% endif %}
           </div>
-          <p style="font-size: 1.1em; margin: 4px 0;">
+          <p class="part-title-row">
             <strong>{{ part.display_label }}</strong>
             {% if part.canonical_sanskrit_deva or part.canonical_sanskrit_iast %}
-            <span class="muted" style="margin-left: 8px;">
+            <span class="muted part-sanskrit-sub">
               {% if part.canonical_sanskrit_deva %}{{ part.canonical_sanskrit_deva }}{% endif %}
               {% if part.canonical_sanskrit_iast %}(<em>{{ part.canonical_sanskrit_iast }}</em>){% endif %}
             </span>
@@ -289,41 +309,6 @@
         </div>
         <span class="count-pill">{{ attributes|length }}</span>
       </div>
-
-      <!-- 1. Names (Vernacular Names table) -->
-      {% if grouped_attributes.vernacular_names %}
-      <div class="group-card">
-        <h3>Vernacular & Regional Names</h3>
-        <table class="vernacular-table">
-          <thead>
-            <tr>
-              <th style="width: 28%;">Language</th>
-              <th>Names</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in grouped_attributes.vernacular_names %}
-            <tr>
-              <td><strong>{{ item.language }}</strong></td>
-              <td><span lang="{{ item.lang_code }}">{{ item.names }}</span></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% if grouped_attributes.vernacular_sources %}
-        <details class="raw-details">
-          <summary>Source attribution ({{ grouped_attributes.vernacular_sources|length }})</summary>
-          <div class="raw-details-content">
-            <ul style="margin: 0; padding-left: 18px;">
-              {% for src in grouped_attributes.vernacular_sources %}
-              <li>{{ src }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-        </details>
-        {% endif %}
-      </div>
-      {% endif %}
 
       <!-- 2. Parts used (3-column English | IAST | Devanagari) -->
       {% if grouped_attributes.parts_used.rows or grouped_attributes.parts_used.english_list or grouped_attributes.parts_used.iast_list or grouped_attributes.parts_used.hindi_list %}

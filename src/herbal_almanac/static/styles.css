@@ -1282,4 +1282,53 @@ html[data-contrast="high"][data-theme="dark"] .localized-herb-name {
   margin: 0;
   padding-left: 16px;
 }
+.card-sub-note {
+  margin: 4px 0 0 0;
+  font-size: 0.9em;
+}
+.col-lang {
+  width: 24%;
+}
+.source-attr-list {
+  margin: 0;
+  padding-left: 18px;
+}
+.vernacular-row-selected {
+  background: rgba(21, 128, 61, 0.08);
+}
+html[data-theme="dark"] .vernacular-row-selected {
+  background: rgba(129, 199, 132, 0.14);
+}
+.part-card-item {
+  border-left: 3px solid var(--green-dark, #15803d);
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  background: var(--surface-alt, #fafaf8);
+  border-radius: 4px;
+}
+html[data-theme="dark"] .part-card-item {
+  background: rgba(255, 255, 255, 0.04);
+  border-left-color: #81c784;
+}
+.part-code-pill {
+  background: var(--border, #e5e7eb);
+  color: inherit;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+}
+html[data-theme="dark"] .part-code-pill {
+  background: rgba(255, 255, 255, 0.12);
+}
+.part-title-row {
+  font-size: 1.05em;
+  margin: 4px 0 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.part-sanskrit-sub {
+  margin-left: 4px;
+}
 

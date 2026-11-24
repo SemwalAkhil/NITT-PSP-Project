@@ -41,12 +41,14 @@ from .herb_view import (
     clean_family,
     format_retrieved,
     dedupe_properties,
+    dedupe_plant_parts,
     group_properties_by_domain,
     virya_consensus,
     dedupe_dosha_effects,
     group_attributes,
     herb_image_url,
     herb_vernacular_table,
+    merged_vernacular_table,
     herb_name,
     qs,
 )
@@ -340,6 +342,8 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
     templates.env.filters["herb_image_url"] = herb_image_url
     templates.env.globals["herb_vernacular_table"] = herb_vernacular_table
     templates.env.filters["herb_vernacular_table"] = herb_vernacular_table
+    templates.env.globals["merged_vernacular_table"] = merged_vernacular_table
+    templates.env.globals["dedupe_plant_parts"] = dedupe_plant_parts
     templates.env.globals["resolve_herb"] = resolve_herb
     templates.env.filters["resolve_herb"] = resolve_herb
     templates.env.globals["search_herb_glossary"] = search_herb_glossary
