@@ -381,15 +381,26 @@ def group_attributes(attributes: list[dict[str, Any]] | None) -> dict[str, Any]:
         iast_vals = [it["value"] for it in items if it["variant"] == "iast" and it["value"]]
         hin_vals = [it["value"] for it in items if it["variant"] == "hindi" and it["value"]]
 
-        max_len = max(len(eng_vals), len(iast_vals), len(hin_vals), 0)
+        non_empty_counts = {len(v) for v in (eng_vals, iast_vals, hin_vals) if len(v) > 0}
+        aligned = len(non_empty_counts) <= 1
         rows: list[dict[str, str]] = []
-        for i in range(max_len):
-            rows.append({
-                "english": eng_vals[i] if i < len(eng_vals) else "",
-                "iast": iast_vals[i] if i < len(iast_vals) else "",
-                "hindi": hin_vals[i] if i < len(hin_vals) else "",
-            })
-        return {"group_name": grp_name, "rows": rows, "sources": sources}
+        if aligned:
+            max_len = max(len(eng_vals), len(iast_vals), len(hin_vals), 0)
+            for i in range(max_len):
+                rows.append({
+                    "english": eng_vals[i] if i < len(eng_vals) else "",
+                    "iast": iast_vals[i] if i < len(iast_vals) else "",
+                    "hindi": hin_vals[i] if i < len(hin_vals) else "",
+                })
+        return {
+            "group_name": grp_name,
+            "rows": rows,
+            "aligned": aligned,
+            "english_list": eng_vals,
+            "iast_list": iast_vals,
+            "hindi_list": hin_vals,
+            "sources": sources,
+        }
 
     # 2. Parts Used
     parts_used = _merge_triple_group("Parts Used")
@@ -398,6 +409,8 @@ def group_attributes(attributes: list[dict[str, Any]] | None) -> dict[str, Any]:
     dosage_formulations: list[dict[str, Any]] = []
     dosage_references: list[str] = []
     dosage_sources: list[str] = []
+    dosage_formulations_aligned = True
+    dosage_formulation_lists: dict[str, list[str]] = {"names": [], "forms": [], "refs": []}
     if "Dosage Formulation" in raw_by_group:
         df_items = raw_by_group["Dosage Formulation"]
         dosage_sources = list(dict.fromkeys(it["source_text"] for it in df_items if it["source_text"]))
@@ -407,12 +420,16 @@ def group_attributes(attributes: list[dict[str, Any]] | None) -> dict[str, Any]:
         refs = [it["value"] for it in df_items if "Reference" in it["subfield"] and it["value"]]
 
         dosage_references = list(dict.fromkeys(refs))
-        max_df = max(len(names), len(forms), 0)
-        for i in range(max_df):
-            n = names[i] if i < len(names) else ""
-            f = forms[i] if i < len(forms) else ""
-            r = refs[i] if i < len(refs) else ""
-            dosage_formulations.append({"name": n, "form": f, "reference": r})
+        dosage_formulation_lists = {"names": names, "forms": forms, "refs": refs}
+        df_counts = {len(v) for v in (names, forms, refs) if len(v) > 0}
+        dosage_formulations_aligned = len(df_counts) <= 1
+        if dosage_formulations_aligned:
+            max_df = max(len(names), len(forms), len(refs), 0)
+            for i in range(max_df):
+                n = names[i] if i < len(names) else ""
+                f = forms[i] if i < len(forms) else ""
+                r = refs[i] if i < len(refs) else ""
+                dosage_formulations.append({"name": n, "form": f, "reference": r})
 
     # 4. Dose
     dose_items = [it["value"] for it in raw_by_group.get("Dose", []) if it["value"]]
@@ -468,6 +485,8 @@ def group_attributes(attributes: list[dict[str, Any]] | None) -> dict[str, Any]:
         "vernacular_sources": vernacular_sources,
         "parts_used": parts_used,
         "dosage_formulations": dosage_formulations,
+        "dosage_formulations_aligned": dosage_formulations_aligned,
+        "dosage_formulation_lists": dosage_formulation_lists,
         "dosage_references": dosage_references,
         "dosage_sources": dosage_sources,
         "dose_items": dose_items,

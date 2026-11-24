@@ -2307,7 +2307,7 @@ class AyurvedicAlmanac:
                 FROM herb_attributes AS a
                 JOIN herbs AS h ON h.id = a.herb_id
                 WHERE a.herb_id = ?
-                ORDER BY a.field_name, a.value
+                ORDER BY a.field_name, a.rowid
                 """,
                 (herb_id,),
             ).fetchall()
@@ -2429,7 +2429,7 @@ class AyurvedicAlmanac:
                        a.machine_generated, a.verification_status
                 FROM herb_attributes AS a
                 JOIN herbs AS h ON h.id = a.herb_id
-                ORDER BY a.herb_id, a.field_name, a.value
+                ORDER BY a.herb_id, a.field_name, a.rowid
                 """
             ).fetchall()
             doshas = connection.execute(

@@ -1,6 +1,58 @@
 {% extends "base.html" %}
 {% from "_icons.html" import icon %}
 {% from "_language_bar.html" import language_bar with context %}
+{% macro triple_table(grp) %}
+  {% if grp.aligned %}
+  <table class="triple-table">
+    <thead>
+      <tr>
+        <th>English</th>
+        <th>IAST Transliteration</th>
+        <th>देवनागरी</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in grp.rows %}
+      <tr>
+        <td>{{ row.english or "—" }}</td>
+        <td><em>{{ row.iast or "—" }}</em></td>
+        <td>{{ row.hindi or "—" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted unaligned-note">Values could not be aligned row-by-row in the source.</p>
+  <table class="triple-table">
+    <thead>
+      <tr>
+        <th>English</th>
+        <th>IAST Transliteration</th>
+        <th>देवनागरी</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          {% if grp.english_list %}
+          <ul class="unaligned-list">{% for v in grp.english_list %}<li>{{ v }}</li>{% endfor %}</ul>
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {% if grp.iast_list %}
+          <ul class="unaligned-list">{% for v in grp.iast_list %}<li><em>{{ v }}</em></li>{% endfor %}</ul>
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {% if grp.hindi_list %}
+          <ul class="unaligned-list">{% for v in grp.hindi_list %}<li>{{ v }}</li>{% endfor %}</ul>
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {% endif %}
+{% endmacro %}
 {% block title %}{{ herb.original_name or herb.english_name }} · Herbal Almanac{% endblock %}
 {% block content %}
 <a class="back-link" href="{{ url_for('herb_list') }}{{ qs(language=current_language if current_language != 'en' else None) }}">← Back to herb explorer</a>
@@ -274,27 +326,10 @@
       {% endif %}
 
       <!-- 2. Parts used (3-column English | IAST | Devanagari) -->
-      {% if grouped_attributes.parts_used.rows %}
+      {% if grouped_attributes.parts_used.rows or grouped_attributes.parts_used.english_list or grouped_attributes.parts_used.iast_list or grouped_attributes.parts_used.hindi_list %}
       <div class="group-card">
         <h3>Parts Used (Prayojyāṅga)</h3>
-        <table class="triple-table">
-          <thead>
-            <tr>
-              <th>English</th>
-              <th>IAST Transliteration</th>
-              <th>देवनागरी</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in grouped_attributes.parts_used.rows %}
-            <tr>
-              <td>{{ row.english or "—" }}</td>
-              <td><em>{{ row.iast or "—" }}</em></td>
-              <td>{{ row.hindi or "—" }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        {{ triple_table(grouped_attributes.parts_used) }}
         {% if grouped_attributes.parts_used.sources %}
         <details class="raw-details">
           <summary>Source attribution ({{ grouped_attributes.parts_used.sources|length }})</summary>
@@ -311,10 +346,40 @@
       {% endif %}
 
       <!-- 3. Preparations & dosage forms -->
-      {% if grouped_attributes.dosage_formulations or (is_version_3 and semantic_profile and semantic_profile.preparations) %}
+      {% if grouped_attributes.dosage_formulations or not grouped_attributes.dosage_formulations_aligned or (is_version_3 and semantic_profile and semantic_profile.preparations) %}
       <div class="group-card">
         <h3>Preparations & Dosage Forms</h3>
-        {% if grouped_attributes.dosage_formulations %}
+        {% if not grouped_attributes.dosage_formulations_aligned %}
+        <p class="muted unaligned-note">Values could not be aligned row-by-row in the source.</p>
+        <table class="triple-table">
+          <thead>
+            <tr>
+              <th>Formulation Name</th>
+              <th>Dosage Form</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                {% if grouped_attributes.dosage_formulation_lists.names %}
+                <ul class="unaligned-list">{% for v in grouped_attributes.dosage_formulation_lists.names %}<li><strong>{{ v }}</strong></li>{% endfor %}</ul>
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if grouped_attributes.dosage_formulation_lists.forms %}
+                <ul class="unaligned-list">{% for v in grouped_attributes.dosage_formulation_lists.forms %}<li>{{ v }}</li>{% endfor %}</ul>
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if grouped_attributes.dosage_formulation_lists.refs %}
+                <ul class="unaligned-list">{% for v in grouped_attributes.dosage_formulation_lists.refs %}<li>{{ v }}</li>{% endfor %}</ul>
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        {% elif grouped_attributes.dosage_formulations %}
         <table class="triple-table">
           <thead>
             <tr>
@@ -382,27 +447,10 @@
       {% endif %}
 
       <!-- 5. Karma / Doshakarma summary -->
-      {% if grouped_attributes.doshakarma_merged.rows %}
+      {% if grouped_attributes.doshakarma_merged.rows or grouped_attributes.doshakarma_merged.english_list or grouped_attributes.doshakarma_merged.iast_list or grouped_attributes.doshakarma_merged.hindi_list %}
       <div class="group-card">
         <h3>Source Doshakarma Statement</h3>
-        <table class="triple-table">
-          <thead>
-            <tr>
-              <th>English</th>
-              <th>IAST Transliteration</th>
-              <th>देवनागरी</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in grouped_attributes.doshakarma_merged.rows %}
-            <tr>
-              <td>{{ row.english or "—" }}</td>
-              <td><em>{{ row.iast or "—" }}</em></td>
-              <td>{{ row.hindi or "—" }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        {{ triple_table(grouped_attributes.doshakarma_merged) }}
       </div>
       {% endif %}
 
@@ -435,53 +483,21 @@
       {% endif %}
 
       <!-- 7. Etymology & Pharmacopoeial status -->
-      {% set etym_count = grouped_attributes.etymology_merged.rows|length %}
+      {% set etym_has = grouped_attributes.etymology_merged.rows or grouped_attributes.etymology_merged.english_list or grouped_attributes.etymology_merged.iast_list or grouped_attributes.etymology_merged.hindi_list %}
+      {% set varga_has = grouped_attributes.varga_merged.rows or grouped_attributes.varga_merged.english_list or grouped_attributes.varga_merged.iast_list or grouped_attributes.varga_merged.hindi_list %}
+      {% set etym_count = grouped_attributes.etymology_merged.rows|length or grouped_attributes.etymology_merged.english_list|length %}
       {% set pharm_count = grouped_attributes.pharmacopoeial_records|length %}
-      {% if etym_count > 0 or pharm_count > 0 or grouped_attributes.varga_merged.rows %}
+      {% if etym_has or pharm_count > 0 or varga_has %}
       <details class="raw-details group-card" style="margin-top: 0;">
         <summary><strong>Etymology & Pharmacopoeial Status</strong> ({{ etym_count + pharm_count }} entries)</summary>
         <div class="raw-details-content">
-          {% if etym_count > 0 %}
+          {% if etym_has %}
           <h4 style="margin: 8px 0 6px 0; color: var(--green-dark);">Etymology & Sanskrit Synonyms</h4>
-          <table class="triple-table">
-            <thead>
-              <tr>
-                <th>English</th>
-                <th>IAST Transliteration</th>
-                <th>देवनागरी</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in grouped_attributes.etymology_merged.rows %}
-              <tr>
-                <td>{{ row.english or "—" }}</td>
-                <td><em>{{ row.iast or "—" }}</em></td>
-                <td>{{ row.hindi or "—" }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          {{ triple_table(grouped_attributes.etymology_merged) }}
           {% endif %}
-          {% if grouped_attributes.varga_merged.rows %}
+          {% if varga_has %}
           <h4 style="margin: 12px 0 6px 0; color: var(--green-dark);">Varga / Classical Classification</h4>
-          <table class="triple-table">
-            <thead>
-              <tr>
-                <th>English</th>
-                <th>IAST Transliteration</th>
-                <th>देवनागरी</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in grouped_attributes.varga_merged.rows %}
-              <tr>
-                <td>{{ row.english or "—" }}</td>
-                <td><em>{{ row.iast or "—" }}</em></td>
-                <td>{{ row.hindi or "—" }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          {{ triple_table(grouped_attributes.varga_merged) }}
           {% endif %}
           {% if pharm_count > 0 %}
           <h4 style="margin: 12px 0 6px 0; color: var(--green-dark);">Pharmacopoeial Verse & References</h4>
@@ -513,24 +529,7 @@
         <div class="raw-details-content">
           {% for grp in grouped_attributes.raw_dravyaguna_groups %}
           <h4 style="margin: 10px 0 4px 0; color: var(--green-dark);">{{ grp.group_name }} (raw triples)</h4>
-          <table class="triple-table">
-            <thead>
-              <tr>
-                <th>English</th>
-                <th>IAST Transliteration</th>
-                <th>देवनागरी</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in grp.rows %}
-              <tr>
-                <td>{{ row.english or "—" }}</td>
-                <td><em>{{ row.iast or "—" }}</em></td>
-                <td>{{ row.hindi or "—" }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          {{ triple_table(grp) }}
           {% endfor %}
           {% for grp in grouped_attributes.other_groups %}
           <h4 style="margin: 10px 0 4px 0; color: var(--green-dark);">{{ grp.group_name }}</h4>

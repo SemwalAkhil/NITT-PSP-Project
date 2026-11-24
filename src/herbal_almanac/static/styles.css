@@ -1273,4 +1273,13 @@ html[data-contrast="high"][data-theme="dark"] .localized-herb-name {
 .remove-row-btn {
   white-space: nowrap;
 }
+.unaligned-note {
+  font-size: 0.857rem;
+  font-style: italic;
+  margin: 4px 0 8px 0;
+}
+.unaligned-list {
+  margin: 0;
+  padding-left: 16px;
+}
 
