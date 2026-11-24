@@ -793,5 +793,39 @@ Executed to streamline project onboarding, eliminate redundant installation extr
    - Added `--stage-c / --no-stage-c` options to Typer CLI `scrape` and scrapper module `main()`, rendering a clean Rich summary table of backfilled concepts and Dravyaguna properties.
    - Retained standalone `upgrade-stage-c` command for retroactively migrating older Schema v2 databases.
 
+---
+
+## 14. Milestone J – Source Identity Safeguards, Manual Herb Attributes & Stage C Web Integration
+
+Executed as the final stabilization and completeness pass prior to project submission to guarantee strict provenance isolation, rich manual herb data entry, actionable Stage C web upgrade flow, and robust schema versioning:
+
+- [x] **Task 1: Source Identity Safeguards & Canonical Almanac Identity:**
+  - Enforced that Almanac Herb ID (`herbs.id`) is canonical across all web and database operations.
+  - Restricted external `source_record_id` resolution in `herb_glossary.py` and `herb_view.py` strictly to verified CCRAS sources via `is_ccras_source(source)`. Manual herbs and third-party references fall back safely to botanical name, original name, and English name matching.
+  - Scoped database queries in `search_herbs`, `herbs_for_illness`, and `all_records` to prevent cross-source ID collisions between manual herbs and CCRAS records.
+  - Image proxy (`/herbs/{id}/image`) serves CCRAS images strictly for CCRAS-sourced monographs; manual and non-CCRAS entries cleanly serve `/static/placeholder-herb.svg`.
+  - Manual herb web creation (`POST /herbs/add`) strictly stores `source_record_id = None`, displays auto-assigned Almanac ID on save, and informs users that herb identity is maintained by the Almanac.
+
+- [x] **Task 2: Manual Herb Classical & Custom Attributes with Stage C Backfill:**
+  - Implemented `AyurvedicAlmanac.add_herb_attributes(herb_id, attributes)` with dual-write to legacy tables (`herb_attributes`, `herb_doshas`, `treatment`, `illness`) and operational provenance (`source_claims` via `_record_claim`).
+  - Added strict validation: whitelist of recognized Dravyaguna prefixes (`Rasa`, `Guna`, `Virya`, `Vipaka`, `Prabhava`, `Karma`, `Doshakarma`, `Parts Used`, `Dosage Formulation`, `Dose`, `Varga`, `Mahakashaya`, `Pharmacopoeial Status`, `Therapeutic Usage`, `Custom.*`), max 80 characters for field names, max 300 characters per value, and max 30 values per field.
+  - Automated Stage C backfill: on Schema Version 3 databases, invokes `run_stage_c_backfill()` immediately to map claims to canonical concepts and populate Dravyaguna semantic tables (`herb_dravyaguna_properties`, `herb_plant_parts`, `herb_preparations`, `herb_indications`, `herb_dosha_effects`).
+  - Reusable partial `_herb_attribute_fields.html` with checkboxes for 6 Rasas and 20 canonical Gurvadi Gunas, radios for Virya and Vipaka, Doshakarma text input, comma-separated classical fields, and dynamic repeatable custom attribute rows.
+  - Embedded in `herb_form.html` (under collapsible section) and `herb_detail_semantic.html` (dedicated contribution card), backed by CSRF-verified `POST /herbs/{herb_id}/attributes`.
+  - Display user-entered attributes with `<span class="badge badge-accent">User-entered</span>` in source attribute tables.
+  - Added CLI parity via `--attribute / -a` repeatable option (`NAME=VALUE`) on `herbal-almanac herb`.
+
+- [x] **Task 3: Actionable Stage C Upgrade Banner & Default v3 Setup:**
+  - Transformed the static v2 capability warning on `herb_detail_semantic.html` and `herb_form.html` into an actionable `.alert.alert-warning` with a one-click "Upgrade database to Stage C" button. The banner automatically disappears once upgraded to Version 3.
+  - Implemented `POST /stage-c/upgrade` with same-origin CSRF verification, transactional `upgrade_to_stage_c()` and `run_stage_c_backfill()`, and open-redirect defense sanitizing `next` targets.
+  - Updated `herbal-almanac setup` to default to Schema Version 3 via `--stage-c` (creating schema, applying Migration 3, and running backfill), with `--no-stage-c` providing legacy Version 2 initialization.
+
+- [x] **Task 4: Comprehensive Verification, Documentation & Clean CI:**
+  - Added 16 new end-to-end tests across `test_manual_attributes.py` and `test_stage_c_upgrade_flow.py` (total test suite: 293 passed).
+  - Confirmed 100% clean passes for `scripts/lint_templates.py` and `scripts/audit_css_classes.py` (0 unstyled template classes, 0 duplicate HTML attributes).
+  - Verified test suite resilience with and without terminal ANSI colors (`GITHUB_ACTIONS=true FORCE_COLOR=1 PY_COLORS=1 TERM=xterm-256color pytest -q`).
+  - Executed clean installation smoke test in isolated Python virtual environment.
+  - Synchronized documentation in `README.md`, `cli.md`, `web_app.md`, and `plan.md`.
+
 
 

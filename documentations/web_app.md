@@ -422,27 +422,43 @@ The handler:
 5. Renders `illness_detail.html`.
 
 ### 7.6 `GET /herbs/add` and `POST /herbs/add` — Add Herb Record
-Form interface to insert new plant records (`english_name`, `botanical_name`, `family`, `source`, `source_record_id`, `source_url`). Enforces required fields, HTTP(S) protocol for URLs, and CSRF origin verification (`verify_same_origin`).
+Form interface to insert new plant records (`english_name`, `botanical_name`, `family`, `source`, `source_url`, optional photo upload).
 
-### 7.7 `GET /illnesses/add` and `POST /illnesses/add` — Add Illness / Indication
+Key identity and attribute principles:
+- **Canonical Almanac Herb ID:** Every herb record is assigned an auto-incrementing Almanac ID (`herbs.id`). Manual entries strictly store `source_record_id = None` (source record ID is reserved for original external URLs/provenance), preventing collisions with CCRAS scraped records.
+- **Classical & Custom Attributes:** Includes a collapsible section (`_herb_attribute_fields.html`) allowing users to record Rasa (six tastes), Virya (hot/cold), Vipaka (post-digestive effect), Guna (20 canonical qualities), Doshakarma, Karma, Prabhava, Parts used, Dosage forms, Posology, Classical groups (Varga, Mahakashaya), Pharmacopoeial references, and Clinical indications (Therapeutic Usage).
+- **Custom Key-Value Attributes:** Dynamic, repeatable custom attribute rows with vanilla JavaScript additions and removals.
+- **Stage C v2 Upgrade Banner:** On Schema Version 2 databases, displays an informative `.alert.alert-warning` explaining that Stage C unlocks normalized Dravyaguna semantic profiles, accompanied by an actionable "Upgrade database to Stage C" button.
+- **Dual-Storage & Backfill:** User-entered attributes land idempotently in `herb_attributes` (`machine_generated = 0`, `verification_status = 'unreviewed'`) and `source_claims` (`created_by_type = 'human'`, `created_by = 'manual'`). On Schema Version 3 databases, `run_stage_c_backfill()` executes immediately to populate semantic profile tables (`herb_dravyaguna_properties`, `herb_plant_parts`, `herb_preparations`, `herb_indications`, `herb_dosha_effects`).
+- **CSRF & Validation:** Enforces required fields, HTTP(S) protocol for URLs, and strict same-origin verification (`verify_same_origin`).
+
+### 7.7 `POST /herbs/{herb_id}/attributes` — Contribute Herb Attributes
+Mutating endpoint allowing users to record Dravyaguna properties and custom attributes directly to an existing plant record from its detail page. Validates field names and prefixes, length constraints (names <= 80 chars, values <= 300 chars, max 30 values per field), enforces same-origin CSRF checks, and redirects to `/herbs/{herb_id}?msg=Attributes+added+successfully`.
+
+### 7.8 `GET /illnesses/add` and `POST /illnesses/add` — Add Illness / Indication
 Form interface to insert illness terms. Traps unique constraint violations and renders user-friendly inline error alerts.
 
-### 7.8 `GET /treatments/add` and `POST /treatments/add` — Link Herb to Illness
+### 7.9 `GET /treatments/add` and `POST /treatments/add` — Link Herb to Illness
 Form interface providing searchable dropdown menus to link an existing plant record to an illness indication.
 
-### 7.9 `GET /treatments` — Treatments Directory
+### 7.10 `GET /treatments` — Treatments Directory
 Paginated directory displaying plant-condition treatment associations with query filtering (`?q=...`).
 
-### 7.10 `GET /attributes` and `GET /herbs/{herb_id}/attributes` — Source Attributes
-Comprehensive source attribute explorer displaying field names, values, source citations, language tags, and verification statuses across all herbs or for a single plant.
+### 7.11 `GET /attributes` and `GET /herbs/{herb_id}/attributes` — Source Attributes
+Comprehensive source attribute explorer displaying field names, values, source citations, language tags, and verification statuses across all herbs or for a single plant. User-entered attributes are prominently badged with `<span class="badge badge-accent">User-entered</span>`.
 
-### 7.11 `GET /records` — Records & Data Hub
+### 7.12 `GET /records` — Records & Data Hub
 Tabbed data hub summarizing records by group (`herbs`, `illnesses`, `treatments`, `attributes`, `doshas`) with live database metrics and export actions.
 
-### 7.12 `POST /stage-c/upgrade` and Stage C Status Architecture
-The standalone HTML route `/stage-c/status` was deprecated and removed (returns 404) to streamline navigation. Stage C capabilities and migration statuses are exposed programmatically via the JSON API (`GET /api/stage-c/status`) and the CLI (`herbal-almanac stage-c-status`). One-click web upgrades remain supported via `POST /stage-c/upgrade`, which upgrades schema transactionally and redirects to `/` with HTTP 303.
+### 7.13 `POST /stage-c/upgrade` and Stage C Status Architecture
+The standalone HTML route `/stage-c/status` was deprecated and removed (returns 404) to streamline navigation. Stage C capabilities and migration statuses are exposed programmatically via the JSON API (`GET /api/stage-c/status`) and the CLI (`herbal-almanac stage-c-status`). One-click web upgrades are supported via `POST /stage-c/upgrade`:
+- Validates same-origin request headers.
+- Invokes `almanac.upgrade_to_stage_c()` and `almanac.run_stage_c_backfill()`.
+- Idempotent: safe to run if already on Schema Version 3.
+- Defends against open-redirect attacks by sanitizing the `next` target parameter (ensuring it begins with `/`, does not start with `//`, and contains no schemes or host overrides). Defaults to `/` on invalid input.
+- Redirects 303 to sanitized target with success/already-upgraded notification.
 
-### 7.13 CSV and JSON Exports
+### 7.14 CSV and JSON Exports
 - `GET /export/herbs.csv` and `GET /export/herbs.json`: Filtered or complete herb records.
 - `GET /export/illnesses.csv` and `GET /export/illnesses.json`: Complete condition records.
 - `GET /export/treatments.csv` and `GET /export/treatments.json`: Plant-illness treatment links.

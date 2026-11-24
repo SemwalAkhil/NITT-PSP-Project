@@ -469,9 +469,9 @@ The Typer CLI provides 12 subcommands:
 
 | Subcommand | Description | Example |
 |---|---|---|
-| `setup` | Initialize database schema and migrations | `herbal-almanac setup --database data/herbs.db` |
+| `setup` | Initialize database schema and migrations (defaults to Stage C / schema v3) | `herbal-almanac setup --database data/herbs.db` |
 | `scrape` | Scrape CCRAS portal, persist records, and auto-upgrade to Stage C | `herbal-almanac scrape --database data/herbs.db --max-plants 10` |
-| `herb` | Insert a single herb with field validation | `herbal-almanac herb "Tulsi" --botanical-name "Ocimum sanctum"` |
+| `herb` | Insert a single herb with field validation and attributes (`-a`) | `herbal-almanac herb "Tulsi" --botanical-name "Ocimum sanctum" -a "Rasa=Tikta"` |
 | `illness` | Insert an illness entity | `herbal-almanac illness "Kasa"` |
 | `treatment` | Link a herb to an illness | `herbal-almanac treatment 1 1` |
 | `herbs` | Search herbs by common, botanical or vernacular name (`-l`) | `herbal-almanac herbs "Vasa" --language hi` |

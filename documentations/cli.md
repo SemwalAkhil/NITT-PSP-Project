@@ -202,14 +202,28 @@ Iterates over each record type and calls `show_rows()` to display it as a separa
 herbal-almanac setup --database data/almanac.db
 ```
 
-Creates the database schema and applies the migrations through:
+Creates the database schema and applies migrations. By default, `--stage-c` is enabled, applying Migration 3 (Stage C Semantic Dravyaguna) and seeding the canonical concept catalog:
 
-```python
-database(database_path).create_database()
+```bash
+herbal-almanac setup --database data/almanac.db
+# Database ready (Stage C / schema v3): data/almanac.db
+```
+
+Options:
+
+| Option | Purpose |
+|---|---|
+| `--database` / `-d` | Path to target SQLite database (default: `DEFAULT_DATABASE_PATH`) |
+| `--stage-c` / `--no-stage-c` | Enable or disable automatic Stage C (schema v3) upgrade and backfill (default: `--stage-c` enabled) |
+
+To initialize a legacy Schema Version 2 baseline:
+
+```bash
+herbal-almanac setup --database data/almanac.db --no-stage-c
+# Database ready: data/almanac.db
 ```
 
 The database path defaults to `DEFAULT_DATABASE_PATH`.
-
 Handled errors include filesystem, validation, and SQLite errors.
 
 ### 6.2 `scrape`
@@ -273,18 +287,22 @@ Processed 25 DRAVYA records.
 herbal-almanac herb "Tulsi" \
   --database data/almanac.db \
   --botanical-name "Ocimum tenuiflorum" \
-  --family "Lamiaceae"
+  --family "Lamiaceae" \
+  --attribute "Rasa=Tikta" \
+  --attribute "Virya=Ushna" \
+  --attribute "Custom.Habitat=Tropical plains"
 ```
 
-Inserts one herb through `AyurvedicAlmanac.add_herb()`.
+Inserts one herb through `AyurvedicAlmanac.add_herb()`, assigning an auto-incrementing Almanac herb ID (`herbs.id`).
 
-Optional metadata includes:
+Optional metadata and attributes include:
 
-- Botanical name
-- Family
-- Source
-- Source record ID
-- Source URL
+- `--botanical-name`: Latin binomial nomenclature
+- `--family`: Plant taxonomic family
+- `--source`: Provenance source (default: `manual`)
+- `--source-record-id`: ID on the original external website (provenance only; not the Almanac ID)
+- `--source-url`: Monograph or literature reference URL
+- `--attribute` / `-a`: Repeatable attribute in `NAME=VALUE` format. Supports classical Dravyaguna fields (`Rasa`, `Guna`, `Virya`, `Vipaka`, `Prabhava`, `Karma`, `Doshakarma`, `Parts Used`, `Dosage Formulation`, `Dose`, `Varga`, `Mahakashaya`, `Pharmacopoeial Status`, `Therapeutic Usage`) as well as `Custom.*` attributes. Attributes land in `herb_attributes` and `source_claims`, automatically backfilling into Stage C profile tables on Version 3 databases.
 
 The database layer performs the actual field validation and insertion.
 
