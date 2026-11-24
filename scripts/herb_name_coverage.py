@@ -38,7 +38,7 @@ def audit_herb_coverage(database_path: Path | str) -> dict[str, Any]:
         rows = [
             dict(r)
             for r in conn.execute(
-                "SELECT id, english_name, original_name, botanical_name, source_record_id FROM herbs ORDER BY id"
+                "SELECT id, english_name, original_name, botanical_name, source, source_record_id FROM herbs ORDER BY id"
             ).fetchall()
         ]
     finally:
@@ -51,11 +51,10 @@ def audit_herb_coverage(database_path: Path | str) -> dict[str, Any]:
     lang_counts: dict[str, int] = {lang: 0 for lang in HERB_LANGUAGE_COLUMNS.values()}
 
     for herb in rows:
-        plant_id = store.get_plant_id(herb)
-        res = store.resolve_by_id(plant_id) if plant_id else None
+        res = store.resolve_herb(herb)
 
         if res:
-            resolved.append({"herb": herb, "resolved": res, "plant_id": plant_id})
+            resolved.append({"herb": herb, "resolved": res, "plant_id": res.id})
             for col in HERB_LANGUAGE_COLUMNS.values():
                 val = res.vernacular_names.get(col)
                 if val and val != "N/A":

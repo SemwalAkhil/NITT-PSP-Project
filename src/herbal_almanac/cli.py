@@ -302,8 +302,7 @@ def list_herbs(
 
             store = get_herb_glossary_store()
             for r in results:
-                p_id = store.get_plant_id(r)
-                resolved = store.resolve_by_id(p_id) if p_id else None
+                resolved = store.resolve_herb(r)
                 vernacular = resolved.get_name(language) if resolved else None
                 r["vernacular_name"] = vernacular or "N/A"
         show_rows(results, "Herbs")

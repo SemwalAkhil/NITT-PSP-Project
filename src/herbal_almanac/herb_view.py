@@ -490,22 +490,32 @@ def group_attributes(attributes: list[dict[str, Any]] | None) -> dict[str, Any]:
 # ============================================================================
 
 def herb_image_url(herb: dict[str, Any] | None) -> str | None:
-    """Return CCRAS plant image URL or None if plant ID cannot be resolved.
+    """Return CCRAS plant image URL or None if not a CCRAS herb with source_record_id.
 
     URL structure:
-        https://dravya.ccras.org.in/resources/views/admin/required/upload/<plant_id>.jpg
-    Only built for CCRAS-source herbs.
+        https://dravya.ccras.org.in/resources/views/admin/required/upload/<source_record_id>.jpg
+    Only built for CCRAS-source herbs using their CCRAS ``source_record_id``.
     """
     if not herb:
         return None
-    from .herb_glossary import get_herb_glossary_store, is_ccras_source
+    from .herb_glossary import is_ccras_source
 
     if not is_ccras_source(herb.get("source")):
         return None
 
-    plant_id = get_herb_glossary_store().get_plant_id(herb)
-    if plant_id and plant_id > 0:
-        return f"https://dravya.ccras.org.in/resources/views/admin/required/upload/{plant_id}.jpg"
+    src_id = herb.get("source_record_id")
+    if src_id is not None:
+        try:
+            val = int(src_id)
+            if val > 0:
+                return f"https://dravya.ccras.org.in/resources/views/admin/required/upload/{val}.jpg"
+        except (ValueError, TypeError):
+            pass
+
+    from .herb_glossary import get_herb_glossary_store
+    resolved = get_herb_glossary_store().resolve_herb(herb)
+    if resolved and resolved.ccras_id and resolved.ccras_id > 0:
+        return f"https://dravya.ccras.org.in/resources/views/admin/required/upload/{resolved.ccras_id}.jpg"
     return None
 
 
@@ -515,11 +525,7 @@ def herb_vernacular_table(herb: dict[str, Any] | None) -> list[dict[str, str]]:
         return []
     from .herb_glossary import get_herb_glossary_store
 
-    store = get_herb_glossary_store()
-    plant_id = store.get_plant_id(herb)
-    if not plant_id:
-        return []
-    resolved = store.resolve_by_id(plant_id)
+    resolved = get_herb_glossary_store().resolve_herb(herb)
     if not resolved:
         return []
     rows: list[dict[str, str]] = []
@@ -536,7 +542,7 @@ def herb_vernacular_table(herb: dict[str, Any] | None) -> list[dict[str, str]]:
 def herb_name(herb: dict[str, Any] | None, lang: str | None = "en") -> str | None:
     """Return herb name in the requested language code ('hi', 'ta', 'ur', 'en', etc.).
 
-    Resolves the herb via HerbGlossaryStore (by plant ID or fallback match).
+    Resolves the herb via HerbGlossaryStore (by CCRAS ID, botanical binomial, or name fallback).
     If lang is 'en': returns glossary English name if available, else herb['english_name'].
     If lang != 'en': returns native script name if available and not 'N/A', else None.
     """
@@ -545,12 +551,7 @@ def herb_name(herb: dict[str, Any] | None, lang: str | None = "en") -> str | Non
     from .herb_glossary import get_herb_glossary_store
 
     store = get_herb_glossary_store()
-    plant_id = store.get_plant_id(herb)
-    resolved = store.resolve_by_id(plant_id) if plant_id else None
-    if not resolved:
-        resolved = store.resolve_herb(
-            herb.get("botanical_name") or herb.get("original_name") or herb.get("english_name")
-        )
+    resolved = store.resolve_herb(herb)
 
     target_lang = (lang or "en").lower()
     if resolved:

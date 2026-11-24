@@ -317,10 +317,10 @@ def test_herb_image_url_resolution():
     url = herb_image_url(herb_direct)
     assert url == "https://dravya.ccras.org.in/resources/views/admin/required/upload/13.jpg"
 
-    # Inferred via botanical name from herb_names.csv (CCRAS source)
+    # Inferred via botanical name from herb_names.csv (CCRAS source -> uses ccras_id 15)
     herb_inferred = {"id": 99, "source": "CCRAS DRAVYA", "source_record_id": None, "botanical_name": "Adhatoda vasica"}
     url2 = herb_image_url(herb_inferred)
-    assert url2 == "https://dravya.ccras.org.in/resources/views/admin/required/upload/13.jpg"
+    assert url2 == "https://dravya.ccras.org.in/resources/views/admin/required/upload/15.jpg"
 
     # Unknown herb returns None
     assert herb_image_url({"id": 100, "botanical_name": "Unknown species"}) is None

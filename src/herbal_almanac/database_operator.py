@@ -2101,36 +2101,40 @@ class AyurvedicAlmanac:
                     pass
 
                 try:
-                    from .herb_glossary import search_herb_glossary
+                    from .herb_glossary import normalize_binomial, search_herb_glossary
 
                     glossary_herbs = search_herb_glossary(clean_q)
                     if glossary_herbs:
-                        g_ids = [gh.id for gh in glossary_herbs if gh.id]
-                        if g_ids:
-                            placeholders = ",".join("?" for _ in g_ids)
+                        ccras_ids = [gh.ccras_id for gh in glossary_herbs if gh.ccras_id is not None]
+                        if ccras_ids:
+                            placeholders = ",".join("?" for _ in ccras_ids)
                             id_matches = connection.execute(
                                 f"""
                                 SELECT id FROM herbs
                                 WHERE (
                                     source = 'CCRAS DRAVYA'
                                     OR source = 'DRAVYA'
-                                    OR lower(trim(source)) IN ('ccras dravya', 'ccras', 'dravya', 'ccras_dravya')
+                                    OR lower(trim(source)) IN ('ccras dravya', 'ccras', 'dravya', 'ccras_dravya', 'ccras-dravya')
                                 ) AND source_record_id IN ({placeholders})
                                 """,
-                                g_ids,
+                                ccras_ids,
                             ).fetchall()
                             for r in id_matches:
                                 vernacular_matched_ids.add(r[0])
 
-                        bot_names = [gh.botanical_name for gh in glossary_herbs if gh.botanical_name]
-                        if bot_names:
-                            b_placeholders = ",".join("?" for _ in bot_names)
+                        hit_binomials = {
+                            normalize_binomial(gh.botanical_name)
+                            for gh in glossary_herbs
+                            if gh.botanical_name
+                        }
+                        hit_binomials.discard("")
+                        if hit_binomials:
                             b_matches = connection.execute(
-                                f"SELECT id FROM herbs WHERE botanical_name IN ({b_placeholders})",
-                                bot_names,
+                                "SELECT id, botanical_name FROM herbs WHERE botanical_name IS NOT NULL AND botanical_name != ''"
                             ).fetchall()
                             for r in b_matches:
-                                vernacular_matched_ids.add(r[0])
+                                if normalize_binomial(r[1]) in hit_binomials:
+                                    vernacular_matched_ids.add(r[0])
                 except Exception:
                     pass
 

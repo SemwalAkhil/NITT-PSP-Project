@@ -84,8 +84,33 @@ def tolerant_herb_key(term: str | None) -> str:
     return " ".join(text.split())
 
 
+def normalize_binomial(botanical_name: str | None) -> str:
+    """Normalize a botanical name to its lowercase 'genus species' binomial.
+
+    Strips diacritics, parenthetical authority citations (e.g. '(Schum.)'),
+    punctuation, and trailing authority/variety suffixes (e.g. 'Muell', 'Buch',
+    'Linn.', 'var. ...', 'Stapf', 'Wall').
+    """
+    if not botanical_name:
+        return ""
+    text = unicodedata.normalize("NFKD", str(botanical_name))
+    text = "".join(c for c in text if not unicodedata.combining(c)).lower()
+    text = re.sub(r"\([^)]*\)", " ", text)
+    text = re.sub(r"[^a-z0-9\s]", " ", text)
+    tokens = text.split()
+    if len(tokens) >= 2:
+        return f"{tokens[0]} {tokens[1]}"
+    return " ".join(tokens)
+
+
 class ResolvedHerb(dict):
-    """Holds a resolved herb entry with multilingual names and metadata."""
+    """Holds a resolved herb entry with multilingual names and metadata.
+
+    Note:
+        ``id`` is the internal glossary row number (1..347) and is NOT stable
+        across scrapes — never compare it with ``source_record_id`` or ``herbs.id``.
+        Use ``ccras_id`` to match CCRAS DRAVYA ``source_record_id``.
+    """
 
     def __init__(
         self,
@@ -94,15 +119,18 @@ class ResolvedHerb(dict):
         botanical_name: str,
         english_name: str,
         vernacular_names: dict[str, str],
+        ccras_id: int | None = None,
     ) -> None:
         super().__init__(
             id=herb_id,
+            ccras_id=ccras_id,
             original_name=original_name,
             botanical_name=botanical_name,
             english_name=english_name,
             vernacular_names=vernacular_names,
         )
         self.id = herb_id
+        self.ccras_id = ccras_id
         self.original_name = original_name
         self.botanical_name = botanical_name
         self.english_name = english_name
@@ -134,6 +162,8 @@ class HerbGlossaryStore:
 
     def __init__(self, rows: list[dict[str, str]]) -> None:
         self.by_id: dict[int, ResolvedHerb] = {}
+        self.by_ccras_id: dict[int, ResolvedHerb] = {}
+        self.by_binomial: dict[str, list[ResolvedHerb]] = {}
         self.by_botanical: dict[str, ResolvedHerb] = {}
         self.by_original: dict[str, ResolvedHerb] = {}
         self.by_english: dict[str, ResolvedHerb] = {}
@@ -146,6 +176,14 @@ class HerbGlossaryStore:
             except (ValueError, KeyError):
                 continue
 
+            raw_ccras = (row.get("ccras_id") or "").strip()
+            ccras_id: int | None = None
+            if raw_ccras:
+                try:
+                    ccras_id = int(raw_ccras)
+                except ValueError:
+                    ccras_id = None
+
             orig = row.get("original_name", "").strip()
             bot = row.get("botanical_name", "").strip()
             eng = row.get("English", "").strip()
@@ -153,7 +191,7 @@ class HerbGlossaryStore:
             # Vernacular mapping: column name -> name
             vernacular: dict[str, str] = {}
             for col, val in row.items():
-                if col not in ("id", "original_name", "botanical_name") and val:
+                if col not in ("id", "ccras_id", "original_name", "botanical_name") and val:
                     vernacular[col] = val.strip()
 
             resolved = ResolvedHerb(
@@ -162,13 +200,19 @@ class HerbGlossaryStore:
                 botanical_name=bot,
                 english_name=eng,
                 vernacular_names=vernacular,
+                ccras_id=ccras_id,
             )
 
             self.by_id[h_id] = resolved
+            if ccras_id is not None:
+                self.by_ccras_id[ccras_id] = resolved
             self.all_herbs.append(resolved)
 
             if bot:
                 self.by_botanical[tolerant_herb_key(bot)] = resolved
+                norm_bin = normalize_binomial(bot)
+                if norm_bin:
+                    self.by_binomial.setdefault(norm_bin, []).append(resolved)
             if orig:
                 self.by_original[tolerant_herb_key(orig)] = resolved
             if eng:
@@ -181,12 +225,67 @@ class HerbGlossaryStore:
                     self.by_name_key.setdefault(key, []).append(resolved)
 
     def resolve_by_id(self, herb_id: int) -> ResolvedHerb | None:
-        """Resolve a herb directly by its integer ID."""
+        """Resolve a herb directly by its internal glossary row ID (1..347)."""
         return self.by_id.get(herb_id)
 
-    def resolve_herb(self, query: str | int | None) -> ResolvedHerb | None:
-        """Resolve a herb by ID, botanical name, original name, English name, or vernacular name."""
+    def resolve_herb(self, query: dict[str, Any] | str | int | None) -> ResolvedHerb | None:
+        """Resolve a herb dict or query string/ID to a ResolvedHerb.
+
+        When given a herb dictionary:
+        1. If ``is_ccras_source(herb['source'])`` and ``source_record_id`` is an int,
+           look up ``by_ccras_id[source_record_id]`` (never use it as glossary row id).
+        2. Botanical name: match on normalized binomial (genus + species). If multiple
+           glossary rows share the binomial, prefer one whose ``original_name`` matches
+           the herb's ``original_name`` or ``english_name``, else the first.
+        3. Fallback to ``original_name``, then ``english_name`` via tolerant matching.
+        """
         if query is None:
+            return None
+
+        if isinstance(query, dict):
+            # 1. CCRAS source_record_id -> by_ccras_id (NEVER by_id)
+            if is_ccras_source(query.get("source")):
+                src_id = query.get("source_record_id")
+                if src_id is not None:
+                    try:
+                        val = int(src_id)
+                        if val > 0 and val in self.by_ccras_id:
+                            return self.by_ccras_id[val]
+                    except (ValueError, TypeError):
+                        pass
+
+            # 2. Botanical name -> normalized binomial
+            bot = query.get("botanical_name")
+            if bot:
+                norm_bin = normalize_binomial(bot)
+                if norm_bin and norm_bin in self.by_binomial:
+                    candidates = self.by_binomial[norm_bin]
+                    if len(candidates) == 1:
+                        return candidates[0]
+                    orig_key = tolerant_herb_key(query.get("original_name"))
+                    eng_key = tolerant_herb_key(query.get("english_name"))
+                    for cand in candidates:
+                        c_orig = tolerant_herb_key(cand.original_name)
+                        if c_orig and (c_orig == orig_key or c_orig == eng_key):
+                            return cand
+                    return candidates[0]
+                resolved = self.by_botanical.get(tolerant_herb_key(bot))
+                if resolved:
+                    return resolved
+
+            # 3. Original name, then English name
+            orig = query.get("original_name")
+            if orig:
+                resolved = self.by_original.get(tolerant_herb_key(orig))
+                if resolved:
+                    return resolved
+
+            eng = query.get("english_name")
+            if eng:
+                resolved = self.by_english.get(tolerant_herb_key(eng))
+                if resolved:
+                    return resolved
+
             return None
 
         if isinstance(query, int):
@@ -208,6 +307,9 @@ class HerbGlossaryStore:
         # Check exact key matches in priority order
         if key in self.by_botanical:
             return self.by_botanical[key]
+        norm_bin = normalize_binomial(clean)
+        if norm_bin and norm_bin in self.by_binomial:
+            return self.by_binomial[norm_bin][0]
         if key in self.by_original:
             return self.by_original[key]
         if key in self.by_english:
@@ -266,39 +368,15 @@ class HerbGlossaryStore:
         return matched
 
     def get_plant_id(self, herb: dict[str, Any]) -> int | None:
-        """Resolve the CCRAS plant ID for a herb dictionary."""
-        # 1. Direct source_record_id (ONLY for CCRAS sources)
-        if is_ccras_source(herb.get("source")):
-            src_id = herb.get("source_record_id")
-            if src_id is not None:
-                try:
-                    val = int(src_id)
-                    if val > 0:
-                        return val
-                except (ValueError, TypeError):
-                    pass
+        """Resolve the internal glossary row ID (`ResolvedHerb.id`) for a herb dictionary.
 
-        # 2. Match by botanical name
-        bot = herb.get("botanical_name")
-        if bot:
-            resolved = self.by_botanical.get(tolerant_herb_key(bot))
-            if resolved:
-                return resolved.id
-
-        # 3. Match by original / english name
-        orig = herb.get("original_name")
-        if orig:
-            resolved = self.by_original.get(tolerant_herb_key(orig))
-            if resolved:
-                return resolved.id
-
-        eng = herb.get("english_name")
-        if eng:
-            resolved = self.by_english.get(tolerant_herb_key(eng))
-            if resolved:
-                return resolved.id
-
-        return None
+        Note:
+            The returned ID is the internal glossary row number (1..347), NEVER
+            ``source_record_id`` or ``herbs.id``. Prefer ``resolve_herb(herb)``
+            for new code.
+        """
+        resolved = self.resolve_herb(herb)
+        return resolved.id if resolved else None
 
 
 @lru_cache(maxsize=1)
